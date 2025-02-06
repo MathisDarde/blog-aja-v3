@@ -1,0 +1,245 @@
+[
+  {
+    "title": "Records Individuels",
+    "image": "/assets/img/djibrilcisserecords.avif",
+    "alt": "Djibril Cissé",
+    "rows": [
+      {
+        "category": "individuel",
+        "record": "Meilleur buteur (99)",
+        "player": "Andrzej Szarmach (ATT)"
+      },
+      {
+        "category": "individuel",
+        "record": "Meilleur passeur (31)",
+        "player": "Thomas Kahlenberg (MIL)"
+      },
+      {
+        "category": "individuel",
+        "record": "Joueur le plus capé (467)",
+        "player": "Fabien Cool (G)"
+      },
+      {
+        "category": "individuel",
+        "record": "Plus grand nombre de minutes jouées (41 653)",
+        "player": "Fabien Cool (G)"
+      },
+      {
+        "category": "individuel",
+        "record": "Plus grand nombre de cartons jaunes (61)",
+        "player": "Jean-Pascal Mignot (DEF)"
+      },
+      {
+        "category": "individuel",
+        "record": "Plus grand nombre de cartons rouges (3)",
+        "player": "Georges Mandjeck (MIL)"
+      },
+      {
+        "category": "individuel",
+        "record": "Plus grand nombre d'entraîneur de l'année (3)",
+        "player": "Guy Roux (ENT)"
+      },
+      {
+        "category": "individuel",
+        "record": "Meilleur buteur sur une saison (30)",
+        "player": "Andrzej Szarmach (ATT)"
+      },
+      {
+        "category": "individuel",
+        "record": "Meilleur passeur sur une saison (15)",
+        "player": "Yann Lachuer (MIL)"
+      },
+      {
+        "category": "individuel",
+        "record": "Plus grand nombre de buts en 1 match (5)",
+        "player": "Andrzej Szarmach (ATT)"
+      },
+      {
+        "category": "individuel",
+        "record": "Plus grand nombre de passes décisives en 1 match (4)",
+        "player": "Teemu Tainio (MIL)"
+      },
+      {
+        "category": "individuel",
+        "record": "Plus grand nombre de sélection en Équipe de France (20)",
+        "player": "Basile Boli (DEF)"
+      }
+    ]
+  },
+  {
+    "title": "Records Collectifs",
+    "image": "/assets/img/titre1996records.webp",
+    "alt": "Titre 1996",
+    "rows": [
+      {
+        "category": "collectif",
+        "record": "Record de points sur une saison (77)",
+        "player": "Saison 1995-1996 (1er)"
+      },
+      {
+        "category": "collectif",
+        "record": "Titre de Champion de France de L1 (1)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "collectif",
+        "record": "Record de victoires d'affilée en Ligue 1 (9)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "collectif",
+        "record": "Record d'invincibilité (19)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "collectif",
+        "record": "4 victoires en Coupe de France",
+        "player": "Saisons 1994, 1996, 2003, 2005"
+      },
+      {
+        "category": "collectif",
+        "record": "2 fois Champion de France de Ligue 2",
+        "player": "Saisons 1980 et 2024"
+      },
+      {
+        "category": "collectif",
+        "record": "Plus haut total de buts marqués sur une saison (76)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "collectif",
+        "record": "Plus bas total de buts encaissés sur une saison (19)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "collectif",
+        "record": "Plus haut total de buts marqués sur un match (7)",
+        "player": "Face au FC Sochaux-Montbéliard en 2005 (7-0)"
+      }
+    ]
+  },
+  {
+    "title": "Records en Championnat",
+    "image": "/assets/img/champions.jpeg",
+    "alt": "Champion Ligue 2",
+    "rows": [
+      {
+        "category": "championnat",
+        "record": "Meilleur buteur sur une saison de Ligue 1 (24)",
+        "player": "Andrzej Szarmach (1982, 1983)"
+      },
+      {
+        "category": "championnat",
+        "record": "Meilleur buteur de l'histoire en Ligue 1 (94)",
+        "player": "Andrzej Szarmach (ATT)"
+      },
+      {
+        "category": "championnat",
+        "record": " Meilleur passeur sur une saison de Ligue 1 (15)",
+        "player": "Yann Lachuer (MIL)"
+      },
+      {
+        "category": "championnat",
+        "record": " Meilleur passeur de l'histoire en Ligue 1 (31)",
+        "player": "Thomas Kahlenberg (MIL)"
+      },
+      {
+        "category": "championnat",
+        "record": " Record de points sur une saison de Ligue 1 (76)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "championnat",
+        "record": " Meilleur classement sur une saison de Ligue 1 (1er)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "championnat",
+        "record": " Meilleur classement sur une saison de Ligue 1 (1er)",
+        "player": "Saison 1995-1996"
+      },
+      {
+        "category": "championnat",
+        "record": " Plus de cartons jaunes sur une saison de Ligue 1 (11)",
+        "player": "Stéphane Grichting (DEF)"
+      },
+      {
+        "category": "championnat",
+        "record": "Plus d'apparitions en Ligue 1 (351)",
+        "player": "Fabien Cool (G)"
+      },
+      {
+        "category": "championnat",
+        "record": "Plus grand nombre de buts en un match de Ligue 1 (5)",
+        "player": "Andrzej Szarmach (ATT)"
+      },
+      {
+        "category": "championnat",
+        "record": "Meilleur buteur de l'histoire en Ligue 2 (26)",
+        "player": "Gauthier Hein (MIL)"
+      },
+      {
+        "category": "championnat",
+        "record": "Meilleur buteur sur une saison de Ligue 2 (15)",
+        "player": "Ado Onaiwu (ATT)"
+      },
+      {
+        "category": "championnat",
+        "record": "Meilleur passeur de l'histoire en Ligue 2 (23)",
+        "player": "Hamza Sakhi (MIL)"
+      },
+      {
+        "category": "championnat",
+        "record": "Meilleur passeur sur une saison de Ligue 2 (13)",
+        "player": "Mathias Autret (MIL)"
+      },
+      {
+        "category": "championnat",
+        "record": "Record de points sur une saison de Ligue 2 (74)",
+        "player": "Saisons 2022 et 2024"
+      },
+      {
+        "category": "championnat",
+        "record": "Joueur le plus capé en Ligue 2 (173)",
+        "player": "Birama Touré (MIL)"
+      }
+    ]
+  },
+  {
+    "title": "Records Européens",
+    "image": "/assets/img/auxerrerealldcrecords.jpg",
+    "alt": "Records européens",
+    "rows": [
+      {
+        "category": "europeen",
+        "record": "Meilleur parcours en C1 (Ligue des Champions)",
+        "player": "Quart de finale (1997)"
+      },
+      {
+        "category": "europeen",
+        "record": "Meilleur parcours en C3 (Ligue Europa)",
+        "player": "Demi-Finale (1993)"
+      },
+      {
+        "category": "europeen",
+        "record": "Meilleur buteur en Coupe d'Europe (9)",
+        "player": "Bonaventure Kalou (ATT)"
+      },
+      {
+        "category": "europeen",
+        "record": "Meilleur passeur en Coupe d'Europe (6)",
+        "player": "Pascal Vahirua (ATT)"
+      },
+      {
+        "category": "europeen",
+        "record": "Joueur le plus capé en Coupe d'Europe (45)",
+        "player": "Fabien Cool (G)"
+      },
+      {
+        "category": "europeen",
+        "record": "Nombre de saisons européennes (15)",
+        "player": "1985, 1986, 1988, 1990, 1992, 1993, 1994, 1997, 1998, 2003, 2004, 2005, 2006, 2007, 2011"
+      }
+    ]
+  }
+]

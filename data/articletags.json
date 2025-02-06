@@ -1,0 +1,140 @@
+[
+  {
+    "tag": "avant 1980",
+    "value": "avant-1980",
+    "img": "./categories-tags/img/avant1980.webp",
+    "type": "year"
+  },
+  {
+    "tag": "1981 - 1990",
+    "value": "1981-1990",
+    "img": "./categories-tags/img/aja80s.jpeg",
+    "type": "year"
+  },
+  {
+    "tag": "1991 - 2000",
+    "value": "1991-2000",
+    "img": "./categories-tags/img/aja90s.jpg",
+    "type": "year"
+  },
+  {
+    "tag": "2001 - 2010",
+    "value": "2001-2010",
+    "img": "./categories-tags/img/aja00s.webp",
+    "type": "year"
+  },
+  {
+    "tag": "2011 - 2020",
+    "value": "2011-2020",
+    "img": "./categories-tags/img/aja10s.webp",
+    "type": "year"
+  },
+  {
+    "tag": "2021 - aujourd'hui",
+    "value": "2021-aujourdhui",
+    "img": "./categories-tags/img/aja20s.jpg",
+    "type": "year"
+  },
+  {
+    "tag": "Coupe d'Europe",
+    "value": "coupedeurope",
+    "img": "./categories-tags/img/coupedeurope.webp",
+    "type": "league"
+  },
+  {
+    "tag": "Ligue 1",
+    "value": "ligue1",
+    "img": "./categories-tags/img/ligue1.webp",
+    "type": "league"
+  },
+  {
+    "tag": "Ligue 2",
+    "value": "ligue2",
+    "img": "./categories-tags/img/ligue2.webp",
+    "type": "league"
+  },
+  {
+    "tag": "Équipes jeunes",
+    "value": "equipesjeunes",
+    "img": "./categories-tags/img/equipesjeunes.webp",
+    "type": "league"
+  },
+  {
+    "tag": "Coupe de France",
+    "value": "coupedefrance",
+    "img": "./categories-tags/img/coupedefrance.jpg",
+    "type": "league"
+  },
+  {
+    "tag": "Djibril Cissé",
+    "value": "djibrilcisse",
+    "img": "./categories-tags/img/djrbrilcisse.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Andrzej Szarmach",
+    "value": "andrzejszarmach",
+    "img": "./categories-tags/img/andrzejszarmach.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Lilian Laslandes",
+    "value": "lilianlaslandes",
+    "img": "./categories-tags/img/lilianlaslandes.png",
+    "type": "player"
+  },
+  {
+    "tag": "Eric Cantona",
+    "value": "ericcantona",
+    "img": "./categories-tags/img/ericcantona.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Christophe Cocard",
+    "value": "christophecocard",
+    "img": "./categories-tags/img/christophecocard.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Gauthier Hein",
+    "value": "gauthierhein",
+    "img": "./categories-tags/img/gauthierhein.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Jean-Marc Ferreri",
+    "value": "jeanmarcferreri",
+    "img": "./categories-tags/img/jeanmarcferreri.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Moussa Saïb",
+    "value": "moussasaib",
+    "img": "./categories-tags/img/moussasaib.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Alain Goma",
+    "value": "alaingoma",
+    "img": "./categories-tags/img/alaingoma.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Lionel Charbonnier",
+    "value": "lionelcharbonnier",
+    "img": "./categories-tags/img/lionelcharbonnier.jpg",
+    "type": "player"
+  },
+  {
+    "tag": "Bernard Diomède",
+    "value": "bernarddiomede",
+    "img": "./categories-tags/img/bernarddiomede.png",
+    "type": "player"
+  },
+  {
+    "tag": "Olivier Kapo",
+    "value": "olivierkapo",
+    "img": "./categories-tags/img/olivierkapo.webp",
+    "type": "player"
+  }
+]
