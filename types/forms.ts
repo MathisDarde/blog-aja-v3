@@ -14,4 +14,5 @@ export type FormResponse = {
   success: boolean;
   errors?: ZodIssue[];
   message?: string;
+  token?: string;
 };
