@@ -11,7 +11,15 @@ export const LoginSchema = z.object({
 export const InscSchema = z
   .object({
     pseudo: z.string().nonempty(),
-    birthday: z.date(),
+    birthday: z.string().refine(
+      (val) => {
+        const date = new Date(val);
+        return !isNaN(date.getTime()) && date < new Date();
+      },
+      {
+        message: "La date de naissance doit être valide et dans le passé.",
+      }
+    ),
     email: z.string().email(),
     password: z
       .string()
