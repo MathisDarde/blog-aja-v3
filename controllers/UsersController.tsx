@@ -1,3 +1,4 @@
+import { InscSchemaType } from "@/types/forms";
 import prisma from "../prisma/prisma";
 import { hashPassword } from "@/utils/bcrypt";
 
@@ -14,16 +15,13 @@ class UsersController {
     return users;
   }
 
-  async store(
-    pseudo: string,
-    birthday: string,
-    email: string,
-    password: string
-  ) {
-    const birthdayDate = new Date(birthday);
+  async store(data: InscSchemaType) {
+    const birthdayDate = new Date(data.birthday);
     birthdayDate.setUTCHours(0, 0, 0, 0);
 
-    const hashedPassword = await hashPassword(password);
+    const pseudo = data.pseudo;
+    const email = data.email;
+    const hashedPassword = await hashPassword(data.password);
 
     const user = await prisma.user.create({
       data: {
@@ -48,7 +46,7 @@ class UsersController {
   async update(
     id_user: number,
     pseudo: string,
-    birthday: string,
+    birthday: Date,
     email: string,
     password: string
   ) {
