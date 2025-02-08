@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Heading, Image, Film, Folder, PenTool, Tag, X } from "lucide-react";
+import {
+  Heading,
+  Image as ImageIcon,
+  Film,
+  Folder,
+  PenTool,
+  Tag,
+  X,
+} from "lucide-react";
 import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
@@ -93,7 +101,7 @@ function ArticleForm() {
 
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
-            <Image className="mr-4" />
+            <ImageIcon className="mr-4" />
             Image :
           </span>
           <input
