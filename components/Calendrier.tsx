@@ -46,6 +46,8 @@ function Calendrier() {
               <div className="flex flex-row justify-between my-2">
                 <Image
                   src={match.logoequipedom}
+                  width={48}
+                  height={24}
                   alt="Logo Club 1"
                   className="w-12 h-6 object-contain"
                 />
@@ -59,6 +61,8 @@ function Calendrier() {
               <div className="flex flex-row justify-between my-2">
                 <Image
                   src={match.logoequipeext}
+                  width={48}
+                  height={24}
                   alt="Logo Club 2"
                   className="w-12 h-6 object-contain"
                 />

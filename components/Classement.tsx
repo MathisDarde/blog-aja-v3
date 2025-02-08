@@ -68,6 +68,8 @@ function Classement() {
                 .replace(/\s+/g, "")
                 .replace(/[^\w]/g, "")
                 .toLowerCase()}.svg`}
+              width={20}
+              height={20}
               alt={`${team.strTeam} logo`}
               className="h-5 w-5 object-contain mx-2 font-Montserrat "
             />
