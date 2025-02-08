@@ -16,7 +16,7 @@ const SearchBar = () => {
   return (
     <div className="relative flex flex-col items-center p-5">
       <input
-        className="relative w-full border border-black text-xs text-gray-500 font-['Montserrat'] py-2 pl-4 pr-10 rounded-full shadow-lg"
+        className="relative w-full border border-black text-xs text-gray-500 font-Montserrat py-2 pl-4 pr-10 rounded-full shadow-lg"
         placeholder="Rechercher un article..."
       />
       <Search size={16} className="absolute right-9 bottom-7 text-gray-500" />

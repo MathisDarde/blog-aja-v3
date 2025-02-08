@@ -121,7 +121,7 @@ function ArticleForm() {
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Folder className="mr-4" />
-            Contenu de l'article :
+            Contenu de l&apos;article :
           </span>
           <textarea
             {...register("content")}
@@ -180,7 +180,7 @@ function ArticleForm() {
             // )}
             // disabled={formState.isSubmitting || !formState.isValid}
           >
-            Je publie l'article
+            Je publie l&apos;article
           </Button>
         </div>
       </form>

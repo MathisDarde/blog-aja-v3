@@ -60,7 +60,7 @@ function Sidebar({ onToggle }: SidebarProps) {
                   {AutresDropdownData.map((dropdownVal, dropdownKey) => (
                     <li
                       key={dropdownKey}
-                      className="group relative w-full h-10 bg-white list-none flex flex-row mb-1 text-gray-600 items-center font-['Montserrat'] text-sm font-normal cursor-pointer hover:text-aja-blue hover:font-semibold hover:transition-colors"
+                      className="group relative w-full h-10 bg-white list-none flex flex-row mb-1 text-gray-600 items-center font-Montserrat text-sm font-normal cursor-pointer hover:text-aja-blue hover:font-semibold hover:transition-colors"
                       onClick={() => {
                         window.location.pathname = dropdownVal.link;
                       }}
@@ -80,7 +80,7 @@ function Sidebar({ onToggle }: SidebarProps) {
         </ul>
 
         <div className="mt-5">
-          <h3 className="text-lg text-black font-bold font-['Montserrat'] text-center">
+          <h3 className="text-lg text-black font-bold font-Montserrat text-center">
             Classement Ligue 1
           </h3>
           <Classement />

@@ -25,7 +25,7 @@ export default function Page() {
       <div className="ml-24">
         <Link href="/">
           <p className="text-5xl text-center font-title italic uppercase font-bold text-aja-blue py-10 font-Bai_Jamjuree">
-            Mémoire d'Auxerrois
+            Mémoire d&apos;Auxerrois
           </p>
         </Link>
 
@@ -35,7 +35,7 @@ export default function Page() {
 
         <div className="my-10">
           <h1 className="uppercase text-3xl font-Montserrat font-bold text-center">
-            A la une sur Mémoire d'Auxerrois
+            A la une sur Mémoire d&apos;Auxerrois
           </h1>
         </div>
       </div>

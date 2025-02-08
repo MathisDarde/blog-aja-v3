@@ -5,7 +5,7 @@ import ArticleForm from "./_components/ArticleForm";
 import Sidebar from "@/components/Sidebar";
 import SidebarResp from "@/components/SidebarResp";
 
-function publisharticle() {
+function PublishArticle() {
   useEffect(() => {
     document.title = "Mémoire d'Auxerrois";
 
@@ -44,4 +44,4 @@ function publisharticle() {
   );
 }
 
-export default publisharticle;
+export default PublishArticle;

@@ -129,7 +129,7 @@ function InscForm() {
             )}
             disabled={formState.isSubmitting || !formState.isValid}
           >
-            Je m'inscris
+            Je m&apos;inscris
           </Button>
         </div>
       </form>
