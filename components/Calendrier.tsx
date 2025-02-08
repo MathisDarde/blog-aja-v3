@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchMatches } from "../utils/matchsapi";
+import Image from "next/image";
 
 interface Match {
   equipedom: string;
@@ -43,7 +44,7 @@ function Calendrier() {
                 <p className="font-Montserrat">{match.date}</p>
               </div>
               <div className="flex flex-row justify-between my-2">
-                <img
+                <Image
                   src={match.logoequipedom}
                   alt="Logo Club 1"
                   className="w-12 h-6 object-contain"
@@ -56,7 +57,7 @@ function Calendrier() {
                 </p>
               </div>
               <div className="flex flex-row justify-between my-2">
-                <img
+                <Image
                   src={match.logoequipeext}
                   alt="Logo Club 2"
                   className="w-12 h-6 object-contain"

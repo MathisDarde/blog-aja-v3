@@ -8,7 +8,6 @@ import { ArticleSchema } from "@/app/schema";
 import submitArticleForm from "@/actions/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
-import { cn } from "@/utils/cn";
 
 interface Tags {
   tag: string;
@@ -30,7 +29,7 @@ function ArticleForm() {
       );
   }, []);
 
-  const { register, handleSubmit, formState } = useForm<ArticleSchemaType>({
+  const { register, handleSubmit } = useForm<ArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
   });
 
@@ -172,16 +171,7 @@ function ArticleForm() {
         </div>
 
         <div className="flex justify-center items-center">
-          <Button
-            type="submit"
-            // className={cn(
-            //   (formState.isSubmitting || !formState.isValid) &&
-            //     "!cursor-not-allowed opacity-40"
-            // )}
-            // disabled={formState.isSubmitting || !formState.isValid}
-          >
-            Je publie l&apos;article
-          </Button>
+          <Button type="submit">Je publie l&apos;article</Button>
         </div>
       </form>
     </div>

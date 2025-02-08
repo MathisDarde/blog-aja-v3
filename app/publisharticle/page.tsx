@@ -34,7 +34,7 @@ function PublishArticle() {
 
         <div className="ml-24">
           <h3 className="font-bold text-4xl font-Montserrat uppercase my-10">
-            Publication d'un article
+            Publication d&apos;un article
           </h3>
 
           <ArticleForm />

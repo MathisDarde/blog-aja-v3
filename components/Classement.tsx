@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface Team {
   idTeam: string;
@@ -62,7 +63,7 @@ function Classement() {
             )}`}
           >
             <p className="pl-2 font-semibold">{team.intRank}.</p>
-            <img
+            <Image
               src={`/_assets/teamlogos/logo${team.strTeam
                 .replace(/\s+/g, "")
                 .replace(/[^\w]/g, "")
