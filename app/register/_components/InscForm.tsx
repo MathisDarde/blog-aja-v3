@@ -26,8 +26,8 @@ function InscForm() {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,
         {
-          icon: <X />,
-          className: "bg-rose-100 border border-rose-50",
+          icon: <X className="text-white" />,
+          className: "bg-red-500 border border-red-200 text-white text-base",
         }
       );
     }
