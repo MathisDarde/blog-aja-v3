@@ -1,10 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import LoginForm from "./_components/LoginForm";
+import SidebarResp from "@/components/SidebarResp";
+import Sidebar from "@/components/Sidebar";
+import { useState } from "react";
 
-async function Login() {
+export default function Login() {
+  const [sidebarState, setSidebarState] = useState(0);
+
+  const toggleSidebar = () => {
+    setSidebarState((prevState) => (prevState === 0 ? 1 : 0));
+  };
   return (
     <>
       <div className="text-center bg-gray-100 h-screen flex flex-col justify-start items-center">
+        {sidebarState === 0 ? (
+          <SidebarResp onToggle={toggleSidebar} />
+        ) : (
+          <Sidebar onToggle={toggleSidebar} />
+        )}
         <h2 className="font-bold text-4xl font-Montserrat uppercase mb-4 mt-10">
           Connectez-vous
         </h2>
@@ -17,5 +32,3 @@ async function Login() {
     </>
   );
 }
-
-export default Login;

@@ -1,12 +1,24 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import Link from "next/link";
 import InscForm from "./_components/InscForm";
+import SidebarResp from "@/components/SidebarResp";
+import Sidebar from "@/components/Sidebar";
 
-function Inscription() {
+export default function Inscription() {
+  const [sidebarState, setSidebarState] = useState(0);
+
+  const toggleSidebar = () => {
+    setSidebarState((prevState) => (prevState === 0 ? 1 : 0));
+  };
   return (
     <div className="bg-gray-100 h-full flex flex-col justify-start items-center">
+      {sidebarState === 0 ? (
+        <SidebarResp onToggle={toggleSidebar} />
+      ) : (
+        <Sidebar onToggle={toggleSidebar} />
+      )}
       <h2 className="font-bold text-4xl font-Montserrat uppercase mb-4 mt-10">
         Formulaire &apos;inscription
       </h2>
@@ -18,5 +30,3 @@ function Inscription() {
     </div>
   );
 }
-
-export default Inscription;
