@@ -35,12 +35,11 @@ export const InscSchema = z
   });
 
 export const ArticleSchema = z.object({
-  imageUrl: z.string().nonempty(),
   title: z.string().nonempty(),
   teaser: z.string().nonempty(),
   content: z.string().nonempty(),
   author: z.string().nonempty(),
-  tags: z.string().nonempty(),
+  tags: z.array(z.string().nonempty()),
 });
 
 export const CommentSchema = z.object({
