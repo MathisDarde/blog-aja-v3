@@ -52,7 +52,7 @@ export default function DisplayCategories() {
         <div className="flex gap-6 my-10 justify-center">
           {randomSelection.length > 0 ? (
             randomSelection.map((category, index) => (
-              <Link href={"#"} key={index}>
+              <Link href={`/articles?tag=${category.value}`} key={index}>
                 <div className="text-center relative group">
                   <Image
                     src={category.img}
@@ -80,12 +80,9 @@ export default function DisplayCategories() {
       )}
 
       <div className="text-center">
-        <Button
-          type="button"
-          className="transition-all duration-300 hover:bg-white hover:text-aja-blue hover:border hover:border-aja-blue"
-        >
-          J'accède à toutes les catégories
-        </Button>
+        <Link href="/categories">
+          <Button type="button">J'accède à toutes les catégories</Button>
+        </Link>
       </div>
     </div>
   );

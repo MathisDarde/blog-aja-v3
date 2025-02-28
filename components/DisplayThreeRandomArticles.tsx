@@ -1,5 +1,6 @@
 import displayArticles from "@/actions/display-articles";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 interface Article {
@@ -49,12 +50,12 @@ export default function DisplayRandom() {
           {randomSelection.length === 0 ? (
             <p>Aucun article disponible.</p>
           ) : (
-            randomSelection.map((article) => (
-              <div
-                key={article.article_id}
-                className="bg-white border border-stone-200 shadow-xl rounded-xl p-4"
-              >
-                <a href={`article-single.php?article_id=${article.article_id}`}>
+            randomSelection.map((article, index) => (
+              <Link href="#">
+                <div
+                  key={index}
+                  className="bg-white border border-stone-200 shadow-xl rounded-xl p-4"
+                >
                   <Image
                     className="w-full object-cover rounded-md aspect-video"
                     width={512}
@@ -65,8 +66,8 @@ export default function DisplayRandom() {
                   <h2 className="text-[0.7rem] font-Montserrat font-semibold mt-2">
                     {article.title}
                   </h2>
-                </a>
-              </div>
+                </div>
+              </Link>
             ))
           )}
         </div>

@@ -1,4 +1,5 @@
 import displayLastPublished from "@/actions/display-last-published";
+import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 
@@ -44,13 +45,10 @@ export default function LastArticle() {
           </p>
         </div>
       ) : (
-        <div
-          className="bg-white rounded-xl text-center border border-stone-200 shadow-xl p-6"
-          key={article.article_id}
-        >
-          <a
-            className="articlelink"
-            href={`article-single.php?article_id=${article.article_id}`}
+        <Link href="#">
+          <div
+            className="bg-white rounded-xl text-center border border-stone-200 shadow-xl p-6"
+            key={article.article_id}
           >
             <Image
               className="inline-block w-full h-auto mx-auto rounded-xl object-cover"
@@ -65,8 +63,8 @@ export default function LastArticle() {
             <p className="w-full text-black text-justify font-Montserrat mx-auto text-sm leading-5">
               {article.teaser}
             </p>
-          </a>
-        </div>
+          </div>
+        </Link>
       )}
     </div>
   );
