@@ -64,7 +64,7 @@ export default function DisplayCategories() {
                   />
 
                   <p
-                    className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 
+                    className="font-Montserrat absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 
                                 bg-gray-300 text-gray-700 text-2xl font-bold uppercase w-[90%] rounded-md p-2 
                                 transition-all duration-300 group-hover:bg-aja-blue group-hover:text-white"
                   >
