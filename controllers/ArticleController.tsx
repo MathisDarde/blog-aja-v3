@@ -19,7 +19,7 @@ class ArticleController {
 
     try {
       // Vérification du type et de la taille du fichier
-      const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+      const MAX_SIZE = 5 * 2048 * 2048; // 5 Mo
       const ALLOWED_TYPES = [
         "image/jpeg",
         "image/png",
@@ -116,12 +116,24 @@ class ArticleController {
   async filter(tag: string) {
     const articles = await prisma.article.findMany({
       where: {
-        // tags: {
-        //   contains: tag,
-        // },
+        tags: {
+          array_contains: tag,
+        },
+      },
+      orderBy: {
+        publishedAt: "desc",
       },
     });
     return articles;
+  }
+
+  async lastpublished() {
+    const lastpublishedarticle = await prisma.article.findFirst({
+      orderBy: {
+        publishedAt: "desc",
+      },
+    });
+    return lastpublishedarticle;
   }
 }
 

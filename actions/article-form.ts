@@ -19,12 +19,13 @@ const submitArticleForm = async (
     if (!registerArticle) {
       return {
         success: false,
-        message: "Erreur lors de la création de l'article ",
+        message: "Erreur lors de la création de l'article",
       };
     }
 
     return { success: true, message: "Article créé avec succès" };
   } catch (err) {
+    console.log(err);
     return {
       success: false,
       message: "Erreur lors de la création de l'article",
