@@ -1,7 +1,7 @@
 [
   {
     "title": "Records Individuels",
-    "image": "/assets/img/djibrilcisserecords.avif",
+    "image": "/_assets/img/djibrilcisserecords.avif",
     "alt": "Djibril Cissé",
     "rows": [
       {
@@ -68,7 +68,7 @@
   },
   {
     "title": "Records Collectifs",
-    "image": "/assets/img/titre1996records.webp",
+    "image": "/_assets/img/titre1996records.webp",
     "alt": "Titre 1996",
     "rows": [
       {
@@ -120,7 +120,7 @@
   },
   {
     "title": "Records en Championnat",
-    "image": "/assets/img/champions.jpeg",
+    "image": "/_assets/img/champions.jpeg",
     "alt": "Champion Ligue 2",
     "rows": [
       {
@@ -207,7 +207,7 @@
   },
   {
     "title": "Records Européens",
-    "image": "/assets/img/auxerrerealldcrecords.jpg",
+    "image": "/_assets/img/auxerrerealldcrecords.jpg",
     "alt": "Records européens",
     "rows": [
       {
