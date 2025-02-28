@@ -41,9 +41,14 @@ export default function Page() {
             A la une sur Mémoire d&apos;Auxerrois
           </h2>
           <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10">
-            <h3 className="text-lg font-bold mb-3 font-Montserrat uppercase text-center w-[250px] ml-auto">
-              Articles que vous pourriez aimer
-            </h3>
+            <div className="flex items-center">
+              <h3 className="text-lg font-bold mb-3 font-Montserrat uppercase text-center w-[750px]">
+                Dernier article publié
+              </h3>
+              <h3 className="text-lg font-bold mb-3 font-Montserrat uppercase text-center w-[250px] ml-auto">
+                Articles que vous pourriez aimer
+              </h3>
+            </div>
             <div className="inline-flex gap-6">
               <div className="w-[750px]">
                 <LastArticle />
