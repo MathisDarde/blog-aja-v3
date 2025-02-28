@@ -42,7 +42,7 @@ export default function Page() {
           </h2>
           <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10">
             <div className="flex items-center">
-              <h3 className="text-lg font-bold mb-3 font-Montserrat uppercase text-center w-[750px]">
+              <h3 className="text-2xl font-bold mb-3 font-Montserrat uppercase text-center w-[750px]">
                 Dernier article publié
               </h3>
               <h3 className="text-lg font-bold mb-3 font-Montserrat uppercase text-center w-[250px] ml-auto">
