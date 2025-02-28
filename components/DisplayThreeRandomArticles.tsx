@@ -51,11 +51,8 @@ export default function DisplayRandom() {
             <p>Aucun article disponible.</p>
           ) : (
             randomSelection.map((article, index) => (
-              <Link href="#">
-                <div
-                  key={index}
-                  className="bg-white border border-stone-200 shadow-xl rounded-xl p-4"
-                >
+              <Link href="#" key={index}>
+                <div className="bg-white border border-stone-200 shadow-xl rounded-xl p-4">
                   <Image
                     className="w-full object-cover rounded-md aspect-video"
                     width={512}
