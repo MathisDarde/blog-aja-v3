@@ -27,7 +27,7 @@ model Article {
   imageUrl    String
   title       String
   teaser      String 
-  content     String
+  content     String @db.Text
   author      String
   publishedAt DateTime @default(now())
   tags Json
