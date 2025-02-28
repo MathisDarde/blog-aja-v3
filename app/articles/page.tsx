@@ -170,17 +170,11 @@ export default function ArticleCenter() {
                   </p>
                 </div>
               ) : (
-                articles.map((article) => (
-                  <div
-                    className="my-4 mx-6 bg-white rounded text-center w-[90%]"
-                    key={article.article_id}
-                  >
-                    <a
-                      className="articlelink"
-                      href={`article-single.php?article_id=${article.article_id}`}
-                    >
+                articles.map((article, index) => (
+                  <Link href={`/articles/${article.article_id}`} key={index}>
+                    <div className="my-4 mx-6 bg-white rounded text-center w-[90%]">
                       <Image
-                        className="inline-block w-[90%] h-64 mx-auto my-2 rounded-sm object-cover"
+                        className="inline-block w-[90%] h-64 mx-auto my-2 rounded-sm object-cover aspect-video"
                         width={512}
                         height={512}
                         src={`${article.imageUrl}`}
@@ -192,8 +186,8 @@ export default function ArticleCenter() {
                       <p className="w-[90%] text-black text-justify font-Montserrat mx-auto pb-4 text-sm leading-5">
                         {article.teaser}
                       </p>
-                    </a>
-                  </div>
+                    </div>
+                  </Link>
                 ))
               )}
             </div>

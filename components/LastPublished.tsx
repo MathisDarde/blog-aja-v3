@@ -45,7 +45,7 @@ export default function LastArticle() {
           </p>
         </div>
       ) : (
-        <Link href="#">
+        <Link href={`/articles/${article.article_id}`}>
           <div
             className="bg-white rounded-xl text-center border border-stone-200 shadow-xl p-6"
             key={article.article_id}
