@@ -23,7 +23,7 @@ const Button = ({
       onClick={onClick}
       className={cn(
         `text-base font-Montserrat text-center m-4 py-4 px-6 rounded-full border-0
-        text-white bg-aja-blue transition-all cursor-pointer`,
+        text-white bg-aja-blue transition-all cursor-pointer duration-300 hover:bg-white hover:text-aja-blue hover:border hover:border-aja-blue`,
         disabled && "cursor-not-allowed opacity-40",
         className
       )}
