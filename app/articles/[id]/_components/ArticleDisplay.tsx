@@ -2,11 +2,25 @@
 
 import Sidebar from "@/components/Sidebar";
 import SidebarResp from "@/components/SidebarResp";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { Calendar1 } from "lucide-react";
+import KeywordHighlighter from "./HighlightKeywords";
+
+import PlayerMethodeExpert from "./MethodDetails/MethodeExpertJoueur";
+import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
+import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
+import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
+
+interface Keyword {
+  id: string | number;
+  typemethode: string;
+  keyword: string | string[];
+  title?: string;
+  description?: string;
+}
 
 interface ArticleProps {
   article: {
@@ -22,18 +36,115 @@ interface ArticleProps {
 
 export default function ArticleDisplay({ article }: ArticleProps) {
   const [sidebarState, setSidebarState] = useState(0);
+  const [keywords, setKeywords] = useState<Keyword[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState<Keyword | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const toggleSidebar = () => {
     setSidebarState((prevState) => (prevState === 0 ? 1 : 0));
   };
 
+  useEffect(() => {
+    setIsLoading(true);
+    fetch("/data/methodeexpert.json")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setKeywords(data);
+        } else {
+          throw new Error("Invalid data format");
+        }
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message || "Failed to load keywords");
+        setIsLoading(false);
+      });
+  }, []);
+
+  const handleKeywordClick = (id: string, type: string) => {
+    const numericId = parseInt(id, 10);
+    let method = keywords.find((m) => m.id === id && m.typemethode === type);
+    if (!method) {
+      method = keywords.find(
+        (m) => m.id === numericId && m.typemethode === type
+      );
+    }
+    if (method) {
+      setSelectedMethod(method);
+    }
+  };
+
+  const closeMethodPanel = () => {
+    setSelectedMethod(null);
+  };
+
+  const renderMethodComponent = () => {
+    if (!selectedMethod) return null;
+
+    switch (selectedMethod.typemethode) {
+      case "joueur":
+        return (
+          <PlayerMethodeExpert
+            methode={selectedMethod}
+            onClose={closeMethodPanel}
+          />
+        );
+      case "saison":
+        return (
+          <SeasonMethodeExpert
+            methode={selectedMethod}
+            onClose={closeMethodPanel}
+          />
+        );
+      case "match":
+        return (
+          <GameMethodeExpert
+            methode={selectedMethod}
+            onClose={closeMethodPanel}
+          />
+        );
+      case "coach":
+        return (
+          <CoachMethodeExpert
+            methode={selectedMethod}
+            onClose={closeMethodPanel}
+          />
+        );
+      default:
+        return (
+          <div className="method-content font-Montserrat">
+            <h4 className="font-bold text-lg mb-2">
+              {selectedMethod.title || "Méthode"}
+            </h4>
+            <p className="mb-4 text-justify">
+              {selectedMethod.description || "Aucune description disponible."}
+            </p>
+            <button
+              className="mt-2 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md text-sm font-medium transition-colors"
+              onClick={closeMethodPanel}
+            >
+              Fermer
+            </button>
+          </div>
+        );
+    }
+  };
+
   return (
-    <div className="bg-gray-100 h-full w-full p-0 m-0 box-border">
+    <div className="bg-gray-100 min-h-screen w-full p-0 m-0 box-border">
       {sidebarState === 0 ? (
         <SidebarResp onToggle={toggleSidebar} />
       ) : (
         <Sidebar onToggle={toggleSidebar} />
       )}
+
       <div className="ml-24">
         <div className="text-center">
           <Link href={"/"}>
@@ -59,16 +170,49 @@ export default function ArticleDisplay({ article }: ArticleProps) {
             </p>
             <Image
               src={`${article.imageUrl}`}
-              width={512}
-              height={512}
+              width={1024}
+              height={1024}
               alt="Image de bannière de l'article"
               className="aspect-video w-full object-cover object-top mb-10 rounded-xl"
-            ></Image>
-            <p className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7 ">
-              {article.content}
-            </p>
+            />
+
+            {isLoading ? (
+              <div className="bg-white rounded-xl p-8 text-center">
+                Chargement des mots-clés...
+              </div>
+            ) : error ? (
+              <div className="bg-white rounded-xl p-8 text-center text-red-500">
+                Erreur: {error}
+              </div>
+            ) : (
+              <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">
+                <KeywordHighlighter
+                  text={article.content}
+                  keywords={keywords}
+                  onKeywordClick={handleKeywordClick}
+                />
+              </div>
+            )}
           </div>
-          <div className="w-[325px] bg-white h-[200px] border border-black rounded-xl"></div>
+
+          <div className="relative w-[325px]">
+            <div className="fixed w-[325px] max-h-[80vh] bg-white h-fit border border-black rounded-xl px-4 py-8 overflow-y-auto">
+              <h3 className="text-center font-bold font-Montserrat uppercase text-2xl mb-4">
+                Méthode Expert
+              </h3>
+
+              {!selectedMethod ? (
+                <p className="font-Montserrat text-justify">
+                  Cliquez sur les mots en surbrillance dans le texte pour
+                  accéder à pleins d'informations supplémentaires !
+                </p>
+              ) : (
+                <div className="method-container">
+                  {renderMethodComponent()}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

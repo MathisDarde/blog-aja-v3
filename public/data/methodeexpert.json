@@ -3,34 +3,18 @@
     "id": 1,
     "keyword": "Mickaël Le Bihan",
     "typemethode": "joueur",
-    "imagejoueur": "./methodeexpert/images/mickaellebihan.webp",
+    "imagejoueur": "/_assets/methodeexpertpp/mickaellebihan.webp",
     "joueurnom": "Mickaël Le Bihan",
     "poste": "Attaquant de pointe",
     "taille": "1m84",
     "piedfort": "Droit",
     "clubs": [
-      [
-        "./classementapi/logosequipes/logosedan.png",
-        "CS Sedan-Ardennes",
-        "(2009-2013)"
-      ],
-      [
-        "./classementapi/logosequipes/logolehavre.svg",
-        "Le Havre AC",
-        "(2013-2015)"
-      ],
-      ["./classementapi/logosequipes/logonice.svg", "OGC Nice", "(2015-2019)"],
-      [
-        "./classementapi/logosequipes/logoajauxerre.png",
-        "AJ Auxerre",
-        "(2019-2021)"
-      ],
-      [
-        "./classementapi/logosequipes/logodijon.png",
-        "Dijon FCO",
-        "(2021-2023)"
-      ],
-      ["./classementapi/logosequipes/logocaen.png", "SM Caen", "(2023- )"]
+      ["/_assets/teamlogos/logosedan.svg", "CS Sedan-Ardennes", "(2009-2013)"],
+      ["/_assets/teamlogos/logolehavre.svg", "Le Havre AC", "(2013-2015)"],
+      ["/_assets/teamlogos/logonice.svg", "OGC Nice", "(2015-2019)"],
+      ["/_assets/teamlogos/logoauxerre.svg", "AJ Auxerre", "(2019-2021)"],
+      ["/_assets/teamlogos/logodijon.svg", "Dijon FCO", "(2021-2023)"],
+      ["/_assets/teamlogos/logocaen.svg", "SM Caen", "(2023- )"]
     ],
     "matchs": 314,
     "buts": 91,
@@ -41,7 +25,7 @@
     "keyword": "saison 2020-2021",
     "typemethode": "saison",
     "saison": "2020-2021",
-    "imgterrain": "./images/demiterrain.png",
+    "imgterrain": "/_assets/terrains/demiterrain.png",
     "joueursterrain": [
       [16, "Léon"],
       [2, "Arcus"],
@@ -58,18 +42,18 @@
     "coach": "Jean-Marc Furlan",
     "systeme": "4-3-3 Défensif",
     "remplacants": [
-      ["G", "Sonny Laiton", "./methodeexpert/images/drapeaumadagascar.svg"],
-      ["DEF", "Kenji Van-Boto", "./methodeexpert/images/drapeaumadagascar.svg"],
-      ["DEF", "Alec Georgen", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Gauthier Lloris", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Samuel Souprayen", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Aly Ndom", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Ousoumane Camara", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Kevin Fortuné", "./methodeexpert/images/drapeaumartinique.svg"],
-      ["MIL", "François Bellugou", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Axel Ngando", "./methodeexpert/images/drapeaufrance.svg"],
-      ["ATT", "Lassine Sinayoko", "./methodeexpert/images/drapeaumali.svg"],
-      ["ATT", "Yanis Begraoui", "./methodeexpert/images/drapeaufrance.svg"]
+      ["G", "Sonny Laiton", "/_assets/flags/drapeaumadagascar.svg"],
+      ["DEF", "Kenji Van-Boto", "/_assets/flags/drapeaumadagascar.svg"],
+      ["DEF", "Alec Georgen", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Gauthier Lloris", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Samuel Souprayen", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Aly Ndom", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Ousoumane Camara", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Kevin Fortuné", "/_assets/flags/drapeaumartinique.svg"],
+      ["MIL", "François Bellugou", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Axel Ngando", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Lassine Sinayoko", "/_assets/flags/drapeaumali.svg"],
+      ["ATT", "Yanis Begraoui", "/_assets/flags/drapeaufrance.svg"]
     ]
   },
   {
@@ -77,7 +61,7 @@
     "keyword": ["Dimanche 29 mai 2022"],
     "typemethode": "match",
     "titrematch": "AUX 1 - 1 ASSE (5 à 4 tab)",
-    "imgterrain": "./methodeexpert/images/sainteajaterrain1260924.png",
+    "imgterrain": "/_assets/terrains/sainteajaterrain1260924.png",
     "couleur1equipe1": "#1d995b",
     "couleur2equipe1": "#fff",
     "nomequipe1": "AS Saint-Etienne",
@@ -87,86 +71,86 @@
     "nomequipe2": "AJ Auxerre",
     "systemeequipe2": "4-1-4-1",
     "remplacantsequipe1": [
-      ["Coach", "Jean-Marc Furlan", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Théo De Percin", "./methodeexpert/images/drapeaufrance.svg"],
+      ["Coach", "Jean-Marc Furlan", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Théo De Percin", "/_assets/flags/drapeaufrance.svg"],
       [
         "DEF",
         "Alexandre Coeff",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "83'"
       ],
-      ["DEF", "Paul Joly", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Gauthier Lloris", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Aly Ndom", "./methodeexpert/images/drapeaufrance.svg"],
+      ["DEF", "Paul Joly", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Gauthier Lloris", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Aly Ndom", "/_assets/flags/drapeaufrance.svg"],
       [
         "MIL",
         "Gaëtan Perrin",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "64'"
       ],
       [
         "ATT",
         "Lassine Sinayoko",
-        "./methodeexpert/images/drapeaumali.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaumali.svg",
+        "ArrowBigUp",
         "75'"
       ],
       [
         "ATT",
         "Rémy Dugimont",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "95'"
       ],
-      ["ATT", "Mohamed Ben Fredj", "./methodeexpert/images/drapeautunisie.svg"]
+      ["ATT", "Mohamed Ben Fredj", "/_assets/flags/drapeautunisie.svg"]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Pascal Dupraz", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Etienne Green", "./methodeexpert/images/drapeauangleterre.svg"],
-      ["DEF", "Mickael Nade", "./methodeexpert/images/drapeaufrance.svg"],
+      ["Coach", "Pascal Dupraz", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Etienne Green", "/_assets/flags/drapeauangleterre.svg"],
+      ["DEF", "Mickael Nade", "/_assets/flags/drapeaufrance.svg"],
       [
         "DEF",
         "Gabriel Silva",
-        "./methodeexpert/images/drapeaubresil.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaubresil.svg",
+        "ArrowBigUp",
         "57'"
       ],
-      ["MIL", "Bakary Sako", "./methodeexpert/images/drapeaumali.svg"],
+      ["MIL", "Bakary Sako", "/_assets/flags/drapeaumali.svg"],
       [
         "MIL",
         "Assane Dioussé",
-        "./methodeexpert/images/drapeausenegal.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeausenegal.svg",
+        "ArrowBigUp",
         "110'"
       ],
       [
         "MIL",
         "Ryad Boudebouz",
-        "./methodeexpert/images/drapeaualgerie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaualgerie.svg",
+        "ArrowBigUp",
         "80'"
       ],
       [
         "MIL",
         "Aïmen Moueffek",
-        "./methodeexpert/images/drapeaumaroc.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaumaroc.svg",
+        "ArrowBigUp",
         "80'"
       ],
       [
         "ATT",
         "Arnaud Nordin",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "58'"
       ],
       [
         "ATT",
         "Enzo Crivelli",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "62'"
       ]
     ],
@@ -177,49 +161,25 @@
     "id": 4,
     "keyword": ["Jean-Marc Furlan", "Furlan"],
     "typemethode": "coach",
-    "imagecoach": "./methodeexpert/images/jeanmarcfurlan.jpg",
+    "imagecoach": "/_assets/methodeexpertpp/jeanmarcfurlan.jpg",
     "nomcoach": "Jean-Marc Furlan",
     "clubscoach": [
       [
-        "./classementapi/logosequipes/logolibourne.svg",
+        "/_assets/teamlogos/logolibourne.svg",
         "FC Libourne-Saint-Seurin",
         "(1997-2004)"
       ],
+      ["/_assets/teamlogos/logotroyes.svg", "ESTAC Troyes", "(2004-2007)"],
       [
-        "./classementapi/logosequipes/logotroyes.png",
-        "ESTAC Troyes",
-        "(2004-2007)"
-      ],
-      [
-        "./classementapi/logosequipes/logostrasbourg.png",
+        "/_assets/teamlogos/logostrasbourg.svg",
         "Racing Club de Strasbourg",
         "(2007-2009)"
       ],
-      [
-        "./classementapi/logosequipes/logonantes.svg",
-        "FC Nantes",
-        "(2009-2010)"
-      ],
-      [
-        "./classementapi/logosequipes/logotroyes.png",
-        "ESTAC Troyes",
-        "(2010-2015)"
-      ],
-      [
-        "./classementapi/logosequipes/logobrest.png",
-        "Stade Brestois 29",
-        "(2016-2019)"
-      ],
-      [
-        "./classementapi/logosequipes/logoajauxerre.png",
-        "AJ Auxerre",
-        "(2019-2022)"
-      ],
-      [
-        "./classementapi/logosequipes/logocaen.png",
-        "Stade Malherbe de Caen",
-        "(2023)"
-      ]
+      ["/_assets/teamlogos/logonantes.svg", "FC Nantes", "(2009-2010)"],
+      ["/_assets/teamlogos/logotroyes.svg", "ESTAC Troyes", "(2010-2015)"],
+      ["/_assets/teamlogos/logobrest.svg", "Stade Brestois 29", "(2016-2019)"],
+      ["/_assets/teamlogos/logoauxerre.svg", "AJ Auxerre", "(2019-2022)"],
+      ["/_assets/teamlogos/logocaen.svg", "Stade Malherbe de Caen", "(2023)"]
     ],
     "palmares": [
       ["Champion de Ligue 2 (1)"],
@@ -231,53 +191,41 @@
     "id": 5,
     "keyword": "Gaëtan Charbonnier",
     "typemethode": "joueur",
-    "imagejoueur": "./methodeexpert/images/gaetancharbonnier.jpg",
+    "imagejoueur": "/_assets/methodeexpertpp/gaetancharbonnier.jpg",
     "joueurnom": "Gaëtan Charbonnier",
     "poste": "Attaquant de pointe",
     "taille": "1m87",
     "piedfort": "Droit",
     "clubs": [
       [
-        "./classementapi/logosequipes/logochatellerault.png",
+        "/_assets/teamlogos/logochatellerault.svg",
         "SO Châtellerault",
         "(2007-2008)"
       ],
       [
-        "./classementapi/logosequipes/logopsg.png",
+        "/_assets/teamlogos/logoparissg.svg",
         "Paris Saint-Germain B",
         "(2008-2009)"
       ],
+      ["/_assets/teamlogos/logoangers.svg", "SCO Angers", "(2009-2012)"],
       [
-        "./classementapi/logosequipes/logoangers.png",
-        "SCO Angers",
-        "(2009-2012)"
-      ],
-      [
-        "./classementapi/logosequipes/logomontpellier.png",
+        "/_assets/teamlogos/logomontpellier.svg",
         "Montpellier HSC",
         "(2012-2013)"
       ],
       [
-        "./classementapi/logosequipes/logoreims.png",
+        "/_assets/teamlogos/logostadedereims.svg",
         "Stade de Reims",
         "(2013-2017)"
       ],
+      ["/_assets/teamlogos/logobrest.svg", "Stade Brestois 29", "(2017-2021)"],
+      ["/_assets/teamlogos/logoauxerre.svg", "AJ Auxerre", "(2021-2022)"],
       [
-        "./classementapi/logosequipes/logobrest.png",
-        "Stade Brestois 29",
-        "(2017-2021)"
-      ],
-      [
-        "./classementapi/logosequipes/logoajauxerre.png",
-        "AJ Auxerre",
-        "(2021-2022)"
-      ],
-      [
-        "./classementapi/logosequipes/logosainte.svg",
+        "/_assets/teamlogos/logostetienne.svg",
         "AS Saint-Etienne",
         "(2022-2024)"
       ],
-      ["./classementapi/logosequipes/logobastia.png", "SC Bastia", "(2024)"]
+      ["/_assets/teamlogos/logobastia.svg", "SC Bastia", "(2024)"]
     ],
     "matchs": 476,
     "buts": 138,
@@ -291,7 +239,7 @@
     ],
     "typemethode": "match",
     "titrematch": "TFC 6 - 0 AJA",
-    "imgterrain": "./methodeexpert/images/tfcajaterrain250924.png",
+    "imgterrain": "/_assets/terrains/tfcajaterrain250924.png",
     "couleur1equipe1": "#8800a0",
     "couleur2equipe1": "#fff",
     "nomequipe1": "Toulouse FC",
@@ -301,95 +249,91 @@
     "nomequipe2": "AJ Auxerre ",
     "systemeequipe2": "4-2-3-1",
     "remplacantsequipe1": [
-      [
-        "Coach",
-        "Philippe Montanier",
-        "./methodeexpert/images/drapeaufrance.svg"
-      ],
-      ["G", "Isak Pettersson", "./methodeexpert/images/drapeausuede.svg"],
-      ["DEF", "Logan Costa", "./methodeexpert/images/drapeaucapvert.svg"],
+      ["Coach", "Philippe Montanier", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Isak Pettersson", "/_assets/flags/drapeausuede.svg"],
+      ["DEF", "Logan Costa", "/_assets/flags/drapeaucapvert.svg"],
       [
         "DEF",
         "Moussa Diarra",
-        "./methodeexpert/images/drapeaumali.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaumali.svg",
+        "ArrowBigUp",
         "66'"
       ],
       [
         "MIL",
         "Sam Sanna",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "66'"
       ],
       [
         "MIL",
         "Nathan Skyttä",
-        "./methodeexpert/images/drapeaufinlande.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufinlande.svg",
+        "ArrowBigUp",
         "75'"
       ],
       [
         "ATT",
         "Yanis Begraoui",
-        "./methodeexpert/images/drapeaumaroc.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaumaroc.svg",
+        "ArrowBigUp",
         "58'"
       ],
       [
         "ATT",
         "Ado Onaiwu",
-        "./methodeexpert/images/drapeaujapon.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaujapon.svg",
+        "ArrowBigUp",
         "58'"
       ]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Jean-Marc Furlan", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Sonny Laiton", "./methodeexpert/images/drapeaumadagascar.svg"],
+      ["Coach", "Jean-Marc Furlan", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Sonny Laiton", "/_assets/flags/drapeaumadagascar.svg"],
       [
         "DEF",
         "Carlens Arcus",
-        "./methodeexpert/images/drapeauhaiti.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauhaiti.svg",
+        "ArrowBigUp",
         "71'"
       ],
-      ["MIL", "Kévin Danois", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Ousoumane Camara", "./methodeexpert/images/drapeaufrance.svg"],
+      ["MIL", "Kévin Danois", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Ousoumane Camara", "/_assets/flags/drapeaufrance.svg"],
       [
         "MIL",
         "Gaëtan Perrin",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "59'"
       ],
-      ["ATT", "Nicolas Mercier", "./methodeexpert/images/drapeaufrance.svg"],
-      ["ATT", "Mohamed Ben Fredj", "./methodeexpert/images/drapeautunisie.svg"]
+      ["ATT", "Nicolas Mercier", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Mohamed Ben Fredj", "/_assets/flags/drapeautunisie.svg"]
     ],
     "stade": "Stadium, Toulouse",
     "date": "16 octobre 2021, 15 heures"
   },
   {
     "id": 7,
-    "keyword": ["de qui est composée cette équipe", "saison 2021-2022"],
+    "keyword": "saison 2021-2022",
     "typemethode": "saison",
     "saison": "2021-2022",
-    "imgterrain": "./methodeexpert/images/ajauxerre2022.png",
+    "imgterrain": "/_assets/terrains/ajauxerre2022.png",
     "coach": "Jean-Marc Furlan",
     "systeme": "4-1-4-1",
     "remplacants": [
-      ["G", "Théo De Percin", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Alexandre Coeff", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Gauthier Lloris", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Alec Georgen", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Paul Joly", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Iyad Mohamed", "./methodeexpert/images/drapeaucomores.svg"],
-      ["MIL", "Aly Ndom", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Alexis Trouillet", "./methodeexpert/images/drapeaufrance.svg"],
-      ["ATT", "Rémy Dugimont", "./methodeexpert/images/drapeaufrance.svg"],
-      ["ATT", "Lassine Sinayoko", "./methodeexpert/images/drapeaumali.svg"],
-      ["ATT", "Mohamed Ben Fredj", "./methodeexpert/images/drapeautunisie.svg"],
-      ["ATT", "Nicolas Mercier", "./methodeexpert/images/drapeaufrance.svg"]
+      ["G", "Théo De Percin", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Alexandre Coeff", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Gauthier Lloris", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Alec Georgen", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Paul Joly", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Iyad Mohamed", "/_assets/flags/drapeaucomores.svg"],
+      ["MIL", "Aly Ndom", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Alexis Trouillet", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Rémy Dugimont", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Lassine Sinayoko", "/_assets/flags/drapeaumali.svg"],
+      ["ATT", "Mohamed Ben Fredj", "/_assets/flags/drapeautunisie.svg"],
+      ["ATT", "Nicolas Mercier", "/_assets/flags/drapeaufrance.svg"]
     ]
   },
   {
@@ -397,7 +341,7 @@
     "keyword": ["le vendredi 20 mai 2022"],
     "typemethode": "match",
     "titrematch": "AJA 0 - 0 FCSM (5 à 4 tab)",
-    "imgterrain": "./methodeexpert/images/ajasochauxterrain260924.png",
+    "imgterrain": "/_assets/terrains/ajasochauxterrain260924.png",
     "couleur1equipe1": "#3c77b4",
     "couleur2equipe1": "#fff",
     "nomequipe1": "AJ Auxerre",
@@ -407,82 +351,82 @@
     "nomequipe2": "FCSM ",
     "systemeequipe2": "4-2-3-1",
     "remplacantsequipe1": [
-      ["Coach", "Jean-Marc Furlan", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Théo De Percin", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Gauthier Lloris", "./methodeexpert/images/drapeaufrance.svg"],
+      ["Coach", "Jean-Marc Furlan", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Théo De Percin", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Gauthier Lloris", "/_assets/flags/drapeaufrance.svg"],
       [
         "DEF",
         "Paul Joly",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "120+1'"
       ],
-      ["MIL", "Aly Ndom", "./methodeexpert/images/drapeaufrance.svg"],
+      ["MIL", "Aly Ndom", "/_assets/flags/drapeaufrance.svg"],
       [
         "MIL",
         "Alexis Trouillet",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "90'"
       ],
       [
         "MIL",
         "Gaëtan Perrin",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "80'"
       ],
       [
         "ATT",
         "Rémy Dugimont",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "105'"
       ]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Omar Daf", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Mehdi Jeannin", "./methodeexpert/images/drapeaualgerie.svg"],
+      ["Coach", "Omar Daf", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Mehdi Jeannin", "/_assets/flags/drapeaualgerie.svg"],
       [
         "DEF",
         "Christophe Diedhiou",
-        "./methodeexpert/images/drapeausenegal.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeausenegal.svg",
+        "ArrowBigUp",
         "90'"
       ],
       [
         "MIL",
         "Younès Kaabouni",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "105'"
       ],
       [
         "MIL",
         "Rassoul Ndiaye",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "73'"
       ],
       [
         "ATT",
         "Steve Ambry",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "73'"
       ],
       [
         "ATT",
         "Alan Virginius",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "105'"
       ],
       [
         "ATT",
         "Yann Kitala",
-        "./methodeexpert/images/drapeaurdc.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaurdc.svg",
+        "ArrowBigUp",
         "85'"
       ]
     ],
@@ -494,7 +438,7 @@
     "keyword": ["jeudi 26 mai 2022"],
     "typemethode": "match",
     "titrematch": "AJA 1 - 1 ASSE",
-    "imgterrain": "./methodeexpert/images/ajasainteterrain2260924.png",
+    "imgterrain": "/_assets/terrains/ajasainteterrain2260924.png",
     "couleur1equipe1": "#3c77b4",
     "couleur2equipe1": "#fff",
     "nomequipe1": "AJ Auxerre",
@@ -504,76 +448,76 @@
     "nomequipe2": "AS Saint-Etienne",
     "systemeequipe2": "4-2-3-1",
     "remplacantsequipe1": [
-      ["Coach", "Jean-Marc Furlan", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Théo De Percin", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Gauthier Lloris", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Alexandre Coeff", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Paul Joly", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Aly Ndom", "./methodeexpert/images/drapeaufrance.svg"],
+      ["Coach", "Jean-Marc Furlan", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Théo De Percin", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Gauthier Lloris", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Alexandre Coeff", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Paul Joly", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Aly Ndom", "/_assets/flags/drapeaufrance.svg"],
       [
         "MIL",
         "Alexis Trouillet",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "76'"
       ],
       [
         "MIL",
         "Gaëtan Perrin",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "62'"
       ],
       [
         "ATT",
         "Rémy Dugimont",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "85'"
       ],
-      ["ATT", "Mohamed Ben Fredj", "./methodeexpert/images/drapeautunisie.svg"]
+      ["ATT", "Mohamed Ben Fredj", "/_assets/flags/drapeautunisie.svg"]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Pascal Dupraz", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Etienne Green", "./methodeexpert/images/drapeauangleterre.svg"],
-      ["DEF", "Saïdou Sow", "./methodeexpert/images/drapeauguinee.svg"],
+      ["Coach", "Pascal Dupraz", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Etienne Green", "/_assets/flags/drapeauangleterre.svg"],
+      ["DEF", "Saïdou Sow", "/_assets/flags/drapeauguinee.svg"],
       [
         "DEF",
         "Yvann Maçon",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "83'"
       ],
       [
         "DEF",
         "Gabriel Silva",
-        "./methodeexpert/images/drapeaubresil.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaubresil.svg",
+        "ArrowBigUp",
         "53'"
       ],
       [
         "MIL",
         "Lucas Gourna-Douath",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "54'"
       ],
       [
         "MIL",
         "Ryad Boudebouz",
-        "./methodeexpert/images/drapeaualgerie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaualgerie.svg",
+        "ArrowBigUp",
         "65'"
       ],
-      ["ATT", "Sada Thioub", "./methodeexpert/images/drapeausenegal.svg"],
+      ["ATT", "Sada Thioub", "/_assets/flags/drapeausenegal.svg"],
       [
         "ATT",
         "Wahbi Khazri",
-        "./methodeexpert/images/drapeautunisie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeautunisie.svg",
+        "ArrowBigUp",
         "53'"
       ],
-      ["ATT", "Romain Hamouma", "./methodeexpert/images/drapeaufrance.svg"]
+      ["ATT", "Romain Hamouma", "/_assets/flags/drapeaufrance.svg"]
     ],
     "stade": "Stade de l'Abbé Deschamps, Auxerre",
     "date": "26 mai 2022, 19 heures"
@@ -583,7 +527,7 @@
     "keyword": ["samedi 15 mai 2010"],
     "typemethode": "match",
     "titrematch": "FCSM 1 - 2 AJA",
-    "imgterrain": "./methodeexpert/images/sochauxauxerre181024.png",
+    "imgterrain": "/_assets/terrains/sochauxauxerre181024.png",
     "couleur1equipe1": "#004f9e",
     "couleur2equipe1": "#ffcf21",
     "nomequipe1": "FC Sochaux",
@@ -593,56 +537,56 @@
     "nomequipe2": "AJ Auxerre",
     "systemeequipe2": "4-4-1-1",
     "remplacantsequipe1": [
-      ["Coach", "Francis Gillot", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Matthieu Dreyer", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Boukary Dramé", "./methodeexpert/images/drapeausenegal.svg"],
+      ["Coach", "Francis Gillot", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Matthieu Dreyer", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Boukary Dramé", "/_assets/flags/drapeausenegal.svg"],
       [
         "MIL",
         "Loïc Poujol",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "83'"
       ],
       [
         "MIL",
         "Benjamin Gavanon",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "65'"
       ],
-      ["ATT", "Sloan Privat", "./methodeexpert/images/drapeaufrance.svg"],
+      ["ATT", "Sloan Privat", "/_assets/flags/drapeaufrance.svg"],
       [
         "ATT",
         "Édouard Butin",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "46'"
       ]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Jean Fernandez", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Rémy Riou", "./methodeexpert/images/drapeaufrance.svg"],
+      ["Coach", "Jean Fernandez", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Rémy Riou", "/_assets/flags/drapeaufrance.svg"],
       [
         "DEF",
         "Jean-Pascal Mignot",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "90'"
       ],
-      ["MIL", "Delvin N'Dinga", "./methodeexpert/images/drapeaurdc.svg"],
-      ["MIL", "Alain Traoré", "./methodeexpert/images/drapeauburkinafaso.svg"],
+      ["MIL", "Delvin N'Dinga", "/_assets/flags/drapeaurdc.svg"],
+      ["MIL", "Alain Traoré", "/_assets/flags/drapeauburkinafaso.svg"],
       [
         "MIL",
         "Maxime Bourgeois",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "76'"
       ],
       [
         "ATT",
         "Julien Quercia",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "59'"
       ]
     ],
@@ -654,7 +598,7 @@
     "keyword": ["17 août 2010"],
     "typemethode": "match",
     "titrematch": "Zenit 1 - 0 AJA",
-    "imgterrain": "./methodeexpert/images/zenitajaterrain131024.png",
+    "imgterrain": "/_assets/terrains/zenitajaterrain131024.png",
     "couleur1equipe1": "#0097DB",
     "couleur2equipe1": "#fff",
     "nomequipe1": "Zenit St. Pétersbourg",
@@ -664,52 +608,52 @@
     "nomequipe2": "AJ Auxerre",
     "systemeequipe2": "4-2-3-1",
     "remplacantsequipe1": [
-      ["Coach", "Luciano Spaletti", "./methodeexpert/images/drapeauitalie.svg"],
-      ["G", "Yuriy Zhevnov", "./methodeexpert/images/drapeaurussie.svg"],
-      ["DEF", "Aleksandar Luković", "./methodeexpert/images/drapeauserbie.svg"],
-      ["DEF", "Fernando Meira", "./methodeexpert/images/drapeauportugal.svg"],
+      ["Coach", "Luciano Spaletti", "/_assets/flags/drapeauitalie.svg"],
+      ["G", "Yuriy Zhevnov", "/_assets/flags/drapeaurussie.svg"],
+      ["DEF", "Aleksandar Luković", "/_assets/flags/drapeauserbie.svg"],
+      ["DEF", "Fernando Meira", "/_assets/flags/drapeauportugal.svg"],
       [
         "MIL",
         "Konstantin Zyryanov",
-        "./methodeexpert/images/drapeaurussie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaurussie.svg",
+        "ArrowBigUp",
         "90'"
       ],
       [
         "MIL",
         "Szabolcs Huszti",
-        "./methodeexpert/images/drapeauhongrie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauhongrie.svg",
+        "ArrowBigUp",
         "60'"
       ],
-      ["ATT", "Alessandro Rosina", "./methodeexpert/images/drapeauitalie.svg"],
+      ["ATT", "Alessandro Rosina", "/_assets/flags/drapeauitalie.svg"],
       [
         "ATT",
         "Aleksandr Bukharov",
-        "./methodeexpert/images/drapeaurussie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaurussie.svg",
+        "ArrowBigUp",
         "78'"
       ]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Jean Fernandez", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Rémy Riou", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Jérémy Berthod", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Kamel Chafni", "./methodeexpert/images/drapeaumaroc.svg"],
-      ["ATT", "Steeven Langil", "./methodeexpert/images/drapeaumartinique.svg"],
-      ["ATT", "Maxime Bourgeois", "./methodeexpert/images/drapeaufrance.svg"],
+      ["Coach", "Jean Fernandez", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Rémy Riou", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Jérémy Berthod", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Kamel Chafni", "/_assets/flags/drapeaumaroc.svg"],
+      ["ATT", "Steeven Langil", "/_assets/flags/drapeaumartinique.svg"],
+      ["ATT", "Maxime Bourgeois", "/_assets/flags/drapeaufrance.svg"],
       [
         "ATT",
         "Roy Contout",
-        "./methodeexpert/images/drapeauguyane.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauguyane.svg",
+        "ArrowBigUp",
         "70'"
       ],
       [
         "ATT",
         "Julien Quercia",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "90'"
       ]
     ],
@@ -721,7 +665,7 @@
     "keyword": ["25 août 2010"],
     "typemethode": "match",
     "titrematch": "AJA 2 - 0 Zenit",
-    "imgterrain": "./methodeexpert/images/auxerrezenitterrain131024.png",
+    "imgterrain": "/_assets/terrains/auxerrezenitterrain131024.png",
     "couleur1equipe1": "#3c77b4",
     "couleur2equipe1": "#fff",
     "nomequipe1": "AJ Auxerre",
@@ -731,52 +675,52 @@
     "nomequipe2": "Zenit St. Petersbourg",
     "systemeequipe2": "4-3-3",
     "remplacantsequipe1": [
-      ["Coach", "Jean Fernandez", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Rémy Riou", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Jérémy Berthod", "./methodeexpert/images/drapeaufrance.svg"],
+      ["Coach", "Jean Fernandez", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Rémy Riou", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Jérémy Berthod", "/_assets/flags/drapeaufrance.svg"],
       [
         "MIL",
         "Valter Birsa",
-        "./methodeexpert/images/drapeauslovenie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauslovenie.svg",
+        "ArrowBigUp",
         "64'"
       ],
       [
         "MIL",
         "Kamel Chafni",
-        "./methodeexpert/images/drapeaumaroc.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaumaroc.svg",
+        "ArrowBigUp",
         "86'"
       ],
-      ["ATT", "Steeven Langil", "./methodeexpert/images/drapeaumartinique.svg"],
-      ["ATT", "Maxime Bourgeois", "./methodeexpert/images/drapeaufrance.svg"],
-      ["ATT", "Julien Quercia", "./methodeexpert/images/drapeaufrance.svg"]
+      ["ATT", "Steeven Langil", "/_assets/flags/drapeaumartinique.svg"],
+      ["ATT", "Maxime Bourgeois", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Julien Quercia", "/_assets/flags/drapeaufrance.svg"]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Luciano Spaletti", "./methodeexpert/images/drapeauitalie.svg"],
+      ["Coach", "Luciano Spaletti", "/_assets/flags/drapeauitalie.svg"],
       [
         "G",
         "Yuriy Zhevnov",
-        "./methodeexpert/images/drapeaurussie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaurussie.svg",
+        "ArrowBigUp",
         "67'"
       ],
-      ["DEF", "Aleksandar Luković", "./methodeexpert/images/drapeauserbie.svg"],
-      ["MIL", "Viktor Faizulin", "./methodeexpert/images/drapeaurussie.svg"],
-      ["ATT", "Aleksey Ionov", "./methodeexpert/images/drapeaurussie.svg"],
+      ["DEF", "Aleksandar Luković", "/_assets/flags/drapeauserbie.svg"],
+      ["MIL", "Viktor Faizulin", "/_assets/flags/drapeaurussie.svg"],
+      ["ATT", "Aleksey Ionov", "/_assets/flags/drapeaurussie.svg"],
       [
         "ATT",
         "Danko Lazovic",
-        "./methodeexpert/images/drapeauserbie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauserbie.svg",
+        "ArrowBigUp",
         "55'"
       ],
-      ["ATT", "Maksim Kanunnikov", "./methodeexpert/images/drapeaurussie.svg"],
+      ["ATT", "Maksim Kanunnikov", "/_assets/flags/drapeaurussie.svg"],
       [
         "ATT",
         "Aleksandr Bukharov",
-        "./methodeexpert/images/drapeaurussie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaurussie.svg",
+        "ArrowBigUp",
         "79'"
       ]
     ],
@@ -788,7 +732,7 @@
     "keyword": ["15 septembre 2010"],
     "typemethode": "match",
     "titrematch": "Milan 2 - 0 AJA",
-    "imgterrain": "./methodeexpert/images/milanauxerreterrain131024.png",
+    "imgterrain": "/_assets/terrains/milanauxerreterrain131024.png",
     "couleur1equipe1": "#e11624",
     "couleur2equipe1": "#000",
     "nomequipe1": "AC Milan",
@@ -798,62 +742,54 @@
     "nomequipe2": "AJ Auxerre",
     "systemeequipe2": "4-2-3-1",
     "remplacantsequipe1": [
-      [
-        "Coach",
-        "Massimiliano Allegri",
-        "./methodeexpert/images/drapeauitalie.svg"
-      ],
-      ["G", "Marco Amelia", "./methodeexpert/images/drapeauitalie.svg"],
-      ["DEF", "Mario Yepes", "./methodeexpert/images/drapeaucolombie.svg"],
+      ["Coach", "Massimiliano Allegri", "/_assets/flags/drapeauitalie.svg"],
+      ["G", "Marco Amelia", "/_assets/flags/drapeauitalie.svg"],
+      ["DEF", "Mario Yepes", "/_assets/flags/drapeaucolombie.svg"],
       [
         "DEF",
         "Ignazio Abate",
-        "./methodeexpert/images/drapeauitalie.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauitalie.svg",
+        "ArrowBigUp",
         "71'"
       ],
-      ["MIL", "Gennaro Gattuso", "./methodeexpert/images/drapeauitalie.svg"],
+      ["MIL", "Gennaro Gattuso", "/_assets/flags/drapeauitalie.svg"],
       [
         "ATT",
         "Kevin-Prince Boateng",
-        "./methodeexpert/images/drapeaughana.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaughana.svg",
+        "ArrowBigUp",
         "15'"
       ],
       [
         "ATT",
         "Robinho",
-        "./methodeexpert/images/drapeaubresil.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaubresil.svg",
+        "ArrowBigUp",
         "55'"
       ],
-      ["ATT", "Filippo Inzaghi", "./methodeexpert/images/drapeauitalie.svg"]
+      ["ATT", "Filippo Inzaghi", "/_assets/flags/drapeauitalie.svg"]
     ],
     "remplacantsequipe2": [
-      ["Coach", "Jean Fernandez", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Rémy Riou", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Jérémy Berthod", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Dariusz Dudka", "./methodeexpert/images/drapeaupologne.svg"],
+      ["Coach", "Jean Fernandez", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Rémy Riou", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Jérémy Berthod", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Dariusz Dudka", "/_assets/flags/drapeaupologne.svg"],
       [
         "MIL",
         "Kamel Chafni",
-        "./methodeexpert/images/drapeaumaroc.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaumaroc.svg",
+        "ArrowBigUp",
         "80'"
       ],
-      [
-        "ATT",
-        "Frédéric Sammaritano",
-        "./methodeexpert/images/drapeaufrance.svg"
-      ],
+      ["ATT", "Frédéric Sammaritano", "/_assets/flags/drapeaufrance.svg"],
       [
         "ATT",
         "Anthony Le Tallec",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "73'"
       ],
-      ["ATT", "Julien Quercia", "./methodeexpert/images/drapeaufrance.svg"]
+      ["ATT", "Julien Quercia", "/_assets/flags/drapeaufrance.svg"]
     ],
     "stade": "Stade Giuseppe-Meazza, Milan",
     "date": "15 septembre 2010, 20h45"
@@ -863,7 +799,7 @@
     "keyword": ["28 septembre 2010"],
     "typemethode": "match",
     "titrematch": "AJA 0 - 1 Real",
-    "imgterrain": "./methodeexpert/images/realajaterrain101324.png",
+    "imgterrain": "/_assets/terrains/realajaterrain101324.png",
     "couleur1equipe1": "#3c77b4",
     "couleur2equipe1": "#fff",
     "nomequipe1": "AJ Auxerre",
@@ -873,62 +809,58 @@
     "nomequipe2": "Real Madrid CF",
     "systemeequipe2": "4-3-3",
     "remplacantsequipe1": [
-      ["Coach", "Jean Fernandez", "./methodeexpert/images/drapeaufrance.svg"],
-      ["G", "Rémy Riou", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Jérémy Berthod", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Valter Birsa", "./methodeexpert/images/drapeauslovenie.svg"],
+      ["Coach", "Jean Fernandez", "/_assets/flags/drapeaufrance.svg"],
+      ["G", "Rémy Riou", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Jérémy Berthod", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Valter Birsa", "/_assets/flags/drapeauslovenie.svg"],
       [
         "MIL",
         "Alain Traoré",
-        "./methodeexpert/images/drapeauburkinafaso.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauburkinafaso.svg",
+        "ArrowBigUp",
         "78'"
       ],
-      [
-        "ATT",
-        "Frédéric Sammaritano",
-        "./methodeexpert/images/drapeaufrance.svg"
-      ],
+      ["ATT", "Frédéric Sammaritano", "/_assets/flags/drapeaufrance.svg"],
       [
         "ATT",
         "Ireneusz Jeleń",
-        "./methodeexpert/images/drapeaupologne.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaupologne.svg",
+        "ArrowBigUp",
         "46'"
       ],
       [
         "ATT",
         "Julien Quercia",
-        "./methodeexpert/images/drapeaufrance.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaufrance.svg",
+        "ArrowBigUp",
         "88'"
       ]
     ],
     "remplacantsequipe2": [
-      ["Coach", "José Mourinho", "./methodeexpert/images/drapeauportugal.svg"],
-      ["G", "Jerzy Dudek", "./methodeexpert/images/drapeaupologne.svg"],
-      ["DEF", "David Mateos", "./methodeexpert/images/drapeauespagne.svg"],
-      ["DEF", "Juankar", "./methodeexpert/images/drapeauespagne.svg"],
+      ["Coach", "José Mourinho", "/_assets/flags/drapeauportugal.svg"],
+      ["G", "Jerzy Dudek", "/_assets/flags/drapeaupologne.svg"],
+      ["DEF", "David Mateos", "/_assets/flags/drapeauespagne.svg"],
+      ["DEF", "Juankar", "/_assets/flags/drapeauespagne.svg"],
       [
         "MIL",
         "Mahamadou Diarra",
-        "./methodeexpert/images/drapeaumali.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeaumali.svg",
+        "ArrowBigUp",
         "86'"
       ],
-      ["MIL", "Esteban Granero", "./methodeexpert/images/drapeauespagne.svg"],
+      ["MIL", "Esteban Granero", "/_assets/flags/drapeauespagne.svg"],
       [
         "ATT",
         "Mesut Özil",
-        "./methodeexpert/images/drapeauallemagne.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauallemagne.svg",
+        "ArrowBigUp",
         "58'"
       ],
       [
         "ATT",
         "Ángel Di María",
-        "./methodeexpert/images/drapeauargentine.svg",
-        "<i class='fa-solid fa-arrow-up'></i>",
+        "/_assets/flags/drapeauargentine.svg",
+        "ArrowBigUp",
         "74'"
       ]
     ],
@@ -940,7 +872,7 @@
     "keyword": "2009-2010",
     "typemethode": "saison",
     "saison": "2009-2010",
-    "imgterrain": "./images/demiterrain.png",
+    "imgterrain": "/_assets/terrains/demiterrain.png",
     "joueursterrain": [
       [16, "Léon"],
       [2, "Arcus"],
@@ -957,18 +889,18 @@
     "coach": "Jean-Marc Furlan",
     "systeme": "4-3-3 Défensif",
     "remplacants": [
-      ["G", "Sonny Laiton", "./methodeexpert/images/drapeaumadagascar.svg"],
-      ["DEF", "Kenji Van-Boto", "./methodeexpert/images/drapeaumadagascar.svg"],
-      ["DEF", "Alec Georgen", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Gauthier Lloris", "./methodeexpert/images/drapeaufrance.svg"],
-      ["DEF", "Samuel Souprayen", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Aly Ndom", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Ousoumane Camara", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Kevin Fortuné", "./methodeexpert/images/drapeaumartinique.svg"],
-      ["MIL", "François Bellugou", "./methodeexpert/images/drapeaufrance.svg"],
-      ["MIL", "Axel Ngando", "./methodeexpert/images/drapeaufrance.svg"],
-      ["ATT", "Lassine Sinayoko", "./methodeexpert/images/drapeaumali.svg"],
-      ["ATT", "Yanis Begraoui", "./methodeexpert/images/drapeaufrance.svg"]
+      ["G", "Sonny Laiton", "/_assets/flags/drapeaumadagascar.svg"],
+      ["DEF", "Kenji Van-Boto", "/_assets/flags/drapeaumadagascar.svg"],
+      ["DEF", "Alec Georgen", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Gauthier Lloris", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Samuel Souprayen", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Aly Ndom", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Ousoumane Camara", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Kevin Fortuné", "/_assets/flags/drapeaumartinique.svg"],
+      ["MIL", "François Bellugou", "/_assets/flags/drapeaufrance.svg"],
+      ["MIL", "Axel Ngando", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Lassine Sinayoko", "/_assets/flags/drapeaumali.svg"],
+      ["ATT", "Yanis Begraoui", "/_assets/flags/drapeaufrance.svg"]
     ]
   }
 ]
