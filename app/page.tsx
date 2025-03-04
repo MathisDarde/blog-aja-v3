@@ -7,6 +7,7 @@ import Calendrier from "@/components/Calendrier";
 import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
 import DisplayCategories from "@/components/DisplayCategories";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 import React, { useState } from "react";
 
@@ -68,6 +69,8 @@ export default function Page() {
             <DisplayCategories />
           </div>
         </div>
+
+        <Footer />
       </div>
     </div>
   );
