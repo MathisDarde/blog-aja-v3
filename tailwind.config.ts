@@ -1,4 +1,3 @@
-import { Bai_Jamjuree, Montserrat } from "next/font/google";
 import type { Config } from "tailwindcss";
 
 export default {
