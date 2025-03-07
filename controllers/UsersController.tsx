@@ -63,6 +63,14 @@ class UsersController {
     });
     return user;
   }
+
+  async getUserNamePdp(id_user: number) {
+    const user = await prisma.user.findUnique({
+      where: { user_id: id_user },
+      select: { pseudo: true, photodeprofil: true },
+    });
+    return user;
+  }
 }
 
 export default new UsersController();
