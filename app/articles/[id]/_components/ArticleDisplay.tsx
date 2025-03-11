@@ -14,12 +14,61 @@ import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
 import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
 
-interface Keyword {
-  id: string | number;
-  typemethode: string;
+interface BaseMethodeData {
+  typemethode: "joueur" | "saison" | "match" | "coach";
+  id: number | string;
   keyword: string | string[];
   title?: string;
   description?: string;
+}
+
+interface MethodeJoueur extends BaseMethodeData {
+  typemethode: "joueur";
+  imagejoueur: string;
+  joueurnom: string;
+  poste: string;
+  taille: string;
+  piedfort: string;
+  clubs: [string, string, string][];
+  matchs: number;
+  buts: number;
+  passesd: number;
+}
+
+interface MethodeSaison extends BaseMethodeData {
+  typemethode: "saison";
+  saison: string;
+  imgterrain: string;
+  coach: string;
+  systeme: string;
+  remplacants: [string, string, string][];
+}
+
+interface MethodeMatch extends BaseMethodeData {
+  typemethode: "match";
+  titrematch: string;
+  imgterrain: string;
+  couleur1equipe1: string;
+  couleur2equipe1: string;
+  nomequipe1: string;
+  systemeequipe1: string;
+  couleur1equipe2: string;
+  couleur2equipe2: string;
+  nomequipe2: string;
+  systemeequipe2: string;
+  remplacantsequipe1: [string, string, string, string?, string?][];
+  remplacantsequipe2: [string, string, string, string?, string?][];
+  stade: string;
+  date: string;
+}
+
+interface MethodeCoach extends BaseMethodeData {
+  typemethode: "coach";
+  imagecoach: string;
+  nomcoach: string;
+  clubscoach: [string, string, string][];
+  palmares: string[];
+  statistiques: string;
 }
 
 interface ArticleProps {
@@ -34,10 +83,12 @@ interface ArticleProps {
   };
 }
 
+type Methode = MethodeJoueur | MethodeSaison | MethodeMatch | MethodeCoach;
+
 export default function ArticleDisplay({ article }: ArticleProps) {
   const [sidebarState, setSidebarState] = useState(0);
-  const [keywords, setKeywords] = useState<Keyword[]>([]);
-  const [selectedMethod, setSelectedMethod] = useState<Keyword | null>(null);
+  const [keywords, setKeywords] = useState<Methode[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState<Methode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -118,13 +169,14 @@ export default function ArticleDisplay({ article }: ArticleProps) {
           />
         );
       default:
+        const method = selectedMethod as BaseMethodeData;
         return (
           <div className="method-content font-Montserrat">
             <h4 className="font-bold text-lg mb-2">
-              {selectedMethod.title || "Méthode"}
+              {method.title || "Méthode"}
             </h4>
             <p className="mb-4 text-justify">
-              {selectedMethod.description || "Aucune description disponible."}
+              {method.description || "Aucune description disponible."}
             </p>
             <button
               className="mt-2 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md text-sm font-medium transition-colors"
