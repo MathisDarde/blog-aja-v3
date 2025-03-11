@@ -10,7 +10,6 @@ interface Category {
 }
 
 export default function DisplayAllCategories() {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [randomSelection, setRandomSelection] = useState<Category[]>([]);
 
@@ -29,7 +28,6 @@ export default function DisplayAllCategories() {
     const loadCategories = async () => {
       setIsLoading(true);
       const data = await fetchCategories();
-      setCategories(data);
       setRandomSelection(data);
       setIsLoading(false);
     };
