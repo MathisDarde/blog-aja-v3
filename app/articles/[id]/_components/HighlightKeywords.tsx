@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 
 interface Keyword {
-  id: string;
+  id: string | number;
   typemethode: string;
   keyword: string | string[];
 }
