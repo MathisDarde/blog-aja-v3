@@ -30,7 +30,7 @@ export default function Footer() {
             </div>
             <div className="flex flex-col w-full">
               <label htmlFor="" className="text-white ml-4 py-2">
-                Date d'anniversaire <span className="text-red-600">*</span>
+                Date d&apos;anniversaire <span className="text-red-600">*</span>
               </label>
               <input type="date" className="py-3 px-5 rounded-full" />
             </div>
@@ -40,7 +40,7 @@ export default function Footer() {
               type="submit"
               className="bg-white text-aja-blue w-full py-3 rounded-full"
             >
-              Je m'inscris à la newsletter
+              Je m&apos;inscris à la newsletter
             </button>
           </div>
           <div className="flex gap-4">
@@ -77,7 +77,7 @@ export default function Footer() {
           <Link href="">Contactez-moi</Link>
           <Link href="/moncompte">Mon compte</Link>
           <Link href="/boutique">Boutique</Link>
-          <Link href="">Règles générales d'utilisation</Link>
+          <Link href="">Règles générales d&apos;utilisation</Link>
           <Link href="">Charte graphique</Link>
           <Link href="">Cookies</Link>
         </div>
@@ -91,7 +91,7 @@ export default function Footer() {
             target="_BLANK"
             className="underline"
           >
-            Site officiel de l'AJ Auxerre
+            Site officiel de l&apos;AJ Auxerre
           </Link>
           <Link
             href="https://boutique.aja.fr/"
@@ -121,12 +121,12 @@ export default function Footer() {
 
       <div>
         <h2 className="text-center text-white uppercase font-Bai_Jamjuree italic font-bold text-6xl pt-10">
-          Mémoire d'Auxerrois
+          Mémoire d&apos;Auxerrois
         </h2>
         <div className="flex items-center gap-2 text-white justify-center py-2">
-          <p>&copy; 2025 Mémoire d'Auxerrois</p>
+          <p>&copy; 2025 Mémoire d&apos;Auxerrois</p>
           <p>•</p>
-          <p>Termes d'utilisation</p>
+          <p>Termes d&apos;utilisation</p>
         </div>
       </div>
     </div>

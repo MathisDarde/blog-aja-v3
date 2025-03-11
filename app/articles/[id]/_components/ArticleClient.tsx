@@ -4,10 +4,22 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import displayUniqueArticle from "@/actions/get-single-article";
 import ArticleDisplay from "./ArticleDisplay";
+import { JsonValue } from "@prisma/client/runtime/library";
+
+interface Article {
+  article_id: number;
+  imageUrl: string;
+  title: string;
+  teaser: string;
+  content: string;
+  author: string;
+  publishedAt: Date;
+  tags: JsonValue;
+}
 
 export default function ArticleClient() {
   const params = useParams();
-  const [article, setArticle] = useState<any>(null);
+  const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

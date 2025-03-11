@@ -11,7 +11,6 @@ interface Category {
 }
 
 export default function DisplayCategories() {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [randomSelection, setRandomSelection] = useState<Category[]>([]);
 
@@ -36,7 +35,6 @@ export default function DisplayCategories() {
       setIsLoading(true);
       const fetchedCategories = await fetchCategories();
 
-      setCategories(fetchedCategories);
       setRandomSelection(selectRandomCategories(fetchedCategories));
       setIsLoading(false);
     };
@@ -81,7 +79,7 @@ export default function DisplayCategories() {
 
       <div className="text-center">
         <Link href="/categories">
-          <Button type="button">J'accède à toutes les catégories</Button>
+          <Button type="button">J&apos;accède à toutes les catégories</Button>
         </Link>
       </div>
     </div>

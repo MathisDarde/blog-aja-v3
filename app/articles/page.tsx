@@ -28,7 +28,6 @@ export default function ArticleCenter() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [filters, setFilters] = useState<Tag[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [sidebarState, setSidebarState] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -70,17 +69,14 @@ export default function ArticleCenter() {
     fetchFilters();
     const queryParams = new URLSearchParams(window.location.search);
     const tagFromURL = queryParams.get("tag");
-    setSelectedTag(tagFromURL);
     fetchAndDisplayArticles(tagFromURL || undefined);
-  }, [window.location.search]);
+  }, []);
 
   const handleFilterClick = (tag: string) => {
-    setSelectedTag(tag);
     window.location.href = `/articles?tag=${encodeURIComponent(tag)}`;
   };
 
   const resetFilters = () => {
-    setSelectedTag(null);
     fetchAndDisplayArticles();
     window.location.href = `/articles`;
   };

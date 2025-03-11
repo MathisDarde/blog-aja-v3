@@ -11,14 +11,14 @@ export default function NotFound() {
         Page non trouvée !
       </p>
       <p className="font-Montserrat mt-2">
-        La page que vous cherchez n'existe pas ou est mal orthographiée.
+        La page que vous cherchez n&apos;existe pas ou est mal orthographiée.
       </p>
       <p className="font-Montserrat mt-2">
         Oula, à deux doigts de descendre en National comme le DFCO !
       </p>
 
       <Link href={"/"}>
-        <Button type="button">Retour vers la page d'accueil</Button>
+        <Button type="button">Retour vers la page d&apos;accueil</Button>
       </Link>
     </div>
   );

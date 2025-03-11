@@ -42,6 +42,7 @@ export default function MonCompte() {
       const currentTime = Math.floor(Date.now() / 1000);
       return decodedToken.exp < currentTime;
     } catch (error) {
+      console.log(error);
       return true;
     }
   };
@@ -186,7 +187,7 @@ export default function MonCompte() {
                   <div className="flex items-center gap-2">
                     <Calendar1 width={20} height={20} />
                     <label className="font-medium">
-                      Inscrit sur Mémoire d'Auxerrois depuis le :
+                      Inscrit sur Mémoire d&apos;Auxerrois depuis le :
                     </label>
                     <p>
                       {new Date(userInfo.createdAt).toLocaleDateString("fr-FR")}
@@ -203,7 +204,7 @@ export default function MonCompte() {
               </div>
 
               <div className="flex items-center justify-center gap-4 font-Montserrat my-10">
-                <div className="bg-white text-red-600 border-2 border-red-600 px-6 py-2 rounded-full flex items-center gap-2">
+                <div className="bg-white text-red-600 border-2 border-red-600 px-6 py-2 rounded-full flex items-center gap-2 transition-colors hover:bg-gray-100">
                   <LogOut className="" />
                   <button type="button" onClick={logOutFunction} className="">
                     Se déconnecter
@@ -223,7 +224,7 @@ export default function MonCompte() {
                         <div className="flex justify-center gap-4">
                           <button
                             onClick={() => setIsPopupOpen(false)}
-                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg"
+                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg transition-colors hover:bg-gray-500 hover:text-white"
                           >
                             Annuler
                           </button>
@@ -232,7 +233,7 @@ export default function MonCompte() {
                               deleteAccountFunction();
                               setIsPopupOpen(false);
                             }}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg transition-colors hover:bg-red-800"
                           >
                             Supprimer
                           </button>
@@ -244,7 +245,7 @@ export default function MonCompte() {
                   <button
                     type="button"
                     onClick={() => setIsPopupOpen(true)}
-                    className="flex items-center gap-2 bg-red-600 px-6 py-2 rounded-full text-white"
+                    className="flex items-center gap-2 bg-red-600 px-6 py-2 rounded-full text-white transition-colors hover:bg-red-800"
                   >
                     <Trash />
                     Supprimer ce compte

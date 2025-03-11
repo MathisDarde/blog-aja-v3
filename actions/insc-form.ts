@@ -22,6 +22,7 @@ const submitInscForm = async (data: InscSchemaType): Promise<FormResponse> => {
 
     return { success: true, message: "Compte créé avec succès" };
   } catch (err) {
+    console.log(err);
     return { success: false, message: "Erreur lors de la création du compte" };
   }
 };

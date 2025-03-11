@@ -13,7 +13,7 @@ export default function Inscription() {
     setSidebarState((prevState) => (prevState === 0 ? 1 : 0));
   };
   return (
-    <div className="bg-gray-100 h-full flex flex-col justify-start items-center">
+    <div className="bg-gray-100 h-full flex flex-col justify-start items-center 2xl:h-screen">
       {sidebarState === 0 ? (
         <SidebarResp onToggle={toggleSidebar} />
       ) : (

@@ -5,7 +5,6 @@ import AuthentificationController from "@/controllers/AuthentificationController
 import { FormResponse, LoginSchemaType } from "@/types/forms";
 import { checkPassword } from "@/utils/bcrypt";
 import { generateToken } from "@/utils/jwt";
-import { log } from "console";
 
 const submitLoginForm = async (
   data: LoginSchemaType

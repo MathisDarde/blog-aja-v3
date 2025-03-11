@@ -13,7 +13,6 @@ interface Article {
 }
 
 export default function DisplayRandom() {
-  const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [randomSelection, setRandomSelection] = useState<Article[]>([]);
 
@@ -28,7 +27,6 @@ export default function DisplayRandom() {
     try {
       setIsLoading(true);
       const fetchedArticles = await displayArticles();
-      setArticles(fetchedArticles);
       setRandomSelection(selectRandomArticles(fetchedArticles));
     } catch (error) {
       console.error("Erreur lors de la récupération des articles :", error);
@@ -39,7 +37,7 @@ export default function DisplayRandom() {
 
   useEffect(() => {
     fetchArticles();
-  }, []);
+  });
 
   return (
     <div>

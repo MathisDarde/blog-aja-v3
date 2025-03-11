@@ -204,7 +204,7 @@ export default function ArticleDisplay({ article }: ArticleProps) {
               {!selectedMethod ? (
                 <p className="font-Montserrat text-justify">
                   Cliquez sur les mots en surbrillance dans le texte pour
-                  accéder à pleins d'informations supplémentaires !
+                  accéder à pleins d&apos;informations supplémentaires !
                 </p>
               ) : (
                 <div className="method-container">

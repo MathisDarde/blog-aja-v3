@@ -56,7 +56,9 @@ export default function SeasonMethodeExpert({
               <p className="text-sm">
                 {remp[0]} - {remp[1]}
               </p>
-              <img
+              <Image
+                width={512}
+                height={512}
                 src={remp[2]}
                 alt=""
                 className="w-4 h-[10px] border border-black"

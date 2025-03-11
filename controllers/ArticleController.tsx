@@ -75,6 +75,7 @@ class ArticleController {
 
       return article;
     } catch (err) {
+      console.log(err);
       throw new Error(
         `Erreur lors de l'upload du fichier ou de la création de l'article`
       );

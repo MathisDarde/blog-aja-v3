@@ -58,7 +58,7 @@ const KeywordHighlighter: React.FC<Props> = ({
   );
 
   // Process the text
-  let processedText = processText(text);
+  const processedText = processText(text);
   let highlightedText = processedText;
 
   // Apply keyword highlighting

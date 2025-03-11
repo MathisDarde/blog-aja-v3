@@ -101,7 +101,9 @@ export default function GameMethodeExpert({
               <p className="text-sm">
                 {remp[0]} - {remp[1]}
               </p>
-              <img
+              <Image
+                width={512}
+                height={512}
                 src={remp[2]}
                 alt=""
                 className="w-4 h-[10px] border border-black object-cover"
@@ -122,7 +124,9 @@ export default function GameMethodeExpert({
               <p className="text-sm">
                 {remp[0]} - {remp[1]}
               </p>
-              <img
+              <Image
+                height={512}
+                width={512}
                 src={remp[2]}
                 alt=""
                 className="w-4 h-[10px] border border-black"

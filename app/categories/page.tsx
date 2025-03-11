@@ -38,7 +38,7 @@ export default function CategoriesPage() {
           </div>
           <div className="text-center">
             <Link href="/">
-              <Button type="button">Je retourne à l'accueil</Button>
+              <Button type="button">Je retourne à l&apos;accueil</Button>
             </Link>
           </div>
         </div>

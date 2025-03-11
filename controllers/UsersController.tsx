@@ -50,7 +50,7 @@ class UsersController {
     email: string,
     password: string
   ) {
-    let user = await prisma.user.update({
+    const user = await prisma.user.update({
       where: { user_id: id_user },
       data: { pseudo, birthday, email, password },
     });

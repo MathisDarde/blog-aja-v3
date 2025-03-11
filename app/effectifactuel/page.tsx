@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import SidebarResp from "@/components/SidebarResp";
+import Image from "next/image";
 
 // Type pour un joueur
 type Joueur = {
@@ -51,7 +52,7 @@ export default function EffectifActuel() {
         <div className="text-center">
           <Link href={"/"}>
             <p className="text-5xl text-center font-title italic uppercase font-bold text-aja-blue py-10">
-              Mémoire d'Auxerrois
+              Mémoire d&apos;Auxerrois
             </p>
           </Link>
         </div>
@@ -76,7 +77,9 @@ export default function EffectifActuel() {
                           className="bg-white w-4/5 h-48 my-4 box-border flex-shrink-0 rounded-2xl flex mx-auto"
                         >
                           <div className="flex items-center justify-center">
-                            <img
+                            <Image
+                              width={512}
+                              height={512}
                               src={joueur.imagejoueur}
                               alt="Image du joueur"
                               className="w-44 h-44 m-2 outline-2 outline-gray-600 object-cover object-top rounded-2xl"
@@ -93,7 +96,9 @@ export default function EffectifActuel() {
                               <p className="text-base font-Montserrat">
                                 {joueur.nationalite}
                               </p>
-                              <img
+                              <Image
+                                width={512}
+                                height={512}
                                 src={joueur.natflag}
                                 alt="Drapeau"
                                 className="w-4 h-3 my-2 mx-3 border border-black"

@@ -55,7 +55,9 @@ export default function PlayerMethodeExpert({
         <ul className="mt-2">
           {methode.clubs.map((club, index) => (
             <li key={index} className="flex items-center gap-2 my-2">
-              <img
+              <Image
+                height={512}
+                width={512}
                 src={club[0]}
                 alt={`Logo de ${club[1]}`}
                 className="w-6 h-6"

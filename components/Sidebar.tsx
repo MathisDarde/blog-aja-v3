@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import SidebarData from "./SidebarData";
 import SearchBar from "./SidebarSearchbar";
-import { ChevronDown, LogIn, X, User } from "lucide-react";
+import { ChevronDown, LogIn, X } from "lucide-react";
 import Classement from "./Classement";
 import { AutresDropdownData } from "./SidebarData";
 import Link from "next/link";
 import getUsernamePhoto from "@/actions/getUserNamePdp";
 import { jwtDecode } from "jwt-decode";
+import Image from "next/image";
 
 interface SidebarProps {
   onToggle: () => void;
@@ -38,6 +39,7 @@ function Sidebar({ onToggle }: SidebarProps) {
       const currentTime = Math.floor(Date.now() / 1000);
       return decodedToken.exp < currentTime;
     } catch (error) {
+      console.log(error);
       return true;
     }
   };
@@ -92,7 +94,7 @@ function Sidebar({ onToggle }: SidebarProps) {
 
   useEffect(() => {
     displayUserNamePhoto();
-  }, []);
+  });
 
   return (
     <>
@@ -123,7 +125,9 @@ function Sidebar({ onToggle }: SidebarProps) {
           ) : (
             <Link href="/moncompte">
               <div className="flex items-center gap-2 ml-2">
-                <img
+                <Image
+                  width={512}
+                  height={512}
                   src={userInfo.photodeprofil || "/_assets/img/pdpdebase.png"}
                   alt="Photo de profil"
                   className="w-12 h-12 rounded-full object-cover"

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import SidebarResp from "@/components/SidebarResp";
 import { ArrowLeftIcon } from "lucide-react";
+import Image from "next/image";
 
 type RecordType = {
   title: string;
@@ -67,7 +68,7 @@ const Palmares = () => {
           <div className="text-center">
             <Link href={"/"}>
               <p className="text-5xl text-center font-title italic uppercase font-bold text-aja-blue py-10">
-                Mémoire d'Auxerrois
+                Mémoire d&apos;Auxerrois
               </p>
             </Link>
           </div>
@@ -83,7 +84,9 @@ const Palmares = () => {
               <div className="grid grid-cols-3 grid-rows-3">
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheeligue1gold.png"
                       alt="Logo Ligue 1"
                       className="m-2 w-24 h-24 object-contain"
@@ -103,7 +106,9 @@ const Palmares = () => {
                 </div>
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheeligue1bronze.png"
                       alt="Logo Ligue 1"
                       className="m-2 w-24 h-24 object-contain"
@@ -123,7 +128,9 @@ const Palmares = () => {
                 </div>
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheecoupedefrancegold.png"
                       alt="Logo Coupe de France"
                       className="m-2 w-24 h-24 object-contain"
@@ -143,7 +150,9 @@ const Palmares = () => {
                 </div>
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheecoupedefrancesilver.png"
                       alt="Logo Coupe de France"
                       className="m-2 w-24 h-24 object-contain"
@@ -163,7 +172,9 @@ const Palmares = () => {
                 </div>
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheeligue2gold.png"
                       alt="Logo Ligue 2"
                       className="m-2 w-24 h-24 object-contain"
@@ -183,7 +194,9 @@ const Palmares = () => {
                 </div>
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheeligue2bronze.png"
                       alt="Logo Ligue 2"
                       className="m-2 w-24 h-24 object-contain"
@@ -203,7 +216,9 @@ const Palmares = () => {
                 </div>
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheecoupeintertotogold.png"
                       alt="Logo Intertoto"
                       className="m-2 w-24 h-24 object-contain"
@@ -223,7 +238,9 @@ const Palmares = () => {
                 </div>
                 <div className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
-                    <img
+                    <Image
+                      width={512}
+                      height={512}
                       src="/_assets/trophies/tropheecoupeintertotosilver.png"
                       alt="Logo Intertoto"
                       className="m-2 w-24 h-24 object-contain"
@@ -276,7 +293,9 @@ const Palmares = () => {
                             setSelectedRecordIndex(isActive ? null : index)
                           }
                         >
-                          <img
+                          <Image
+                            width={512}
+                            height={512}
                             src={list.image}
                             alt={`Image de ${list.title}`}
                             className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100 group-hover:grayscale-0"
