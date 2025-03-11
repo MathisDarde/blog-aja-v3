@@ -21,7 +21,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       fs:
-        specifier: ^0.0.1-security
+        specifier: 0.0.1-security
         version: 0.0.1-security
       jsonwebtoken:
         specifier: ^9.0.2
