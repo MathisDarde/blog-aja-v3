@@ -1,12 +1,13 @@
 "use server";
 
 import { ArticleSchema } from "@/app/schema";
-import ArticleController from "@/controllers/ArticleController";
+import { createArticle } from "@/controllers/ArticlesController";
 import { ArticleSchemaType, FormResponse } from "@/types/forms";
 
 const submitArticleForm = async (
   data: ArticleSchemaType,
-  file: File
+  file: File,
+  userId: string
 ): Promise<FormResponse> => {
   try {
     const parsedData = ArticleSchema.safeParse(data);
@@ -15,7 +16,9 @@ const submitArticleForm = async (
       return { success: false, errors: parsedData.error.errors };
     }
 
-    const registerArticle = await ArticleController.store(data, file);
+    const registerArticle = await createArticle(data, file, userId);
+
+    console.log(data, file, userId);
     if (!registerArticle) {
       return {
         success: false,

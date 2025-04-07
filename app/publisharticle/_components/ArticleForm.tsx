@@ -16,6 +16,7 @@ import { ArticleSchema } from "@/app/schema";
 import submitArticleForm from "@/actions/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 
 interface Tags {
   tag: string;
@@ -23,6 +24,9 @@ interface Tags {
   img: string;
   type: string;
 }
+
+const session = await authClient.getSession();
+const id = session?.data?.user.id || null;
 
 function ArticleForm() {
   const [tags, setTags] = useState([]);
@@ -37,13 +41,15 @@ function ArticleForm() {
       );
   }, []);
 
-  const { register, handleSubmit } = useForm<ArticleSchemaType>({
+  const { register, handleSubmit, formState } = useForm<ArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
   });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
+    } else {
+      setSelectedFile(null);
     }
   };
 
@@ -62,8 +68,13 @@ function ArticleForm() {
         Array.isArray(value) ? JSON.stringify(value) : value
       );
     });
-
-    const response = await submitArticleForm(data, selectedFile);
+    if (!id) {
+      toast.error(
+        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
+      );
+      return;
+    }
+    const response = await submitArticleForm(data, selectedFile, id);
 
     if (response.success) {
       redirect("/");
@@ -77,6 +88,18 @@ function ArticleForm() {
       );
     }
   };
+
+  useEffect(() => {
+    Object.values(formState.errors).forEach((error) => {
+      if (error && "message" in error) {
+        toast.error(error.message as string, {
+          icon: <X className="text-white" />,
+          className:
+            "bg-red-500 !important border border-red-200 text-white text-base",
+        });
+      }
+    });
+  }, [formState.errors]);
 
   return (
     <div className="w-w-600 mx-auto">

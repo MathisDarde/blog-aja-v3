@@ -1,7 +1,7 @@
 "use server";
 
 import { InscSchema } from "@/app/schema";
-import UsersController from "@/controllers/UsersController";
+import { signUp } from "@/controllers/UserController";
 import { FormResponse, InscSchemaType } from "@/types/forms";
 
 const submitInscForm = async (data: InscSchemaType): Promise<FormResponse> => {
@@ -12,18 +12,22 @@ const submitInscForm = async (data: InscSchemaType): Promise<FormResponse> => {
       return { success: false, errors: parsedData.error.errors };
     }
 
-    const registerUser = await UsersController.store(data);
-    if (!registerUser) {
+    try {
+      await signUp(parsedData.data);
+      return { success: true, message: "Compte créé avec succès" };
+    } catch (error) {
+      console.error(error);
       return {
         success: false,
         message: "Erreur lors de la création du compte",
       };
     }
-
-    return { success: true, message: "Compte créé avec succès" };
   } catch (err) {
     console.log(err);
-    return { success: false, message: "Erreur lors de la création du compte" };
+    return {
+      success: false,
+      message: "Erreur lors de la création du compte",
+    };
   }
 };
 

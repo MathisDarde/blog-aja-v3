@@ -1,14 +1,13 @@
-import prisma from "../prisma/prisma";
+"use server";
 
-class AuthentificationController {
-  async login(email: string) {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
-    });
-    return user;
-  }
-}
+import { auth } from "@/lib/auth";
+import { LoginSchemaType } from "@/types/forms";
 
-export default new AuthentificationController();
+export const signIn = async (data: LoginSchemaType) => {
+  await auth.api.signInEmail({
+    body: {
+      email: data.email,
+      password: data.password,
+    },
+  });
+};

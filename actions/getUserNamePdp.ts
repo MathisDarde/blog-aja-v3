@@ -1,10 +1,10 @@
 "use server";
 
-import UsersController from "@/controllers/UsersController";
+import { getUserPicName } from "@/controllers/UserController";
 
-const getUsernamePhoto = async (id_user: number) => {
+const getUsernamePhoto = async (id: string) => {
   try {
-    return await UsersController.getUserNamePdp(id_user);
+    return await getUserPicName(id);
   } catch (error) {
     console.error("Erreur lors de la récupération de l'utilisateur :", error);
     return [];

@@ -1,0 +1,12 @@
+ALTER TABLE "account" ALTER COLUMN "id" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "account" ALTER COLUMN "userId" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "articles_table" ALTER COLUMN "id_article" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "articles_table" ALTER COLUMN "userId" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "comments_table" ALTER COLUMN "id_comment" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "comments_table" ALTER COLUMN "userId" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "comments_table" ALTER COLUMN "article_id" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "session" ALTER COLUMN "id" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "session" ALTER COLUMN "userId" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "users_table" ALTER COLUMN "id" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "verification" ALTER COLUMN "id" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "users_table" ADD COLUMN "email_verified" boolean DEFAULT false NOT NULL;

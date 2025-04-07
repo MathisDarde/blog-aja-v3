@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoginSchema } from "@/app/schema";
 import { LoginSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,6 @@ import Button from "@/components/BlueButton";
 import submitLoginForm from "@/actions/login-form";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
-import { cn } from "@/utils/cn";
 import { Eye } from "lucide-react";
 import { EyeOff } from "lucide-react";
 import { X } from "lucide-react";
@@ -24,7 +23,6 @@ function LoginForm() {
   const handleSubmitForm = async (data: LoginSchemaType) => {
     const response = await submitLoginForm(data);
     if (response.success) {
-      localStorage.setItem("token", response.token as string);
       redirect("/");
     } else {
       toast.error(
@@ -40,6 +38,18 @@ function LoginForm() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  useEffect(() => {
+    Object.values(formState.errors).forEach((error) => {
+      if (error && "message" in error) {
+        toast.error(error.message as string, {
+          icon: <X className="text-white" />,
+          className:
+            "bg-red-500 !important border border-red-200 text-white text-base",
+        });
+      }
+    });
+  }, [formState.errors]);
 
   return (
     <>
@@ -73,16 +83,7 @@ function LoginForm() {
           </div>
 
           <div className="flex justify-center items-center">
-            <Button
-              type="submit"
-              className={cn(
-                (formState.isSubmitting || !formState.isValid) &&
-                  "!cursor-not-allowed opacity-40"
-              )}
-              disabled={formState.isSubmitting || !formState.isValid}
-            >
-              Je me connecte
-            </Button>
+            <Button type="submit">Je me connecte</Button>
           </div>
         </form>
       </div>

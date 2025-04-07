@@ -55,14 +55,16 @@ export default function GameMethodeExpert({
 
       {/* Équipe 1 */}
       <div className="flex items-center justify-center gap-2 mt-4">
-        <div
-          className="w-6 h-6 rounded-full border border-black"
-          style={{ background: methode.couleur1equipe1 }}
-        ></div>
-        <div
-          className="w-6 h-6 rounded-full border border-black"
-          style={{ background: methode.couleur2equipe1 }}
-        ></div>
+        <div className="flex gap-0">
+          <div
+            className="w-6 h-6 rounded-full border border-black"
+            style={{ background: methode.couleur1equipe1 }}
+          ></div>
+          <div
+            className="w-6 h-6 rounded-full border border-black"
+            style={{ background: methode.couleur2equipe1 }}
+          ></div>
+        </div>
         <h3 className="font-semibold">{methode.nomequipe1}</h3>
         <h3 className="text-sm">{methode.systemeequipe1}</h3>
       </div>
@@ -71,8 +73,8 @@ export default function GameMethodeExpert({
       <div className="my-4 flex justify-center">
         <Image
           src={methode.imgterrain}
-          width={300}
-          height={200}
+          width={1024}
+          height={1024}
           alt="Terrain"
           className="rounded-md"
         />
@@ -80,21 +82,23 @@ export default function GameMethodeExpert({
 
       {/* Équipe 2 */}
       <div className="flex items-center justify-center gap-2">
-        <div
-          className="w-6 h-6 rounded-full border border-black"
-          style={{ background: methode.couleur1equipe2 }}
-        ></div>
-        <div
-          className="w-6 h-6 rounded-full border border-black"
-          style={{ background: methode.couleur2equipe2 }}
-        ></div>
+        <div className="flex gap-0">
+          <div
+            className="w-6 h-6 rounded-full border border-black"
+            style={{ background: methode.couleur1equipe2 }}
+          ></div>
+          <div
+            className="w-6 h-6 rounded-full border border-black"
+            style={{ background: methode.couleur2equipe2 }}
+          ></div>
+        </div>
         <h3 className="font-semibold">{methode.nomequipe2}</h3>
         <h3 className="text-sm">{methode.systemeequipe2}</h3>
       </div>
 
       {/* Remplaçants équipe 1 */}
       <div className="mt-4">
-        <p className="font-semibold text-center">Banc {methode.nomequipe2} :</p>
+        <p className="font-semibold text-center">Banc {methode.nomequipe1} :</p>
         <ul className="mt-2 space-y-1">
           {methode.remplacantsequipe1.map((remp, index) => (
             <li key={index} className="flex items-center gap-2">
@@ -117,7 +121,7 @@ export default function GameMethodeExpert({
 
       {/* Remplaçants équipe 2 */}
       <div className="mt-4">
-        <p className="font-semibold text-center">Banc {methode.nomequipe1} :</p>
+        <p className="font-semibold text-center">Banc {methode.nomequipe2} :</p>
         <ul className="mt-2 space-y-1">
           {methode.remplacantsequipe2.map((remp, index) => (
             <li key={index} className="flex items-center gap-2">

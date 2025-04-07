@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@/components/BlueButton";
 import { User, Cake, Mail, KeyRound, Eye, EyeOff, X } from "lucide-react";
 import { InscSchema } from "@/app/schema";
@@ -6,11 +6,12 @@ import { InscSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import submitInscForm from "@/actions/insc-form";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { cn } from "@/utils/cn";
 
 function InscForm() {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -21,7 +22,7 @@ function InscForm() {
   const handleSubmitForm = async (data: InscSchemaType) => {
     const response = await submitInscForm(data);
     if (response.success) {
-      redirect("/login");
+      router.push("/");
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,
@@ -40,6 +41,18 @@ function InscForm() {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  useEffect(() => {
+    Object.values(formState.errors).forEach((error) => {
+      if (error && "message" in error) {
+        toast.error(error.message as string, {
+          icon: <X className="text-white" />,
+          className:
+            "bg-red-500 !important border border-red-200 text-white text-base",
+        });
+      }
+    });
+  }, [formState.errors]);
+
   return (
     <div className="w-w-600 mx-auto">
       <form
@@ -54,7 +67,7 @@ function InscForm() {
           </span>
           <input
             type="text"
-            {...register("pseudo")}
+            {...register("name")}
             className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Pseudo"
           />
@@ -121,16 +134,7 @@ function InscForm() {
         </div>
 
         <div className="flex justify-center items-center">
-          <Button
-            type="submit"
-            className={cn(
-              (formState.isSubmitting || !formState.isValid) &&
-                "!cursor-not-allowed opacity-40"
-            )}
-            disabled={formState.isSubmitting || !formState.isValid}
-          >
-            Je m&apos;inscris
-          </Button>
+          <Button type="submit">Je m&apos;inscris</Button>
         </div>
       </form>
     </div>

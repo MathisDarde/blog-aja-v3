@@ -1,10 +1,10 @@
 "use server";
 
-import ArticleController from "@/controllers/ArticleController";
+import { getLastPublished } from "@/controllers/ArticlesController";
 
 const displayLastPublished = async () => {
   try {
-    return await ArticleController.lastpublished();
+    return await getLastPublished();
   } catch (error) {
     console.error("Erreur lors de la récupération des articles :", error);
     return [];

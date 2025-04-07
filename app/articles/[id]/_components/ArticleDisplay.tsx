@@ -1,14 +1,10 @@
 "use client";
 
-import Sidebar from "@/components/Sidebar";
-import SidebarResp from "@/components/SidebarResp";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { Calendar1 } from "lucide-react";
 import KeywordHighlighter from "./HighlightKeywords";
-
 import PlayerMethodeExpert from "./MethodDetails/MethodeExpertJoueur";
 import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
@@ -86,15 +82,10 @@ interface ArticleProps {
 type Methode = MethodeJoueur | MethodeSaison | MethodeMatch | MethodeCoach;
 
 export default function ArticleDisplay({ article }: ArticleProps) {
-  const [sidebarState, setSidebarState] = useState(0);
   const [keywords, setKeywords] = useState<Methode[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<Methode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const toggleSidebar = () => {
-    setSidebarState((prevState) => (prevState === 0 ? 1 : 0));
-  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -191,79 +182,61 @@ export default function ArticleDisplay({ article }: ArticleProps) {
 
   return (
     <div className="bg-gray-100 min-h-screen w-full p-0 m-0 box-border">
-      {sidebarState === 0 ? (
-        <SidebarResp onToggle={toggleSidebar} />
-      ) : (
-        <Sidebar onToggle={toggleSidebar} />
-      )}
+      <div className="flex justify-center gap-10">
+        <div className="w-[975px]">
+          <h2 className="font-Montserrat font-extrabold text-3xl">
+            {article.title}
+          </h2>
+          <p className="font-Montserrat flex items-center my-4 italic">
+            <Calendar1 className="mr-2" />
+            {new Date(article.publishedAt).toLocaleDateString("fr-FR", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}{" "}
+            par {article.author}
+          </p>
+          <Image
+            src={`${article.imageUrl}`}
+            width={1024}
+            height={1024}
+            alt="Image de bannière de l'article"
+            className="aspect-video w-full object-cover object-top mb-10 rounded-xl"
+          />
 
-      <div className="ml-24">
-        <div className="text-center">
-          <Link href={"/"}>
-            <p className="text-5xl text-center font-title italic uppercase font-bold text-aja-blue py-10">
-              Mémoire d&apos;Auxerrois
-            </p>
-          </Link>
+          {isLoading ? (
+            <div className="bg-white rounded-xl p-8 text-center">
+              Chargement des mots-clés...
+            </div>
+          ) : error ? (
+            <div className="bg-white rounded-xl p-8 text-center text-red-500">
+              Erreur: {error}
+            </div>
+          ) : (
+            <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">
+              <KeywordHighlighter
+                text={article.content}
+                keywords={keywords}
+                onKeywordClick={handleKeywordClick}
+              />
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-center gap-10">
-          <div className="w-[975px]">
-            <h2 className="font-Montserrat font-extrabold text-3xl">
-              {article.title}
-            </h2>
-            <p className="font-Montserrat flex items-center my-4 italic">
-              <Calendar1 className="mr-2" />
-              {new Date(article.publishedAt).toLocaleDateString("fr-FR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}{" "}
-              par {article.author}
-            </p>
-            <Image
-              src={`${article.imageUrl}`}
-              width={1024}
-              height={1024}
-              alt="Image de bannière de l'article"
-              className="aspect-video w-full object-cover object-top mb-10 rounded-xl"
-            />
+        <div className="relative w-[325px]">
+          <div className="fixed w-[325px] max-h-[80vh] bg-white h-fit border border-black rounded-xl px-4 py-8 overflow-y-auto">
+            <h3 className="text-center font-bold font-Montserrat uppercase text-2xl mb-4">
+              Méthode Expert
+            </h3>
 
-            {isLoading ? (
-              <div className="bg-white rounded-xl p-8 text-center">
-                Chargement des mots-clés...
-              </div>
-            ) : error ? (
-              <div className="bg-white rounded-xl p-8 text-center text-red-500">
-                Erreur: {error}
-              </div>
+            {!selectedMethod ? (
+              <p className="font-Montserrat text-justify">
+                Cliquez sur les mots en surbrillance dans le texte pour accéder
+                à pleins d&apos;informations supplémentaires !
+              </p>
             ) : (
-              <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">
-                <KeywordHighlighter
-                  text={article.content}
-                  keywords={keywords}
-                  onKeywordClick={handleKeywordClick}
-                />
-              </div>
+              <div className="method-container">{renderMethodComponent()}</div>
             )}
-          </div>
-
-          <div className="relative w-[325px]">
-            <div className="fixed w-[325px] max-h-[80vh] bg-white h-fit border border-black rounded-xl px-4 py-8 overflow-y-auto">
-              <h3 className="text-center font-bold font-Montserrat uppercase text-2xl mb-4">
-                Méthode Expert
-              </h3>
-
-              {!selectedMethod ? (
-                <p className="font-Montserrat text-justify">
-                  Cliquez sur les mots en surbrillance dans le texte pour
-                  accéder à pleins d&apos;informations supplémentaires !
-                </p>
-              ) : (
-                <div className="method-container">
-                  {renderMethodComponent()}
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>

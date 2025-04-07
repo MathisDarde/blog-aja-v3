@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 
 interface Article {
-  article_id: number;
+  id_article: string;
   imageUrl: string;
   title: string;
   teaser: string;
@@ -45,10 +45,10 @@ export default function LastArticle() {
           </p>
         </div>
       ) : (
-        <Link href={`/articles/${article.article_id}`}>
+        <Link href={`/articles/${article.id_article}`}>
           <div
             className="bg-white rounded-xl text-center border border-stone-200 shadow-xl p-6"
-            key={article.article_id}
+            key={article.id_article}
           >
             <Image
               className="inline-block w-full h-auto mx-auto rounded-xl object-cover"

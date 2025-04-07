@@ -1,13 +1,17 @@
 "use server";
 
-import UsersController from "@/controllers/UsersController";
+import { deleteUser } from "@/controllers/UserController";
 
-const deleteAccount = async (id_user: number) => {
+const deleteAccount = async (id_user: string) => {
   try {
-    return await UsersController.destroy(id_user);
+    await deleteUser(id_user);
+    return { success: true, message: "Utilisateur supprimé avec succès." };
   } catch (error) {
-    console.error("Erreur lors de la récupération de l'utilisateur :", error);
-    return [];
+    console.error("Erreur lors de la suppression de l'utilisateur :", error);
+    return {
+      success: false,
+      message: "Erreur lors de la suppression du compte.",
+    };
   }
 };
 

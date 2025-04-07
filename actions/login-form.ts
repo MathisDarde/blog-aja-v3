@@ -1,10 +1,8 @@
 "use server";
 
 import { LoginSchema } from "@/app/schema";
-import AuthentificationController from "@/controllers/AuthentificationController";
+import { signIn } from "@/controllers/AuthentificationController";
 import { FormResponse, LoginSchemaType } from "@/types/forms";
-import { checkPassword } from "@/utils/bcrypt";
-import { generateToken } from "@/utils/jwt";
 
 const submitLoginForm = async (
   data: LoginSchemaType
@@ -16,27 +14,21 @@ const submitLoginForm = async (
       return { success: false, errors: parsedData.error.errors };
     }
 
-    const user = await AuthentificationController.login(parsedData.data.email);
-    if (!user) {
-      return { success: false, message: "Email ou mot de passe incorrect" };
+    try {
+      await signIn(parsedData.data);
+      return { success: true, message: "Connexion effectuée avec succès !" };
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message: "Quelque chose s'est mal passé, veuillez réessayer plus tard.",
+      };
     }
-
-    if (!(await checkPassword(parsedData.data.password, user.password))) {
-      return { success: false, message: "Email ou mot de passe incorrect" };
-    }
-
-    const token = generateToken(user.user_id, user.email);
-
-    return {
-      success: true,
-      message: "La connexion a été un succès !",
-      token: token,
-    };
   } catch (err) {
     console.log(err);
     return {
       success: false,
-      message: "Quelque chose s'est mal passé, veuillez réessayer plus tard.",
+      message: "Erreur lors de connexion",
     };
   }
 };

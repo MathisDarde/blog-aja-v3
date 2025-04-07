@@ -1,9 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import Sidebar from "@/components/Sidebar";
-import SidebarResp from "@/components/SidebarResp";
 
 interface Answer {
   text: string;
@@ -16,15 +13,22 @@ interface Question {
 }
 
 export default function Home() {
-  const [sidebarState, setSidebarState] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [showingQuestion, setShowingQuestion] = useState<boolean>(true);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
-  const toggleSidebar = () => {
-    setSidebarState((prevState) => (prevState === 0 ? 1 : 0));
-  };
+  useEffect(() => {
+    document.title = "Le Quiz - Mémoire d'Auxerrois";
+
+    if (!document.getElementById("favicon")) {
+      const link = document.createElement("link");
+      link.id = "favicon";
+      link.rel = "icon";
+      link.href = "/_assets/teamlogos/logoauxerre.svg";
+      document.head.appendChild(link);
+    }
+  }, []);
 
   const questions: Question[] = [
     {
@@ -161,82 +165,68 @@ export default function Home() {
 
   return (
     <div className="text-center bg-gray-100 h-screen w-screen box-border">
-      {sidebarState === 0 ? (
-        <SidebarResp onToggle={toggleSidebar} />
-      ) : (
-        <Sidebar onToggle={toggleSidebar} />
-      )}
+      <main className="bg-white p-6 mx-auto my-10 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center mb-6 font-Montserrat">
+          Quiz AJ Auxerre
+        </h2>
 
-      <div className="ml-24">
-        <div className="text-5xl text-center font-title italic uppercase font-bold text-aja-blue py-10 font-Bai_Jamjuree">
-          <Link href={"/"}>
-            <h2>Mémoire d&apos;Auxerrois</h2>
-          </Link>
-        </div>
-
-        <main className="bg-white p-6 mx-auto my-10 rounded-lg shadow-lg w-full max-w-md">
-          <h2 className="text-2xl font-bold text-center mb-6 font-Montserrat">
-            Quiz AJ Auxerre
-          </h2>
-
-          <div className="quiz-container">
-            {showingQuestion ? (
-              <>
-                <div className="question-container mb-6">
-                  <h2 className="text-lg font-medium mb-4 font-Montserrat">
-                    {currentQuestionIndex + 1}. {currentQuestion.question}
-                  </h2>
-                  <div className="flex flex-col gap-3">
-                    {currentQuestion.answers.map((answer, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleAnswerClick(answer.correct, index)}
-                        className={`p-3 border rounded-md text-left transition-colors font-Montserrat ${
-                          selectedAnswer === null
-                            ? "hover:bg-gray-100"
-                            : selectedAnswer === index
-                            ? answer.correct
-                              ? "bg-green-200 border-green-500"
-                              : "bg-red-200 border-red-500"
-                            : answer.correct && selectedAnswer !== null
-                            ? "bg-green-200 border-green-500"
-                            : "opacity-70"
-                        }`}
-                        disabled={selectedAnswer !== null}
-                      >
-                        {answer.text}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {selectedAnswer !== null && (
-                  <button
-                    onClick={handleNextButton}
-                    className="w-full p-3 bg-aja-blue border font-Montserrat text-white rounded-md transition-colors hover:bg-white hover:text-aja-blue hover: border-aja-blue"
-                  >
-                    {currentQuestionIndex + 1 < questions.length
-                      ? "Suivant"
-                      : "Voir le résultat"}
-                  </button>
-                )}
-              </>
-            ) : (
-              <div className="score-container text-center">
+        <div className="quiz-container">
+          {showingQuestion ? (
+            <>
+              <div className="question-container mb-6">
                 <h2 className="text-lg font-medium mb-4 font-Montserrat">
-                  Tu as réussi {score} questions sur {questions.length} !
+                  {currentQuestionIndex + 1}. {currentQuestion.question}
                 </h2>
-                <button
-                  onClick={startQuiz}
-                  className="w-full p-3 bg-aja-blue border font-Montserrat text-white rounded-md transition-colors hover:bg-white hover:text-aja-blue hover:border-aja-blue"
-                >
-                  Relancer le quiz
-                </button>
+                <div className="flex flex-col gap-3">
+                  {currentQuestion.answers.map((answer, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswerClick(answer.correct, index)}
+                      className={`p-3 border rounded-md text-left transition-colors font-Montserrat ${
+                        selectedAnswer === null
+                          ? "hover:bg-gray-100"
+                          : selectedAnswer === index
+                          ? answer.correct
+                            ? "bg-green-200 border-green-500"
+                            : "bg-red-200 border-red-500"
+                          : answer.correct && selectedAnswer !== null
+                          ? "bg-green-200 border-green-500"
+                          : "opacity-70"
+                      }`}
+                      disabled={selectedAnswer !== null}
+                    >
+                      {answer.text}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
-        </main>
-      </div>
+
+              {selectedAnswer !== null && (
+                <button
+                  onClick={handleNextButton}
+                  className="w-full p-3 bg-aja-blue border font-Montserrat text-white rounded-md transition-colors hover:bg-white hover:text-aja-blue hover: border-aja-blue"
+                >
+                  {currentQuestionIndex + 1 < questions.length
+                    ? "Suivant"
+                    : "Voir le résultat"}
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="score-container text-center">
+              <h2 className="text-lg font-medium mb-4 font-Montserrat">
+                Tu as réussi {score} questions sur {questions.length} !
+              </h2>
+              <button
+                onClick={startQuiz}
+                className="w-full p-3 bg-aja-blue border font-Montserrat text-white rounded-md transition-colors hover:bg-white hover:text-aja-blue hover:border-aja-blue"
+              >
+                Relancer le quiz
+              </button>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

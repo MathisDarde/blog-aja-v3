@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1743454095072,
+      "tag": "0000_abandoned_marrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1743708919170,
+      "tag": "0001_quiet_echo",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743710900498,
+      "tag": "0002_groovy_medusa",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1743712245487,
+      "tag": "0003_colossal_plazm",
+      "breakpoints": true
+    }
+  ]
+}

@@ -23,13 +23,13 @@ function Calendrier() {
   }, []);
 
   return (
-    <div className="w-8/12 bg-white h-56 my-3 mx-auto rounded-xl">
-      <h3 className="inline-block text-sm p-3 ml-6 mt-2 border border-gray-600 rounded-full font-bold">
-        Calendrier
+    <div className="w-8/12 bg-white h-56 mx-auto rounded-xl">
+      <h3 className="inline-block text-sm p-3 ml-6 mt-2 font-bold uppercase font-Montserrat">
+        Calendrier de l&apos;AJ Auxerre
       </h3>
       <div className="relative">
         <div
-          className="flex flex-row w-6/6 my-2 mx-6 overflow-x-auto whitespace-nowrap"
+          className="flex flex-row w-6/6 mx-6 overflow-x-auto whitespace-nowrap"
           id="matchs-container"
         >
           {matches.map((match: Match, index: number) => (

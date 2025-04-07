@@ -5,6 +5,13 @@ interface Team {
   idTeam: string;
   intRank: number;
   strTeam: string;
+  intPlayed: number;
+  intWin: number;
+  intDraw: number;
+  intLoss: number;
+  intGoalsFor: number;
+  intGoalsAgainst: number;
+  intGoalDifference: number;
   intPoints: number;
   strDescription: string;
 }
@@ -23,7 +30,7 @@ const getTeamClass = (description: string): string => {
 };
 
 function Classement() {
-  const [teams, setTeams] = useState([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,79 +61,141 @@ function Classement() {
 
   return (
     <>
-      <div className="px-4 py-1 h-auto">
-        {teams.map((team: Team) => (
-          <div
-            key={team.idTeam}
-            className={`border border-black w-full flex flex-row items-center h-10 mt-0.5 ${getTeamClass(
-              team.strDescription
-            )}`}
-          >
-            <p className="pl-2 font-semibold">{team.intRank}.</p>
-            <Image
-              src={`/_assets/teamlogos/logo${team.strTeam
-                .replace(/\s+/g, "")
-                .replace(/[^\w]/g, "")
-                .toLowerCase()}.svg`}
-              width={20}
-              height={20}
-              alt={`${team.strTeam} logo`}
-              className="h-5 w-5 object-contain mx-2 font-Montserrat "
-            />
-            <p className="px-1 font-Montserrat font-semibold">{team.strTeam}</p>
-            <p className="font-bold font-Montserrat pr-2 ml-auto">
-              {team.intPoints} pts
-            </p>
-          </div>
-        ))}
+      <div className="px-4 mt-10 h-auto w-[800px] overflow-x-auto mx-auto">
+        <table className="w-full table-fixed border-collapse">
+          <thead>
+            <tr className="bg-gray-200 text-black border border-black">
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center ">
+                Pos.
+              </th>
+              <th className="p-2 w-[200px] font-bold font-Montserrat border border-black text-left">
+                Équipe
+              </th>
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center">
+                J
+              </th>
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center">
+                G
+              </th>
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center">
+                N
+              </th>
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center">
+                P
+              </th>
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center">
+                BP
+              </th>
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center">
+                BC
+              </th>
+              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center">
+                Diff
+              </th>
+              <th className="p-2 w-[65px] font-bold font-Montserrat border border-black text-center">
+                Pts
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {teams.map((team: Team) => (
+              <tr
+                key={team.idTeam}
+                className={`border border-black ${getTeamClass(
+                  team.strDescription
+                )}`}
+              >
+                <td className="w-[25px] text-center p-2 font-Montserrat font-semibold border border-black">
+                  {team.intRank}.
+                </td>
+                <td className="w-[200px] border border-black text-left p-2">
+                  <div className="flex gap-2 font-Montserrat justify-left items-center font-semibold">
+                    <Image
+                      src={`/_assets/teamlogos/logo${team.strTeam
+                        .replace(/\s+/g, "")
+                        .replace(/[^\w]/g, "")
+                        .toLowerCase()}.svg`}
+                      width={20}
+                      height={20}
+                      alt={`${team.strTeam} logo`}
+                      className="h-5 w-5 object-contain font-Montserrat"
+                    />
+
+                    {team.strTeam}
+                  </div>
+                </td>
+                <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                  {team.intPlayed}
+                </td>
+                <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                  {team.intWin}
+                </td>
+                <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                  {team.intDraw}
+                </td>
+                <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                  {team.intLoss}
+                </td>
+                <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                  {team.intGoalsFor}
+                </td>
+                <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                  {team.intGoalsAgainst}
+                </td>
+                {team.intGoalDifference > 0 ? (
+                  <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                    +{team.intGoalDifference}
+                  </td>
+                ) : (
+                  <td className="px-1 font-Montserrat font-semibold border border-black text-center">
+                    {team.intGoalDifference}
+                  </td>
+                )}
+                <td className="font-bold font-Montserrat border border-black text-center">
+                  {team.intPoints} pts
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      <div className="m-2">
-        <div className=" flex items-center">
-          <div
-            className={`h-3 w-3 rounded-full bg-blue-200 my-0.5 mx-2 border border-black`}
-          ></div>
-          <p className="font-Montserrat text-xs">
-            : Qualification en Ligue des Champions
-          </p>
-        </div>
-        <div className=" flex items-center">
-          <div
-            className={`h-3 w-3 rounded-full bg-blue-100 my-0.5 mx-2 border border-black`}
-          ></div>
-          <p className="font-Montserrat text-xs">
-            : Barrages de Ligue des Champions
-          </p>
-        </div>
-        <div className=" flex items-center">
-          <div
-            className={`h-3 w-3 rounded-full bg-green-100 my-0.5 mx-2 border border-black`}
-          ></div>
-          <p className="font-Montserrat text-xs">
-            : Qualification en Ligue Europa
-          </p>
-        </div>
-        <div className=" flex items-center">
-          <div
-            className={`h-3 w-3 rounded-full bg-yellow-100 my-0.5 mx-2 border border-black`}
-          ></div>
-          <p className="font-Montserrat text-xs">
-            : Barrages de Ligue Conference
-          </p>
-        </div>
-        <div className=" flex items-center">
-          <div
-            className={`h-3 w-3 rounded-full bg-red-100 my-0.5 mx-2 border border-black`}
-          ></div>
-          <p className="font-Montserrat text-xs">
-            : Barrages de relégation en Ligue 2
-          </p>
-        </div>
-        <div className=" flex items-center">
-          <div
-            className={`h-3 w-3 rounded-full bg-red-300 my-0.5 mx-2 border border-black`}
-          ></div>
-          <p className="font-Montserrat text-xs">: Relégation en Ligue 2</p>
+      <div className="w-[800px] mx-auto mt-4">
+        <div className="m-2  mr-auto">
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full bg-blue-200 my-0.5 mx-2 border border-black"></div>
+            <p className="font-Montserrat text-sm">
+              : Qualification en Ligue des Champions
+            </p>
+          </div>
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full bg-blue-100 my-0.5 mx-2 border border-black"></div>
+            <p className="font-Montserrat text-sm">
+              : Barrages de Ligue des Champions
+            </p>
+          </div>
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full bg-green-100 my-0.5 mx-2 border border-black"></div>
+            <p className="font-Montserrat text-sm">
+              : Qualification en Ligue Europa
+            </p>
+          </div>
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full bg-yellow-100 my-0.5 mx-2 border border-black"></div>
+            <p className="font-Montserrat text-sm">
+              : Barrages de Ligue Conference
+            </p>
+          </div>
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full bg-red-100 my-0.5 mx-2 border border-black"></div>
+            <p className="font-Montserrat text-sm">
+              : Barrages de relégation en Ligue 2
+            </p>
+          </div>
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full bg-red-300 my-0.5 mx-2 border border-black"></div>
+            <p className="font-Montserrat text-sm">: Relégation en Ligue 2</p>
+          </div>
         </div>
       </div>
     </>

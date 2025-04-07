@@ -873,34 +873,143 @@
     "typemethode": "saison",
     "saison": "2009-2010",
     "imgterrain": "/_assets/terrains/demiterrain.png",
-    "joueursterrain": [
-      [16, "Léon"],
-      [2, "Arcus"],
-      [4, "Jubal"],
-      [20, "Coeff"],
-      [3, "Bernard"],
-      [12, "Touré"],
-      [22, "Sakhi"],
-      [29, "Autret"],
-      [21, "Dugimont"],
-      [8, "Le Bihan"],
-      [7, "Hein"]
-    ],
-    "coach": "Jean-Marc Furlan",
-    "systeme": "4-3-3 Défensif",
+    "coach": "Jean Fernandez",
+    "systeme": "4-2-4",
     "remplacants": [
-      ["G", "Sonny Laiton", "/_assets/flags/drapeaumadagascar.svg"],
-      ["DEF", "Kenji Van-Boto", "/_assets/flags/drapeaumadagascar.svg"],
-      ["DEF", "Alec Georgen", "/_assets/flags/drapeaufrance.svg"],
-      ["DEF", "Gauthier Lloris", "/_assets/flags/drapeaufrance.svg"],
-      ["DEF", "Samuel Souprayen", "/_assets/flags/drapeaufrance.svg"],
-      ["MIL", "Aly Ndom", "/_assets/flags/drapeaufrance.svg"],
-      ["MIL", "Ousoumane Camara", "/_assets/flags/drapeaufrance.svg"],
-      ["MIL", "Kevin Fortuné", "/_assets/flags/drapeaumartinique.svg"],
-      ["MIL", "François Bellugou", "/_assets/flags/drapeaufrance.svg"],
-      ["MIL", "Axel Ngando", "/_assets/flags/drapeaufrance.svg"],
-      ["ATT", "Lassine Sinayoko", "/_assets/flags/drapeaumali.svg"],
-      ["ATT", "Yanis Begraoui", "/_assets/flags/drapeaufrance.svg"]
+      ["G", "Rémy Riou", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Dariusz Dudka", "/_assets/flags/drapeaupologne.svg"],
+      ["DEF", "Jean-Pascal Mignot", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Jérémy Berthod", "/_assets/flags/drapeaufrance.svg"],
+      ["DEF", "Robert Popov", "/_assets/flags/drapeaumacedoine.svg"],
+      ["MIL", "Moussa Narry", "/_assets/flags/drapeaughana.svg"],
+      ["MIL", "Kamel Chafni", "/_assets/flags/drapeaumaroc.svg"],
+      ["MIL", "Issa Ba", "/_assets/flags/drapeausenegal.svg"],
+      ["MIL", "Amadou Sidibe", "/_assets/flags/drapeaumali.svg"],
+      ["MIL", "Alain Traoré", "/_assets/flags/drapeauburkinafaso.svg"],
+      ["ATT", "Alexandre Licata", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Julien Quercia", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Kevin Lejeune", "/_assets/flags/drapeaufrance.svg"],
+      ["ATT", "Roy Contout", "/_assets/flags/drapeaufrance.svg"]
     ]
+  },
+  {
+    "id": 16,
+    "keyword": ["Cédric Hengbart", "Hengbart"],
+    "typemethode": "joueur",
+    "imagejoueur": "/_assets/methodeexpertpp/cedrichengbart.webp",
+    "joueurnom": "Cédric Hengbart",
+    "poste": "Arrière droit",
+    "taille": "1m83",
+    "piedfort": "Droit",
+    "clubs": [
+      [
+        "/_assets/teamlogos/logousonmondeville.png",
+        "USON Mondeville",
+        "(1997-2001)"
+      ],
+      ["/_assets/teamlogos/logocaen.svg", "SM Caen", "(2001-2008)"],
+      ["/_assets/teamlogos/logoauxerre.svg", "AJ Auxerre", "(2008-2013)"],
+      ["/_assets/teamlogos/logoajaccio.svg", "AC Ajaccio", "(2013-2014)"],
+      [
+        "/_assets/teamlogos/logokeralablasters.svg",
+        "Kerala Blasters",
+        "(2014-2015)"
+      ],
+      [
+        "/_assets/teamlogos/logousonmondeville.png",
+        "USON Mondeville",
+        "(2015)"
+      ],
+      [
+        "/_assets/teamlogos/logonortheastufc.svg",
+        "NorthEast UFC",
+        "(2015-2016)"
+      ],
+      [
+        "/_assets/teamlogos/logokeralablasters.svg",
+        "Kerala Blasters",
+        "(2016)"
+      ],
+      ["/_assets/teamlogos/logomostafc.png", "Mosta FC", "(2017)"]
+    ],
+    "matchs": 525,
+    "buts": 29,
+    "passesd": "Nombre inconnu de"
+  },
+  {
+    "id": 17,
+    "keyword": ["Jean Fernandez", "Fernandez"],
+    "typemethode": "coach",
+    "imagecoach": "/_assets/methodeexpertpp/jeanfernandez.jpg",
+    "nomcoach": "Jean Fernandez",
+    "clubscoach": [
+      ["/_assets/teamlogos/logocannes.svg", "AS Cannes", "(1985-1990)"],
+      ["/_assets/teamlogos/logonice.svg", "OGC Nice", "(1990)"],
+      [
+        "/_assets/teamlogos/logomarseille.svg",
+        "Olympique de Marseille",
+        "(1992)"
+      ],
+      ["/_assets/teamlogos/logoalnassr.svg", "Al-Nassr", "(1993-1994)"],
+      ["/_assets/teamlogos/logolille.svg", "LOSC Lille", "(1994-1995)"],
+      ["/_assets/teamlogos/logoalnassr.svg", "Al-Nassr", "(1995-1996)"],
+      ["/_assets/teamlogos/logoalshabab.png", "Al-Shabab FC", "(1996-1997)"],
+      ["/_assets/teamlogos/logoalwehda.png", "Al-Wehda FC", "(1997)"],
+      ["/_assets/teamlogos/logoalnassr.svg", "Al-Nassr", "(1998)"],
+      [
+        "/_assets/teamlogos/logoetoiledusahel.svg",
+        "Etoile du Sahel",
+        "(1998-1999)"
+      ],
+      [
+        "/_assets/teamlogos/logosochaux.svg",
+        "FC Sochaux-Montbéliard",
+        "(1999-2002)"
+      ],
+      ["/_assets/teamlogos/logometz.svg", "FC Metz", "(2002-2005)"],
+      [
+        "/_assets/teamlogos/logomarseille.svg",
+        "Olympique de Marseille",
+        "(2005-2006)"
+      ],
+      ["/_assets/teamlogos/logoauxerre.svg", "AJ Auxerre", "(2006-2011)"],
+      ["/_assets/teamlogos/logonancy.svg", "AS Nancy-Lorraine", "(2011-2013)"],
+      ["/_assets/teamlogos/logomontpellier.svg", "Montpellier HSC", "(2013)"],
+      ["/_assets/teamlogos/logoalkhor.svg", "Al-Khor SC", "(2015-2017)"],
+      ["/_assets/teamlogos/logoalgharafa.png", "Al-Gharafa SC", "(2017)"]
+    ],
+    "palmares": [["Meilleur entraîneur de la saison (3)"]],
+    "statistiques": "964 matchs (355v - 281n - 328d)"
+  },
+  {
+    "id": 18,
+    "keyword": ["Benoît Pedretti", "Pedretti", "Benoit Pedretti"],
+    "typemethode": "joueur",
+    "imagejoueur": "/_assets/methodeexpertpp/benoitpedretti.webp",
+    "joueurnom": "Benoît Pedretti",
+    "poste": "Milieu défensif",
+    "taille": "1m78",
+    "piedfort": "Droit",
+    "clubs": [
+      [
+        "/_assets/teamlogos/logosochaux.svg",
+        "FC Sochaux-Montbéliard",
+        "(1999-2004)"
+      ],
+      [
+        "/_assets/teamlogos/logomarseille.svg",
+        "Olympique de Marseille",
+        "(2004-2005)"
+      ],
+      ["/_assets/teamlogos/logolyon.svg", "Olympique Lyonnais", "(2005-2006)"],
+      ["/_assets/teamlogos/logoauxerre.svg", "AJ Auxerre", "(2006-2011)"],
+
+      ["/_assets/teamlogos/logolille.svg", "LOSC Lille", "(2011-2013)"],
+      ["/_assets/teamlogos/logoajaccio.svg", "AC Ajaccio", "(2013-2015)"],
+      ["/_assets/teamlogos/logonancy.svg", "AS Nancy-Lorraine", "(2015-2018)"]
+    ],
+    "matchs": 514,
+    "buts": 52,
+    "passesd": 66
   }
 ]

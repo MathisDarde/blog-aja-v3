@@ -2,24 +2,24 @@
 
 import Link from "next/link";
 import LoginForm from "./_components/LoginForm";
-import SidebarResp from "@/components/SidebarResp";
-import Sidebar from "@/components/Sidebar";
-import { useState } from "react";
+import { useEffect } from "react";
 
 export default function Login() {
-  const [sidebarState, setSidebarState] = useState(0);
+  useEffect(() => {
+    document.title = "Je me connecte - Mémoire d'Auxerrois";
 
-  const toggleSidebar = () => {
-    setSidebarState((prevState) => (prevState === 0 ? 1 : 0));
-  };
+    if (!document.getElementById("favicon")) {
+      const link = document.createElement("link");
+      link.id = "favicon";
+      link.rel = "icon";
+      link.href = "/_assets/teamlogos/logoauxerre.svg";
+      document.head.appendChild(link);
+    }
+  }, []);
+
   return (
     <>
       <div className="text-center bg-gray-100 h-screen flex flex-col justify-start items-center">
-        {sidebarState === 0 ? (
-          <SidebarResp onToggle={toggleSidebar} />
-        ) : (
-          <Sidebar onToggle={toggleSidebar} />
-        )}
         <h2 className="font-bold text-4xl font-Montserrat uppercase mb-4 mt-10">
           Connectez-vous
         </h2>
