@@ -16,20 +16,30 @@ import {
   ChartBarBig,
   Clock4,
   ArrowLeftRight,
+  Loader2,
+  FileQuestion,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { getFlags } from "@/actions/get-flags-files";
+import Image from "next/image";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;
+
+const IMAGE_PATHS = {
+  clubs: "/_assets/teamlogos/",
+  drapeaux: "/_assets/flags/",
+};
 
 export default function SaisonForm() {
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<MethodeSaisonSchemaType>({
     resolver: zodResolver(MethodeSaisonSchema),
@@ -43,6 +53,12 @@ export default function SaisonForm() {
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [modal, setModal] = useState(false);
+  const [fileList, setFileList] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activeFlagIndex, setActiveFlagIndex] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const {
     fields: keywordsfield,
     append: appendkeywords,
@@ -60,6 +76,38 @@ export default function SaisonForm() {
     name: "remplacants",
   });
 
+  const fetchFiles = async () => {
+    setLoading(true);
+    try {
+      const result = await getFlags();
+
+      if (result.success) {
+        setFileList(result.files);
+      } else {
+        toast.error(result.message || "Erreur lors du chargement des fichiers");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error("Impossible de charger la liste des fichiers");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openModal = (index: number) => {
+    setActiveFlagIndex(index);
+    setModal(true);
+    fetchFiles();
+  };
+
+  // Sélectionner un fichier et le mettre dans le champ correspondant
+  const selectFile = (filename: string) => {
+    if (activeFlagIndex !== null) {
+      setValue(`remplacants.${activeFlagIndex}.1`, filename);
+      setModal(false);
+    }
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
@@ -68,16 +116,44 @@ export default function SaisonForm() {
     }
   };
 
+  // Fonction pour compléter automatiquement les chemins d'images
+  const processImagePaths = (
+    data: MethodeSaisonSchemaType
+  ): MethodeSaisonSchemaType => {
+    // Crée une copie profonde des données pour éviter de modifier l'original
+    const processedData = JSON.parse(
+      JSON.stringify(data)
+    ) as MethodeSaisonSchemaType;
+
+    // Traitement des logos de clubs
+    if (processedData.remplacants) {
+      processedData.remplacants = processedData.remplacants.map((remp) => {
+        if (
+          remp[0] &&
+          !remp[0].startsWith("http") &&
+          !remp[0].startsWith("/")
+        ) {
+          remp[0] = `${IMAGE_PATHS.drapeaux}${remp[0]}`;
+        }
+        return remp;
+      });
+    }
+
+    return processedData;
+  };
+
   const handleSubmitForm = async (data: MethodeSaisonSchemaType) => {
     if (!selectedFile) {
       toast.error("Veuillez sélectionner une image !");
       return;
     }
 
+    const processedData = processImagePaths(data);
+
     const formData = new FormData();
     formData.append("image", selectedFile);
 
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(processedData).forEach(([key, value]) => {
       formData.append(
         key,
         Array.isArray(value) ? JSON.stringify(value) : value
@@ -85,7 +161,7 @@ export default function SaisonForm() {
     });
 
     const response = await submitMethodeSaisonForm(
-      data,
+      processedData,
       selectedFile,
       id || ""
     );
@@ -103,6 +179,10 @@ export default function SaisonForm() {
     }
   };
 
+  const filteredFiles = fileList.filter((file) =>
+    file.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     Object.values(errors).forEach((error) => {
       if (error && "message" in error) {
@@ -116,6 +196,64 @@ export default function SaisonForm() {
 
   return (
     <div className="w[600px] mx-auto">
+      {modal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white font-Montserrat rounded-lg p-6 w-[500px] max-h-[80vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Sélection d&apos;un drapeau</h3>
+              <button
+                onClick={() => setModal(false)}
+                className="text-gray-500 hover:text-red-500"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Rechercher un logo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center items-center h-40">
+                <Loader2 className="animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {filteredFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="border rounded p-2 cursor-pointer hover:bg-gray-100 flex flex-col items-center"
+                    onClick={() => selectFile(file)}
+                  >
+                    <Image
+                      width={100}
+                      height={100}
+                      src={`${IMAGE_PATHS.drapeaux}${file}`}
+                      alt={file}
+                      className="h-12 object-contain mb-2"
+                    />
+                    <span className="text-xs text-center truncate w-full">
+                      {file.split(".")[0]}
+                    </span>
+                  </div>
+                ))}
+                {filteredFiles.length === 0 && (
+                  <div className="col-span-3 text-center py-4 text-gray-500">
+                    Aucun fichier trouvé
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <form
         method="POST"
         id="methodesaisonform"
@@ -222,19 +360,28 @@ export default function SaisonForm() {
                 type="text"
                 {...register(`remplacants.${index}.0`)}
                 placeholder="Nom (ex: Gaëtan Perrin)"
-                className="py-2 px-4 border rounded"
+                className="py-2 px-4 border rounded w-2/5"
               />
-              <input
-                type="text"
-                {...register(`remplacants.${index}.1`)}
-                placeholder="URL du drapeau (/_assets/flags/...)"
-                className="py-2 px-4 border rounded"
-              />
+              <div className="relative w-2/5 flex">
+                <input
+                  type="text"
+                  {...register(`remplacants.${index}.1`)}
+                  placeholder="Drapeau (ex: france)"
+                  className="py-2 px-4 border rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => openModal(index)}
+                  className="ml-1 text-aja-blue"
+                >
+                  <FileQuestion size={20} />
+                </button>
+              </div>
               <input
                 type="text"
                 {...register(`remplacants.${index}.2`)}
                 placeholder="Poste (ex: G ou Gardien)"
-                className="py-2 px-4 border rounded w-[125px]"
+                className="py-2 px-4 border rounded w-1/5"
               />
               <button
                 type="button"

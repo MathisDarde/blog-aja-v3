@@ -19,15 +19,24 @@ import {
   Dumbbell,
   Clock,
   FolderPen,
+  Loader2,
+  FileQuestion,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import Section from "./DropdownContainerDomExt";
+import { getFlags } from "@/actions/get-flags-files";
+import Image from "next/image";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;
+
+const IMAGE_PATHS = {
+  clubs: "/_assets/teamlogos/",
+  drapeaux: "/_assets/flags/",
+};
 
 export default function MatchForm() {
   const {
@@ -58,6 +67,12 @@ export default function MatchForm() {
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [modal, setModal] = useState<
+    false | { team: "equipe1" | "equipe2"; index: number }
+  >(false);
+  const [fileList, setFileList] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     fields: keywordsfield,
@@ -86,6 +101,46 @@ export default function MatchForm() {
     name: "remplacantsequipe2",
   });
 
+  const fetchFiles = async () => {
+    setLoading(true);
+    try {
+      const result = await getFlags();
+
+      if (result.success) {
+        setFileList(result.files);
+      } else {
+        toast.error(result.message || "Erreur lors du chargement des fichiers");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error("Impossible de charger la liste des fichiers");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openModalTeam1 = (index: number) => {
+    setModal({ team: "equipe1", index });
+    fetchFiles();
+  };
+
+  const openModalTeam2 = (index: number) => {
+    setModal({ team: "equipe2", index });
+    fetchFiles();
+  };
+
+  // Modifiez la fonction selectFile pour utiliser l'information de l'équipe
+  const selectFile = (filename: string) => {
+    if (modal && typeof modal !== "boolean") {
+      if (modal.team === "equipe1") {
+        setValue(`remplacantsequipe1.${modal.index}.1`, filename);
+      } else {
+        setValue(`remplacantsequipe2.${modal.index}.1`, filename);
+      }
+      setModal(false);
+    }
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
@@ -94,23 +149,73 @@ export default function MatchForm() {
     }
   };
 
+  // Modifiez la fonction processImagePaths pour traiter correctement les deux équipes
+  const processImagePaths = (
+    data: MethodeMatchSchemaType
+  ): MethodeMatchSchemaType => {
+    // Crée une copie profonde des données pour éviter de modifier l'original
+    const processedData = JSON.parse(
+      JSON.stringify(data)
+    ) as MethodeMatchSchemaType;
+
+    // Traitement des logos pour l'équipe 1
+    if (processedData.remplacantsequipe1) {
+      processedData.remplacantsequipe1 = processedData.remplacantsequipe1.map(
+        (remp1) => {
+          if (
+            remp1[0] &&
+            !remp1[0].startsWith("http") &&
+            !remp1[0].startsWith("/")
+          ) {
+            remp1[0] = `${IMAGE_PATHS.drapeaux}${remp1[0]}`;
+          }
+          return remp1;
+        }
+      );
+    }
+
+    // Traitement des logos pour l'équipe 2
+    if (processedData.remplacantsequipe2) {
+      processedData.remplacantsequipe2 = processedData.remplacantsequipe2.map(
+        (remp2) => {
+          if (
+            remp2[0] &&
+            !remp2[0].startsWith("http") &&
+            !remp2[0].startsWith("/")
+          ) {
+            remp2[0] = `${IMAGE_PATHS.drapeaux}${remp2[0]}`;
+          }
+          return remp2;
+        }
+      );
+    }
+
+    return processedData;
+  };
+
   const handleSubmitForm = async (data: MethodeMatchSchemaType) => {
     if (!selectedFile) {
       toast.error("Veuillez sélectionner une image !");
       return;
     }
 
+    const processedData = processImagePaths(data);
+
     const formData = new FormData();
     formData.append("image", selectedFile);
 
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(processedData).forEach(([key, value]) => {
       formData.append(
         key,
         Array.isArray(value) ? JSON.stringify(value) : value
       );
     });
 
-    const response = await submitMethodeMatchForm(data, selectedFile, id || "");
+    const response = await submitMethodeMatchForm(
+      processedData,
+      selectedFile,
+      id || ""
+    );
 
     if (response.success) {
       redirect("/");
@@ -154,6 +259,10 @@ export default function MatchForm() {
     }
   };
 
+  const filteredFiles = fileList.filter((file) =>
+    file.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     Object.values(errors).forEach((error) => {
       if (error && "message" in error) {
@@ -167,6 +276,64 @@ export default function MatchForm() {
 
   return (
     <div className="w-[750px] ">
+      {modal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white font-Montserrat rounded-lg p-6 w-[500px] max-h-[80vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Sélection d&apos;un drapeau</h3>
+              <button
+                onClick={() => setModal(false)}
+                className="text-gray-500 hover:text-red-500"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Rechercher un drapeau..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center items-center h-40">
+                <Loader2 className="animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {filteredFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="border rounded p-2 cursor-pointer hover:bg-gray-100 flex flex-col items-center"
+                    onClick={() => selectFile(file)}
+                  >
+                    <Image
+                      width={100}
+                      height={100}
+                      src={`${IMAGE_PATHS.drapeaux}${file}`}
+                      alt={file}
+                      className="h-12 object-contain mb-2"
+                    />
+                    <span className="text-xs text-center truncate w-full">
+                      {file.split(".")[0]}
+                    </span>
+                  </div>
+                ))}
+                {filteredFiles.length === 0 && (
+                  <div className="col-span-3 text-center py-4 text-gray-500">
+                    Aucun fichier trouvé
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <form
         method="POST"
         id="methodesaisonform"
@@ -351,12 +518,21 @@ export default function MatchForm() {
                     placeholder="Nom (ex: Gaëtan Perrin)"
                     className="py-2 px-4 border rounded w-2/5"
                   />
-                  <input
-                    type="text"
-                    {...register(`remplacantsequipe1.${index}.1`)}
-                    placeholder="Nom du pays (ex: france)"
-                    className="py-2 px-4 border rounded w-2/5"
-                  />
+                  <div className="relative w-2/5 flex">
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe1.${index}.1`)}
+                      placeholder="Drapeau (ex: france)"
+                      className="py-2 px-4 border rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openModalTeam1(index)}
+                      className="ml-1 text-aja-blue"
+                    >
+                      <FileQuestion size={20} />
+                    </button>
+                  </div>
                   <input
                     type="text"
                     {...register(`remplacantsequipe1.${index}.2`)}
@@ -476,12 +652,21 @@ export default function MatchForm() {
                     placeholder="Nom (ex: Gaëtan Perrin)"
                     className="py-2 px-4 border rounded w-2/5"
                   />
-                  <input
-                    type="text"
-                    {...register(`remplacantsequipe2.${index}.1`)}
-                    placeholder="Nom du pays (ex: france)"
-                    className="py-2 px-4 border rounded w-2/5"
-                  />
+                  <div className="relative w-2/5 flex">
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe2.${index}.1`)}
+                      placeholder="Drapeau (ex: france)"
+                      className="py-2 px-4 border rounded "
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openModalTeam2(index)}
+                      className="ml-1 text-aja-blue"
+                    >
+                      <FileQuestion size={20} />
+                    </button>
+                  </div>
                   <input
                     type="text"
                     {...register(`remplacantsequipe2.${index}.2`)}

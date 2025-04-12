@@ -1,5 +1,6 @@
 "use client";
 
+import { getTeamLogos } from "@/actions/get-logos-files";
 import submitMethodeCoachForm from "@/actions/methode-coach-form";
 import { MethodeCoachSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
@@ -16,7 +17,10 @@ import {
   ShieldHalf,
   Trophy,
   ChartBarIncreasing,
+  FileQuestion,
+  Loader2,
 } from "lucide-react";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -25,11 +29,17 @@ import { toast } from "sonner";
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;
 
+const IMAGE_PATHS = {
+  clubs: "/_assets/teamlogos/",
+  drapeaux: "/_assets/flags/",
+};
+
 export default function CoachForm() {
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<MethodeCoachSchemaType>({
     resolver: zodResolver(MethodeCoachSchema),
@@ -43,6 +53,11 @@ export default function CoachForm() {
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [modal, setModal] = useState(false);
+  const [fileList, setFileList] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     fields: keywordsfield,
@@ -69,6 +84,38 @@ export default function CoachForm() {
     name: "palmares",
   });
 
+  const fetchFiles = async () => {
+    setLoading(true);
+    try {
+      const result = await getTeamLogos();
+
+      if (result.success) {
+        setFileList(result.files);
+      } else {
+        toast.error(result.message || "Erreur lors du chargement des fichiers");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error("Impossible de charger la liste des fichiers");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openModal = (index: number) => {
+    setActiveClubIndex(index);
+    setModal(true);
+    fetchFiles();
+  };
+
+  // Sélectionner un fichier et le mettre dans le champ correspondant
+  const selectFile = (filename: string) => {
+    if (activeClubIndex !== null) {
+      setValue(`clubscoach.${activeClubIndex}.0`, filename);
+      setModal(false);
+    }
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
@@ -77,23 +124,56 @@ export default function CoachForm() {
     }
   };
 
+  // Fonction pour compléter automatiquement les chemins d'images
+  const processImagePaths = (
+    data: MethodeCoachSchemaType
+  ): MethodeCoachSchemaType => {
+    // Crée une copie profonde des données pour éviter de modifier l'original
+    const processedData = JSON.parse(
+      JSON.stringify(data)
+    ) as MethodeCoachSchemaType;
+
+    // Traitement des logos de clubs
+    if (processedData.clubscoach) {
+      processedData.clubscoach = processedData.clubscoach.map((club) => {
+        if (
+          club[0] &&
+          !club[0].startsWith("http") &&
+          !club[0].startsWith("/")
+        ) {
+          club[0] = `${IMAGE_PATHS.clubs}${club[0]}`;
+        }
+        return club;
+      });
+    }
+
+    return processedData;
+  };
+
   const handleSubmitForm = async (data: MethodeCoachSchemaType) => {
     if (!selectedFile) {
       toast.error("Veuillez sélectionner une image !");
       return;
     }
 
+    // Traiter les chemins d'images avant l'envoi
+    const processedData = processImagePaths(data);
+
     const formData = new FormData();
     formData.append("image", selectedFile);
 
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(processedData).forEach(([key, value]) => {
       formData.append(
         key,
         Array.isArray(value) ? JSON.stringify(value) : value
       );
     });
 
-    const response = await submitMethodeCoachForm(data, selectedFile, id || "");
+    const response = await submitMethodeCoachForm(
+      processedData,
+      selectedFile,
+      id || ""
+    );
 
     if (response.success) {
       redirect("/");
@@ -108,6 +188,10 @@ export default function CoachForm() {
     }
   };
 
+  const filteredFiles = fileList.filter((file) =>
+    file.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     Object.values(errors).forEach((error) => {
       if (error && "message" in error) {
@@ -121,6 +205,66 @@ export default function CoachForm() {
 
   return (
     <div className="w[600px] mx-auto">
+      {modal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white font-Montserrat rounded-lg p-6 w-[500px] max-h-[80vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">
+                Sélection d&apos;un logo de club
+              </h3>
+              <button
+                onClick={() => setModal(false)}
+                className="text-gray-500 hover:text-red-500"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Rechercher un logo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center items-center h-40">
+                <Loader2 className="animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {filteredFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="border rounded p-2 cursor-pointer hover:bg-gray-100 flex flex-col items-center"
+                    onClick={() => selectFile(file)}
+                  >
+                    <Image
+                      width={100}
+                      height={100}
+                      src={`${IMAGE_PATHS.clubs}${file}`}
+                      alt={file}
+                      className="h-12 object-contain mb-2"
+                    />
+                    <span className="text-xs text-center truncate w-full">
+                      {file.split(".")[0]}
+                    </span>
+                  </div>
+                ))}
+                {filteredFiles.length === 0 && (
+                  <div className="col-span-3 text-center py-4 text-gray-500">
+                    Aucun fichier trouvé
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <form
         method="POST"
         id="methodesaisonform"
@@ -197,12 +341,21 @@ export default function CoachForm() {
 
           {clubsfield.map((field, index) => (
             <div key={field.id} className="flex gap-2 mb-2 w-full">
-              <input
-                type="text"
-                {...register(`clubscoach.${index}.0`)}
-                placeholder="Logo (ex: logoajauxerre)"
-                className="py-2 px-4 border rounded w-1/3"
-              />
+              <div className="relative w-1/3 flex">
+                <input
+                  type="text"
+                  {...register(`clubscoach.${index}.0`)}
+                  placeholder="Logo (ex: auxerre)"
+                  className="py-2 px-4 border rounded w-full"
+                />
+                <button
+                  type="button"
+                  onClick={() => openModal(index)}
+                  className="ml-1 text-aja-blue"
+                >
+                  <FileQuestion size={20} />
+                </button>
+              </div>
               <input
                 type="text"
                 {...register(`clubscoach.${index}.1`)}
