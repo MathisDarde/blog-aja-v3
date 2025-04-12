@@ -21,6 +21,8 @@ import {
   FolderPen,
   Loader2,
   FileQuestion,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -73,6 +75,13 @@ export default function MatchForm() {
   const [fileList, setFileList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedIndices, setExpandedIndices] = useState<{
+    equipe1: number[];
+    equipe2: number[];
+  }>({
+    equipe1: [],
+    equipe2: [],
+  });
 
   const {
     fields: keywordsfield,
@@ -163,11 +172,11 @@ export default function MatchForm() {
       processedData.remplacantsequipe1 = processedData.remplacantsequipe1.map(
         (remp1) => {
           if (
-            remp1[0] &&
-            !remp1[0].startsWith("http") &&
-            !remp1[0].startsWith("/")
+            remp1[1] &&
+            !remp1[1].startsWith("http") &&
+            !remp1[1].startsWith("/")
           ) {
-            remp1[0] = `${IMAGE_PATHS.drapeaux}${remp1[0]}`;
+            remp1[1] = `${IMAGE_PATHS.drapeaux}${remp1[1]}`;
           }
           return remp1;
         }
@@ -179,11 +188,11 @@ export default function MatchForm() {
       processedData.remplacantsequipe2 = processedData.remplacantsequipe2.map(
         (remp2) => {
           if (
-            remp2[0] &&
-            !remp2[0].startsWith("http") &&
-            !remp2[0].startsWith("/")
+            remp2[1] &&
+            !remp2[1].startsWith("http") &&
+            !remp2[1].startsWith("/")
           ) {
-            remp2[0] = `${IMAGE_PATHS.drapeaux}${remp2[0]}`;
+            remp2[1] = `${IMAGE_PATHS.drapeaux}${remp2[1]}`;
           }
           return remp2;
         }
@@ -191,6 +200,24 @@ export default function MatchForm() {
     }
 
     return processedData;
+  };
+
+  const toggleExpand = (team: "equipe1" | "equipe2", index: number) => {
+    setExpandedIndices((prev) => {
+      const teamIndices = [...prev[team]];
+      const currentIndex = teamIndices.indexOf(index);
+
+      if (currentIndex === -1) {
+        teamIndices.push(index);
+      } else {
+        teamIndices.splice(currentIndex, 1);
+      }
+
+      return {
+        ...prev,
+        [team]: teamIndices,
+      };
+    });
   };
 
   const handleSubmitForm = async (data: MethodeMatchSchemaType) => {
@@ -509,9 +536,18 @@ export default function MatchForm() {
               Remplaçants de l&apos;équipe à domicile :
             </span>
 
-            {remplacantseq1field.map((field, index) => {
-              return (
-                <div key={field.id} className="flex gap-2 mb-2 w-full">
+            {remplacantseq1field.map((field, index) => (
+              <React.Fragment key={field.id}>
+                <div className="flex items-center gap-2 mb-2 w-full">
+                  {expandedIndices.equipe1.includes(index) ? (
+                    <ChevronDown
+                      onClick={() => toggleExpand("equipe1", index)}
+                    />
+                  ) : (
+                    <ChevronRight
+                      onClick={() => toggleExpand("equipe1", index)}
+                    />
+                  )}
                   <input
                     type="text"
                     {...register(`remplacantsequipe1.${index}.0`)}
@@ -547,8 +583,26 @@ export default function MatchForm() {
                     <Trash size={18} />
                   </button>
                 </div>
-              );
-            })}
+
+                {expandedIndices.equipe1.includes(index) && (
+                  <div className="flex gap-4 items-center px-12 mb-2">
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe1.${index}.3`)}
+                      placeholder="Minute du changement (ex: 75')"
+                      className="py-2 px-4 border rounded w-2/4"
+                    />
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe1.${index}.4`)}
+                      placeholder="Nombre de buts marqués (ex: 0)"
+                      className="py-2 px-4 border rounded w-2/4"
+                    />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+
             <button
               type="button"
               onClick={() => appendremplacantseq1([""])}
@@ -643,9 +697,18 @@ export default function MatchForm() {
               Remplaçants de l&apos;équipe à l&apos;extérieur :
             </span>
 
-            {remplacantseq2field.map((field, index) => {
-              return (
-                <div key={field.id} className="flex gap-2 mb-2 w-full">
+            {remplacantseq2field.map((field, index) => (
+              <React.Fragment key={field.id}>
+                <div className="flex items-center gap-2 mb-2 w-full">
+                  {expandedIndices.equipe2.includes(index) ? (
+                    <ChevronDown
+                      onClick={() => toggleExpand("equipe2", index)}
+                    />
+                  ) : (
+                    <ChevronRight
+                      onClick={() => toggleExpand("equipe2", index)}
+                    />
+                  )}
                   <input
                     type="text"
                     {...register(`remplacantsequipe2.${index}.0`)}
@@ -657,7 +720,7 @@ export default function MatchForm() {
                       type="text"
                       {...register(`remplacantsequipe2.${index}.1`)}
                       placeholder="Drapeau (ex: france)"
-                      className="py-2 px-4 border rounded "
+                      className="py-2 px-4 border rounded"
                     />
                     <button
                       type="button"
@@ -681,8 +744,25 @@ export default function MatchForm() {
                     <Trash size={18} />
                   </button>
                 </div>
-              );
-            })}
+
+                {expandedIndices.equipe2.includes(index) && (
+                  <div className="flex gap-4 items-center px-12 mb-2">
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe2.${index}.3`)}
+                      placeholder="Minute du changement (ex: 75')"
+                      className="py-2 px-4 border rounded w-2/4"
+                    />
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe2.${index}.4`)}
+                      placeholder="Nombre de buts marqués (ex: 0)"
+                      className="py-2 px-4 border rounded w-2/4"
+                    />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
             <button
               type="button"
               onClick={() => appendremplacantseq2([""])}

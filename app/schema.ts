@@ -129,18 +129,30 @@ export const MethodeMatchSchema = z.object({
     .string()
     .nonempty({ message: "Le système de l'équipe doit être renseigné." }),
   remplacantsequipe1: z.array(
-    z.array(
-      z.string().nonempty({
-        message: "Les remplaçants de jeu doivent être renseignés.",
+    z
+      .array(z.string())
+      .min(3, "Chaque remplaçant doit avoir au moins nom, drapeau et poste")
+      .refine((arr) => arr[0] && arr[0].length > 0, {
+        message: "Le nom du remplaçant doit être renseigné",
+        path: [0],
       })
-    )
+      .refine((arr) => arr[2] && arr[2].length > 0, {
+        message: "Le poste du remplaçant doit être renseigné",
+        path: [2],
+      })
   ),
   remplacantsequipe2: z.array(
-    z.array(
-      z.string().nonempty({
-        message: "Les remplaçants de jeu doivent être renseignés.",
+    z
+      .array(z.string())
+      .min(3, "Chaque remplaçant doit avoir au moins nom, drapeau et poste")
+      .refine((arr) => arr[0] && arr[0].length > 0, {
+        message: "Le nom du remplaçant doit être renseigné",
+        path: [0],
       })
-    )
+      .refine((arr) => arr[2] && arr[2].length > 0, {
+        message: "Le poste du remplaçant doit être renseigné",
+        path: [2],
+      })
   ),
   stade: z.string().nonempty({
     message: "Le nom du stade doit être renseigné.",
