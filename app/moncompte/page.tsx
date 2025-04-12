@@ -113,7 +113,7 @@ export default function MonCompte() {
         ) : user ? (
           <>
             <div className="flex gap-4">
-              <div className="flex flex-col gap-2 font-Montserrat w-1/2 p-4 bg-white rounded-xl shadow-xl">
+              <div className="flex flex-col gap-2 font-Montserrat w-[1000px] p-10 bg-white rounded-xl shadow-xl mx-auto">
                 {!user.image ? (
                   <Image
                     src="/_assets/img/pdpdebase.png"
@@ -155,11 +155,11 @@ export default function MonCompte() {
                 </div>
 
                 <div>
-                  <Button type="button">Modifier ce profil</Button>
+                  <Button type="button">Modifier mon profil</Button>
                 </div>
-              </div>
-              <div className="font-Montserrat w-1/2 p-4 bg-white rounded-xl shadow-xl">
-                <h3>Commentaires</h3>
+                <div className="font-Montserrat w-full p-4 bg-white">
+                  <h3 className="font-bold">Commentaires</h3>
+                </div>
               </div>
             </div>
 

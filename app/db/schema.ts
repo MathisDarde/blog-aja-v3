@@ -1,5 +1,6 @@
 import {
   boolean,
+  json,
   pgTable,
   text,
   timestamp,
@@ -93,6 +94,91 @@ export const commentsTable = pgTable("comments_table", {
     .$onUpdate(() => new Date()),
 });
 
+export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
+  id_methode: text("id_methode").primaryKey(),
+  typemethode: text("typemethode").notNull().default("saison"),
+  keywords: varchar("keywords", { length: 255 }).array().notNull(),
+  saison: text("saison").notNull(),
+  imgterrain: text("imgterrain").notNull(),
+  coach: text("coach").notNull(),
+  systeme: text("systeme").notNull(),
+  remplacants: json("remplacants").notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
+  id_methode: text("id_methode").primaryKey(),
+  typemethode: text("typemethode").notNull().default("match"),
+  keywords: varchar("keywords", { length: 255 }).array().notNull(),
+  titrematch: text("titrematch").notNull(),
+  imgterrain: text("imgterrain").notNull(),
+  couleur1equipe1: text("couleur1equipe1").notNull(),
+  couleur2equipe1: text("couleur2equipe1").notNull(),
+  nomequipe1: text("nomequipe1").notNull(),
+  systemeequipe1: text("systemeequipe1").notNull(),
+  couleur1equipe2: text("couleur1equipe2").notNull(),
+  couleur2equipe2: text("couleur2equipe2").notNull(),
+  nomequipe2: text("nomequipe2").notNull(),
+  systemeequipe2: text("systemeequipe2").notNull(),
+  remplacantsequipe1: json("remplacantsequipe1").notNull(),
+  remplacantsequipe2: json("remplacantsequipe2").notNull(),
+  stade: text("stade").notNull(),
+  date: text("date").notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const methodeExpertJoueurTable = pgTable("methode_expert_joueur_table", {
+  id_methode: text("id_methode").primaryKey(),
+  typemethode: text("typemethode").notNull().default("joueur"),
+  keywords: varchar("keywords", { length: 255 }).array().notNull(),
+  imagejoueur: text("imagejoueur").notNull(),
+  joueurnom: text("joueurnom").notNull(),
+  poste: text("poste").notNull(),
+  taille: text("taille").notNull(),
+  piedfort: text("piedfort").notNull(),
+  clubs: json("clubs").notNull(),
+  matchs: text("matchs").notNull(),
+  buts: text("buts").notNull(),
+  passesd: text("passesd").notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const methodeExpertCoachTable = pgTable("methode_expert_coach_table", {
+  id_methode: text("id_methode").primaryKey(),
+  typemethode: text("typemethode").notNull().default("coach"),
+  keywords: varchar("keywords", { length: 255 }).array().notNull(),
+  imagecoach: text("imagecoach").notNull(),
+  nomcoach: text("nomcoach").notNull(),
+  clubscoach: json("clubscoach").notNull(),
+  palmares: json("palmares").notNull(),
+  statistiques: text("statistiques").notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
 export const schema = {
   user,
   session,
@@ -100,6 +186,10 @@ export const schema = {
   verification,
   articlesTable,
   commentsTable,
+  methodeExpertSaisonTable,
+  methodeExpertMatchTable,
+  methodeExpertJoueurTable,
+  methodeExpertCoachTable,
 };
 
 export type SelectUser = typeof user.$inferSelect;
