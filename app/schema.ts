@@ -64,9 +64,15 @@ export const ArticleSchema = z.object({
 });
 
 export const CommentSchema = z.object({
-  stars: z.number(),
-  comm_title: z.string().nonempty(),
-  comm_content: z.string().nonempty(),
+  stars: z
+    .string()
+    .nonempty({ message: "Veuillez attribuer une note à l'article." }),
+  title: z
+    .string()
+    .nonempty({ message: "Le titre du commentaire ne peut pas être vide." }),
+  content: z
+    .string()
+    .nonempty({ message: "Le contenu du message ne peut pas être vide." }),
 });
 
 export const MethodeSaisonSchema = z.object({
