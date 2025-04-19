@@ -46,6 +46,10 @@ export default function CommentForm() {
       reset();
       setRating(null);
       setHover(null);
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,
