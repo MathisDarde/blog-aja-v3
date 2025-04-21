@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
-export async function getMethodes(): Promise<
+export async function getCoachMethodes(): Promise<
   Array<{
     id_methode: string;
     typemethode: string;
