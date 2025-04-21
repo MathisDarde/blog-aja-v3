@@ -57,7 +57,7 @@ export default function EffectifActuel() {
                 <h4 className="text-2xl my-2 ml-28 underline font-semibold font-Montserrat">
                   {category} :
                 </h4>
-                <div className="relative grid grid-cols-2 grid-rows-2 justify-around content-start pb-6 mx-10">
+                <div className="relative grid grid-cols-2 grid-rows-2 2xl:grid-cols-3 justify-around content-start pb-6 mx-10">
                   {joueurs
                     .filter((joueur) => joueur.poste === category)
                     .map((joueur) => (
