@@ -1,137 +1,160 @@
 [
   {
+    "id": 1,
     "tag": "avant 1980",
     "value": "avant-1980",
     "img": "/_assets/tagsbg/avant1980.webp",
     "type": "year"
   },
   {
+    "id": 2,
     "tag": "1981 - 1990",
     "value": "1981-1990",
     "img": "/_assets/tagsbg/aja80s.jpeg",
     "type": "year"
   },
   {
+    "id": 3,
     "tag": "1991 - 2000",
     "value": "1991-2000",
     "img": "/_assets/tagsbg/aja90s.jpg",
     "type": "year"
   },
   {
+    "id": 4,
     "tag": "2001 - 2010",
     "value": "2001-2010",
     "img": "/_assets/tagsbg/aja00s.webp",
     "type": "year"
   },
   {
+    "id": 5,
     "tag": "2011 - 2020",
     "value": "2011-2020",
     "img": "/_assets/tagsbg/aja10s.webp",
     "type": "year"
   },
   {
+    "id": 6,
     "tag": "2021 - aujourd'hui",
     "value": "2021-aujourdhui",
     "img": "/_assets/tagsbg/aja20s.jpg",
     "type": "year"
   },
   {
+    "id": 7,
     "tag": "Coupe d'Europe",
     "value": "coupedeurope",
     "img": "/_assets/tagsbg/coupedeurope.webp",
     "type": "league"
   },
   {
+    "id": 8,
     "tag": "Ligue 1",
     "value": "ligue1",
     "img": "/_assets/tagsbg/ligue1.webp",
     "type": "league"
   },
   {
+    "id": 9,
     "tag": "Ligue 2",
     "value": "ligue2",
     "img": "/_assets/tagsbg/ligue2.webp",
     "type": "league"
   },
   {
+    "id": 10,
     "tag": "Équipes jeunes",
     "value": "equipesjeunes",
     "img": "/_assets/tagsbg/equipesjeunes.webp",
     "type": "league"
   },
   {
+    "id": 11,
     "tag": "Coupe de France",
     "value": "coupedefrance",
     "img": "/_assets/tagsbg/coupedefrance.jpg",
     "type": "league"
   },
   {
+    "id": 12,
     "tag": "Djibril Cissé",
     "value": "djibrilcisse",
     "img": "/_assets/tagsbg/djrbrilcisse.jpg",
     "type": "player"
   },
   {
+    "id": 13,
     "tag": "Andrzej Szarmach",
     "value": "andrzejszarmach",
     "img": "/_assets/tagsbg/andrzejszarmach.jpg",
     "type": "player"
   },
   {
+    "id": 14,
     "tag": "Lilian Laslandes",
     "value": "lilianlaslandes",
     "img": "/_assets/tagsbg/lilianlaslandes.png",
     "type": "player"
   },
   {
+    "id": 15,
     "tag": "Eric Cantona",
     "value": "ericcantona",
     "img": "/_assets/tagsbg/ericcantona.jpg",
     "type": "player"
   },
   {
+    "id": 16,
     "tag": "Christophe Cocard",
     "value": "christophecocard",
     "img": "/_assets/tagsbg/christophecocard.jpg",
     "type": "player"
   },
   {
+    "id": 17,
     "tag": "Gauthier Hein",
     "value": "gauthierhein",
     "img": "/_assets/tagsbg/gauthierhein.jpg",
     "type": "player"
   },
   {
+    "id": 18,
     "tag": "Jean-Marc Ferreri",
     "value": "jeanmarcferreri",
     "img": "/_assets/tagsbg/jeanmarcferreri.jpg",
     "type": "player"
   },
   {
+    "id": 19,
     "tag": "Moussa Saïb",
     "value": "moussasaib",
     "img": "/_assets/tagsbg/moussasaib.jpg",
     "type": "player"
   },
   {
+    "id": 20,
     "tag": "Alain Goma",
     "value": "alaingoma",
     "img": "/_assets/tagsbg/alaingoma.jpg",
     "type": "player"
   },
   {
+    "id": 21,
     "tag": "Lionel Charbonnier",
     "value": "lionelcharbonnier",
     "img": "/_assets/tagsbg/lionelcharbonnier.jpg",
     "type": "player"
   },
   {
+    "id": 22,
     "tag": "Bernard Diomède",
     "value": "bernarddiomede",
     "img": "/_assets/tagsbg/bernarddiomede.png",
     "type": "player"
   },
   {
+    "id": 23,
     "tag": "Olivier Kapo",
     "value": "olivierkapo",
     "img": "/_assets/tagsbg/olivierkapo.webp",
