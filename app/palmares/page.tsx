@@ -4,6 +4,14 @@ import { useState, useEffect } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import Image from "next/image";
 
+type Trophee = {
+  id: number;
+  title: string;
+  img: string;
+  annee: string;
+  nombre: number;
+};
+
 type RecordType = {
   title: string;
   image: string;
@@ -18,6 +26,7 @@ type RecordRow = {
 };
 
 const Palmares = () => {
+  const [trophees, setTrophees] = useState<Trophee[]>([]);
   const [records, setRecords] = useState<RecordType[]>([]);
   const [selectedRecordIndex, setSelectedRecordIndex] = useState<number | null>(
     null
@@ -60,197 +69,63 @@ const Palmares = () => {
       });
   }, []);
 
+  useEffect(() => {
+    fetch("/data/palmares.json")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Erreur lors du chargement du fichier JSON");
+        }
+        return response.json();
+      })
+      .then((data: Trophee[]) => setTrophees(data))
+      .catch((error) =>
+        console.error("Erreur lors du chargement JSON :", error)
+      );
+  }, []);
+
   return (
     <>
-      <div className="bg-gray-100 h-full w-full p-0 m-0 box-border">
-        <div>
-          <h3 className="text-center text-4xl font-bold uppercase mt-10 mb-5">
+      <div className="bg-gray-100 h-full w-full p-0 m-0 box-border font-Montserrat">
+        <div className="max-w-[1500px] mx-auto">
+          <h3 className="text-center text-4xl font-bold uppercase pt-10 mb-5">
             Palmarès
           </h3>
+
           <div className="pb-12">
-            <h3 className="my-6 mx-24 text-2xl underline font-medium">
+            <h3 className="my-6 mx-24 text-2xl underline font-semibold">
               Armoire à trophées :
             </h3>
+
             <div className="grid grid-cols-3 grid-rows-3">
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheeligue1gold.png"
-                    alt="Logo Ligue 1"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 1
-                  </p>
+              {trophees.map((trophee, index) => (
+                <div key={index} className="flex flex-col items-center w-full">
+                  <div className="flex flex-row items-center">
+                    <Image
+                      width={512}
+                      height={512}
+                      src={trophee.img}
+                      alt={trophee.title}
+                      className="m-2 w-24 h-24 object-contain"
+                    />
+                    <p className="text-5xl font-Bai_Jamjuree font-bold italic pt-4 m-4 cursor-default">
+                      x {trophee.nombre}
+                    </p>
+                  </div>
+                  <div className="flex flex-col justify-center items-center">
+                    <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-Montserrat">
+                      {trophee.title}
+                    </p>
+                    <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
+                      ({trophee.annee})
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    Champion de France de Ligue 1
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (1996)
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheeligue1bronze.png"
-                    alt="Logo Ligue 1"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 5
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    3ème place de Ligue 1
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (1984, 1991, 1994, 2002, 2010)
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheecoupedefrancegold.png"
-                    alt="Logo Coupe de France"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 4
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    Vainqueur de la Coupe de France
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (1994, 1996, 2003, 2005)
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheecoupedefrancesilver.png"
-                    alt="Logo Coupe de France"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 2
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    Finaliste de la Coupe de France
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (1979, 2015)
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheeligue2gold.png"
-                    alt="Logo Ligue 2"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 2
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    Champion de France de Ligue 2
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (1980, 2024)
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheeligue2bronze.png"
-                    alt="Logo Ligue 2"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 1
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    3ème place de Ligue 2
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (2022)
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheecoupeintertotogold.png"
-                    alt="Logo Intertoto"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 1
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    Vainqueur de la Coupe Intertoto
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (1997)
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center">
-                  <Image
-                    width={512}
-                    height={512}
-                    src="/_assets/trophies/tropheecoupeintertotosilver.png"
-                    alt="Logo Intertoto"
-                    className="m-2 w-24 h-24 object-contain"
-                  />
-                  <p className="text-5xl font-title font-bold italic pt-4 m-4 cursor-default">
-                    x 1
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-paragraph">
-                    Finaliste de la Coupe Intertoto
-                  </p>
-                  <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
-                    (2000)
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+        </div>
 
+        <div className="max-w-[1500px] mx-auto">
           <h3 className="text-center text-4xl font-bold uppercase mt-10 mb-5">
             Records
           </h3>
@@ -311,10 +186,10 @@ const Palmares = () => {
                           <table className="table border-collapse w-full">
                             <thead>
                               <tr>
-                                <th className="p-2 border-2 border-gray-600 text-left align-middle font-bold bg-aja-blue text-white font-paragraph text-sm">
+                                <th className="p-2 border-2 border-gray-600 text-left align-middle font-bold bg-aja-blue text-white font-Montserrat text-sm">
                                   Record
                                 </th>
-                                <th className="p-2 border-2 border-gray-600 text-left align-middle font-bold bg-aja-blue text-white font-paragraph text-sm">
+                                <th className="p-2 border-2 border-gray-600 text-left align-middle font-bold bg-aja-blue text-white font-Montserrat text-sm">
                                   Détenteur
                                 </th>
                               </tr>
@@ -322,10 +197,10 @@ const Palmares = () => {
                             <tbody>
                               {list.rows.map((rowlist, rowIndex) => (
                                 <tr key={rowIndex}>
-                                  <td className="p-2 border-2 border-gray-600 text-left align-middle font-paragraph text-sm font-medium bg-white text-black">
+                                  <td className="p-2 border-2 border-gray-600 text-left align-middle font-Montserrat text-sm font-medium bg-white text-black">
                                     {rowlist.record}
                                   </td>
-                                  <td className="p-2 border-2 border-gray-600 text-left align-middle font-paragraph text-sm bg-white">
+                                  <td className="p-2 border-2 border-gray-600 text-left align-middle font-Montserrat text-sm bg-white">
                                     {rowlist.player}
                                   </td>
                                 </tr>

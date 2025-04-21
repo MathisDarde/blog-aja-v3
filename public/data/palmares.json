@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "img": "/_assets/trophies/tropheeligue1gold.png",
+    "title": "Champion de France de Ligue 1",
+    "nombre": 1,
+    "annee": "1996"
+  },
+  {
+    "id": 2,
+    "img": "/_assets/trophies/tropheeligue1bronze.png",
+    "title": "3ème place de Ligue 1",
+    "nombre": 5,
+    "annee": "1984, 1991, 1994, 2002, 2010"
+  },
+  {
+    "id": 3,
+    "img": "/_assets/trophies/tropheecoupedefrancegold.png",
+    "title": "Vainqueur de la Coupe de France",
+    "nombre": 4,
+    "annee": "1994, 1996, 2003, 2005"
+  },
+  {
+    "id": 4,
+    "img": "/_assets/trophies/tropheecoupedefrancesilver.png",
+    "title": "Finaliste de la Coupe de France",
+    "nombre": 2,
+    "annee": "1979, 2015"
+  },
+  {
+    "id": 5,
+    "img": "/_assets/trophies/tropheeligue2gold.png",
+    "title": "Champion de France de Ligue 2",
+    "nombre": 2,
+    "annee": "1980, 2024"
+  },
+  {
+    "id": 6,
+    "img": "/_assets/trophies/tropheeligue2bronze.png",
+    "title": "3ème place de Ligue 2",
+    "nombre": 1,
+    "annee": "2022"
+  },
+  {
+    "id": 7,
+    "img": "/_assets/trophies/tropheecoupeintertotogold.png",
+    "title": "Vainqueur de la Coupe Intertoto",
+    "nombre": 1,
+    "annee": "1997"
+  },
+  {
+    "id": 8,
+    "img": "/_assets/trophies/tropheecoupeintertotosilver.png",
+    "title": "Finaliste de la Coupe Intertoto",
+    "nombre": 1,
+    "annee": "2000"
+  }
+]
