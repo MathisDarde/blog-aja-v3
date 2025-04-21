@@ -119,12 +119,66 @@ export async function getArticlebyId(
 
 export async function updateArticle(
   articleId: SelectPost["id_article"],
-  data: Partial<Omit<SelectPost, "id_article">>
+  data: Partial<Omit<SelectPost, "id_article">>,
+  file: File
 ) {
-  await db
-    .update(articlesTable)
-    .set(data)
-    .where(eq(articlesTable.id_article, articleId));
+  try {
+    const MAX_SIZE = 5 * 2048 * 2048; // 5 Mo
+    const ALLOWED_TYPES = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+    ];
+
+    if (file.size > MAX_SIZE) {
+      throw new Error(
+        "Le fichier est trop grand. La taille maximale est de 5 Mo."
+      );
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      throw new Error(
+        "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
+      );
+    }
+
+    const uploadDir = path.join(process.cwd(), "/public/uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const fileExtension = path.extname(file.name);
+    const fileName = `${uuidv4()}${fileExtension}`;
+    const filePath = path.join(uploadDir, fileName);
+
+    const buffer = await file.arrayBuffer();
+    fs.writeFileSync(filePath, Buffer.from(buffer));
+
+    const imageUrl = `/uploads/${fileName}`;
+
+    // Si des tags sont présents, les parser si besoin
+    if (data.tags && typeof data.tags === "string") {
+      data.tags = JSON.parse(data.tags);
+    }
+
+    // Préparer les données à mettre à jour (image obligatoire)
+    const updatedData: Partial<Omit<SelectPost, "id_article">> = {
+      ...data,
+      imageUrl, // imageUrl est obligatoirement mis à jour ici
+    };
+
+    // Effectuer la mise à jour
+    const result = await db
+      .update(articlesTable)
+      .set(updatedData)
+      .where(eq(articlesTable.id_article, articleId));
+
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw new Error("Erreur lors de la modification de l'article");
+  }
 }
 
 export async function deleteArticle(articleId: SelectPost["id_article"]) {

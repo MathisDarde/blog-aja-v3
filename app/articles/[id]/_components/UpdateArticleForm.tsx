@@ -1,0 +1,268 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import {
+  Heading,
+  Image as ImageIcon,
+  Film,
+  Folder,
+  PenTool,
+  Tag,
+  X,
+} from "lucide-react";
+import Button from "@/components/BlueButton";
+import { useForm } from "react-hook-form";
+import { ArticleSchemaType } from "@/types/forms";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArticleSchema } from "@/app/schema";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
+import updateArticleForm from "@/actions/update-article-form";
+import { useParams } from "next/navigation";
+
+interface Tags {
+  tag: string;
+  value: string;
+  img: string;
+  type: string;
+}
+
+interface UpdateArticleFormProps {
+  articleData: ArticleSchemaType;
+}
+
+const session = await authClient.getSession();
+const id = session?.data?.user.id || null;
+
+export default function UpdateArticleForm({
+  articleData,
+}: UpdateArticleFormProps) {
+  const params = useParams();
+
+  const [tags, setTags] = useState<Tags[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const { register, handleSubmit, formState, setValue, watch } =
+    useForm<ArticleSchemaType>({
+      resolver: zodResolver(ArticleSchema),
+      defaultValues: articleData,
+    });
+
+  useEffect(() => {
+    fetch("/data/articletags.json")
+      .then((response) => response.json())
+      .then((data) => setTags(data))
+      .catch((error) =>
+        console.error("Erreur lors du chargement des tags :", error)
+      );
+  }, []);
+
+  useEffect(() => {
+    if (articleData) {
+      setValue("title", articleData.title);
+      setValue("teaser", articleData.teaser);
+      setValue("content", articleData.content);
+      setValue("author", articleData.author);
+      setValue("tags", articleData.tags);
+    }
+  }, [articleData, setValue]);
+
+  const id_article = React.useRef<string>("");
+
+  useEffect(() => {
+    if (!params?.id) return;
+
+    const articleId = Array.isArray(params.id) ? params.id[0] : params.id;
+    id_article.current = articleId;
+  });
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    } else {
+      setSelectedFile(null);
+    }
+  };
+
+  const handleSubmitForm = async (data: ArticleSchemaType) => {
+    const formData = new FormData();
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
+
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(
+        key,
+        Array.isArray(value) ? JSON.stringify(value) : value
+      );
+    });
+
+    if (!id) {
+      toast.error(
+        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
+      );
+      return;
+    }
+
+    if (!selectedFile) {
+      toast.error("Veuillez sélectionner un fichier avant de soumettre.");
+      return;
+    }
+    const response = await updateArticleForm(
+      id_article.current,
+      data,
+      selectedFile
+    );
+
+    if (response.success) {
+      toast.success(response.message, {
+        icon: <X className="text-white" />,
+        className: "bg-green-500 border border-green-200 text-white text-base",
+      });
+      window.location.reload();
+    } else {
+      toast.error(
+        response.message ? response.message : response.errors?.[0].message,
+        {
+          icon: <X className="text-white" />,
+          className: "bg-red-500 border border-red-200 text-white text-base",
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    Object.values(formState.errors).forEach((error) => {
+      if (error && "message" in error) {
+        toast.error(error.message as string, {
+          icon: <X className="text-white" />,
+          className:
+            "bg-red-500 !important border border-red-200 text-white text-base",
+        });
+      }
+    });
+  }, [formState.errors]);
+
+  const watchedTags = watch("tags") || [];
+
+  return (
+    <div className="w-w-600 mx-auto">
+      <form
+        id="publishform"
+        encType="multipart/form-data"
+        className="w-w-600"
+        onSubmit={handleSubmit(handleSubmitForm)}
+      >
+        <div className="relative w-w-600">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <Heading className="mr-4" />
+            Titre :
+          </span>
+          <input
+            type="text"
+            {...register("title")}
+            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            placeholder="Titre de l'article"
+          />
+        </div>
+
+        <div className="relative w-w-600">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <ImageIcon className="mr-4" />
+            Image :
+          </span>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            accept="image/*"
+          />
+        </div>
+
+        <div className="relative w-w-600">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <Film className="mr-4" />
+            Teaser :
+          </span>
+          <input
+            type="text"
+            {...register("teaser")}
+            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            placeholder="Teaser de l'article"
+          />
+        </div>
+
+        <div className="relative w-w-600">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <Folder className="mr-4" />
+            Contenu de l&apos;article :
+          </span>
+          <textarea
+            {...register("content")}
+            className="w-w-600 h-auto my-4 pt-4 pb-64 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            placeholder="Contenu de l'article"
+          ></textarea>
+        </div>
+
+        <div className="relative w-w-600">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <PenTool className="mr-4" />
+            Auteur :
+          </span>
+          <input
+            type="text"
+            {...register("author")}
+            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            placeholder="Nom de l'auteur"
+          />
+        </div>
+
+        <div className="relative w-w-600">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <Tag className="mr-4" />
+            Tags :
+          </span>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}
+            className="w-w-600 bg-white rounded-2xl border border-gray-600 my-4"
+          >
+            {tags.map((category: Tags) => (
+              <div
+                key={category.value}
+                className="relative pl-2 cursor-pointer flex items-center"
+              >
+                <input
+                  type="checkbox"
+                  {...register("tags")}
+                  value={category.value}
+                  checked={watchedTags.includes(category.value)}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    const value = category.value;
+
+                    let updatedTags = [...watchedTags];
+                    if (isChecked) {
+                      updatedTags.push(value);
+                    } else {
+                      updatedTags = updatedTags.filter((tag) => tag !== value);
+                    }
+                    setValue("tags", updatedTags);
+                  }}
+                  className="my-4 mx-2"
+                />
+                <label htmlFor={`checkbox`} className="cursor-pointer">
+                  {category.tag}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-center items-center">
+          <Button type="submit">Je modifie l&apos;article</Button>
+        </div>
+      </form>
+    </div>
+  );
+}
