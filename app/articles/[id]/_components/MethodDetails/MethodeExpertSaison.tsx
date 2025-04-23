@@ -2,6 +2,9 @@ import Image from "next/image";
 
 interface SeasonMethodeExpertProps {
   methode: {
+    id_methode: string;
+    typemethode: "saison";
+    keyword: string[];
     saison: string;
     imgterrain: string;
     coach: string;
@@ -54,12 +57,12 @@ export default function SeasonMethodeExpert({
           {methode.remplacants.map((remp, index) => (
             <li key={index} className="flex items-center gap-2">
               <p className="text-sm">
-                {remp[0]} - {remp[1]}
+                {remp[2]} - {remp[0]}
               </p>
               <Image
                 width={512}
                 height={512}
-                src={remp[2]}
+                src={remp[1]}
                 alt=""
                 className="w-4 h-[10px] border border-black"
               />

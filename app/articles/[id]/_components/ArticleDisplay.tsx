@@ -24,13 +24,12 @@ import Button from "@/components/BlueButton";
 import { toast } from "sonner";
 import deleteArticleSA from "@/actions/delete-article";
 import UpdateArticleForm from "./UpdateArticleForm";
+import getAllMethodes from "@/actions/get-all-methodes";
 
 interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
-  id: number | string;
-  keyword: string | string[];
-  title?: string;
-  description?: string;
+  id_methode: string;
+  keyword: string[];
 }
 
 interface MethodeJoueur extends BaseMethodeData {
@@ -112,7 +111,8 @@ export default function ArticleDisplay({ article }: ArticleProps) {
   const params = useParams();
   const router = useRouter();
 
-  const [keywords, setKeywords] = useState<Methode[]>([]);
+  const [keywords, setKeywords] = useState<BaseMethodeData[]>([]);
+  const [methodes, setMethodes] = useState<Methode[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<Methode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -143,18 +143,26 @@ export default function ArticleDisplay({ article }: ArticleProps) {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("/data/methodeexpert.json")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error: ${res.status}`);
-        }
-        return res.json();
-      })
+
+    getAllMethodes()
       .then((data) => {
-        if (Array.isArray(data)) {
-          setKeywords(data);
+        if (data) {
+          setMethodes(data);
+
+          const allKeywords = data.flatMap((item) =>
+            item.keywords.map((kw) => ({
+              id_methode: item.id_methode,
+              typemethode: item.typemethode as
+                | "joueur"
+                | "saison"
+                | "match"
+                | "coach",
+              keyword: [kw],
+            }))
+          );
+          setKeywords(allKeywords);
         } else {
-          throw new Error("Invalid data format");
+          setKeywords([]);
         }
         setIsLoading(false);
       })
@@ -217,15 +225,14 @@ export default function ArticleDisplay({ article }: ArticleProps) {
   };
 
   const handleKeywordClick = (id: string, type: string) => {
-    const numericId = parseInt(id, 10);
-    let method = keywords.find((m) => m.id === id && m.typemethode === type);
-    if (!method) {
-      method = keywords.find(
-        (m) => m.id === numericId && m.typemethode === type
-      );
-    }
+    const method = methodes.find(
+      (m) => m.id_methode === id && m.typemethode === type
+    );
+
     if (method) {
       setSelectedMethod(method);
+    } else {
+      toast.error("Méthode non trouvée.");
     }
   };
 
@@ -240,41 +247,36 @@ export default function ArticleDisplay({ article }: ArticleProps) {
       case "joueur":
         return (
           <PlayerMethodeExpert
-            methode={selectedMethod}
+            methode={selectedMethod as MethodeJoueur}
             onClose={closeMethodPanel}
           />
         );
       case "saison":
         return (
           <SeasonMethodeExpert
-            methode={selectedMethod}
+            methode={selectedMethod as MethodeSaison}
             onClose={closeMethodPanel}
           />
         );
       case "match":
         return (
           <GameMethodeExpert
-            methode={selectedMethod}
+            methode={selectedMethod as MethodeMatch}
             onClose={closeMethodPanel}
           />
         );
       case "coach":
         return (
           <CoachMethodeExpert
-            methode={selectedMethod}
+            methode={selectedMethod as MethodeCoach}
             onClose={closeMethodPanel}
           />
         );
       default:
-        const method = selectedMethod as BaseMethodeData;
         return (
           <div className="method-content font-Montserrat">
-            <h4 className="font-bold text-lg mb-2">
-              {method.title || "Méthode"}
-            </h4>
-            <p className="mb-4 text-justify">
-              {method.description || "Aucune description disponible."}
-            </p>
+            <h4 className="font-bold text-lg mb-2">Méthode</h4>
+            <p className="mb-4 text-justify">Aucune description disponible.</p>
             <button
               className="mt-2 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md text-sm font-medium transition-colors"
               onClick={closeMethodPanel}

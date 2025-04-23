@@ -129,11 +129,11 @@ export default function SaisonForm() {
     if (processedData.remplacants) {
       processedData.remplacants = processedData.remplacants.map((remp) => {
         if (
-          remp[0] &&
-          !remp[0].startsWith("http") &&
-          !remp[0].startsWith("/")
+          remp[1] &&
+          !remp[1].startsWith("http") &&
+          !remp[1].startsWith("/")
         ) {
-          remp[0] = `${IMAGE_PATHS.drapeaux}${remp[0]}`;
+          remp[1] = `${IMAGE_PATHS.drapeaux}${remp[1]}`;
         }
         return remp;
       });

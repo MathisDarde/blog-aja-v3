@@ -3,7 +3,11 @@ import { ArrowBigUp } from "lucide-react";
 
 interface GameMethodeExpertProps {
   methode: {
+    id_methode: string;
+    typemethode: "match";
+    keyword: string[];
     titrematch: string;
+    imgterrain: string;
     couleur1equipe1: string;
     couleur2equipe1: string;
     nomequipe1: string;
@@ -12,7 +16,6 @@ interface GameMethodeExpertProps {
     couleur2equipe2: string;
     nomequipe2: string;
     systemeequipe2: string;
-    imgterrain: string;
     remplacantsequipe1: [string, string, string, string?, string?][];
     remplacantsequipe2: [string, string, string, string?, string?][];
     stade: string;
@@ -25,19 +28,6 @@ export default function GameMethodeExpert({
   methode,
   onClose,
 }: GameMethodeExpertProps) {
-  const iconMap = {
-    ArrowBigUp,
-  };
-
-  // Fonction pour récupérer l'icône
-  const getIconComponent = (iconName?: string) => {
-    if (!iconName) return null;
-    const LucideIcon = iconMap[iconName as keyof typeof iconMap];
-    return LucideIcon ? (
-      <LucideIcon className="w-4 h-4 text-green-500" />
-    ) : null;
-  };
-
   return (
     <div className="bg-white rounded-lg font-Montserrat">
       {/* Bouton de fermeture */}
@@ -103,17 +93,31 @@ export default function GameMethodeExpert({
           {methode.remplacantsequipe1.map((remp, index) => (
             <li key={index} className="flex items-center gap-2">
               <p className="text-sm">
-                {remp[0]} - {remp[1]}
+                {remp[2].slice(0, 3).toUpperCase()} - {remp[0]}
               </p>
               <Image
                 width={512}
                 height={512}
-                src={remp[2]}
+                src={remp[1]}
                 alt=""
                 className="w-4 h-[10px] border border-black object-cover"
               />
-              {getIconComponent(remp[3])}
-              {remp[4] && <p className="text-black text-xs">{remp[4]}</p>}
+              {remp[3] && (
+                <>
+                  <ArrowBigUp fill="green" size={16} stroke="green" />
+                  <p className="text-sm">{remp[3]}</p>
+                </>
+              )}
+              {Number(remp[4]) > 0 &&
+                Array.from({ length: Number(remp[4]) }, (_, i) => (
+                  <Image
+                    key={i}
+                    src={"/_assets/img/iconeballon.png"}
+                    alt="Buts"
+                    width={15}
+                    height={15}
+                  />
+                ))}
             </li>
           ))}
         </ul>
@@ -126,17 +130,31 @@ export default function GameMethodeExpert({
           {methode.remplacantsequipe2.map((remp, index) => (
             <li key={index} className="flex items-center gap-2">
               <p className="text-sm">
-                {remp[0]} - {remp[1]}
+                {remp[2].slice(0, 3).toUpperCase()} - {remp[0]}
               </p>
               <Image
-                height={512}
                 width={512}
-                src={remp[2]}
+                height={512}
+                src={remp[1]}
                 alt=""
-                className="w-4 h-[10px] border border-black"
+                className="w-4 h-[10px] border border-black object-cover"
               />
-              {getIconComponent(remp[3])}
-              {remp[4] && <p className="text-black text-xs">{remp[4]}</p>}
+              {remp[3] && (
+                <>
+                  <ArrowBigUp fill="green" size={16} stroke="green" />
+                  <p className="text-sm">{remp[3]}</p>
+                </>
+              )}
+              {Number(remp[4]) > 0 &&
+                Array.from({ length: Number(remp[4]) }, (_, i) => (
+                  <Image
+                    key={i}
+                    src={"/_assets/img/iconeballon.png"}
+                    alt="Buts"
+                    width={15}
+                    height={15}
+                  />
+                ))}
             </li>
           ))}
         </ul>

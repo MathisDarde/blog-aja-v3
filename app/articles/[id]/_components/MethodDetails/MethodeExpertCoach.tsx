@@ -1,6 +1,9 @@
 import Image from "next/image";
 
 interface Methode {
+  id_methode: string;
+  typemethode: "coach";
+  keyword: string[];
   imagecoach: string;
   nomcoach: string;
   clubscoach: [string, string, string][];
@@ -62,8 +65,8 @@ export default function CoachMethodeExpert({
                   className="rounded"
                 />
                 <span className="text-gray-700">
-                  <span className="font-semibold">{club.name}</span>{" "}
-                  {club.years}
+                  <span className="font-semibold">{club.name}</span> (
+                  {club.years})
                 </span>
               </li>
             ) : (
@@ -81,7 +84,7 @@ export default function CoachMethodeExpert({
         <ul className="list-disc pl-5">
           {methode.palmares?.map((item, index) => (
             <li key={index} className="text-gray-700">
-              {item}
+              {item[0]} ({item[1]})
             </li>
           ))}
         </ul>

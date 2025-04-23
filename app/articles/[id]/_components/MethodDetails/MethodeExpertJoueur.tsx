@@ -2,6 +2,9 @@ import Image from "next/image";
 
 interface PlayerMethodeExpertProps {
   methode: {
+    id_methode: string;
+    typemethode: "joueur";
+    keyword: string[];
     imagejoueur: string;
     joueurnom: string;
     poste: string;
@@ -63,7 +66,7 @@ export default function PlayerMethodeExpert({
                 className="w-6 h-6"
               />
               <span className="text-gray-700">
-                <span className="font-semibold">{club[1]}</span> {club[2]}
+                <span className="font-semibold">{club[1]}</span> ({club[2]})
               </span>
             </li>
           ))}
