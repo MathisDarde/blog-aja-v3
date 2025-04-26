@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
@@ -62,29 +62,33 @@ const formatName: { [key: string]: string } = {
   "RC Strasbourg Alsace": "RSCA",
 };
 
-const startDate = dayjs("2024-08-01");
-
-// 👉 fonction utilitaire pour afficher la date+heure correctement
 const formatDateTime = (date: string, time?: string) => {
   if (!time) return dayjs(date).format("DD/MM/YYYY");
   return dayjs(`${date}T${time}`).format("DD/MM/YYYY, HH:mm");
 };
 
 export default function Calendar() {
-  const [currentMonth, setCurrentMonth] = useState(() => startDate);
+  const startDate = dayjs("2024-08-01");
+
+  const [currentMonth, setCurrentMonth] = useState(startDate);
   const [matches, setMatches] = useState<MatchAPI[]>([]);
 
-  const startOfMonth = currentMonth.startOf("month");
-  const endOfMonth = currentMonth.endOf("month");
-  const startDateGrid = startOfMonth.startOf("week");
-  const endDateGrid = endOfMonth.endOf("week");
+  const days = useMemo(() => {
+    const startOfMonth = currentMonth.startOf("month");
+    const endOfMonth = currentMonth.endOf("month");
+    const startDateGrid = startOfMonth.startOf("week");
+    const endDateGrid = endOfMonth.endOf("week");
 
-  const days = [];
-  let day = startDateGrid;
-  while (day.isBefore(endDateGrid, "day") || day.isSame(endDateGrid, "day")) {
-    days.push(day);
-    day = day.add(1, "day");
-  }
+    const tempDays: dayjs.Dayjs[] = [];
+    let day = startDateGrid;
+
+    while (day.isBefore(endDateGrid, "day") || day.isSame(endDateGrid, "day")) {
+      tempDays.push(day);
+      day = day.add(1, "day");
+    }
+
+    return tempDays;
+  }, [currentMonth]);
 
   useEffect(() => {
     fetchMatches(
@@ -102,14 +106,14 @@ export default function Calendar() {
     <div className="p-4 w-[1300px] mx-auto">
       <div className="flex justify-between mb-4 font-Montserrat">
         <button
-          onClick={() => setCurrentMonth(currentMonth.subtract(1, "month"))}
+          onClick={() => setCurrentMonth((prev) => prev.subtract(1, "month"))}
         >
           Précédent
         </button>
         <h2 className="text-xl font-bold capitalize">
           {currentMonth.format("MMMM YYYY")}
         </h2>
-        <button onClick={() => setCurrentMonth(currentMonth.add(1, "month"))}>
+        <button onClick={() => setCurrentMonth((prev) => prev.add(1, "month"))}>
           Suivant
         </button>
       </div>
