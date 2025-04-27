@@ -5,6 +5,7 @@ import Image from "next/image";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
 import { fetchMatches } from "@/utils/matchsapi";
+import { ChevronLeftCircle, ChevronRightCircle } from "lucide-react";
 
 dayjs.locale("fr");
 
@@ -102,19 +103,38 @@ export default function Calendar() {
     });
   }, []);
 
+  const getMatchColor = (match: MatchAPI) => {
+    if (!match.score?.ft || match.score.ft.length !== 2) {
+      return "bg-white"; // match pas encore joué
+    }
+
+    const [score1, score2] = match.score.ft.map((s) => parseInt(s));
+
+    if (isNaN(score1) || isNaN(score2)) return "bg-white"; // au cas où
+
+    const isAuxerreTeam1 = match.team1 === "AJ Auxerre";
+
+    const auxerreScore = isAuxerreTeam1 ? score1 : score2;
+    const opponentScore = isAuxerreTeam1 ? score2 : score1;
+
+    if (auxerreScore > opponentScore) return "bg-green-200";
+    if (auxerreScore < opponentScore) return "bg-red-200";
+    return "bg-gray-200"; // nul
+  };
+
   return (
-    <div className="p-4 w-[1300px] mx-auto">
+    <div className="p-6 w-[1300px] bg-white mx-auto">
       <div className="flex justify-between mb-4 font-Montserrat">
         <button
           onClick={() => setCurrentMonth((prev) => prev.subtract(1, "month"))}
         >
-          Précédent
+          <ChevronLeftCircle />
         </button>
         <h2 className="text-xl font-bold capitalize">
           {currentMonth.format("MMMM YYYY")}
         </h2>
         <button onClick={() => setCurrentMonth((prev) => prev.add(1, "month"))}>
-          Suivant
+          <ChevronRightCircle />
         </button>
       </div>
       <div className="grid grid-cols-7 gap-1 font-Montserrat">
@@ -139,7 +159,11 @@ export default function Calendar() {
               }`}
             >
               {matchOfTheDay ? (
-                <div className="w-full h-full bg-white rounded-lg py-2 px-3">
+                <div
+                  className={`w-full h-full rounded-lg py-2 px-3 text-black ${getMatchColor(
+                    matchOfTheDay
+                  )}`}
+                >
                   <div className="flex flex-col items-center justify-between mb-2">
                     {!matchOfTheDay.score?.ft?.length ? (
                       <p className="font-bold font-Montserrat text-xs uppercase italic">
