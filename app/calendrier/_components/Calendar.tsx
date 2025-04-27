@@ -68,7 +68,7 @@ const formatDateTime = (date: string, time?: string) => {
 };
 
 export default function Calendar() {
-  const startDate = dayjs("2024-08-01");
+  const startDate = dayjs(new Date());
 
   const [currentMonth, setCurrentMonth] = useState(startDate);
   const [matches, setMatches] = useState<MatchAPI[]>([]);
