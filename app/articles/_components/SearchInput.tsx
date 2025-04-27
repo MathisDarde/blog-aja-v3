@@ -21,7 +21,6 @@ const SearchInput = ({
 
   const onSearch = (event: React.FormEvent) => {
     event.preventDefault();
-    // Preserve any existing category filter when searching
     const urlParams = new URLSearchParams(window.location.search);
     const currentCategory = urlParams.get("tags");
 
@@ -53,7 +52,7 @@ const SearchInput = ({
         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-lg text-gray-600 cursor-pointer border-l border-gray-600 pl-4">
           <button
             type="button"
-            className="flex gap-2 items-center text-sm"
+            className="flex gap-2 items-center text-sm font-Montserrat"
             onClick={onFilterClick}
           >
             Filtrer <ArrowDown size={16} />

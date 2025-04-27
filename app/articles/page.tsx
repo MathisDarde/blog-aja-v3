@@ -170,7 +170,7 @@ export default function ArticleCenter() {
   };
 
   return (
-    <div className="text-center bg-gray-100 h-full w-screen box-border">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border">
       <div className="text-center">
         <h1 className="text-center font-Montserrat text-4xl font-bold uppercase pt-10 mb-10">
           Rechercher un article
@@ -190,7 +190,7 @@ export default function ArticleCenter() {
               className="absolute z-10 mt-4 w-[748px] p-4 bg-white ring-1 ring-black ring-opacity-5 top-3 right-1/2 transform translate-x-1/2"
             >
               <div className="py-1">
-                <div className="grid grid-cols-3 gap-4 p-4">
+                <div className="grid grid-cols-3 gap-4 p-4 font-Montserrat">
                   {/* Années */}
                   <div>
                     <h3 className="text-lg font-semibold border-b pb-2 mb-2">
@@ -255,7 +255,7 @@ export default function ArticleCenter() {
           </Button>
         </div>
 
-        <div className="relative w-3/4 mx-auto">
+        <div className="relative w-[1500px] mx-auto">
           <p className="text-xl font-Montserrat font-semibold text-left ml-12 py-6 ">
             Résultats les plus pertinents :
           </p>
@@ -293,7 +293,7 @@ export default function ArticleCenter() {
 
           <div
             id="articlecontainerteaser"
-            className="grid grid-cols-2 justify-items-center my-2 mx-5"
+            className="grid grid-cols-3 justify-items-center gap-6 my-2 mx-5"
           >
             {isLoading ? (
               <div className="relative w-full h-64 flex items-center justify-center col-span-2">
@@ -307,19 +307,23 @@ export default function ArticleCenter() {
               </div>
             ) : (
               articles.map((article, index) => (
-                <Link href={`/articles/${article.id_article}`} key={index}>
-                  <div className="my-4 mx-6 bg-white rounded text-center w-[90%]">
+                <Link
+                  href={`/articles/${article.id_article}`}
+                  key={index}
+                  className="w-full h-full"
+                >
+                  <div className="flex flex-col bg-white rounded text-center p-6 h-full">
                     <Image
-                      className="inline-block w-[90%] h-64 mx-auto my-2 rounded-sm object-cover aspect-video"
+                      className="inline-block w-full h-auto mx-auto rounded-sm object-cover aspect-video object-top"
                       width={512}
                       height={512}
                       src={article.imageUrl}
                       alt={article.title}
                     />
-                    <h2 className="text-justify text-black font-semibold font-Montserrat w-[90%] text-lg py-2 pr-2 mx-auto">
+                    <h2 className="text-justify text-black font-semibold font-Montserrat text-lg pt-4 py-2 pr-2 mx-auto">
                       {article.title}
                     </h2>
-                    <p className="w-[90%] text-black text-justify font-Montserrat mx-auto pb-4 text-sm leading-5">
+                    <p className="text-black text-justify font-Montserrat mx-auto text-sm leading-5">
                       {article.teaser}
                     </p>
                   </div>
