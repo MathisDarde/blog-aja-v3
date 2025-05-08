@@ -20,7 +20,7 @@ export default function Header() {
     emailVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
-    image?: string | null;
+    photodeprofil?: string | null;
     birthday: Date;
     admin: boolean;
   }
@@ -215,13 +215,13 @@ export default function Header() {
           </Link>
         ) : (
           <Link href={"/moncompte"}>
-            <div className="flex items-center gap-2 font-Montserrat text-gray-800">
+            <div className="flex items-center gap-4 font-Montserrat text-gray-800">
               <Image
-                src={user.image || "/_assets/img/pdpdebase.png"}
+                src={user.photodeprofil || "/_assets/img/pdpdebase.png"}
                 alt="User Avatar"
-                width={40}
-                height={40}
-                className="rounded-full"
+                width={128}
+                height={128}
+                className="size-9 object-cover rounded-full"
               />
               <p>{user.name}</p>
             </div>

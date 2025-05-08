@@ -7,11 +7,13 @@ import {
   MethodeJoueurSchema,
   MethodeMatchSchema,
   MethodeSaisonSchema,
+  updateProfileSchema,
 } from "@/app/schema";
 import { z, ZodIssue } from "zod";
 
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type InscSchemaType = z.infer<typeof InscSchema>;
+export type UpdateProfileSchemaType = z.infer<typeof updateProfileSchema>;
 export type ArticleSchemaType = z.infer<typeof ArticleSchema>;
 export type CommentSchemaType = z.infer<typeof CommentSchema>;
 export type MethodeSaisonSchemaType = z.infer<typeof MethodeSaisonSchema>;

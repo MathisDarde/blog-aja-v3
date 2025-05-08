@@ -21,6 +21,11 @@ export const auth = betterAuth({
         required: true,
         defaultValue: "false",
       },
+      photodeprofil: {
+        type: "string",
+        required: false,
+        defaultValue: null,
+      },
     },
   },
 
