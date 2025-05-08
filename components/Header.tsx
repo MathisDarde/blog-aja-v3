@@ -89,7 +89,7 @@ export default function Header() {
   }, []);
 
   return (
-    <div className="h-auto w-full bg-white px-12 py-4 flex items-center">
+    <div className="h-[68px] w-full bg-white px-12 py-4 flex items-center">
       <div className="flex-shrink-0 w-[250px]">
         <Link href={"/"}>
           <p className="uppercase text-aja-blue font-Bai_Jamjuree italic font-bold text-xl">

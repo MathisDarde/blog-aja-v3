@@ -25,6 +25,8 @@ export async function getMatchMethodes(): Promise<
     date: string;
     remplacantsequipe1: string[][];
     remplacantsequipe2: string[][];
+    created_at: Date;
+    updated_at: Date;
   }>
 > {
   const results = await db.select().from(methodeExpertMatchTable);
@@ -32,6 +34,8 @@ export async function getMatchMethodes(): Promise<
     ...item,
     remplacantsequipe1: item.remplacantsequipe1 as string[][],
     remplacantsequipe2: item.remplacantsequipe2 as string[][],
+    created_at: new Date(item.createdAt),
+    updated_at: new Date(item.updatedAt),
   }));
 }
 

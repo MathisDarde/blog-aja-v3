@@ -86,7 +86,7 @@ export const AdminDropdownData = [
     image: "/_assets/img/adminicon.jpg",
     description:
       "Vous avez accès à l'ensemble des outils administratifs de Mémoire d'Auxerrois.",
-    link: "/dashboardadmin",
+    link: "/admindashboard",
     dropdown: false,
   },
 ];

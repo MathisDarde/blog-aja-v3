@@ -30,6 +30,7 @@ export async function getAllUsers(): Promise<
     email: string;
     createdAt: Date;
     updatedAt: Date;
+    admin: boolean | null;
   }>
 > {
   return db.select().from(user);

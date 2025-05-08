@@ -16,6 +16,8 @@ export async function getCoachMethodes(): Promise<
     palmares: string[][];
     statistiques: string;
     clubscoach: string[][];
+    created_at: Date;
+    updated_at: Date;
   }>
 > {
   const results = await db.select().from(methodeExpertCoachTable);
@@ -23,6 +25,8 @@ export async function getCoachMethodes(): Promise<
     ...item,
     clubscoach: item.clubscoach as string[][],
     palmares: item.palmares as string[][],
+    created_at: new Date(item.createdAt),
+    updated_at: new Date(item.updatedAt),
   }));
 }
 

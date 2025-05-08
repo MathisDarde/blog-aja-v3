@@ -20,12 +20,16 @@ export async function getJoueurMethodes(): Promise<
     buts: string;
     passesd: string;
     clubs: string[][];
+    created_at: Date;
+    updated_at: Date;
   }>
 > {
   const results = await db.select().from(methodeExpertJoueurTable);
   return results.map((item) => ({
     ...item,
     clubs: item.clubs as string[][],
+    created_at: new Date(item.createdAt),
+    updated_at: new Date(item.updatedAt),
   }));
 }
 

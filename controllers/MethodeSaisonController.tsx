@@ -16,12 +16,16 @@ export async function getSaisonMethodes(): Promise<
     coach: string;
     systeme: string;
     remplacants: string[][];
+    created_at: Date;
+    updated_at: Date;
   }>
 > {
   const results = await db.select().from(methodeExpertSaisonTable);
   return results.map((item) => ({
     ...item,
     remplacants: item.remplacants as string[][],
+    created_at: new Date(item.createdAt),
+    updated_at: new Date(item.updatedAt),
   }));
 }
 
