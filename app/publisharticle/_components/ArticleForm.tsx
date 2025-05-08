@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArticleSchema } from "@/app/schema";
-import submitArticleForm from "@/actions/article-form";
+import submitArticleForm from "@/actions/article/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";

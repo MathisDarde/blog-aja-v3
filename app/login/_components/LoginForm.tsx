@@ -6,7 +6,7 @@ import { LoginSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Button from "@/components/BlueButton";
-import submitLoginForm from "@/actions/login-form";
+import submitLoginForm from "@/actions/user/login-form";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 import { Eye } from "lucide-react";

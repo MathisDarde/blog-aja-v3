@@ -5,7 +5,7 @@ import { InscSchema } from "@/app/schema";
 import { InscSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import submitInscForm from "@/actions/insc-form";
+import submitInscForm from "@/actions/user/insc-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

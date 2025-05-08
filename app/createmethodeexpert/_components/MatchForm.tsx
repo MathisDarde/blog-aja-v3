@@ -1,6 +1,6 @@
 "use client";
 
-import submitMethodeMatchForm from "@/actions/methode-match-form";
+import submitMethodeMatchForm from "@/actions/method/methode-match-form";
 import { MethodeMatchSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
 import { authClient } from "@/lib/auth-client";
@@ -29,7 +29,7 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import Section from "./DropdownContainerDomExt";
-import { getFlags } from "@/actions/get-flags-files";
+import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
 
 const session = await authClient.getSession();

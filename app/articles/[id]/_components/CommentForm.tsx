@@ -7,7 +7,7 @@ import { CommentSchema } from "@/app/schema";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import Button from "@/components/BlueButton";
-import submitCommentForm from "@/actions/comment-form";
+import submitCommentForm from "@/actions/comment/comment-form";
 import { authClient } from "@/lib/auth-client";
 
 const session = await authClient.getSession();

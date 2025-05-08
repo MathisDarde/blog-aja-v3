@@ -18,13 +18,13 @@ import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
 import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
 import CommentForm from "./CommentForm";
-import displayCommentsbyId from "@/actions/display-comments-by-article";
+import displayCommentsbyId from "@/actions/comment/display-comments-by-article";
 import { useRouter, useParams } from "next/navigation";
 import Button from "@/components/BlueButton";
 import { toast } from "sonner";
-import deleteArticleSA from "@/actions/delete-article";
+import deleteArticleSA from "@/actions/article/delete-article";
 import UpdateArticleForm from "./UpdateArticleForm";
-import getAllMethodes from "@/actions/get-all-methodes";
+import getAllMethodes from "@/actions/method/get-all-methodes";
 
 interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";

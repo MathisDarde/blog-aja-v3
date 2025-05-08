@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import updateArticleForm from "@/actions/update-article-form";
+import updateArticleForm from "@/actions/article/update-article-form";
 import { useParams } from "next/navigation";
 
 interface Tags {

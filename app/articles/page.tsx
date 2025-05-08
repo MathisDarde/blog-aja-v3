@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SearchInput from "./_components/SearchInput";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getArticlesbyKeywords } from "@/actions/get-article-by-keywords";
+import { getArticlesbyKeywords } from "@/actions/article/get-article-by-keywords";
 import Button from "@/components/BlueButton";
 
 interface Article {

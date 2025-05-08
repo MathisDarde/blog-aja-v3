@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import displayUniqueArticle from "@/actions/get-single-article";
+import displayUniqueArticle from "@/actions/article/get-single-article";
 import ArticleDisplay from "./ArticleDisplay";
 
 interface Article {

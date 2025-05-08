@@ -1,7 +1,7 @@
 "use client";
 
-import { getTeamLogos } from "@/actions/get-logos-files";
-import submitMethodeCoachForm from "@/actions/methode-coach-form";
+import { getTeamLogos } from "@/actions/method/get-logos-files";
+import submitMethodeCoachForm from "@/actions/method/methode-coach-form";
 import { MethodeCoachSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
 import { authClient } from "@/lib/auth-client";

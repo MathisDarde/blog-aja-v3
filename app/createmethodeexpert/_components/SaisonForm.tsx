@@ -1,6 +1,6 @@
 "use client";
 
-import submitMethodeSaisonForm from "@/actions/methode-saison-form";
+import submitMethodeSaisonForm from "@/actions/method/methode-saison-form";
 import { MethodeSaisonSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
 import { authClient } from "@/lib/auth-client";
@@ -23,7 +23,7 @@ import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { getFlags } from "@/actions/get-flags-files";
+import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
 
 const session = await authClient.getSession();

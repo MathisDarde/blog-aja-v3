@@ -1,8 +1,8 @@
 "use client";
 
-import deleteAccount from "@/actions/delete-account";
-import { isAuthenticated } from "@/actions/is-user-connected";
-import { logOut } from "@/actions/log-out";
+import deleteAccount from "@/actions/user/delete-account";
+import { isAuthenticated } from "@/actions/user/is-user-connected";
+import { logOut } from "@/actions/user/log-out";
 import Button from "@/components/BlueButton";
 import {
   Cake,

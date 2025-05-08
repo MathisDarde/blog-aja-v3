@@ -8,7 +8,7 @@ import SidebarData, {
   AutresDropdownData,
 } from "./SidebarData";
 import Image from "next/image";
-import { isAuthenticated } from "@/actions/is-user-connected";
+import { isAuthenticated } from "@/actions/user/is-user-connected";
 
 export default function Header() {
   const [loading, setLoading] = useState(true);

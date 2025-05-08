@@ -1,4 +1,4 @@
-import displayLastPublished from "@/actions/display-last-published";
+import displayLastPublished from "@/actions/article/display-last-published";
 import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";

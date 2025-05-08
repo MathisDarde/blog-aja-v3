@@ -1,4 +1,4 @@
-import displayArticles from "@/actions/display-articles";
+import displayArticles from "@/actions/article/display-articles";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
