@@ -89,7 +89,7 @@ export async function getCommentbyId(
     );
 }
 
-export async function updateArticle(
+export async function updateComment(
   commentId: SelectComment["id_comment"],
   data: Partial<Omit<SelectComment, "id_comment">>
 ) {
@@ -99,7 +99,7 @@ export async function updateArticle(
     .where(eq(commentsTable.id_comment, commentId));
 }
 
-export async function deleteArticle(commentId: SelectComment["id_comment"]) {
+export async function deleteComment(commentId: SelectComment["id_comment"]) {
   await db.delete(commentsTable).where(eq(commentsTable.id_comment, commentId));
 }
 
@@ -133,4 +133,36 @@ export async function getCommentsbyArticle(
     .from(commentsTable)
     .innerJoin(user, eq(commentsTable.userId, user.id))
     .where(eq(commentsTable.articleId, id_article));
+}
+
+export async function getCommentsByUser(
+  id_user: SelectComment["userId"]
+): Promise<
+  Array<{
+    id_comment: string;
+    stars: string;
+    title: string;
+    content: string;
+    userId: string;
+    pseudo: string;
+    photodeprofil: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }>
+> {
+  return db
+    .select({
+      id_comment: commentsTable.id_comment,
+      stars: commentsTable.stars,
+      title: commentsTable.title,
+      content: commentsTable.content,
+      userId: commentsTable.userId,
+      pseudo: user.name,
+      photodeprofil: user.photodeprofil,
+      createdAt: commentsTable.createdAt,
+      updatedAt: commentsTable.updatedAt,
+    })
+    .from(commentsTable)
+    .innerJoin(user, eq(commentsTable.userId, user.id))
+    .where(eq(commentsTable.userId, id_user));
 }

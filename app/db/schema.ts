@@ -1,11 +1,18 @@
 import {
   boolean,
   json,
+  pgEnum,
   pgTable,
   text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+
+export const statesEnum = pgEnum("states", [
+  "pending",
+  "published",
+  "archived",
+]);
 
 export const user = pgTable("users_table", {
   id: text("id").primaryKey(),
@@ -69,6 +76,7 @@ export const articlesTable = pgTable("articles_table", {
   content: text("content").notNull(),
   author: text("author").notNull(),
   tags: varchar("tags", { length: 255 }).array().notNull(),
+  state: statesEnum().default("pending"),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

@@ -16,7 +16,7 @@ const getAllMethodes = async () => {
 
     return [...coach, ...joueur, ...match, ...saison];
   } catch (error) {
-    console.error("Erreur lors de la récupération de l'article :", error);
+    console.error("Erreur lors de la récupération de la méthode :", error);
     return null;
   }
 };

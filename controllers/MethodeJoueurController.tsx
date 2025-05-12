@@ -147,7 +147,7 @@ export async function getMethodeById(methodeId: string): Promise<
   }));
 }
 
-export async function updateMethode(
+export async function updateMethodeJoueur(
   methodeId: string,
   data: Partial<
     Omit<
@@ -175,8 +175,9 @@ export async function updateMethode(
     .where(eq(methodeExpertJoueurTable.id_methode, methodeId));
 }
 
-export async function deleteMethode(methodeId: string) {
+export async function deleteMethodeJoueur(methodeId: string) {
   await db
     .delete(methodeExpertJoueurTable)
     .where(eq(methodeExpertJoueurTable.id_methode, methodeId));
+  return { success: true };
 }

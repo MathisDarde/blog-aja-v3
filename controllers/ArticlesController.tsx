@@ -181,6 +181,16 @@ export async function updateArticle(
   }
 }
 
+export async function updateStatus(
+  articleId: SelectPost["id_article"],
+  state: "pending" | "published" | "archived"
+) {
+  await db
+    .update(articlesTable)
+    .set({ state })
+    .where(eq(articlesTable.id_article, articleId));
+}
+
 export async function deleteArticle(articleId: SelectPost["id_article"]) {
   await db.delete(articlesTable).where(eq(articlesTable.id_article, articleId));
 }

@@ -1,7 +1,8 @@
 import getArticlesInfos from "@/actions/dashboard/get-articles-infos";
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ContextPopup from "./ContextPopup";
 
 interface Article {
   id_article: string;
@@ -22,6 +23,12 @@ export default function TabArticleContent() {
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [contextPopupId, setContextPopupId] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const getArticles = async () => {
@@ -74,6 +81,33 @@ export default function TabArticleContent() {
       setSortOrder("asc");
     }
   };
+
+  const openContextPopup = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Pour éviter des comportements inattendus
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    setPopupPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+    });
+    setContextPopupId((prev) => (prev === id ? null : id));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setContextPopupId(null);
+        setPopupPosition(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="overflow-x-auto">
@@ -146,7 +180,12 @@ export default function TabArticleContent() {
                 <td className="p-3 text-center w-[125px]">
                   {article.publishedAt.toLocaleDateString()}
                 </td>
-                <td className="p-3 text-center w-[50px] cursor-pointer text-gray-600">
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e: React.MouseEvent) =>
+                    openContextPopup(article.id_article, e)
+                  }
+                >
                   <EllipsisVertical />
                 </td>
               </tr>
@@ -154,6 +193,16 @@ export default function TabArticleContent() {
           )}
         </tbody>
       </table>
+
+      {contextPopupId && popupPosition && (
+        <div
+          className="absolute z-50"
+          style={{ top: popupPosition.top, left: popupPosition.left }}
+          ref={popupRef}
+        >
+          <ContextPopup id={contextPopupId} type="article" />
+        </div>
+      )}
     </div>
   );
 }

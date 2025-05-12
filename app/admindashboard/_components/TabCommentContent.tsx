@@ -2,7 +2,8 @@
 
 import getCommentsInfos from "@/actions/dashboard/get-comments-infos";
 import { EllipsisVertical, Loader2, Star } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ContextPopup from "./ContextPopup";
 
 interface Comment {
   id_comment: string;
@@ -22,6 +23,12 @@ export default function TabCommentContent() {
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [contextPopupId, setContextPopupId] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -74,6 +81,33 @@ export default function TabCommentContent() {
       setSortOrder("asc");
     }
   };
+
+  const openContextPopup = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Pour éviter des comportements inattendus
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    setPopupPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+    });
+    setContextPopupId((prev) => (prev === id ? null : id));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setContextPopupId(null);
+        setPopupPosition(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="overflow-x-auto">
@@ -157,7 +191,12 @@ export default function TabCommentContent() {
                 <td className="p-3 text-center w-[150px]">
                   {comment.createdAt.toLocaleDateString()}
                 </td>
-                <td className="p-3 text-center w-[50px] cursor-pointer text-gray-600">
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e: React.MouseEvent) =>
+                    openContextPopup(comment.id_comment, e)
+                  }
+                >
                   <EllipsisVertical />
                 </td>
               </tr>
@@ -165,6 +204,16 @@ export default function TabCommentContent() {
           )}
         </tbody>
       </table>
+
+      {contextPopupId && popupPosition && (
+        <div
+          className="absolute z-50"
+          style={{ top: popupPosition.top, left: popupPosition.left }}
+          ref={popupRef}
+        >
+          <ContextPopup id={contextPopupId} type="comment" />
+        </div>
+      )}
     </div>
   );
 }

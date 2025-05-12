@@ -1,8 +1,9 @@
 "use client";
 
 import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { EllipsisVertical, Loader2 } from "lucide-react";
+import ContextPopup from "./ContextPopup";
 
 interface Methode {
   id: string;
@@ -31,6 +32,12 @@ export default function TabMethodeContent() {
   const [loading, setLoading] = useState(true); // Commence avec loading à true
   const [sortKey, setSortKey] = useState<SortKey>("typemethode");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [contextPopupId, setContextPopupId] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     // Déclaration de la fonction fetchData en dehors pour éviter les problèmes de portée
@@ -126,6 +133,33 @@ export default function TabMethodeContent() {
     }
   };
 
+  const openContextPopup = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Pour éviter des comportements inattendus
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    setPopupPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+    });
+    setContextPopupId((prev) => (prev === id ? null : id));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setContextPopupId(null);
+        setPopupPosition(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="overflow-y-auto">
       <table className="w-auto table-auto border border-gray-300">
@@ -192,7 +226,12 @@ export default function TabMethodeContent() {
                 <td className="p-3 text-center w-[250px]">
                   {methode.created_at.toLocaleDateString()}
                 </td>
-                <td className="p-3 text-center w-[50px] cursor-pointer text-gray-600">
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e: React.MouseEvent) =>
+                    openContextPopup(methode.id, e)
+                  }
+                >
                   <EllipsisVertical />
                 </td>
               </tr>
@@ -200,6 +239,16 @@ export default function TabMethodeContent() {
           )}
         </tbody>
       </table>
+
+      {contextPopupId && popupPosition && (
+        <div
+          className="absolute z-50"
+          style={{ top: popupPosition.top, left: popupPosition.left }}
+          ref={popupRef}
+        >
+          <ContextPopup id={contextPopupId} type="method" />
+        </div>
+      )}
     </div>
   );
 }

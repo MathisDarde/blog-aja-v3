@@ -3,7 +3,8 @@
 import getUsersInfos from "@/actions/dashboard/get-users-infos";
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ContextPopup from "./ContextPopup";
 
 interface User {
   id: string;
@@ -26,6 +27,12 @@ export default function TabUserContent() {
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [contextPopupId, setContextPopupId] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -89,6 +96,33 @@ export default function TabUserContent() {
       setSortOrder("asc");
     }
   };
+
+  const openContextPopup = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    setPopupPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+    });
+    setContextPopupId((prev) => (prev === id ? null : id));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setContextPopupId(null);
+        setPopupPosition(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="overflow-x-auto w-fit">
@@ -172,7 +206,12 @@ export default function TabUserContent() {
                 <td className="p-3 text-center w-[125px]">
                   {user.admin ? "Admin" : "Membre"}
                 </td>
-                <td className="p-3 text-center w-[50px] cursor-pointer text-gray-600">
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e: React.MouseEvent) =>
+                    openContextPopup(user.id, e)
+                  }
+                >
                   <EllipsisVertical />
                 </td>
               </tr>
@@ -180,6 +219,16 @@ export default function TabUserContent() {
           )}
         </tbody>
       </table>
+
+      {contextPopupId && popupPosition && (
+        <div
+          className="absolute z-50"
+          style={{ top: popupPosition.top, left: popupPosition.left }}
+          ref={popupRef}
+        >
+          <ContextPopup id={contextPopupId} type="user" />
+        </div>
+      )}
     </div>
   );
 }
