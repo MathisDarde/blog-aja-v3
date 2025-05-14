@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && <actual-build-command>",
     "start": "next start",
     "lint": "next lint"
   },
