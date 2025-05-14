@@ -1,10 +1,28 @@
 import { db } from "@/app/db/db";
 import { articlesTable, SelectPost } from "@/app/db/schema";
-import { ArticleSchemaType } from "@/types/forms";
+import { ArticleSchemaType, DraftArticleSchemaType } from "@/types/forms";
 import { desc, eq } from "drizzle-orm";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+
+export async function getAllArticles(): Promise<
+  Array<{
+    id_article: string;
+    imageUrl: string;
+    title: string;
+    teaser: string;
+    content: string;
+    author: string;
+    state: string | null;
+    tags: string[];
+    userId: string;
+    publishedAt: Date;
+    updatedAt: Date;
+  }>
+> {
+  return db.select().from(articlesTable);
+}
 
 export async function getArticles(): Promise<
   Array<{
@@ -14,13 +32,23 @@ export async function getArticles(): Promise<
     teaser: string;
     content: string;
     author: string;
+    state: string;
     tags: string[];
     userId: string;
     publishedAt: Date;
     updatedAt: Date;
   }>
 > {
-  return db.select().from(articlesTable);
+  return db
+    .select()
+    .from(articlesTable)
+    .where(eq(articlesTable.state, "published"))
+    .then((articles) =>
+      articles.map((article) => ({
+        ...article,
+        state: article.state ?? "unknown",
+      }))
+    );
 }
 
 export async function createArticle(
@@ -83,6 +111,7 @@ export async function createArticle(
       content,
       author,
       tags: parsedTags,
+      state: "published",
       userId,
     });
 
@@ -92,6 +121,72 @@ export async function createArticle(
     throw new Error(
       `Erreur lors de l'upload du fichier ou de la création de l'article`
     );
+  }
+}
+
+export async function storeBrouillon(
+  data: Partial<DraftArticleSchemaType>,
+  userId: string,
+  file?: File
+) {
+  let imageUrl = "";
+
+  try {
+    if (file) {
+      const MAX_SIZE = 5 * 2048 * 2048; // 5 Mo
+      const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ];
+
+      if (file.size > MAX_SIZE) {
+        throw new Error(
+          "Le fichier est trop grand. La taille maximale est de 5 Mo."
+        );
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        throw new Error(
+          "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
+        );
+      }
+
+      const uploadDir = path.join(process.cwd(), "/public/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileExtension = path.extname(file.name);
+      const fileName = `${uuidv4()}${fileExtension}`;
+      const filePath = path.join(uploadDir, fileName);
+
+      const buffer = await file.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(buffer));
+
+      imageUrl = `/uploads/${fileName}`;
+    }
+
+    const { title, teaser, content, author, tags } = data || {};
+    const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
+
+    const result = await db.insert(articlesTable).values({
+      id_article: uuidv4(),
+      imageUrl,
+      title: title ?? "",
+      teaser: teaser ?? "",
+      content: content ?? "",
+      author: author ?? "",
+      tags: parsedTags ?? [],
+      state: "pending",
+      userId: userId,
+    });
+
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw new Error(`Erreur lors de l'enregistrement du brouillon`);
   }
 }
 
@@ -199,6 +294,7 @@ export async function getLastPublished() {
   const result = await db
     .select()
     .from(articlesTable)
+    .where(eq(articlesTable.state, "published"))
     .orderBy(desc(articlesTable.publishedAt))
     .then((results) => results[0]);
   return result;

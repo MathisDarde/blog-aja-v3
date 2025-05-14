@@ -12,11 +12,12 @@ import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArticleSchema } from "@/app/schema";
+import { ArticleSchema, DraftArticleSchema } from "@/app/schema";
 import submitArticleForm from "@/actions/article/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import storeDraftArticle from "@/actions/article/store-draft";
 
 interface Tags {
   tag: string;
@@ -41,9 +42,10 @@ function ArticleForm() {
       );
   }, []);
 
-  const { register, handleSubmit, formState } = useForm<ArticleSchemaType>({
-    resolver: zodResolver(ArticleSchema),
-  });
+  const { register, handleSubmit, formState, getValues } =
+    useForm<ArticleSchemaType>({
+      resolver: zodResolver(ArticleSchema),
+    });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -86,6 +88,51 @@ function ArticleForm() {
           className: "bg-red-500 border border-red-200 text-white text-base",
         }
       );
+    }
+  };
+
+  const storeBrouillon = async () => {
+    const rawData = getValues();
+
+    const normalizedDraftData = {
+      ...rawData,
+      tags: Array.isArray(rawData.tags)
+        ? rawData.tags
+        : rawData.tags
+        ? [rawData.tags]
+        : [],
+    };
+
+    console.log("Normalized Draft Data:", normalizedDraftData);
+
+    const parsed = DraftArticleSchema.safeParse(normalizedDraftData);
+
+    if (!parsed.success) {
+      console.error("Validation Error:", parsed.error.format());
+      toast.error("Erreur de validation du brouillon.");
+      return;
+    }
+
+    if (!id) {
+      toast.error(
+        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
+      );
+      return;
+    }
+
+    const response = await storeDraftArticle(
+      parsed.data,
+      id,
+      selectedFile || undefined
+    );
+
+    if (response.success) {
+      redirect("/brouillons");
+    } else {
+      toast.error(response.message || response.errors?.[0].message, {
+        icon: <X className="text-white" />,
+        className: "bg-red-500 border border-red-200 text-white text-base",
+      });
     }
   };
 
@@ -179,21 +226,28 @@ function ArticleForm() {
             Tags :
           </span>
           <div
-            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}
-            className="w-w-600 bg-white rounded-2xl border border-gray-600 my-4"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "16px",
+            }}
+            className="w-w-600 bg-white rounded-2xl border border-gray-600 my-4 p-4"
           >
             {tags.map((category: Tags) => (
               <div
                 key={category.value}
-                className="relative pl-2 cursor-pointer flex items-center"
+                className="relative cursor-pointer flex items-center"
               >
                 <input
                   type="checkbox"
                   {...register("tags")}
                   value={category.value}
-                  className="my-4 mx-2"
+                  className="mx-2"
                 />
-                <label htmlFor={`checkbox`} className="cursor-pointer">
+                <label
+                  htmlFor={`checkbox`}
+                  className="cursor-pointer font-Montserrat"
+                >
                   {category.tag}
                 </label>
               </div>
@@ -202,6 +256,13 @@ function ArticleForm() {
         </div>
 
         <div className="flex justify-center items-center">
+          <Button
+            type="button"
+            className="bg-gray-400 border-0 hover:border-none hover:bg-gray-500 hover:text-white"
+            onClick={storeBrouillon}
+          >
+            Sauvegarder le brouillon
+          </Button>
           <Button type="submit">Je publie l&apos;article</Button>
         </div>
       </form>

@@ -1,6 +1,7 @@
 import {
   ArticleSchema,
   CommentSchema,
+  DraftArticleSchema,
   InscSchema,
   LoginSchema,
   MethodeCoachSchema,
@@ -15,6 +16,7 @@ export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type InscSchemaType = z.infer<typeof InscSchema>;
 export type UpdateProfileSchemaType = z.infer<typeof updateProfileSchema>;
 export type ArticleSchemaType = z.infer<typeof ArticleSchema>;
+export type DraftArticleSchemaType = z.infer<typeof DraftArticleSchema>;
 export type CommentSchemaType = z.infer<typeof CommentSchema>;
 export type MethodeSaisonSchemaType = z.infer<typeof MethodeSaisonSchema>;
 export type MethodeMatchSchemaType = z.infer<typeof MethodeMatchSchema>;

@@ -2,7 +2,7 @@
 
 import { db } from "@/app/db/db";
 import { articlesTable } from "@/app/db/schema";
-import { and, or, like, ilike, sql } from "drizzle-orm";
+import { and, or, like, ilike, sql, eq } from "drizzle-orm";
 
 interface Article {
   id_article: string;
@@ -31,6 +31,7 @@ export async function getArticlesbyKeywords({
 
     const conditions = [];
 
+    // Recherche textuelle
     if (searchTerms.length > 0) {
       const searchConditions = searchTerms.map((term) =>
         or(
@@ -42,6 +43,7 @@ export async function getArticlesbyKeywords({
       conditions.push(or(...searchConditions));
     }
 
+    // Filtres de tags
     if (year) {
       conditions.push(sql`${year} = ANY(${articlesTable.tags})`);
     }
@@ -52,11 +54,14 @@ export async function getArticlesbyKeywords({
       conditions.push(sql`${player} = ANY(${articlesTable.tags})`);
     }
 
+    // Toujours vérifier l'état publié
+    conditions.push(eq(articlesTable.state, "published"));
+
     // Exécution de la requête
     const results = await db
       .select()
       .from(articlesTable)
-      .where(conditions.length > 0 ? and(...conditions) : undefined);
+      .where(and(...conditions));
 
     return results as Article[];
   } catch (error) {

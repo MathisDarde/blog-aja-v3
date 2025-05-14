@@ -86,6 +86,14 @@ export const ArticleSchema = z.object({
   ),
 });
 
+export const DraftArticleSchema = z.object({
+  title: z.string().optional(),
+  teaser: z.string().optional(),
+  content: z.string().optional(),
+  author: z.string().optional(),
+  tags: z.array(z.string().optional()),
+});
+
 export const CommentSchema = z.object({
   stars: z
     .string()
