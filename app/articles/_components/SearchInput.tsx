@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Search, ArrowDown } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface SearchInputProps {
   value: string;
@@ -17,24 +16,6 @@ const SearchInput = ({
   onFilterClick,
   onSubmit,
 }: SearchInputProps) => {
-  const router = useRouter();
-
-  const onSearch = (event: React.FormEvent) => {
-    event.preventDefault();
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentCategory = urlParams.get("tags");
-
-    const params = new URLSearchParams();
-    if (value) {
-      params.set("q", value);
-    }
-    if (currentCategory) {
-      params.set("tags", currentCategory);
-    }
-
-    router.push(`/articles?${params.toString()}`);
-  };
-
   return (
     <div className="relative z-20">
       <form onSubmit={onSubmit}>
