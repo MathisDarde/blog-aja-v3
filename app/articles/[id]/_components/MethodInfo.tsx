@@ -5,6 +5,8 @@ import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
 
 interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
+  id_methode: string;
+  keywords: string[];
 }
 
 interface MethodeJoueur extends BaseMethodeData {

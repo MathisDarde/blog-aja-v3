@@ -58,7 +58,15 @@ export default function TabMethodeContent() {
           }));
           setMethodes(parsed);
         } else {
-          console.error("Failed to fetch methods:", result.message);
+          console.error(
+            "Failed to fetch methods:",
+            result &&
+              typeof result === "object" &&
+              result !== null &&
+              "message" in result
+              ? (result as { message: string }).message
+              : result
+          );
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des méthodes :", error);

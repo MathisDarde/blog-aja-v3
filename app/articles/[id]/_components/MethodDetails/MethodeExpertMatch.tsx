@@ -5,7 +5,7 @@ interface GameMethodeExpertProps {
   methode: {
     id_methode: string;
     typemethode: "match";
-    keyword: string[];
+    keywords: string[];
     titrematch: string;
     imgterrain: string;
     couleur1equipe1: string;

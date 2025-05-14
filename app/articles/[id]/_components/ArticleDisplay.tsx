@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { JsonValue } from "@prisma/client/runtime/library";
 import {
   Calendar1,
   ChevronLeft,
@@ -29,7 +28,7 @@ import getAllMethodes from "@/actions/method/get-all-methodes";
 interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
   id_methode: string;
-  keyword: string[];
+  keywords: string[];
 }
 
 interface MethodeJoueur extends BaseMethodeData {
@@ -89,7 +88,7 @@ interface ArticleProps {
     content: string;
     author: string;
     publishedAt: Date;
-    tags: JsonValue;
+    tags: string[];
   };
 }
 
@@ -147,19 +146,33 @@ export default function ArticleDisplay({ article }: ArticleProps) {
     getAllMethodes()
       .then((data) => {
         if (data) {
-          setMethodes(data);
+          const typedMethodes = data.map((item) => {
+            switch (item.typemethode) {
+              case "joueur":
+                return item as unknown as MethodeJoueur;
+              case "saison":
+                return item as unknown as MethodeSaison;
+              case "match":
+                return item as unknown as MethodeMatch;
+              case "coach":
+                return item as unknown as MethodeCoach;
+              default:
+                throw new Error(
+                  `Type de méthode inconnu : ${item.typemethode}`
+                );
+            }
+          });
 
-          const allKeywords = data.flatMap((item) =>
+          setMethodes(typedMethodes); // ✅ plus d'erreur ici
+
+          const allKeywords = typedMethodes.flatMap((item) =>
             item.keywords.map((kw) => ({
               id_methode: item.id_methode,
-              typemethode: item.typemethode as
-                | "joueur"
-                | "saison"
-                | "match"
-                | "coach",
-              keyword: [kw],
+              typemethode: item.typemethode,
+              keywords: [kw],
             }))
           );
+
           setKeywords(allKeywords);
         } else {
           setKeywords([]);

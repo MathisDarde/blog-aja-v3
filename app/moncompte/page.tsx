@@ -156,9 +156,7 @@ export default function MonCompte() {
             userData={{
               name: user?.name || "",
               email: user?.email || "",
-              birthday: user?.birthday
-                ? new Date(user.birthday).toISOString().split("T")[0]
-                : "",
+              birthday: user?.birthday || new Date(),
             }}
           />
         </div>

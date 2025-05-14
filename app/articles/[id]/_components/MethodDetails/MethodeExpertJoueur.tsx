@@ -4,7 +4,7 @@ interface PlayerMethodeExpertProps {
   methode: {
     id_methode: string;
     typemethode: "joueur";
-    keyword: string[];
+    keywords: string[];
     imagejoueur: string;
     joueurnom: string;
     poste: string;

@@ -3,7 +3,7 @@ import Image from "next/image";
 interface Methode {
   id_methode: string;
   typemethode: "coach";
-  keyword: string[];
+  keywords: string[];
   imagecoach: string;
   nomcoach: string;
   clubscoach: [string, string, string][];

@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 interface Keyword {
   id_methode: string;
   typemethode: string;
-  keyword: string[];
+  keywords: string[];
 }
 
 interface Props {
@@ -63,9 +63,9 @@ const KeywordHighlighter: React.FC<Props> = ({
 
   // Apply keyword highlighting
   keywords.forEach((keyword) => {
-    const keywordArray = Array.isArray(keyword.keyword)
-      ? keyword.keyword
-      : [keyword.keyword];
+    const keywordArray = Array.isArray(keyword.keywords)
+      ? keyword.keywords
+      : [keyword.keywords];
 
     keywordArray.forEach((kw) => {
       // Make sure keyword is a string before processing

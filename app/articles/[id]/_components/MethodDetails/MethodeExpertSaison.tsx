@@ -4,7 +4,7 @@ interface SeasonMethodeExpertProps {
   methode: {
     id_methode: string;
     typemethode: "saison";
-    keyword: string[];
+    keywords: string[];
     saison: string;
     imgterrain: string;
     coach: string;
