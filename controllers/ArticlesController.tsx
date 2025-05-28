@@ -14,14 +14,25 @@ export async function getAllArticles(): Promise<
     teaser: string;
     content: string;
     author: string;
-    state: string | null;
+    state: "pending" | "published" | "archived";
     tags: string[];
     userId: string;
     publishedAt: Date;
     updatedAt: Date;
   }>
 > {
-  return db.select().from(articlesTable);
+  return db
+    .select()
+    .from(articlesTable)
+    .then((articles) =>
+      articles.map((article) => ({
+        ...article,
+        state: (article.state ?? "pending") as
+          | "pending"
+          | "published"
+          | "archived",
+      }))
+    );
 }
 
 export async function getArticles(): Promise<
@@ -32,8 +43,8 @@ export async function getArticles(): Promise<
     teaser: string;
     content: string;
     author: string;
-    state: string;
     tags: string[];
+    state: "pending" | "published" | "archived";
     userId: string;
     publishedAt: Date;
     updatedAt: Date;
@@ -46,7 +57,10 @@ export async function getArticles(): Promise<
     .then((articles) =>
       articles.map((article) => ({
         ...article,
-        state: article.state ?? "unknown",
+        state: (article.state ?? "pending") as
+          | "pending"
+          | "published"
+          | "archived",
       }))
     );
 }
@@ -201,6 +215,7 @@ export async function getArticlebyId(
     content: string;
     author: string;
     userId: string;
+    state: "pending" | "published" | "archived";
     publishedAt: Date;
     updatedAt: Date;
     tags: string[];
@@ -209,7 +224,16 @@ export async function getArticlebyId(
   return db
     .select()
     .from(articlesTable)
-    .where(eq(articlesTable.id_article, articleId));
+    .where(eq(articlesTable.id_article, articleId))
+    .then((articles) =>
+      articles.map((article) => ({
+        ...article,
+        state: (article.state ?? "pending") as
+          | "pending"
+          | "published"
+          | "archived",
+      }))
+    );
 }
 
 export async function updateArticle(

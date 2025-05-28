@@ -8,6 +8,7 @@ import DisplayCategories from "@/components/DisplayCategories";
 import Footer from "@/components/Footer";
 import React, { useEffect } from "react";
 import Classement from "@/components/Classement";
+import Carousel from "@/components/carousel/Carousel";
 
 export default function Page() {
   useEffect(() => {
@@ -24,6 +25,10 @@ export default function Page() {
 
   return (
     <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
+      <div className="pb-3">
+        <Carousel />
+      </div>
+
       <div className="py-3">
         <Calendrier />
       </div>

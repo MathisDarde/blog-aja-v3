@@ -21,13 +21,15 @@ export default function UpdateProfileForm({
 }: UpdateArticleFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  console.log(userData);
+
   const { register, handleSubmit, formState } =
     useForm<UpdateProfileSchemaType>({
       resolver: zodResolver(updateProfileSchema),
       defaultValues: {
         name: userData.name || "",
+        birthday: userData.birthday,
         email: userData.email || "",
-        birthday: userData.birthday || new Date(),
       },
     });
 
@@ -63,11 +65,11 @@ export default function UpdateProfileForm({
       return;
     }
 
-    if (!selectedFile) {
-      toast.error("Veuillez sélectionner un fichier avant de soumettre.");
-      return;
-    }
-    const response = await updateProfileForm(id, data, selectedFile);
+    const response = await updateProfileForm(
+      id,
+      data,
+      selectedFile ?? undefined
+    );
 
     if (response.success) {
       toast.success(response.message, {
