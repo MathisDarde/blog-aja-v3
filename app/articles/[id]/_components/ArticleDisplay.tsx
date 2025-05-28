@@ -306,7 +306,7 @@ export default function ArticleDisplay({ article }: ArticleProps) {
       {isUpdating ? (
         <div>
           {confirmLeaveChanges && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-Montserrat">
               <div className="bg-white p-6 rounded-xl shadow-lg w-96 text-center">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">
                   Revenir en arrière ?
@@ -408,7 +408,7 @@ export default function ArticleDisplay({ article }: ArticleProps) {
                         {/* Delete */}
                         <div className="border border-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:bg-red-500 hover:text-white">
                           {isDeletePopupOpen && (
-                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-Montserrat">
                               <div className="bg-white p-6 rounded-xl shadow-lg w-96 text-center">
                                 <h3 className="text-xl font-bold text-gray-800 mb-4">
                                   Supprimer le compte ?
@@ -517,17 +517,17 @@ export default function ArticleDisplay({ article }: ArticleProps) {
                                   <Image
                                     src={"/_assets/img/pdpdebase.png"}
                                     alt="Photo de profil"
-                                    width={45}
-                                    height={45}
-                                    className="rounded-full"
+                                    width={128}
+                                    height={128}
+                                    className="w-11 h-11 rounded-full"
                                   />
                                 ) : (
                                   <Image
                                     src={comment.photodeprofil}
                                     alt="Photo de profil"
-                                    width={35}
-                                    height={35}
-                                    className="w-15 h-15"
+                                    width={128}
+                                    height={128}
+                                    className="w-11 h-11 rounded-full object-cover"
                                   />
                                 )}
                                 <p className="font-semibold">
@@ -536,18 +536,18 @@ export default function ArticleDisplay({ article }: ArticleProps) {
                                 <p className="font-light text-xs">
                                   {comment.updatedAt}
                                 </p>
-                              </div>
-                              <div className="flex items-center gap-1 my-2">
-                                {Array.from({ length: comment.stars }).map(
-                                  (_, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="text-yellow-400 text-3xl"
-                                    >
-                                      ★
-                                    </span>
-                                  )
-                                )}
+                                <div className="flex items-center gap-1 my-2">
+                                  {Array.from({ length: comment.stars }).map(
+                                    (_, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="text-yellow-400 text-3xl"
+                                      >
+                                        ★
+                                      </span>
+                                    )
+                                  )}
+                                </div>
                               </div>
                               <p className="font-semibold uppercase my-2">
                                 {comment.title}

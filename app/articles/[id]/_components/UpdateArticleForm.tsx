@@ -225,13 +225,17 @@ export default function UpdateArticleForm({
             Tags :
           </span>
           <div
-            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}
-            className="w-w-600 bg-white rounded-2xl border border-gray-600 my-4"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "16px",
+            }}
+            className="w-w-600 bg-white rounded-2xl border border-gray-600 my-4 p-4"
           >
             {tags.map((category: Tags) => (
               <div
                 key={category.value}
-                className="relative pl-2 cursor-pointer flex items-center"
+                className="relative cursor-pointer flex items-center"
               >
                 <input
                   type="checkbox"
@@ -250,9 +254,12 @@ export default function UpdateArticleForm({
                     }
                     setValue("tags", updatedTags);
                   }}
-                  className="my-4 mx-2"
+                  className="mx-2"
                 />
-                <label htmlFor={`checkbox`} className="cursor-pointer">
+                <label
+                  htmlFor={`checkbox`}
+                  className="cursor-pointer font-Montserrat"
+                >
                   {category.tag}
                 </label>
               </div>
