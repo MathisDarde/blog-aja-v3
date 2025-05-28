@@ -202,7 +202,8 @@ function ArticleForm() {
           </span>
           <textarea
             {...register("content")}
-            className="w-w-600 h-auto my-4 pt-4 pb-64 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            rows={15}
+            className="w-w-600 h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
             placeholder="Contenu de l'article"
           ></textarea>
         </div>

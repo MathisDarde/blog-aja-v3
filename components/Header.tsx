@@ -131,7 +131,7 @@ export default function Header() {
                 {val.dropdown && activeDropdown === val.title && (
                   <div
                     ref={dropdownRef} // Ajouter la référence ici
-                    className="absolute top-10 left-1/2 -translate-x-1/2 mt-4 z-50 bg-white shadow-lg rounded-xl p-6 w-screen flex justify-center gap-10"
+                    className="absolute top-10 left-1/2 -translate-x-1/2 mt-3 z-50 bg-white shadow-lg rounded-xl p-6 w-screen flex justify-center gap-10"
                   >
                     {val.type === "vanilla" &&
                       AutresDropdownData.map((dropdownVal, dropdownKey) => (
