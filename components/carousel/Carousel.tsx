@@ -7,7 +7,6 @@ import displayUniqueArticle from "@/actions/article/get-single-article";
 import { Article } from "./CarouselContent";
 
 export default function Carousel() {
-  const [articles, setArticles] = useState<Article[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -35,8 +34,6 @@ export default function Carousel() {
         ...lastPublished.filter((a): a is Article => a !== null),
         ...myChoice.filter((a): a is Article => a !== null),
       ];
-
-      setArticles(allArticles);
     }
 
     fetchArticles();
