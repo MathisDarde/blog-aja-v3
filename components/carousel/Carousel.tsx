@@ -8,6 +8,7 @@ import { Article } from "./CarouselContent";
 
 export default function Carousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -16,24 +17,19 @@ export default function Carousel() {
         "c402e045-c67f-4967-8097-f74705dff076"
       );
 
-      const lastPublished: (Article | null)[] = Array.isArray(
-        lastPublishedResult
-      )
+      const lastPublished: Article[] = Array.isArray(lastPublishedResult)
         ? lastPublishedResult
         : lastPublishedResult
         ? [lastPublishedResult]
         : [];
 
-      const myChoice: (Article | null)[] = Array.isArray(myChoiceResult)
+      const myChoice: Article[] = Array.isArray(myChoiceResult)
         ? myChoiceResult
         : myChoiceResult
         ? [myChoiceResult]
         : [];
 
-      const allArticles = [
-        ...lastPublished.filter((a): a is Article => a !== null),
-        ...myChoice.filter((a): a is Article => a !== null),
-      ];
+      setArticles([...lastPublished, ...myChoice]);
     }
 
     fetchArticles();
@@ -44,6 +40,7 @@ export default function Carousel() {
       <CarouselContent
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
+        articles={articles}
       />
     </div>
   );

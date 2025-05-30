@@ -1,7 +1,4 @@
-import displayLastPublished from "@/actions/article/display-last-published";
-import displayUniqueArticle from "@/actions/article/get-single-article";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { CarouselDots } from "./Dots";
 
 export type Article = {
@@ -21,42 +18,14 @@ export type Article = {
 type CarouselContentProps = {
   currentIndex: number;
   setCurrentIndex: (index: number) => void;
+  articles: Article[];
 };
 
 export const CarouselContent = ({
   currentIndex,
   setCurrentIndex,
+  articles = [],
 }: CarouselContentProps) => {
-  const [articles, setArticles] = useState<Article[]>([]);
-
-  useEffect(() => {
-    async function fetchArticles() {
-      const lastPublished = await displayLastPublished();
-      const myChoice = await displayUniqueArticle(
-        "c402e045-c67f-4967-8097-f74705dff076"
-      );
-
-      const allArticles = [
-        ...(Array.isArray(lastPublished)
-          ? (lastPublished as (Article | null)[]).filter(
-              (a): a is Article => a !== null
-            )
-          : lastPublished
-          ? [lastPublished as Article]
-          : []),
-        ...(Array.isArray(myChoice)
-          ? myChoice.filter((a) => a !== null)
-          : myChoice
-          ? [myChoice]
-          : []),
-      ];
-
-      setArticles(allArticles);
-    }
-
-    fetchArticles();
-  }, []);
-
   const article = articles[currentIndex];
 
   if (!article) return null;
