@@ -42,18 +42,6 @@ export default function Carousel() {
     fetchArticles();
   }, []);
 
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? articles.length - 1 : prevIndex - 1
-    );
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === articles.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
   return (
     <div className="relative">
       <CarouselContent

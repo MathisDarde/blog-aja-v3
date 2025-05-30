@@ -19,12 +19,14 @@ const geistMono = Geist_Mono({
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
+  preload: true,
 });
 
 const baijamjuree = Bai_Jamjuree({
   variable: "--font-bai-jamjuree",
   subsets: ["latin"],
   weight: ["400", "700"],
+  preload: true,
 });
 
 export default function RootLayout({
