@@ -1,7 +1,6 @@
 "use client";
 
 import "./globals.css";
-import Calendrier from "@/components/Calendrier";
 import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
 import DisplayCategories from "@/components/DisplayCategories";

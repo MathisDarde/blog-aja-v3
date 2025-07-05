@@ -1,17 +1,16 @@
 "use client";
 
-import getUsersInfos from "@/actions/dashboard/get-users-infos";
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
-import { User, UserSortKey } from "@/contexts/Interfaces";
+import { UserSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabUserContent() {
   const {
     users,
-    loading,
+    usersLoading,
     sortElements,
     openContextPopup,
     DashboardPopupId,
@@ -77,7 +76,7 @@ export default function TabUserContent() {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {usersLoading ? (
             <tr>
               <td colSpan={3} className="h-64 w-[1150px]">
                 <div className="flex justify-center items-center h-full">

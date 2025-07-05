@@ -4,9 +4,9 @@ import ArticleDisplay from "./ArticleDisplay";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function ArticleClient() {
-  const { article, loading } = useGlobalContext();
+  const { article, articleLoading } = useGlobalContext();
 
-  if (loading) return <p>Chargement...</p>;
+  if (articleLoading) return <p>Chargement...</p>;
   if (!article) return <p>Aucun article trouvé.</p>;
 
   console.log("Article to display:", article);

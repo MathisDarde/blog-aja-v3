@@ -9,7 +9,7 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 export default function TabCommentContent() {
   const {
     comments,
-    loading,
+    commentsLoading,
     sortElements,
     openContextPopup,
     DashboardPopupId,
@@ -68,7 +68,7 @@ export default function TabCommentContent() {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {commentsLoading ? (
             <tr>
               <td colSpan={5} className="h-64">
                 <div className="flex justify-center items-center h-full">

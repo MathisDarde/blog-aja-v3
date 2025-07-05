@@ -7,12 +7,11 @@ import { Cake, Calendar1, Loader2, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { User, Comment } from "@/contexts/Interfaces";
+import { useEffect } from "react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function UserPreview() {
-  const { comments, setComments, loading, setLoading, user, setUser } =
+  const { comments, setComments, userLoading, setUserLoading, user, setUser } =
     useGlobalContext();
 
   const params = useParams();
@@ -22,7 +21,7 @@ export default function UserPreview() {
 
     const fetchData = async () => {
       try {
-        setLoading(true);
+        setUserLoading(true);
         const id_user = params.user as string;
         if (!id_user) return;
 
@@ -40,7 +39,7 @@ export default function UserPreview() {
         setUser(null);
         setComments([]);
       } finally {
-        setLoading(false);
+        setUserLoading(false);
       }
     };
 
@@ -54,7 +53,7 @@ export default function UserPreview() {
           Vue de l&apos;utilisateur
         </h2>
         <div className="w-full gap-4 px-4 my-10">
-          {loading ? (
+          {userLoading ? (
             <div className="flex items-center gap-2 font-Montserrat text-gray-500">
               <Loader2 className="animate-spin" size={20} />
               <span>Chargement...</span>

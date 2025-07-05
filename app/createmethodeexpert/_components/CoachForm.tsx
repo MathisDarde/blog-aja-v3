@@ -4,7 +4,6 @@ import { getTeamLogos } from "@/actions/method/get-logos-files";
 import submitMethodeCoachForm from "@/actions/method/methode-coach-form";
 import { MethodeCoachSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import { authClient } from "@/lib/auth-client";
 import { MethodeCoachSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,7 +35,7 @@ const IMAGE_PATHS = {
 };
 
 export default function CoachForm() {
-  const { loading, setLoading } = useGlobalContext();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,

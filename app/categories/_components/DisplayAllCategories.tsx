@@ -2,11 +2,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Category } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function DisplayAllCategories() {
-  const { loading, setLoading } = useGlobalContext();
-
+  const [loading, setLoading] = useState(false);
   const [randomSelection, setRandomSelection] = useState<Category[]>([]);
 
   const fetchCategories = async (): Promise<Category[]> => {

@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "./BlueButton";
 import { Category } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function DisplayCategories() {
   const [loading, setLoading] = useState(false);

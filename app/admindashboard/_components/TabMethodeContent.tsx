@@ -1,7 +1,6 @@
 "use client";
 
-import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import ContextPopup from "./ContextPopup";
 import { Methode, MethodeSortKey } from "@/contexts/Interfaces";
@@ -10,7 +9,7 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 export default function TabMethodeContent() {
   const {
     methodes,
-    loading,
+    methodesLoading,
     sortElements,
     openContextPopup,
     DashboardPopupId,
@@ -89,7 +88,7 @@ export default function TabMethodeContent() {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {methodesLoading ? (
             <tr>
               <td colSpan={3} className="h-64">
                 <div className="flex justify-center items-center h-full">

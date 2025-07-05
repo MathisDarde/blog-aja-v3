@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Team } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const teamStyles: Record<string, string> = {
   "Champions League": "bg-blue-200",

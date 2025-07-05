@@ -31,7 +31,6 @@ import { toast } from "sonner";
 import Section from "./DropdownContainerDomExt";
 import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;

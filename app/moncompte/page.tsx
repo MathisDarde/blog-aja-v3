@@ -18,7 +18,6 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import UpdateProfileForm from "./_components/UpdateProfileForm";
-import { User } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function MonCompte() {

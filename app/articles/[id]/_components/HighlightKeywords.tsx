@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Keyword, KeywordProps } from "@/contexts/Interfaces";
+import { KeywordProps } from "@/contexts/Interfaces";
 
 const KeywordHighlighter: React.FC<KeywordProps> = ({
   text,

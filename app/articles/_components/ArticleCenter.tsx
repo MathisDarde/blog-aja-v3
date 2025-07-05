@@ -11,7 +11,8 @@ import { Filter, Article } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function ArticleCenter() {
-  const { articles, setArticles, loading, setLoading } = useGlobalContext();
+  const { articles, setArticles, articleLoading, setArticleLoading } =
+    useGlobalContext();
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function ArticleCenter() {
 
   useEffect(() => {
     async function fetchArticles() {
-      setLoading(true);
+      setArticleLoading(true);
       try {
         const data: Article[] = await getArticlesbyKeywords({
           query: searchQuery || undefined,
@@ -68,7 +69,7 @@ export default function ArticleCenter() {
       } catch (error) {
         console.error("Erreur lors de la récupération des articles :", error);
       } finally {
-        setLoading(false);
+        setArticleLoading(false);
       }
     }
 
@@ -280,7 +281,7 @@ export default function ArticleCenter() {
             id="articlecontainerteaser"
             className="grid grid-cols-3 justify-items-center gap-6 my-2 mx-5"
           >
-            {loading ? (
+            {articleLoading ? (
               <div className="relative w-full h-64 flex items-center justify-center col-span-2">
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-8 rounded-full border-t-8 border-white border-t-aja-blue animate-spin"></div>
               </div>

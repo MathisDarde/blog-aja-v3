@@ -36,6 +36,8 @@ interface GlobalContextType {
   setArticleLoading: React.Dispatch<boolean>;
   articlesLoading: boolean;
   setArticlesLoading: React.Dispatch<boolean>;
+  userLoading: boolean;
+  setUserLoading: React.Dispatch<boolean>;
   usersLoading: boolean;
   setUsersLoading: React.Dispatch<boolean>;
   commentsLoading: boolean;
@@ -69,6 +71,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [articleLoading, setArticleLoading] = useState(false);
   const [articlesLoading, setArticlesLoading] = useState(false);
+  const [userLoading, setUserLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [methodesLoading, setMethodesLoading] = useState(false);
@@ -353,6 +356,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setArticlesLoading,
         commentsLoading,
         setCommentsLoading,
+        userLoading,
+        setUserLoading,
         usersLoading,
         setUsersLoading,
         methodesLoading,

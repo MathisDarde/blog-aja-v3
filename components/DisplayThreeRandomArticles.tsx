@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Article } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function DisplayRandom() {
   const [loading, setLoading] = useState(false);

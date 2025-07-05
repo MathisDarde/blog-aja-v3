@@ -1,14 +1,14 @@
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
-import { Article, ArticleSortKey } from "@/contexts/Interfaces";
+import { ArticleSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabArticleContent() {
   const {
     articles,
-    loading,
+    articlesLoading,
     sortElements,
     openContextPopup,
     DashboardPopupId,
@@ -63,7 +63,7 @@ export default function TabArticleContent() {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {articlesLoading ? (
             <tr>
               <td colSpan={3} className="h-64">
                 <div className="flex justify-center items-center h-full">
