@@ -42,7 +42,7 @@ const IMAGE_PATHS = {
 };
 
 export default function MatchForm() {
-  const { loading, setLoading } = useGlobalContext();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,

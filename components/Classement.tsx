@@ -17,8 +17,7 @@ const getTeamClass = (description: string): string => {
 };
 
 function Classement() {
-  const { loading, setLoading } = useGlobalContext();
-
+  const [loading, setLoading] = useState(false);
   const [teams, setTeams] = useState<Team[]>([]);
 
   useEffect(() => {

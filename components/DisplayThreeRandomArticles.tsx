@@ -6,7 +6,7 @@ import { Article } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function DisplayRandom() {
-  const { loading, setLoading } = useGlobalContext();
+  const [loading, setLoading] = useState(false);
   const [randomSelection, setRandomSelection] = useState<Article[]>([]);
 
   const selectRandomArticles = (articles: Article[]) => {

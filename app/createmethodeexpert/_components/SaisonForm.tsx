@@ -36,8 +36,6 @@ const IMAGE_PATHS = {
 };
 
 export default function SaisonForm() {
-  const { loading, setLoading } = useGlobalContext();
-
   const {
     register,
     handleSubmit,
@@ -56,6 +54,7 @@ export default function SaisonForm() {
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
   const [activeFlagIndex, setActiveFlagIndex] = useState<number | null>(null);

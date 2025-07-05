@@ -22,8 +22,9 @@ import { User } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function MonCompte() {
-  const { user, setUser, loading, setLoading } = useGlobalContext();
+  const { user, setUser } = useGlobalContext();
 
+  const [loading, setLoading] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [confirmLeaveChanges, setConfirmLeaveChanges] = useState(false);

@@ -40,13 +40,12 @@ export default function ArticleDisplay({ article }: { article: Article }) {
     setMethode,
     methodes,
     setMethodes,
-    loading,
-    setLoading,
     comments,
     isAdmin,
     isUser,
   } = useGlobalContext();
 
+  const [loading, setLoading] = useState(false);
   const [keywords, setKeywords] = useState<BaseMethodeData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isPublishingComment, setIsPublishingComment] = useState(false);

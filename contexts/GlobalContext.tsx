@@ -32,8 +32,16 @@ interface GlobalContextType {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-  loading: boolean;
-  setLoading: React.Dispatch<boolean>;
+  articleLoading: boolean;
+  setArticleLoading: React.Dispatch<boolean>;
+  articlesLoading: boolean;
+  setArticlesLoading: React.Dispatch<boolean>;
+  usersLoading: boolean;
+  setUsersLoading: React.Dispatch<boolean>;
+  commentsLoading: boolean;
+  setCommentsLoading: React.Dispatch<boolean>;
+  methodesLoading: boolean;
+  setMethodesLoading: React.Dispatch<boolean>;
   sortElements: SortElementsType;
   openContextPopup: OpenContextPopupFn;
   DashboardPopupId: string | null;
@@ -59,7 +67,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [methodes, setMethodes] = useState<Methode[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [articleLoading, setArticleLoading] = useState(false);
+  const [articlesLoading, setArticlesLoading] = useState(false);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [methodesLoading, setMethodesLoading] = useState(false);
   const [DashboardPopupId, setDashboardPopupId] = useState<string | null>(null);
   const [DashboardPopupPosition, setDashboardPopupPosition] = useState<{
     top: number;
@@ -77,10 +89,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     const fetchArticle = async () => {
       try {
-        setLoading(true);
+        setArticleLoading(true);
         const id_article = params.id as string;
         if (id_article === "") {
-          setLoading(false);
+          setArticleLoading(false);
           return;
         }
 
@@ -100,7 +112,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("Erreur lors de la récupération de l'article:", error);
         setArticle(null);
       } finally {
-        setLoading(false);
+        setArticleLoading(false);
       }
     };
 
@@ -127,7 +139,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           error
         );
       } finally {
-        setLoading(false);
+        setArticlesLoading(false);
       }
     };
 
@@ -154,7 +166,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           error
         );
       } finally {
-        setLoading(false);
+        setCommentsLoading(false);
       }
     };
 
@@ -197,7 +209,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         console.error("Erreur lors de la récupération des méthodes :", error);
       } finally {
-        setLoading(false);
+        setMethodesLoading(false);
       }
     };
 
@@ -226,7 +238,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           error
         );
       } finally {
-        setLoading(false);
+        setUsersLoading(false);
       }
     };
 
@@ -322,8 +334,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setUser,
         users,
         setUsers,
-        loading,
-        setLoading,
         sortElements,
         openContextPopup,
         DashboardPopupId,
@@ -337,6 +347,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setIsUser,
         isAdmin,
         setIsAdmin,
+        articleLoading,
+        setArticleLoading,
+        articlesLoading,
+        setArticlesLoading,
+        commentsLoading,
+        setCommentsLoading,
+        usersLoading,
+        setUsersLoading,
+        methodesLoading,
+        setMethodesLoading,
       }}
     >
       {children}

@@ -6,7 +6,9 @@ import { Article } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function LastArticle() {
-  const { loading, setLoading, article, setArticle } = useGlobalContext();
+  const { article, setArticle } = useGlobalContext();
+
+  const [loading, setLoading] = useState(false);
 
   const DisplayLastArticle = async () => {
     try {
