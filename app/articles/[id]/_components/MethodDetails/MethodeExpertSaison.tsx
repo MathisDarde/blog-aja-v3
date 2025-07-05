@@ -1,16 +1,8 @@
+import { MethodeSaison } from "@/contexts/Interfaces";
 import Image from "next/image";
 
 interface SeasonMethodeExpertProps {
-  methode: {
-    id_methode: string;
-    typemethode: "saison";
-    keywords: string[];
-    saison: string;
-    imgterrain: string;
-    coach: string;
-    systeme: string;
-    remplacants: [string, string, string][];
-  };
+  methode: MethodeSaison;
   onClose: () => void;
 }
 

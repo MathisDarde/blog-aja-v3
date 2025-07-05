@@ -1,20 +1,8 @@
+import { MethodeJoueur } from "@/contexts/Interfaces";
 import Image from "next/image";
 
 interface PlayerMethodeExpertProps {
-  methode: {
-    id_methode: string;
-    typemethode: "joueur";
-    keywords: string[];
-    imagejoueur: string;
-    joueurnom: string;
-    poste: string;
-    taille: string;
-    piedfort: string;
-    clubs: [string, string, string][];
-    matchs: number;
-    buts: number;
-    passesd: number;
-  };
+  methode: MethodeJoueur;
   onClose: () => void;
 }
 

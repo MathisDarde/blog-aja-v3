@@ -18,22 +18,12 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import UpdateProfileForm from "./_components/UpdateProfileForm";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  emailVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  photodeprofil?: string | null;
-  birthday: Date;
-  admin?: boolean;
-}
+import { User } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function MonCompte() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, setUser, loading, setLoading } = useGlobalContext();
+
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [confirmLeaveChanges, setConfirmLeaveChanges] = useState(false);
@@ -157,6 +147,8 @@ export default function MonCompte() {
               name: user?.name || "",
               email: user?.email || "",
               birthday: user?.birthday || new Date(),
+              password: "",
+              confirmPassword: "",
             }}
           />
         </div>

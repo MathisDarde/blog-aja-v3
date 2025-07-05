@@ -4,6 +4,7 @@ import { getTeamLogos } from "@/actions/method/get-logos-files";
 import submitMethodeJoueurForm from "@/actions/method/methode-joueur-form";
 import { MethodeJoueurSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 import { authClient } from "@/lib/auth-client";
 import { MethodeJoueurSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +40,8 @@ const IMAGE_PATHS = {
 };
 
 export default function JoueurForm() {
+  const { loading, setLoading } = useGlobalContext();
+
   const {
     register,
     handleSubmit,
@@ -63,7 +66,6 @@ export default function JoueurForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [modal, setModal] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
   const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 

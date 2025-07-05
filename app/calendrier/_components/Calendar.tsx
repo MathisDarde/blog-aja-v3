@@ -6,20 +6,9 @@ import dayjs from "dayjs";
 import "dayjs/locale/fr";
 import { fetchMatches } from "@/utils/matchsapi";
 import { ChevronLeftCircle, ChevronRightCircle } from "lucide-react";
+import { MatchAPI } from "@/contexts/Interfaces";
 
 dayjs.locale("fr");
-
-interface MatchAPI {
-  round: string;
-  date: string;
-  time: string;
-  team1: string;
-  team2: string;
-  score: {
-    ht: string[];
-    ft: string[];
-  };
-}
 
 const clubLogos: { [key: string]: string } = {
   "AJ Auxerre": "/_assets/teamlogos/logoauxerre.svg",

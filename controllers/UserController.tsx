@@ -28,6 +28,7 @@ export async function getAllUsers(): Promise<
     photodeprofil: string | null;
     birthday: Date;
     email: string;
+    emailVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
     admin: boolean | null;

@@ -25,6 +25,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;
@@ -35,6 +36,8 @@ const IMAGE_PATHS = {
 };
 
 export default function SaisonForm() {
+  const { loading, setLoading } = useGlobalContext();
+
   const {
     register,
     handleSubmit,
@@ -55,7 +58,6 @@ export default function SaisonForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [modal, setModal] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
   const [activeFlagIndex, setActiveFlagIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 

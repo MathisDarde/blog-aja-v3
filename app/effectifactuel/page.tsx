@@ -2,17 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
-// Type pour un joueur
-type Joueur = {
-  nom: string;
-  age: number;
-  poste: string;
-  nationalite: string;
-  natflag: string;
-  number: number;
-  imagejoueur: string;
-};
+import { Joueur } from "@/contexts/Interfaces";
 
 export default function EffectifActuel() {
   const [joueurs, setJoueurs] = useState<Joueur[]>([]);

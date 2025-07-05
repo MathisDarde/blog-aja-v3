@@ -2,30 +2,16 @@
 
 import { db } from "@/app/db/db";
 import { articlesTable } from "@/app/db/schema";
+import { Article, GetURLParams } from "@/contexts/Interfaces";
+
 import { and, or, like, ilike, sql, eq } from "drizzle-orm";
-
-interface Article {
-  id_article: string;
-  imageUrl: string;
-  title: string;
-  teaser: string;
-  content: string;
-  author: string;
-}
-
-interface GetDonsParams {
-  query?: string;
-  year?: string;
-  player?: string;
-  league?: string;
-}
 
 export async function getArticlesbyKeywords({
   query,
   year,
   player,
   league,
-}: GetDonsParams = {}): Promise<Article[]> {
+}: GetURLParams = {}): Promise<Article[]> {
   try {
     const searchTerms = query?.trim().split(" ") || [];
 

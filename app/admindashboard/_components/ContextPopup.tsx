@@ -14,14 +14,12 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { DashboardElementProps } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
-interface Props {
-  id: string;
-  type: string;
-}
+export default function ContextPopup({ id, type }: DashboardElementProps) {
+  const { router } = useGlobalContext();
 
-export default function ContextPopup({ id, type }: Props) {
-  const router = useRouter();
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
   const deleteElement = async (id: string, type: string) => {

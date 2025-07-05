@@ -1,18 +1,7 @@
 import React, { useCallback } from "react";
+import { Keyword, KeywordProps } from "@/contexts/Interfaces";
 
-interface Keyword {
-  id_methode: string;
-  typemethode: string;
-  keywords: string[];
-}
-
-interface Props {
-  text: string;
-  keywords: Keyword[];
-  onKeywordClick: (id: string, type: string) => void;
-}
-
-const KeywordHighlighter: React.FC<Props> = ({
+const KeywordHighlighter: React.FC<KeywordProps> = ({
   text,
   keywords,
   onKeywordClick,

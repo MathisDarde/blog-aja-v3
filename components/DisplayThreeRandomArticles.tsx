@@ -2,18 +2,11 @@ import displayArticles from "@/actions/article/display-articles";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
-
-interface Article {
-  id_article: string;
-  imageUrl: string;
-  title: string;
-  teaser: string;
-  content: string;
-  author: string;
-}
+import { Article } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function DisplayRandom() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading, setLoading } = useGlobalContext();
   const [randomSelection, setRandomSelection] = useState<Article[]>([]);
 
   const selectRandomArticles = (articles: Article[]) => {
@@ -25,13 +18,13 @@ export default function DisplayRandom() {
 
   const fetchArticles = async () => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const fetchedArticles = await displayArticles();
       setRandomSelection(selectRandomArticles(fetchedArticles));
     } catch (error) {
       console.error("Erreur lors de la récupération des articles :", error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -41,7 +34,7 @@ export default function DisplayRandom() {
 
   return (
     <div>
-      {isLoading ? (
+      {loading ? (
         <p>Chargement...</p>
       ) : (
         <div className="flex flex-col gap-3">

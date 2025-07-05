@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
-interface Category {
-  tag: string;
-  value: string;
-  img: string;
-  type?: string;
-}
+import { Category } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function DisplayAllCategories() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading, setLoading } = useGlobalContext();
+
   const [randomSelection, setRandomSelection] = useState<Category[]>([]);
 
   const fetchCategories = async (): Promise<Category[]> => {
@@ -26,10 +22,10 @@ export default function DisplayAllCategories() {
 
   useEffect(() => {
     const loadCategories = async () => {
-      setIsLoading(true);
+      setLoading(true);
       const data = await fetchCategories();
       setRandomSelection(data);
-      setIsLoading(false);
+      setLoading(false);
     };
 
     loadCategories();
@@ -37,7 +33,7 @@ export default function DisplayAllCategories() {
 
   return (
     <div>
-      {isLoading ? (
+      {loading ? (
         <p>Chargement...</p>
       ) : (
         <div className="grid grid-cols-4 gap-10 m-10">

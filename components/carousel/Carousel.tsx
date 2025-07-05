@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { CarouselContent } from "./CarouselContent";
 import displayLastPublished from "@/actions/article/display-last-published";
 import displayUniqueArticle from "@/actions/article/get-single-article";
-import { Article } from "./CarouselContent";
+import { Article } from "@/contexts/Interfaces";
 
 export default function Carousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [selectedArticles, setSelectedArticles] = useState<Article[]>([]);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -29,18 +29,18 @@ export default function Carousel() {
         ? [myChoiceResult]
         : [];
 
-      setArticles([...lastPublished, ...myChoice]);
+      setSelectedArticles([...lastPublished, ...myChoice]);
     }
 
     fetchArticles();
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative mx-auto max-w-[1300px]">
       <CarouselContent
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
-        articles={articles}
+        articles={selectedArticles}
       />
     </div>
   );

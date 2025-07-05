@@ -5,9 +5,11 @@ import DashboardSidebar from "./_components/DashboardSidebar";
 import TabContentContainer from "./_components/TabContentContainer";
 import getUsersInfos from "@/actions/dashboard/get-users-infos";
 import getArticlesInfos from "@/actions/dashboard/get-articles-infos";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function Dashboard() {
-  const [activeMenu, setActiveMenu] = useState("users");
+  const { activeMenu, setActiveMenu } = useGlobalContext();
+
   const [nbUsers, setNbUsers] = useState(0);
   const [nbArticles, setNbArticles] = useState(0);
 

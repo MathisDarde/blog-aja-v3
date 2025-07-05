@@ -2,71 +2,16 @@ import PlayerMethodeExpert from "./MethodDetails/MethodeExpertJoueur";
 import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
 import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
+import {
+  MethodeCoach,
+  MethodeJoueur,
+  MethodeMatch,
+  MethodeSaison,
+  MethodeProps,
+} from "@/contexts/Interfaces";
 
-interface BaseMethodeData {
-  typemethode: "joueur" | "saison" | "match" | "coach";
-  id_methode: string;
-  keywords: string[];
-}
-
-interface MethodeJoueur extends BaseMethodeData {
-  typemethode: "joueur";
-  imagejoueur: string;
-  joueurnom: string;
-  poste: string;
-  taille: string;
-  piedfort: string;
-  clubs: [string, string, string][];
-  matchs: number;
-  buts: number;
-  passesd: number;
-}
-
-interface MethodeSaison extends BaseMethodeData {
-  typemethode: "saison";
-  saison: string;
-  imgterrain: string;
-  coach: string;
-  systeme: string;
-  remplacants: [string, string, string][];
-}
-
-interface MethodeMatch extends BaseMethodeData {
-  typemethode: "match";
-  titrematch: string;
-  imgterrain: string;
-  couleur1equipe1: string;
-  couleur2equipe1: string;
-  nomequipe1: string;
-  systemeequipe1: string;
-  couleur1equipe2: string;
-  couleur2equipe2: string;
-  nomequipe2: string;
-  systemeequipe2: string;
-  remplacantsequipe1: [string, string, string, string?, string?][];
-  remplacantsequipe2: [string, string, string, string?, string?][];
-  stade: string;
-  date: string;
-}
-
-interface MethodeCoach extends BaseMethodeData {
-  typemethode: "coach";
-  imagecoach: string;
-  nomcoach: string;
-  clubscoach: [string, string, string][];
-  palmares: string[];
-  statistiques: string;
-}
-
-type MethodeData = MethodeJoueur | MethodeSaison | MethodeMatch | MethodeCoach;
-
-interface Props {
-  methodData: MethodeData | null;
-  onClose: () => void;
-}
-
-const MethodInfo: React.FC<Props> = ({ methodData, onClose }) => {
-  if (!methodData) return null;
+const MethodInfo: React.FC<MethodeProps> = ({ methode, onClose }) => {
+  if (!methode) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -78,27 +23,27 @@ const MethodInfo: React.FC<Props> = ({ methodData, onClose }) => {
           ✖
         </button>
 
-        {methodData.typemethode === "joueur" && (
+        {methode.typemethode === "joueur" && (
           <PlayerMethodeExpert
-            methode={methodData as MethodeJoueur}
+            methode={methode as MethodeJoueur}
             onClose={onClose}
           />
         )}
-        {methodData.typemethode === "saison" && (
+        {methode.typemethode === "saison" && (
           <SeasonMethodeExpert
-            methode={methodData as MethodeSaison}
+            methode={methode as MethodeSaison}
             onClose={onClose}
           />
         )}
-        {methodData.typemethode === "match" && (
+        {methode.typemethode === "match" && (
           <GameMethodeExpert
-            methode={methodData as MethodeMatch}
+            methode={methode as MethodeMatch}
             onClose={onClose}
           />
         )}
-        {methodData.typemethode === "coach" && (
+        {methode.typemethode === "coach" && (
           <CoachMethodeExpert
-            methode={methodData as MethodeCoach}
+            methode={methode as MethodeCoach}
             onClose={onClose}
           />
         )}

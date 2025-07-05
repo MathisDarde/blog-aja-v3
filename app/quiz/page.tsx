@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface Answer {
-  text: string;
-  correct: boolean;
-}
-
-interface Question {
-  question: string;
-  answers: Answer[];
-}
+import { Question } from "@/contexts/Interfaces";
 
 export default function Home() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);

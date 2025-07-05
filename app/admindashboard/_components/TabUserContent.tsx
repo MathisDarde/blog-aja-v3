@@ -5,90 +5,26 @@ import { EllipsisVertical, Loader2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import ContextPopup from "./ContextPopup";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  birthday: Date;
-  photodeprofil: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  admin: boolean;
-}
-
-type SortKey = keyof Pick<
-  User,
-  "name" | "email" | "birthday" | "createdAt" | "admin"
->;
+import { User, UserSortKey } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabUserContent() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [sortKey, setSortKey] = useState<SortKey>("name");
+  const {
+    users,
+    loading,
+    sortElements,
+    openContextPopup,
+    DashboardPopupId,
+    DashboardPopupPosition,
+    DashboardPopupRef,
+  } = useGlobalContext();
+
+  const [sortKey, setSortKey] = useState<UserSortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [contextPopupId, setContextPopupId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
-  const popupRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const result = await getUsersInfos();
-        if (Array.isArray(result)) {
-          const parsed = result.map((u) => ({
-            ...u,
-            birthday: new Date(u.birthday),
-            createdAt: new Date(u.createdAt),
-            updatedAt: new Date(u.updatedAt),
-            admin: u.admin === null ? false : u.admin,
-          }));
-          setUsers(parsed);
-        } else {
-          console.error("Failed to fetch users:", result.message);
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des utilisateurs :",
-          error
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+  const usersList = sortElements({ elements: users, sortKey, sortOrder });
 
-    getUsers();
-  }, []);
-
-  const sortedUsers = [...users].sort((a, b) => {
-    const aValue = a[sortKey];
-    const bValue = b[sortKey];
-
-    if (aValue instanceof Date && bValue instanceof Date) {
-      return sortOrder === "asc"
-        ? aValue.getTime() - bValue.getTime()
-        : bValue.getTime() - aValue.getTime();
-    }
-
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      return sortOrder === "asc"
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
-    }
-
-    if (typeof aValue === "boolean" && typeof bValue === "boolean") {
-      return sortOrder === "asc"
-        ? Number(aValue) - Number(bValue)
-        : Number(bValue) - Number(aValue);
-    }
-
-    return 0;
-  });
-
-  const handleSort = (key: SortKey) => {
+  const handleSort = (key: UserSortKey) => {
     if (sortKey === key) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
@@ -96,33 +32,6 @@ export default function TabUserContent() {
       setSortOrder("asc");
     }
   };
-
-  const openContextPopup = (id: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    setPopupPosition({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-    });
-    setContextPopupId((prev) => (prev === id ? null : id));
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setContextPopupId(null);
-        setPopupPosition(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <div className="overflow-x-auto w-fit">
@@ -180,7 +89,7 @@ export default function TabUserContent() {
               </td>
             </tr>
           ) : (
-            sortedUsers.map((user) => (
+            usersList.map((user) => (
               <tr key={user.id} className="bg-white border-t border-gray-200">
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image
@@ -208,8 +117,8 @@ export default function TabUserContent() {
                 </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(e: React.MouseEvent) =>
-                    openContextPopup(user.id, e)
+                  onClick={(event: React.MouseEvent) =>
+                    openContextPopup({ id: user.id, event })
                   }
                 >
                   <EllipsisVertical />
@@ -220,13 +129,16 @@ export default function TabUserContent() {
         </tbody>
       </table>
 
-      {contextPopupId && popupPosition && (
+      {DashboardPopupId && DashboardPopupPosition && (
         <div
           className="absolute z-50"
-          style={{ top: popupPosition.top, left: popupPosition.left }}
-          ref={popupRef}
+          style={{
+            top: DashboardPopupPosition.top,
+            left: DashboardPopupPosition.left,
+          }}
+          ref={DashboardPopupRef}
         >
-          <ContextPopup id={contextPopupId} type="user" />
+          <ContextPopup id={DashboardPopupId} type="user" />
         </div>
       )}
     </div>

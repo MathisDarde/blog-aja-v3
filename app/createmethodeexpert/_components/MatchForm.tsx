@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import Section from "./DropdownContainerDomExt";
 import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;
@@ -41,6 +42,8 @@ const IMAGE_PATHS = {
 };
 
 export default function MatchForm() {
+  const { loading, setLoading } = useGlobalContext();
+
   const {
     register,
     handleSubmit,
@@ -73,7 +76,6 @@ export default function MatchForm() {
     false | { team: "equipe1" | "equipe2"; index: number }
   >(false);
   const [fileList, setFileList] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedIndices, setExpandedIndices] = useState<{
     equipe1: number[];

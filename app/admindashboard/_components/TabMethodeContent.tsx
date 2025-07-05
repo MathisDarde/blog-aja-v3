@@ -4,79 +4,33 @@ import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
 import React, { useEffect, useRef, useState } from "react";
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import ContextPopup from "./ContextPopup";
-
-interface Methode {
-  id: string;
-  typemethode: string;
-  keywords: string;
-  nomcoach: string | null;
-  joueurnom: string | null;
-  titrematch: string | null;
-  saison: string | null;
-  created_at: Date;
-  updated_at: Date;
-}
-
-type SortKey = keyof Pick<
-  Methode,
-  | "typemethode"
-  | "nomcoach"
-  | "joueurnom"
-  | "titrematch"
-  | "saison"
-  | "created_at"
->;
+import { Methode, MethodeSortKey } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabMethodeContent() {
-  const [methodes, setMethodes] = useState<Methode[]>([]);
-  const [loading, setLoading] = useState(true); // Commence avec loading à true
-  const [sortKey, setSortKey] = useState<SortKey>("typemethode");
+  const {
+    methodes,
+    loading,
+    sortElements,
+    openContextPopup,
+    DashboardPopupId,
+    DashboardPopupPosition,
+    DashboardPopupRef,
+  } = useGlobalContext();
+
+  const [sortKey, setSortKey] = useState<MethodeSortKey>("typemethode");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [contextPopupId, setContextPopupId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
-  const popupRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    // Déclaration de la fonction fetchData en dehors pour éviter les problèmes de portée
-    const fetchData = async () => {
-      try {
-        const result = await getAllMethodes();
-        if (Array.isArray(result)) {
-          const parsed = result.map((u) => ({
-            id: u.id_methode,
-            typemethode: u.typemethode,
-            keywords: u.keywords.join(", "),
-            nomcoach: "nomcoach" in u ? u.nomcoach : null,
-            joueurnom: "joueurnom" in u ? u.joueurnom : null,
-            titrematch: "titrematch" in u ? u.titrematch : null,
-            saison: "saison" in u ? u.saison : null,
-            created_at: new Date(u.created_at),
-            updated_at: new Date(u.updated_at),
-          }));
-          setMethodes(parsed);
-        } else {
-          console.error(
-            "Failed to fetch methods:",
-            result &&
-              typeof result === "object" &&
-              result !== null &&
-              "message" in result
-              ? (result as { message: string }).message
-              : result
-          );
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des méthodes :", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const methodesList = sortElements({ elements: methodes, sortKey, sortOrder });
 
-    fetchData();
-  }, []);
+  const handleSort = (key: MethodeSortKey) => {
+    if (sortKey === key) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortOrder("asc");
+    }
+  };
 
   const getTitre = (methode: Methode): string => {
     switch (methode.typemethode.toLowerCase()) {
@@ -98,75 +52,6 @@ export default function TabMethodeContent() {
         );
     }
   };
-
-  const getSortValue = (
-    methode: Methode,
-    key: SortKey
-  ): string | Date | null => {
-    if (
-      key === "nomcoach" ||
-      key === "joueurnom" ||
-      key === "titrematch" ||
-      key === "saison"
-    ) {
-      return getTitre(methode);
-    }
-    return methode[key];
-  };
-
-  const sortedMethodes = [...methodes].sort((a, b) => {
-    const aValue = getSortValue(a, sortKey);
-    const bValue = getSortValue(b, sortKey);
-
-    if (aValue instanceof Date && bValue instanceof Date) {
-      return sortOrder === "asc"
-        ? aValue.getTime() - bValue.getTime()
-        : bValue.getTime() - aValue.getTime();
-    }
-
-    const aString = aValue?.toString() || "";
-    const bString = bValue?.toString() || "";
-
-    return sortOrder === "asc"
-      ? aString.localeCompare(bString)
-      : bString.localeCompare(aString);
-  });
-
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortKey(key);
-      setSortOrder("asc");
-    }
-  };
-
-  const openContextPopup = (id: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Pour éviter des comportements inattendus
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    setPopupPosition({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-    });
-    setContextPopupId((prev) => (prev === id ? null : id));
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setContextPopupId(null);
-        setPopupPosition(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <div className="overflow-y-auto">
@@ -216,7 +101,7 @@ export default function TabMethodeContent() {
               </td>
             </tr>
           ) : (
-            sortedMethodes.map((methode) => (
+            methodesList.map((methode) => (
               <tr
                 key={methode.id}
                 className="bg-white border-t border-gray-200"
@@ -236,8 +121,8 @@ export default function TabMethodeContent() {
                 </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(e: React.MouseEvent) =>
-                    openContextPopup(methode.id, e)
+                  onClick={(event: React.MouseEvent) =>
+                    openContextPopup({ id: methode.id, event })
                   }
                 >
                   <EllipsisVertical />
@@ -248,13 +133,16 @@ export default function TabMethodeContent() {
         </tbody>
       </table>
 
-      {contextPopupId && popupPosition && (
+      {DashboardPopupId && DashboardPopupPosition && (
         <div
           className="absolute z-50"
-          style={{ top: popupPosition.top, left: popupPosition.left }}
-          ref={popupRef}
+          style={{
+            top: DashboardPopupPosition.top,
+            left: DashboardPopupPosition.left,
+          }}
+          ref={DashboardPopupRef}
         >
-          <ContextPopup id={contextPopupId} type="method" />
+          <ContextPopup id={DashboardPopupId} type="method" />
         </div>
       )}
     </div>

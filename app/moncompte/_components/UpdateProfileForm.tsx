@@ -8,17 +8,12 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import updateProfileForm from "@/actions/user/update-profile-form";
 import { updateProfileSchema } from "@/app/schema";
-
-interface UpdateArticleFormProps {
-  userData: UpdateProfileSchemaType;
-}
+import { UpdateUserFromProps } from "@/contexts/Interfaces";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;
 
-export default function UpdateProfileForm({
-  userData,
-}: UpdateArticleFormProps) {
+export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   console.log(userData);

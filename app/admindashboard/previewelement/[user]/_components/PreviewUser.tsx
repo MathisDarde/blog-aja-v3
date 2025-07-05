@@ -8,36 +8,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  emailVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  photodeprofil?: string | null;
-  birthday: Date;
-  admin?: boolean;
-}
-
-interface Comment {
-  id_comment: string;
-  stars: string;
-  title: string;
-  content: string;
-  userId: string;
-  pseudo: string;
-  photodeprofil: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { User, Comment } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function UserPreview() {
+  const { comments, setComments, loading, setLoading, user, setUser } =
+    useGlobalContext();
+
   const params = useParams();
-  const [user, setUser] = useState<User | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!params?.user) return;

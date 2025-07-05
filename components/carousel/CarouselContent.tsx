@@ -1,19 +1,6 @@
 import Image from "next/image";
 import { CarouselDots } from "./Dots";
-
-export type Article = {
-  id_article: string;
-  imageUrl: string;
-  title: string;
-  teaser: string;
-  content: string;
-  author: string;
-  tags: string[];
-  state: "pending" | "published" | "archived" | null;
-  userId: string;
-  publishedAt: Date;
-  updatedAt: Date;
-};
+import { Article } from "@/contexts/Interfaces";
 
 type CarouselContentProps = {
   currentIndex: number;
@@ -41,8 +28,12 @@ export const CarouselContent = ({
         height={2048}
         src={article.imageUrl}
         alt={article.title}
+        priority
         className="w-full h-[600px] object-cover object-top"
       />
+
+      <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black to-transparent z-0" />
+
       <div className="absolute bottom-2 left-0 m-8">
         <h2 className="text-white uppercase text-2xl font-bold w-1/2">
           {article.title}

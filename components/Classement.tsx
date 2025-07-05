@@ -1,20 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-
-interface Team {
-  idTeam: string;
-  intRank: number;
-  strTeam: string;
-  intPlayed: number;
-  intWin: number;
-  intDraw: number;
-  intLoss: number;
-  intGoalsFor: number;
-  intGoalsAgainst: number;
-  intGoalDifference: number;
-  intPoints: number;
-  strDescription: string;
-}
+import { Team } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const teamStyles: Record<string, string> = {
   "Champions League": "bg-blue-200",
@@ -30,8 +17,9 @@ const getTeamClass = (description: string): string => {
 };
 
 function Classement() {
+  const { loading, setLoading } = useGlobalContext();
+
   const [teams, setTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTeamStats = async () => {

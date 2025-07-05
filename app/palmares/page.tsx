@@ -3,27 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import Image from "next/image";
-
-type Trophee = {
-  id: number;
-  title: string;
-  img: string;
-  annee: string;
-  nombre: number;
-};
-
-type RecordType = {
-  title: string;
-  image: string;
-  alt: string;
-  rows: RecordRow[];
-};
-
-type RecordRow = {
-  category: string;
-  record: string;
-  player: string;
-};
+import { Trophee, RecordType } from "@/contexts/Interfaces";
 
 const Palmares = () => {
   const [trophees, setTrophees] = useState<Trophee[]>([]);

@@ -29,10 +29,6 @@ export default function Page() {
         <Carousel />
       </div>
 
-      <div className="py-3">
-        <Calendrier />
-      </div>
-
       <div className="my-10 text-center">
         <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
           A la une sur Mémoire d&apos;Auxerrois

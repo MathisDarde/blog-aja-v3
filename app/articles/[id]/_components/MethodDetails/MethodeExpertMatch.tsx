@@ -1,26 +1,9 @@
 import Image from "next/image";
 import { ArrowBigUp } from "lucide-react";
+import { MethodeMatch } from "@/contexts/Interfaces";
 
 interface GameMethodeExpertProps {
-  methode: {
-    id_methode: string;
-    typemethode: "match";
-    keywords: string[];
-    titrematch: string;
-    imgterrain: string;
-    couleur1equipe1: string;
-    couleur2equipe1: string;
-    nomequipe1: string;
-    systemeequipe1: string;
-    couleur1equipe2: string;
-    couleur2equipe2: string;
-    nomequipe2: string;
-    systemeequipe2: string;
-    remplacantsequipe1: [string, string, string, string?, string?][];
-    remplacantsequipe2: [string, string, string, string?, string?][];
-    stade: string;
-    date: string;
-  };
+  methode: MethodeMatch;
   onClose: () => void;
 }
 

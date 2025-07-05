@@ -18,13 +18,7 @@ import { redirect } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import storeDraftArticle from "@/actions/article/store-draft";
-
-interface Tags {
-  tag: string;
-  value: string;
-  img: string;
-  type: string;
-}
+import { Tags } from "@/contexts/Interfaces";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;

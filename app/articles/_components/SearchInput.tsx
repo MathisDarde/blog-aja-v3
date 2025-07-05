@@ -2,13 +2,7 @@
 
 import React from "react";
 import { Search, ArrowDown } from "lucide-react";
-
-interface SearchInputProps {
-  value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onFilterClick: () => void;
-  onSubmit: (event: React.FormEvent) => void;
-}
+import { SearchInputProps } from "@/contexts/Interfaces";
 
 const SearchInput = ({
   value,

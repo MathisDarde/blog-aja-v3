@@ -1,13 +1,6 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { cn } from "@/utils/cn";
-
-interface ButtonProps {
-  children: ReactNode;
-  onClick?: () => void;
-  type?: "submit" | "reset" | "button";
-  className?: string;
-  disabled?: boolean;
-}
+import { ButtonProps } from "@/contexts/Interfaces";
 
 const Button = ({
   children,

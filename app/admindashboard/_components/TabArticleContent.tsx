@@ -1,79 +1,27 @@
-import getArticlesInfos from "@/actions/dashboard/get-articles-infos";
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import ContextPopup from "./ContextPopup";
-
-interface Article {
-  id_article: string;
-  imageUrl: string;
-  title: string;
-  teaser: string;
-  content: string;
-  tags: string[];
-  author: string;
-  publishedAt: Date;
-  updatedAt: Date;
-}
-
-type SortKey = keyof Pick<Article, "title" | "author" | "publishedAt">;
+import { Article, ArticleSortKey } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabArticleContent() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [sortKey, setSortKey] = useState<SortKey>("title");
+  const {
+    articles,
+    loading,
+    sortElements,
+    openContextPopup,
+    DashboardPopupId,
+    DashboardPopupPosition,
+    DashboardPopupRef,
+  } = useGlobalContext();
+
+  const [sortKey, setSortKey] = useState<ArticleSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [contextPopupId, setContextPopupId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
-  const popupRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const getArticles = async () => {
-      try {
-        const result = await getArticlesInfos();
-        if (Array.isArray(result)) {
-          const parsed = result.map((u) => ({
-            ...u,
-            publishedAt: new Date(u.publishedAt),
-            updatedAt: new Date(u.updatedAt),
-          }));
-          setArticles(parsed);
-        } else {
-          console.error("Failed to fetch users:", result.message);
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des utilisateurs :",
-          error
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+  const articlesList = sortElements({ elements: articles, sortKey, sortOrder });
 
-    getArticles();
-  }, []);
-
-  const sortedArticles = [...articles].sort((a, b) => {
-    const aValue = a[sortKey];
-    const bValue = b[sortKey];
-    if (aValue instanceof Date && bValue instanceof Date) {
-      return sortOrder === "asc"
-        ? aValue.getTime() - bValue.getTime()
-        : bValue.getTime() - aValue.getTime();
-    }
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      return sortOrder === "asc"
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
-    }
-    return 0;
-  });
-
-  const handleSort = (key: SortKey) => {
+  const handleSort = (key: ArticleSortKey) => {
     if (sortKey === key) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
@@ -81,33 +29,6 @@ export default function TabArticleContent() {
       setSortOrder("asc");
     }
   };
-
-  const openContextPopup = (id: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Pour éviter des comportements inattendus
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    setPopupPosition({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-    });
-    setContextPopupId((prev) => (prev === id ? null : id));
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setContextPopupId(null);
-        setPopupPosition(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <div className="overflow-x-auto">
@@ -154,7 +75,7 @@ export default function TabArticleContent() {
               </td>
             </tr>
           ) : (
-            sortedArticles.map((article) => (
+            articlesList.map((article) => (
               <tr
                 key={article.id_article}
                 className="bg-white border-t border-gray-200"
@@ -182,8 +103,8 @@ export default function TabArticleContent() {
                 </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(e: React.MouseEvent) =>
-                    openContextPopup(article.id_article, e)
+                  onClick={(event: React.MouseEvent) =>
+                    openContextPopup({ id: article.id_article, event })
                   }
                 >
                   <EllipsisVertical />
@@ -194,13 +115,16 @@ export default function TabArticleContent() {
         </tbody>
       </table>
 
-      {contextPopupId && popupPosition && (
+      {DashboardPopupId && DashboardPopupPosition && (
         <div
           className="absolute z-50"
-          style={{ top: popupPosition.top, left: popupPosition.left }}
-          ref={popupRef}
+          style={{
+            top: DashboardPopupPosition.top,
+            left: DashboardPopupPosition.left,
+          }}
+          ref={DashboardPopupRef}
         >
-          <ContextPopup id={contextPopupId} type="article" />
+          <ContextPopup id={DashboardPopupId} type="article" />
         </div>
       )}
     </div>

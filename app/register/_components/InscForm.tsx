@@ -8,9 +8,10 @@ import { useForm } from "react-hook-form";
 import submitInscForm from "@/actions/user/insc-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 function InscForm() {
-  const router = useRouter();
+  const { router } = useGlobalContext();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

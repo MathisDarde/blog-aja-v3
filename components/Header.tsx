@@ -9,21 +9,10 @@ import SidebarData, {
 } from "./SidebarData";
 import Image from "next/image";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
+import { User } from "@/contexts/Interfaces";
 
 export default function Header() {
   const [loading, setLoading] = useState(true);
-
-  interface User {
-    id: string;
-    name: string;
-    email: string;
-    emailVerified: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    photodeprofil?: string | null;
-    birthday: Date;
-    admin: boolean;
-  }
 
   const [user, setUser] = useState<User | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);

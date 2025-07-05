@@ -7,25 +7,12 @@ import SearchInput from "./SearchInput";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getArticlesbyKeywords } from "@/actions/article/get-article-by-keywords";
 import Button from "@/components/BlueButton";
-
-interface Article {
-  id_article: string;
-  imageUrl: string;
-  title: string;
-  teaser: string;
-  content: string;
-  author: string;
-}
-
-interface Filter {
-  id: number;
-  tag: string;
-  value: string;
-  img: string;
-  type: string;
-}
+import { Filter, Article } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function ArticleCenter() {
+  const { articles, setArticles, loading, setLoading } = useGlobalContext();
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const searchQuery = searchParams ? searchParams.get("q") || "" : "";
@@ -33,8 +20,6 @@ export default function ArticleCenter() {
   const playerfilter = searchParams ? searchParams.get("player") || "" : "";
   const leaguefilter = searchParams ? searchParams.get("league") || "" : "";
 
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<Filter[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchValue, setSearchValue] = useState(searchQuery);
@@ -71,7 +56,7 @@ export default function ArticleCenter() {
 
   useEffect(() => {
     async function fetchArticles() {
-      setIsLoading(true);
+      setLoading(true);
       try {
         const data: Article[] = await getArticlesbyKeywords({
           query: searchQuery || undefined,
@@ -83,7 +68,7 @@ export default function ArticleCenter() {
       } catch (error) {
         console.error("Erreur lors de la récupération des articles :", error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     }
 
@@ -295,7 +280,7 @@ export default function ArticleCenter() {
             id="articlecontainerteaser"
             className="grid grid-cols-3 justify-items-center gap-6 my-2 mx-5"
           >
-            {isLoading ? (
+            {loading ? (
               <div className="relative w-full h-64 flex items-center justify-center col-span-2">
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-8 rounded-full border-t-8 border-white border-t-aja-blue animate-spin"></div>
               </div>

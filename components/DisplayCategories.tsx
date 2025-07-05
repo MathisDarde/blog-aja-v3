@@ -2,16 +2,11 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "./BlueButton";
-
-interface Category {
-  tag: string;
-  value: string;
-  img: string;
-  type?: string;
-}
+import { Category } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function DisplayCategories() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading, setLoading } = useGlobalContext();
   const [randomSelection, setRandomSelection] = useState<Category[]>([]);
 
   const fetchCategories = async (): Promise<Category[]> => {
@@ -32,11 +27,11 @@ export default function DisplayCategories() {
 
   useEffect(() => {
     const displayThreeCategories = async () => {
-      setIsLoading(true);
+      setLoading(true);
       const fetchedCategories = await fetchCategories();
 
       setRandomSelection(selectRandomCategories(fetchedCategories));
-      setIsLoading(false);
+      setLoading(false);
     };
 
     displayThreeCategories();
@@ -44,7 +39,7 @@ export default function DisplayCategories() {
 
   return (
     <div>
-      {isLoading ? (
+      {loading ? (
         <p>Chargement...</p>
       ) : (
         <div className="flex gap-6 my-10 justify-center">

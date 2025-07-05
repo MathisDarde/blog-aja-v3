@@ -17,131 +17,46 @@ import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
 import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
 import CommentForm from "./CommentForm";
-import displayCommentsbyId from "@/actions/comment/display-comments-by-article";
-import { useRouter, useParams } from "next/navigation";
 import Button from "@/components/BlueButton";
 import { toast } from "sonner";
 import deleteArticleSA from "@/actions/article/delete-article";
 import UpdateArticleForm from "./UpdateArticleForm";
 import getAllMethodes from "@/actions/method/get-all-methodes";
+import {
+  Article,
+  BaseMethodeData,
+  MethodeCoach,
+  MethodeMatch,
+  MethodeJoueur,
+  MethodeSaison,
+  Methode,
+} from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
-interface BaseMethodeData {
-  typemethode: "joueur" | "saison" | "match" | "coach";
-  id_methode: string;
-  keywords: string[];
-}
-
-interface MethodeJoueur extends BaseMethodeData {
-  typemethode: "joueur";
-  imagejoueur: string;
-  joueurnom: string;
-  poste: string;
-  taille: string;
-  piedfort: string;
-  clubs: [string, string, string][];
-  matchs: number;
-  buts: number;
-  passesd: number;
-}
-
-interface MethodeSaison extends BaseMethodeData {
-  typemethode: "saison";
-  saison: string;
-  imgterrain: string;
-  coach: string;
-  systeme: string;
-  remplacants: [string, string, string][];
-}
-
-interface MethodeMatch extends BaseMethodeData {
-  typemethode: "match";
-  titrematch: string;
-  imgterrain: string;
-  couleur1equipe1: string;
-  couleur2equipe1: string;
-  nomequipe1: string;
-  systemeequipe1: string;
-  couleur1equipe2: string;
-  couleur2equipe2: string;
-  nomequipe2: string;
-  systemeequipe2: string;
-  remplacantsequipe1: [string, string, string, string?, string?][];
-  remplacantsequipe2: [string, string, string, string?, string?][];
-  stade: string;
-  date: string;
-}
-
-interface MethodeCoach extends BaseMethodeData {
-  typemethode: "coach";
-  imagecoach: string;
-  nomcoach: string;
-  clubscoach: [string, string, string][];
-  palmares: string[];
-  statistiques: string;
-}
-
-interface ArticleProps {
-  article: {
-    title: string;
-    teaser: string;
-    imageUrl: string;
-    content: string;
-    author: string;
-    publishedAt: Date;
-    tags: string[];
-  };
-}
-
-type Methode = MethodeJoueur | MethodeSaison | MethodeMatch | MethodeCoach;
-
-interface Comment {
-  id: string;
-  title: string;
-  content: string;
-  stars: number;
-  userId: string;
-  pseudo: string;
-  photodeprofil: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export default function ArticleDisplay({ article }: ArticleProps) {
-  const params = useParams();
-  const router = useRouter();
+export default function ArticleDisplay({ article }: { article: Article }) {
+  const {
+    router,
+    methode,
+    setMethode,
+    methodes,
+    setMethodes,
+    loading,
+    setLoading,
+    comments,
+    isAdmin,
+    isUser,
+  } = useGlobalContext();
 
   const [keywords, setKeywords] = useState<BaseMethodeData[]>([]);
-  const [methodes, setMethodes] = useState<Methode[]>([]);
-  const [selectedMethod, setSelectedMethod] = useState<Methode | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPublishingComment, setIsPublishingComment] = useState(false);
-  const [comments, setComments] = useState<Comment[]>([]);
   const [visibleComments, setVisibleComments] = useState(3);
-  const [isUser, setIsUser] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [confirmLeaveChanges, setConfirmLeaveChanges] = useState(false);
 
   useEffect(() => {
-    const cachedUser = localStorage.getItem("userData");
-    if (cachedUser) {
-      try {
-        const parsedUser = JSON.parse(cachedUser);
-        setIsUser(true);
-        if (parsedUser.admin === true) {
-          setIsAdmin(true);
-        }
-      } catch (e: unknown) {
-        console.error("Erreur de parsing des données utilisateur:", e);
-        localStorage.removeItem("userData");
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(true);
+    setLoading(true);
 
     getAllMethodes()
       .then((data) => {
@@ -149,13 +64,13 @@ export default function ArticleDisplay({ article }: ArticleProps) {
           const typedMethodes = data.map((item) => {
             switch (item.typemethode) {
               case "joueur":
-                return item as unknown as MethodeJoueur;
+                return item as unknown as Methode;
               case "saison":
-                return item as unknown as MethodeSaison;
+                return item as unknown as Methode;
               case "match":
-                return item as unknown as MethodeMatch;
+                return item as unknown as Methode;
               case "coach":
-                return item as unknown as MethodeCoach;
+                return item as unknown as Methode;
               default:
                 throw new Error(
                   `Type de méthode inconnu : ${item.typemethode}`
@@ -163,11 +78,11 @@ export default function ArticleDisplay({ article }: ArticleProps) {
             }
           });
 
-          setMethodes(typedMethodes); // ✅ plus d'erreur ici
+          setMethodes(typedMethodes);
 
           const allKeywords = typedMethodes.flatMap((item) =>
             item.keywords.map((kw) => ({
-              id_methode: item.id_methode,
+              id_methode: item.id,
               typemethode: item.typemethode,
               keywords: [kw],
             }))
@@ -177,45 +92,15 @@ export default function ArticleDisplay({ article }: ArticleProps) {
         } else {
           setKeywords([]);
         }
-        setIsLoading(false);
+        setLoading(false);
       })
       .catch((error) => {
         setError(error.message || "Failed to load keywords");
-        setIsLoading(false);
+        setLoading(false);
       });
   }, []);
 
   const id_article = React.useRef<string>("");
-
-  useEffect(() => {
-    if (!params?.id) return;
-
-    const articleId = Array.isArray(params.id) ? params.id[0] : params.id;
-    id_article.current = articleId;
-
-    const fetchComments = async () => {
-      try {
-        const comments = await displayCommentsbyId(articleId);
-        setComments(
-          (comments || []).map((comment) => ({
-            id: comment.id_comment,
-            title: comment.title,
-            content: comment.content,
-            stars: parseInt(comment.stars, 10),
-            userId: comment.userId,
-            pseudo: comment.pseudo,
-            photodeprofil: comment.photodeprofil,
-            createdAt: comment.createdAt.toLocaleDateString("fr-FR"),
-            updatedAt: comment.updatedAt.toLocaleDateString("fr-FR"),
-          }))
-        );
-      } catch (error) {
-        console.error("Erreur lors du chargement des commentaires", error);
-      }
-    };
-
-    fetchComments();
-  }, [params?.id]);
 
   const handleVoirPlus = () => {
     setVisibleComments((prev) => prev + 3);
@@ -238,50 +123,48 @@ export default function ArticleDisplay({ article }: ArticleProps) {
   };
 
   const handleKeywordClick = (id: string, type: string) => {
-    const method = methodes.find(
-      (m) => m.id_methode === id && m.typemethode === type
-    );
+    const method = methodes.find((m) => m.id === id && m.typemethode === type);
 
     if (method) {
-      setSelectedMethod(method);
+      setMethode(method);
     } else {
       toast.error("Méthode non trouvée.");
     }
   };
 
   const closeMethodPanel = () => {
-    setSelectedMethod(null);
+    setMethode(null);
   };
 
   const renderMethodComponent = () => {
-    if (!selectedMethod) return null;
+    if (!methode) return null;
 
-    switch (selectedMethod.typemethode) {
+    switch (methode.typemethode) {
       case "joueur":
         return (
           <PlayerMethodeExpert
-            methode={selectedMethod as MethodeJoueur}
+            methode={methode as unknown as MethodeJoueur}
             onClose={closeMethodPanel}
           />
         );
       case "saison":
         return (
           <SeasonMethodeExpert
-            methode={selectedMethod as MethodeSaison}
+            methode={methode as unknown as MethodeSaison}
             onClose={closeMethodPanel}
           />
         );
       case "match":
         return (
           <GameMethodeExpert
-            methode={selectedMethod as MethodeMatch}
+            methode={methode as unknown as MethodeMatch}
             onClose={closeMethodPanel}
           />
         );
       case "coach":
         return (
           <CoachMethodeExpert
-            methode={selectedMethod as MethodeCoach}
+            methode={methode as unknown as MethodeCoach}
             onClose={closeMethodPanel}
           />
         );
@@ -457,7 +340,7 @@ export default function ArticleDisplay({ article }: ArticleProps) {
                 className="aspect-video w-full object-cover object-top rounded-xl"
               />
 
-              {isLoading ? (
+              {loading ? (
                 <div className="bg-white rounded-xl p-8 text-center">
                   Chargement des mots-clés...
                 </div>
@@ -509,7 +392,7 @@ export default function ArticleDisplay({ article }: ArticleProps) {
                         <>
                           {comments.slice(0, visibleComments).map((comment) => (
                             <div
-                              key={comment.id}
+                              key={comment.id_comment}
                               className="border rounded-lg p-4 bg-gray-50 font-Montserrat"
                             >
                               <div className="flex items-center gap-4">
@@ -534,19 +417,19 @@ export default function ArticleDisplay({ article }: ArticleProps) {
                                   {comment.pseudo}
                                 </p>
                                 <p className="font-light text-xs">
-                                  {comment.updatedAt}
+                                  {comment.updatedAt.toLocaleString("fr-FR")}
                                 </p>
                                 <div className="flex items-center gap-1 my-2">
-                                  {Array.from({ length: comment.stars }).map(
-                                    (_, idx) => (
-                                      <span
-                                        key={idx}
-                                        className="text-yellow-400 text-3xl"
-                                      >
-                                        ★
-                                      </span>
-                                    )
-                                  )}
+                                  {Array.from({
+                                    length: Number(comment.stars),
+                                  }).map((_, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="text-yellow-400 text-3xl"
+                                    >
+                                      ★
+                                    </span>
+                                  ))}
                                 </div>
                               </div>
                               <p className="font-semibold uppercase my-2">
@@ -597,7 +480,7 @@ export default function ArticleDisplay({ article }: ArticleProps) {
                   Méthode Expert
                 </h3>
 
-                {!selectedMethod ? (
+                {!methode ? (
                   <p className="font-Montserrat text-justify">
                     Cliquez sur les mots en surbrillance dans le texte pour
                     accéder à pleins d&apos;informations supplémentaires !

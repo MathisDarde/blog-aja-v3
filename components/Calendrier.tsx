@@ -2,18 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchMatches } from "../utils/matchsapi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-interface MatchAPI {
-  round: string;
-  date: string;
-  time: string;
-  team1: string;
-  team2: string;
-  score: {
-    ht: string[];
-    ft: string[];
-  };
-}
+import { MatchAPI } from "@/contexts/Interfaces";
 
 const clubLogos: { [key: string]: string } = {
   "AJ Auxerre": "/_assets/teamlogos/logoauxerre.svg",

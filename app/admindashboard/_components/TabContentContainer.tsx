@@ -4,10 +4,7 @@ import TabArticleContent from "./TabArticleContent";
 import TabMethodeContent from "./TabMethodeContent";
 import TabCommentContent from "./TabCommentContent";
 import { Search } from "lucide-react";
-
-interface TabContentContainerProps {
-  activeMenu: string;
-}
+import { TabContentContainerProps } from "@/contexts/Interfaces";
 
 export default function TabContentContainer({
   activeMenu,

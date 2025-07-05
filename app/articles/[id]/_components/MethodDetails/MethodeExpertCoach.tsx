@@ -1,18 +1,8 @@
+import { MethodeCoach } from "@/contexts/Interfaces";
 import Image from "next/image";
 
-interface Methode {
-  id_methode: string;
-  typemethode: "coach";
-  keywords: string[];
-  imagecoach: string;
-  nomcoach: string;
-  clubscoach: [string, string, string][];
-  palmares: string[];
-  statistiques: string;
-}
-
 interface CoachMethodeExpertProps {
-  methode: Methode;
+  methode: MethodeCoach;
   onClose: () => void;
 }
 

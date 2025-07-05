@@ -18,18 +18,8 @@ import { ArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import updateArticleForm from "@/actions/article/update-article-form";
-import { useParams } from "next/navigation";
-
-interface Tags {
-  tag: string;
-  value: string;
-  img: string;
-  type: string;
-}
-
-interface UpdateArticleFormProps {
-  articleData: ArticleSchemaType;
-}
+import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const session = await authClient.getSession();
 const id = session?.data?.user.id || null;
@@ -37,7 +27,7 @@ const id = session?.data?.user.id || null;
 export default function UpdateArticleForm({
   articleData,
 }: UpdateArticleFormProps) {
-  const params = useParams();
+  const { params } = useGlobalContext();
 
   const [tags, setTags] = useState<Tags[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
