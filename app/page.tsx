@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import React, { useEffect } from "react";
 import Classement from "@/components/Classement";
 import Carousel from "@/components/carousel/Carousel";
+import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
 
 export default function Page() {
   useEffect(() => {
@@ -26,6 +27,10 @@ export default function Page() {
     <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
       <div className="pb-3">
         <Carousel />
+      </div>
+
+      <div className="my-4">
+        <TeamStatsBlock />
       </div>
 
       <div className="my-10 text-center">

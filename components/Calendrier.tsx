@@ -1,79 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { fetchMatches } from "../utils/matchsapi";
+import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { MatchAPI } from "@/contexts/Interfaces";
-
-const clubLogos: { [key: string]: string } = {
-  "AJ Auxerre": "/_assets/teamlogos/logoauxerre.svg",
-  "Paris Saint-Germain FC": "/_assets/teamlogos/logoparissg.svg",
-  "Olympique de Marseille": "/_assets/teamlogos/logomarseille.svg",
-  "Stade Brestois 29": "/_assets/teamlogos/logobrest.svg",
-  "Le Havre AC": "/_assets/teamlogos/logolehavre.svg",
-  "Racing Club de Lens": "/_assets/teamlogos/logolens.svg",
-  "Toulouse FC": "/_assets/teamlogos/logotoulouse.svg",
-  "Olympique Lyonnais": "/_assets/teamlogos/logolyon.svg",
-  "AS Saint-Étienne": "/_assets/teamlogos/logostetienne.svg",
-  "Lille OSC": "/_assets/teamlogos/logolille.svg",
-  "Stade Rennais FC 1901": "/_assets/teamlogos/logorennes.svg",
-  "FC Nantes": "/_assets/teamlogos/logonantes.svg",
-  "Angers SCO": "/_assets/teamlogos/logoangers.svg",
-  "AS Monaco FC": "/_assets/teamlogos/logomonaco.svg",
-  "OGC Nice": "/_assets/teamlogos/logonice.svg",
-  "Montpellier HSC": "/_assets/teamlogos/logomontpellier.svg",
-  "Stade de Reims": "/_assets/teamlogos/logostadedereims.svg",
-  "RC Strasbourg Alsace": "/_assets/teamlogos/logostrasbourg.svg",
-};
-
-const formatName: { [key: string]: string } = {
-  "AJ Auxerre": "AJA",
-  "Paris Saint-Germain FC": "PSG",
-  "Olympique de Marseille": "OM",
-  "Stade Brestois 29": "SB29",
-  "Le Havre AC": "HAC",
-  "Racing Club de Lens": "RCL",
-  "Toulouse FC": "TFC",
-  "Olympique Lyonnais": "OL",
-  "AS Saint-Étienne": "ASSE",
-  "Lille OSC": "LOSC",
-  "Stade Rennais FC 1901": "SRFC",
-  "FC Nantes": "NAN",
-  "Angers SCO": "SCO",
-  "AS Monaco FC": "ASM",
-  "OGC Nice": "OGCN",
-  "Montpellier HSC": "MHSC",
-  "Stade de Reims": "SDR",
-  "RC Strasbourg Alsace": "RSCA",
-};
+import { clubLogos, formatName } from "@/contexts/Teams";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 function Calendrier() {
-  const router = useRouter();
-  const [matches, setMatches] = useState<MatchAPI[]>([]);
-
-  useEffect(() => {
-    fetchMatches(
-      "https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json"
-    ).then((data) => {
-      const filteredMatches = data.matches.filter((match: MatchAPI) => {
-        return match.team1 === "AJ Auxerre" || match.team2 === "AJ Auxerre";
-      });
-
-      const lastFinishedIndex = [...filteredMatches]
-        .reverse()
-        .findIndex((match) => match.score?.ft && match.score.ft.length > 0);
-
-      let selectedMatches: MatchAPI[] = [];
-
-      if (lastFinishedIndex !== -1) {
-        const actualIndex = filteredMatches.length - 1 - lastFinishedIndex;
-        selectedMatches = filteredMatches.slice(actualIndex, actualIndex + 5);
-      } else {
-        selectedMatches = filteredMatches.slice(0, 5);
-      }
-
-      setMatches(selectedMatches);
-    });
-  }, []);
+  const { router, matches } = useGlobalContext();
 
   return (
     <div className="bg-white h-48 w-[1000px] mx-auto rounded-xl">

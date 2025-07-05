@@ -1,12 +1,20 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Article, Comment, Methode, SortParams, User } from "./Interfaces";
+import {
+  Article,
+  Comment,
+  MatchAPI,
+  Methode,
+  SortParams,
+  Team,
+  User,
+} from "./Interfaces";
 import getArticlesInfos from "@/actions/dashboard/get-articles-infos";
 import getCommentsInfos from "@/actions/dashboard/get-comments-infos";
 import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
 import getUsersInfos from "@/actions/dashboard/get-users-infos";
 import displayUniqueArticle from "@/actions/article/get-single-article";
 import { useParams, useRouter } from "next/navigation";
-import deleteArticleSA from "@/actions/article/delete-article";
+import { fetchMatches } from "@/utils/matchsapi";
 
 type SortElementsType = <T>(params: SortParams<T>) => T[];
 
@@ -44,6 +52,8 @@ interface GlobalContextType {
   setCommentsLoading: React.Dispatch<boolean>;
   methodesLoading: boolean;
   setMethodesLoading: React.Dispatch<boolean>;
+  classementLoading: boolean;
+  setClassementLoading: React.Dispatch<boolean>;
   sortElements: SortElementsType;
   openContextPopup: OpenContextPopupFn;
   DashboardPopupId: string | null;
@@ -57,6 +67,10 @@ interface GlobalContextType {
   setIsUser: React.Dispatch<boolean>;
   isAdmin: boolean;
   setIsAdmin: React.Dispatch<boolean>;
+  matches: MatchAPI[];
+  getLastMatch: () => Promise<MatchAPI>;
+  teams: Team[];
+  getReducedClassement: () => Team[];
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -75,6 +89,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [usersLoading, setUsersLoading] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [methodesLoading, setMethodesLoading] = useState(false);
+  const [classementLoading, setClassementLoading] = useState(false);
   const [DashboardPopupId, setDashboardPopupId] = useState<string | null>(null);
   const [DashboardPopupPosition, setDashboardPopupPosition] = useState<{
     top: number;
@@ -320,6 +335,85 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  const [matches, setMatches] = useState<MatchAPI[]>([]);
+
+  useEffect(() => {
+    fetchMatches(
+      "https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json"
+    ).then((data) => {
+      const filteredMatches = data.matches.filter((match: MatchAPI) => {
+        return match.team1 === "AJ Auxerre" || match.team2 === "AJ Auxerre";
+      });
+
+      const lastFinishedIndex = [...filteredMatches]
+        .reverse()
+        .findIndex((match) => match.score?.ft && match.score.ft.length > 0);
+
+      let selectedMatches: MatchAPI[] = [];
+
+      if (lastFinishedIndex !== -1) {
+        const actualIndex = filteredMatches.length - 1 - lastFinishedIndex;
+        selectedMatches = filteredMatches.slice(actualIndex, actualIndex + 5);
+      } else {
+        selectedMatches = filteredMatches.slice(0, 5);
+      }
+
+      setMatches(selectedMatches);
+    });
+  }, []);
+
+  async function getLastMatch(): Promise<MatchAPI> {
+    const data = await fetchMatches(
+      "https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json"
+    );
+    const filteredMatches = data.matches.filter((match: MatchAPI) => {
+      return match.team1 === "AJ Auxerre" || match.team2 === "AJ Auxerre";
+    });
+
+    const lastMatch = [...filteredMatches]
+      .reverse()
+      .find((match) => match.score?.ft && match.score.ft.length > 0);
+
+    if (!lastMatch) {
+      throw new Error("No finished match found for AJ Auxerre.");
+    }
+
+    return lastMatch;
+  }
+
+  const [teams, setTeams] = useState<Team[]>([]);
+
+  useEffect(() => {
+    const fetchTeamStats = async () => {
+      try {
+        const response = await fetch(
+          "https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=4334&s=2024-2025"
+        );
+        const data = await response.json();
+        setTeams(data.table);
+        setClassementLoading(false);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données :", error);
+        setClassementLoading(false);
+      }
+    };
+
+    fetchTeamStats();
+  }, []);
+
+  function getReducedClassement() {
+    const index = teams.findIndex((team) =>
+      team.strTeam.toLowerCase().replace(/\./g, "").includes("auxerre")
+    );
+
+    if (index === -1) return [];
+
+    const start = Math.max(0, index - 2);
+    const end = Math.min(teams.length, index + 3);
+
+    return teams.slice(start, end);
+  }
+
   return (
     <GlobalContext.Provider
       value={{
@@ -362,6 +456,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setUsersLoading,
         methodesLoading,
         setMethodesLoading,
+        classementLoading,
+        setClassementLoading,
+        matches,
+        getLastMatch,
+        teams,
+        getReducedClassement,
       }}
     >
       {children}
