@@ -64,6 +64,14 @@ export const AutresDropdownData = [
     link: "/quiz",
     dropdown: false,
   },
+  {
+    title: "Chants",
+    image: "/_assets/img/public.webp",
+    description:
+      "Retrouvez la liste des chants auxerrois pour être plongés dans l'ambiance la prochaine fois que vous irez au stade !",
+    link: "/chants",
+    dropdown: false,
+  },
 ];
 
 export const AdminDropdownData = [
