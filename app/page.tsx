@@ -37,20 +37,20 @@ export default function Page() {
         <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
           A la une sur Mémoire d&apos;Auxerrois
         </h2>
-        <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10">
+        <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 w-[1300px]">
           <div className="flex items-center">
-            <h3 className="text-2xl font-bold mb-3 font-Bai_Jamjuree uppercase text-center w-[750px]">
+            <h3 className="text-2xl font-bold mb-3 font-Bai_Jamjuree uppercase text-center w-[75%]">
               Dernier article publié
             </h3>
-            <h3 className="text-md font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[250px] ml-auto">
+            <h3 className="text-xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[25%] ml-auto">
               Articles que vous pourriez aimer
             </h3>
           </div>
           <div className="inline-flex gap-6">
-            <div className="w-[750px]">
+            <div className="w-[75%]">
               <LastArticle />
             </div>
-            <div className="flex flex-col items-center justify-center w-[250px]">
+            <div className="flex flex-col items-center justify-center w-[25%]">
               <DisplayRandom />
             </div>
           </div>

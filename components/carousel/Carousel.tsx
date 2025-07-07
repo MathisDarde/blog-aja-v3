@@ -36,7 +36,7 @@ export default function Carousel() {
   }, []);
 
   return (
-    <div className="relative mx-auto max-w-[1300px]">
+    <div className="relative mx-auto max-w-[2000px]">
       <CarouselContent
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}

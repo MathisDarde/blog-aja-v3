@@ -15,9 +15,9 @@ export default function ClassementAuxerre() {
         {classement.map((team, index) => (
           <div
             key={index}
-            className={`flex items-center gap-3 mx-auto p-4 rounded-md border border-black ${
+            className={`flex items-center gap-3 mx-auto p-4 rounded-md border border-gray-400 ${
               team.strTeam === "Auxerre"
-                ? "w-[450px] h-[60px]"
+                ? "w-[450px] h-[65px]"
                 : "w-[350px] h-[50px]"
             } `}
           >

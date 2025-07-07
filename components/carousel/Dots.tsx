@@ -10,7 +10,7 @@ export const CarouselDots = ({
   totalSlides,
 }: CarouselDotsProps) => {
   return (
-    <div className="flex mt-4">
+    <div className="flex mt-4" onClick={(e) => e.stopPropagation()}>
       <div className="flex gap-2 bg-gray-700 p-2 rounded-full">
         {Array.from({ length: totalSlides }).map((_, index) => (
           <span
