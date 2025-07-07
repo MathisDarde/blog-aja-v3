@@ -9,12 +9,10 @@ import { toast } from "sonner";
 import Button from "@/components/BlueButton";
 import submitCommentForm from "@/actions/comment/comment-form";
 import { authClient } from "@/lib/auth-client";
-
-const session = await authClient.getSession();
-const id = session?.data?.user.id ?? "";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function CommentForm() {
-  const params = useParams();
+  const { params, user_id } = useGlobalContext();
 
   const [rating, setRating] = useState<number | null>(null);
   const [hover, setHover] = useState<number | null>(0);
@@ -32,11 +30,13 @@ export default function CommentForm() {
   }, [params?.id]);
 
   const handleSubmitForm = async (data: CommentSchemaType) => {
-    const response = await submitCommentForm(
-      data,
-      id as string,
-      id_article.current
-    );
+    if (!user_id) {
+      toast.error("Vous devez être connecté pour publier un commentaire.");
+      return;
+    }
+
+    const response = await submitCommentForm(data, user_id, id_article.current);
+
     if (response.success) {
       toast.success("Commentaire publié !", {
         icon: "✅",

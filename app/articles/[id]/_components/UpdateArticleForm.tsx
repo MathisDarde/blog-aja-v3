@@ -21,13 +21,10 @@ import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
-const session = await authClient.getSession();
-const id = session?.data?.user.id || null;
-
 export default function UpdateArticleForm({
   articleData,
 }: UpdateArticleFormProps) {
-  const { params } = useGlobalContext();
+  const { params, user_id } = useGlobalContext();
 
   const [tags, setTags] = useState<Tags[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -88,7 +85,7 @@ export default function UpdateArticleForm({
       );
     });
 
-    if (!id) {
+    if (!user_id) {
       toast.error(
         "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
       );

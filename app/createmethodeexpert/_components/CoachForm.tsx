@@ -26,7 +26,7 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const session = await authClient.getSession();
+const session = await authClient.ion();
 const id = session?.data?.user.id || null;
 
 const IMAGE_PATHS = {

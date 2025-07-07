@@ -19,11 +19,10 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import storeDraftArticle from "@/actions/article/store-draft";
 import { Tags } from "@/contexts/Interfaces";
-
-const session = await authClient.getSession();
-const id = session?.data?.user.id || null;
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 function ArticleForm() {
+  const { user_id } = useGlobalContext();
   const [tags, setTags] = useState([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -64,13 +63,13 @@ function ArticleForm() {
         Array.isArray(value) ? JSON.stringify(value) : value
       );
     });
-    if (!id) {
+    if (!user_id) {
       toast.error(
         "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
       );
       return;
     }
-    const response = await submitArticleForm(data, selectedFile, id);
+    const response = await submitArticleForm(data, selectedFile, user_id);
 
     if (response.success) {
       redirect("/");
@@ -107,7 +106,7 @@ function ArticleForm() {
       return;
     }
 
-    if (!id) {
+    if (!user_id) {
       toast.error(
         "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
       );
@@ -116,7 +115,7 @@ function ArticleForm() {
 
     const response = await storeDraftArticle(
       parsed.data,
-      id,
+      user_id,
       selectedFile || undefined
     );
 

@@ -4,6 +4,7 @@ import { getTeamLogos } from "@/actions/method/get-logos-files";
 import submitMethodeJoueurForm from "@/actions/method/methode-joueur-form";
 import { MethodeJoueurSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 import { authClient } from "@/lib/auth-client";
 import { MethodeJoueurSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,15 +31,14 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const session = await authClient.getSession();
-const id = session?.data?.user.id || null;
-
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
   drapeaux: "/_assets/flags/",
 };
 
 export default function JoueurForm() {
+  const { user_id } = useGlobalContext();
+
   const [loading, setLoading] = useState(false);
 
   const {
@@ -172,7 +172,7 @@ export default function JoueurForm() {
     const response = await submitMethodeJoueurForm(
       processedData,
       selectedFile,
-      id || ""
+      user_id || ""
     );
 
     if (response.success) {

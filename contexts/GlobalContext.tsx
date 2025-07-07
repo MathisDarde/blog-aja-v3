@@ -15,6 +15,7 @@ import getUsersInfos from "@/actions/dashboard/get-users-infos";
 import displayUniqueArticle from "@/actions/article/get-single-article";
 import { useParams, useRouter } from "next/navigation";
 import { fetchMatches } from "@/utils/matchsapi";
+import { authClient } from "@/lib/auth-client";
 
 type SortElementsType = <T>(params: SortParams<T>) => T[];
 
@@ -71,11 +72,14 @@ interface GlobalContextType {
   getLastMatch: () => Promise<MatchAPI>;
   teams: Team[];
   getReducedClassement: () => Team[];
+  user_id: string | null;
+  loadSession: () => Promise<void>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user_id, setuser_id] = useState<string | null>(null);
   const [article, setArticle] = useState<Article | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -101,6 +105,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [isUser, setIsUser] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const loadSession = async () => {
+    const session = await authClient.getSession();
+    const id = session?.data?.user.id || null;
+    setuser_id(id);
+  };
+
+  useEffect(() => {
+    loadSession();
+  }, []);
 
   useEffect(() => {
     if (!params?.id) return;
@@ -414,6 +428,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return teams.slice(start, end);
   }
 
+  async function getUserId() {
+    const session = await authClient.getSession();
+    const id = session?.data?.user.id || null;
+    return id;
+  }
+
   return (
     <GlobalContext.Provider
       value={{
@@ -462,6 +482,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         getLastMatch,
         teams,
         getReducedClassement,
+        user_id,
+        loadSession,
       }}
     >
       {children}

@@ -31,9 +31,7 @@ import { toast } from "sonner";
 import Section from "./DropdownContainerDomExt";
 import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
-
-const session = await authClient.getSession();
-const id = session?.data?.user.id || null;
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -41,6 +39,8 @@ const IMAGE_PATHS = {
 };
 
 export default function MatchForm() {
+  const { user_id } = useGlobalContext();
+
   const [loading, setLoading] = useState(false);
 
   const {
@@ -242,7 +242,7 @@ export default function MatchForm() {
     const response = await submitMethodeMatchForm(
       processedData,
       selectedFile,
-      id || ""
+      user_id || ""
     );
 
     if (response.success) {

@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
 
-const session = await authClient.getSession();
+const session = await authClient.ion();
 const id = session?.data?.user.id || null;
 
 const IMAGE_PATHS = {

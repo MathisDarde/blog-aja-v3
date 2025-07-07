@@ -8,6 +8,7 @@ import {
   Heart,
   MessageCircle,
   PenBox,
+  PenSquare,
   Plus,
   Trash,
 } from "lucide-react";
@@ -43,6 +44,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
     comments,
     isAdmin,
     isUser,
+    user_id,
   } = useGlobalContext();
 
   const [loading, setLoading] = useState(false);
@@ -392,6 +394,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                           {comments.slice(0, visibleComments).map((comment) => (
                             <div
                               key={comment.id_comment}
+                              id={comment.id_comment}
                               className="border rounded-lg p-4 bg-gray-50 font-Montserrat"
                             >
                               <div className="flex items-center gap-4">
@@ -430,6 +433,16 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                                     </span>
                                   ))}
                                 </div>
+                                {comment.userId === user_id && (
+                                  <div className="flex items-center gap-2 ml-auto">
+                                    <button className="rounded-full border border-gray-300 p-2">
+                                      <PenSquare size={20} />
+                                    </button>
+                                    <button className="rounded-full border bg-red-500 text-white border-gray-300 p-2">
+                                      <Trash size={20} />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                               <p className="font-semibold uppercase my-2">
                                 {comment.title}

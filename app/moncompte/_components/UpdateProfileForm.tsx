@@ -9,11 +9,11 @@ import { authClient } from "@/lib/auth-client";
 import updateProfileForm from "@/actions/user/update-profile-form";
 import { updateProfileSchema } from "@/app/schema";
 import { UpdateUserFromProps } from "@/contexts/Interfaces";
-
-const session = await authClient.getSession();
-const id = session?.data?.user.id || null;
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
+  const { user_id } = useGlobalContext();
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   console.log(userData);
@@ -53,7 +53,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
       );
     });
 
-    if (!id) {
+    if (!user_id) {
       toast.error(
         "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
       );
@@ -61,7 +61,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
     }
 
     const response = await updateProfileForm(
-      id,
+      user_id,
       data,
       selectedFile ?? undefined
     );

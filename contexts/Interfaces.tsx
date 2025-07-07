@@ -159,6 +159,7 @@ export interface Comment {
   content: string;
   pseudo: string;
   photodeprofil: string | null;
+  userId: string;
   createdAt: Date;
   updatedAt: Date;
 }
