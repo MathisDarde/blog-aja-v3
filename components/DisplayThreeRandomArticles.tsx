@@ -50,7 +50,7 @@ export default function DisplayRandom() {
                     src={article.imageUrl}
                     alt={article.title}
                   />
-                  <h2 className="text-[0.7rem] font-Montserrat font-semibold mt-2">
+                  <h2 className="text-xs font-Montserrat font-medium mt-2">
                     {article.title}
                   </h2>
                 </div>

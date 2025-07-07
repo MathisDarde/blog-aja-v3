@@ -51,9 +51,9 @@ export default function LastArticle() {
               src={`${article.imageUrl}`}
               alt={article.title}
             />
-            <h2 className="text-justify text-black font-semibold font-Montserrat w-full text-lg py-2 pr-2 mx-auto">
+            <h4 className="text-justify text-black font-medium font-Montserrat w-full text-lg py-2 pr-2 mx-auto">
               {article.title}
-            </h2>
+            </h4>
             <p className="w-full text-black text-justify font-Montserrat mx-auto text-sm leading-5">
               {article.teaser}
             </p>

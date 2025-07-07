@@ -39,7 +39,7 @@ export default function Page() {
         </h2>
         <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 w-[1300px]">
           <div className="flex items-center">
-            <h3 className="text-2xl font-bold mb-3 font-Bai_Jamjuree uppercase text-center w-[75%]">
+            <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[75%]">
               Dernier article publié
             </h3>
             <h3 className="text-xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[25%] ml-auto">
@@ -58,7 +58,7 @@ export default function Page() {
       </div>
 
       <div className="my-10">
-        <h2 className="uppercase text-3xl font-Montserrat font-bold text-center">
+        <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
           Catégories
         </h2>
         <div>
@@ -67,7 +67,7 @@ export default function Page() {
       </div>
 
       <div className="my-10">
-        <h2 className="uppercase text-3xl font-Montserrat font-bold text-center">
+        <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
           Classement Ligue 1
         </h2>
         <div>

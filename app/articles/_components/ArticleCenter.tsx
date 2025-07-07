@@ -155,6 +155,12 @@ export default function ArticleCenter() {
     setIsFilterOpen(false);
   };
 
+  const removeFilter = (type: "year" | "player" | "league") => {
+    const params = new URLSearchParams(window.location.search);
+    params.delete(type);
+    router.push(`/articles?${params.toString()}`);
+  };
+
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border">
       <div className="text-center">
@@ -258,6 +264,13 @@ export default function ArticleCenter() {
                   Année :{" "}
                   {filters.find((f) => f.value === yearfilter)?.tag ||
                     yearfilter}
+                  <button
+                    onClick={() => removeFilter("year")}
+                    className="ml-2 text-white font-bold hover:text-gray-300"
+                    aria-label="Supprimer le filtre Année"
+                  >
+                    ×
+                  </button>
                 </span>
               )}
               {playerfilter && (
@@ -265,6 +278,13 @@ export default function ArticleCenter() {
                   Joueur :{" "}
                   {filters.find((f) => f.value === playerfilter)?.tag ||
                     playerfilter}
+                  <button
+                    onClick={() => removeFilter("player")}
+                    className="ml-2 text-white font-bold hover:text-gray-300"
+                    aria-label="Supprimer le filtre Joueur"
+                  >
+                    ×
+                  </button>
                 </span>
               )}
               {leaguefilter && (
@@ -272,6 +292,13 @@ export default function ArticleCenter() {
                   Ligue :{" "}
                   {filters.find((f) => f.value === leaguefilter)?.tag ||
                     leaguefilter}
+                  <button
+                    onClick={() => removeFilter("league")}
+                    className="ml-2 text-white font-bold hover:text-gray-300"
+                    aria-label="Supprimer le filtre Ligue"
+                  >
+                    ×
+                  </button>
                 </span>
               )}
             </div>
