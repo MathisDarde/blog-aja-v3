@@ -1,5 +1,6 @@
 import {
   boolean,
+  integer,
   json,
   pgEnum,
   pgTable,
@@ -88,7 +89,7 @@ export const articlesTable = pgTable("articles_table", {
 
 export const commentsTable = pgTable("comments_table", {
   id_comment: text("id_comment").primaryKey(),
-  stars: text("stars").notNull(),
+  stars: integer("stars").notNull(),
   title: text("title").notNull(),
   content: text("content").notNull(),
   userId: text("userId")

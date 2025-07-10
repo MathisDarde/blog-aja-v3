@@ -95,9 +95,7 @@ export const DraftArticleSchema = z.object({
 });
 
 export const CommentSchema = z.object({
-  stars: z
-    .string()
-    .nonempty({ message: "Veuillez attribuer une note à l'article." }),
+  stars: z.number(),
   title: z
     .string()
     .nonempty({ message: "Le titre du commentaire ne peut pas être vide." }),

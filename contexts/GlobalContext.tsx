@@ -4,6 +4,7 @@ import {
   Comment,
   MatchAPI,
   Methode,
+  ModalParamsType,
   SortParams,
   Team,
   User,
@@ -74,6 +75,8 @@ interface GlobalContextType {
   getReducedClassement: () => Team[];
   user_id: string | null;
   loadSession: () => Promise<void>;
+  modalParams: ModalParamsType;
+  setModalParams: React.Dispatch<ModalParamsType>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -94,6 +97,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [methodesLoading, setMethodesLoading] = useState(false);
   const [classementLoading, setClassementLoading] = useState(false);
+  const [modalParams, setModalParams] = useState<ModalParamsType>(null);
   const [DashboardPopupId, setDashboardPopupId] = useState<string | null>(null);
   const [DashboardPopupPosition, setDashboardPopupPosition] = useState<{
     top: number;
@@ -484,6 +488,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         getReducedClassement,
         user_id,
         loadSession,
+        modalParams,
+        setModalParams,
       }}
     >
       {children}

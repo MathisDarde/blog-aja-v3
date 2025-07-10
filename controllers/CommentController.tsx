@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 export async function getComments(): Promise<
   Array<{
     id_comment: string;
-    stars: string;
+    stars: number;
     title: string;
     content: string;
     userId: string;
@@ -57,7 +57,7 @@ export async function getCommentbyId(
 ): Promise<
   Array<{
     id_comment: string;
-    stars: string;
+    stars: number;
     title: string;
     content: string;
     userId: string;
@@ -108,7 +108,7 @@ export async function getCommentsbyArticle(
 ): Promise<
   Array<{
     id_comment: string;
-    stars: string;
+    stars: number;
     title: string;
     content: string;
     userId: string;
@@ -140,7 +140,7 @@ export async function getCommentsByUser(
 ): Promise<
   Array<{
     id_comment: string;
-    stars: string;
+    stars: number;
     title: string;
     content: string;
     userId: string;

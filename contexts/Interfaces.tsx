@@ -1,6 +1,10 @@
 // Interfaces Article
 
-import { ArticleSchemaType, InscSchemaType } from "@/types/forms";
+import {
+  ArticleSchemaType,
+  CommentSchemaType,
+  InscSchemaType,
+} from "@/types/forms";
 import { ReactNode } from "react";
 
 export interface Article {
@@ -49,6 +53,11 @@ export interface Tags {
 
 export interface UpdateArticleFormProps {
   articleData: ArticleSchemaType;
+}
+
+export interface UpdateCommentFormProps {
+  commentId: string;
+  commentData: CommentSchemaType;
 }
 
 export interface Filter {
@@ -154,7 +163,7 @@ export interface MethodeCoach extends BaseMethodeData {
 
 export interface Comment {
   id_comment: string;
-  stars: string;
+  stars: number;
   title: string;
   content: string;
   pseudo: string;
@@ -291,3 +300,10 @@ export type RecordRow = {
   record: string;
   player: string;
 };
+
+export type ModalParamsType = {
+  object: string;
+  type: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+} | null;

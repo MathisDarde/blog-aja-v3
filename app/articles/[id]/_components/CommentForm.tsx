@@ -17,7 +17,7 @@ export default function CommentForm() {
   const [rating, setRating] = useState<number | null>(null);
   const [hover, setHover] = useState<number | null>(0);
 
-  const { register, handleSubmit, reset, formState } =
+  const { register, handleSubmit, reset, formState, watch, setValue } =
     useForm<CommentSchemaType>({
       resolver: zodResolver(CommentSchema),
     });
@@ -83,23 +83,21 @@ export default function CommentForm() {
               Note de l&apos;article :
             </span>
             <div className="flex flex-row gap-2 my-4 w-[600px]">
-              {[...Array(5)].map((star, index) => {
+              {[...Array(5)].map((_, index) => {
                 const currentRating = index + 1;
-
                 return (
                   <label key={index}>
                     <input
                       type="radio"
-                      value={currentRating}
-                      onClick={() => setRating(currentRating)}
                       className="hidden"
-                      {...register("stars")}
+                      value={currentRating}
+                      onChange={() => setValue("stars", currentRating)}
                     />
                     <Star
                       size={30}
                       className="cursor-pointer transition-colors"
                       fill={
-                        currentRating <= ((hover ?? 0) || (rating ?? 0))
+                        currentRating <= (watch("stars") ?? 0)
                           ? "#337cbb"
                           : "#fff"
                       }

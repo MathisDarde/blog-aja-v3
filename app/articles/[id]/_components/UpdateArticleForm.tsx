@@ -16,7 +16,6 @@ import { ArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -24,7 +23,7 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 export default function UpdateArticleForm({
   articleData,
 }: UpdateArticleFormProps) {
-  const { params, user_id } = useGlobalContext();
+  const { params, user_id, setModalParams } = useGlobalContext();
 
   const [tags, setTags] = useState<Tags[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -58,10 +57,9 @@ export default function UpdateArticleForm({
 
   useEffect(() => {
     if (!params?.id) return;
-
     const articleId = Array.isArray(params.id) ? params.id[0] : params.id;
     id_article.current = articleId;
-  });
+  }, [params?.id]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -96,6 +94,7 @@ export default function UpdateArticleForm({
       toast.error("Veuillez sélectionner un fichier avant de soumettre.");
       return;
     }
+
     const response = await updateArticleForm(
       id_article.current,
       data,
@@ -124,8 +123,7 @@ export default function UpdateArticleForm({
       if (error && "message" in error) {
         toast.error(error.message as string, {
           icon: <X className="text-white" />,
-          className:
-            "bg-red-500 !important border border-red-200 text-white text-base",
+          className: "bg-red-500 border border-red-200 text-white text-base",
         });
       }
     });
@@ -133,14 +131,23 @@ export default function UpdateArticleForm({
 
   const watchedTags = watch("tags") || [];
 
+  // 🔥 Fonction appelée quand on clique sur le bouton
+  const onSubmitWithConfirmation = handleSubmit((data) => {
+    setModalParams({
+      object: "article",
+      type: "edit",
+      onConfirm: async () => {
+        await handleSubmitForm(data);
+        setModalParams(null);
+      },
+      onCancel: () => setModalParams(null),
+    });
+  });
+
   return (
     <div className="w-w-600 mx-auto">
-      <form
-        id="publishform"
-        encType="multipart/form-data"
-        className="w-w-600"
-        onSubmit={handleSubmit(handleSubmitForm)}
-      >
+      <form id="publishform" encType="multipart/form-data" className="w-w-600">
+        {/* Titre */}
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Heading className="mr-4" />
@@ -154,6 +161,7 @@ export default function UpdateArticleForm({
           />
         </div>
 
+        {/* Image */}
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <ImageIcon className="mr-4" />
@@ -167,6 +175,7 @@ export default function UpdateArticleForm({
           />
         </div>
 
+        {/* Teaser */}
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Film className="mr-4" />
@@ -180,6 +189,7 @@ export default function UpdateArticleForm({
           />
         </div>
 
+        {/* Contenu */}
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Folder className="mr-4" />
@@ -193,6 +203,7 @@ export default function UpdateArticleForm({
           ></textarea>
         </div>
 
+        {/* Auteur */}
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <PenTool className="mr-4" />
@@ -206,6 +217,7 @@ export default function UpdateArticleForm({
           />
         </div>
 
+        {/* Tags */}
         <div className="relative w-w-600">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Tag className="mr-4" />
@@ -254,8 +266,11 @@ export default function UpdateArticleForm({
           </div>
         </div>
 
+        {/* Bouton de confirmation */}
         <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie l&apos;article</Button>
+          <Button type="button" onClick={onSubmitWithConfirmation}>
+            Je modifie l&apos;article
+          </Button>
         </div>
       </form>
     </div>
