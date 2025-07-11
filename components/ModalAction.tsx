@@ -36,13 +36,21 @@ export const ModalAction = ({
               ? `Modifier l'objet suivant : ${object} ?`
               : type === "leaveChanges"
               ? `Ne pas enregistrer les modifications de l'objet suivant : ${object} ?`
-              : "Valider"}
+              : type === "publish"
+              ? `Publier l'objet suivant : ${object}`
+              : type === "save"
+              ? `Sauvegarder l'objet suivant : ${object}`
+              : `${object}`}
           </h3>
           <p className="text-gray-600 mb-6">
             {type === "delete" || type === "edit"
               ? "Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
               : type === "leaveChanges"
               ? "Vous perdrez toutes vos modifications, souhaitez-vous continuer ?"
+              : type === "publish"
+              ? "Souhaitez vous publier cet élément ?"
+              : type === "save"
+              ? "Souhaitez vous sauvegarder cet élément ?"
               : ""}
           </p>
           <div className="flex justify-center gap-4">

@@ -65,6 +65,27 @@ export async function getArticles(): Promise<
     );
 }
 
+export async function getBrouillons(): Promise<
+  Array<{
+    id_article: string;
+    imageUrl: string;
+    title: string;
+    teaser: string;
+    content: string;
+    author: string;
+    tags: string[];
+    state: "pending" | "published" | "archived";
+    userId: string;
+    publishedAt: Date;
+    updatedAt: Date;
+  }>
+> {
+  return db
+    .select()
+    .from(articlesTable)
+    .where(eq(articlesTable.state, "pending"));
+}
+
 export async function createArticle(
   data: ArticleSchemaType,
   file: File,
@@ -201,6 +222,77 @@ export async function storeBrouillon(
   } catch (err) {
     console.log(err);
     throw new Error(`Erreur lors de l'enregistrement du brouillon`);
+  }
+}
+
+export async function updateBrouillon(
+  articleId: string,
+  data: Partial<DraftArticleSchemaType>,
+  file?: File
+) {
+  let imageUrl: string | undefined = undefined;
+
+  try {
+    // Gérer l'image
+    if (file) {
+      const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+      const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ];
+
+      if (file.size > MAX_SIZE) {
+        throw new Error(
+          "Le fichier est trop grand. La taille maximale est de 5 Mo."
+        );
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        throw new Error(
+          "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
+        );
+      }
+
+      const uploadDir = path.join(process.cwd(), "/public/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileExtension = path.extname(file.name);
+      const fileName = `${uuidv4()}${fileExtension}`;
+      const filePath = path.join(uploadDir, fileName);
+
+      const buffer = await file.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(buffer));
+
+      imageUrl = `/uploads/${fileName}`;
+    }
+
+    const { title, teaser, content, author, tags } = data || {};
+    const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
+
+    // Mise à jour de la base
+    const updateData = {
+      ...(title !== undefined && { title }),
+      ...(teaser !== undefined && { teaser }),
+      ...(content !== undefined && { content }),
+      ...(author !== undefined && { author }),
+      ...(parsedTags !== undefined && { tags: parsedTags }),
+      ...(imageUrl && { imageUrl }),
+      updatedAt: new Date(),
+    };
+
+    const result = await db
+      .update(articlesTable)
+      .set(updateData)
+      .where(eq(articlesTable.id_article, articleId));
+
+    return result;
+  } catch (err) {
+    console.error(err);
+    throw new Error(`Erreur lors de la mise à jour du brouillon`);
   }
 }
 

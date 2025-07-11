@@ -15,6 +15,7 @@ export interface Article {
   content: string;
   author: string;
   userId: string;
+  state: string;
   publishedAt: Date;
   updatedAt: Date;
   tags: string[];
@@ -53,6 +54,12 @@ export interface Tags {
 
 export interface UpdateArticleFormProps {
   articleData: ArticleSchemaType;
+}
+
+export interface UpdateBrouillonFormProps {
+  articleData: ArticleSchemaType;
+  setIsEditing: React.Dispatch<boolean>;
+  id_article: string;
 }
 
 export interface UpdateCommentFormProps {
@@ -272,12 +279,17 @@ export interface SortParams<T> {
 
 export type Joueur = {
   nom: string;
-  age: number;
   poste: string;
+  numéro: number;
+  fiche_url: string;
+  image_url: string;
+  date_naissance: string;
+  age: number;
+  ville: string;
   nationalite: string;
-  natflag: string;
-  number: number;
-  imagejoueur: string;
+  taille: string;
+  poids: string;
+  pied: string;
 };
 
 export type Trophee = {

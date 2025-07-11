@@ -1,23 +1,22 @@
 "use server";
 
-import { ArticleSchema } from "@/app/schema";
-import { updateArticle, updateStatus } from "@/controllers/ArticlesController";
-import { ArticleSchemaType, FormResponse } from "@/types/forms";
+import { DraftArticleSchema } from "@/app/schema";
+import { updateBrouillon } from "@/controllers/ArticlesController";
+import { DraftArticleSchemaType, FormResponse } from "@/types/forms";
 
-const updateArticleForm = async (
+const updateBrouillonForm = async (
   articleId: string,
-  data: ArticleSchemaType,
-  file: File
+  data: DraftArticleSchemaType,
+  file?: File
 ): Promise<FormResponse> => {
   try {
-    const parsedData = ArticleSchema.safeParse(data);
+    const parsedData = DraftArticleSchema.safeParse(data);
 
     if (!parsedData.success) {
       return { success: false, errors: parsedData.error.errors };
     }
 
-    const registerArticle = await updateArticle(articleId, data, file);
-    await updateStatus(articleId, "published");
+    const registerArticle = await updateBrouillon(articleId, data, file);
 
     if (!registerArticle) {
       return {
@@ -36,4 +35,4 @@ const updateArticleForm = async (
   }
 };
 
-export default updateArticleForm;
+export default updateBrouillonForm;

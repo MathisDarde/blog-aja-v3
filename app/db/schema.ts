@@ -77,7 +77,7 @@ export const articlesTable = pgTable("articles_table", {
   content: text("content").notNull(),
   author: text("author").notNull(),
   tags: varchar("tags", { length: 255 }).array().notNull(),
-  state: statesEnum().default("pending"),
+  state: statesEnum().notNull().default("pending"),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

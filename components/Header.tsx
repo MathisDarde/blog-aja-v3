@@ -1,37 +1,31 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, LogIn, Loader2 } from "lucide-react";
 import SidebarData, {
   AdminDropdownData,
   AutresDropdownData,
-} from "./SidebarData";
+} from "./HeaderDropdownData";
 import Image from "next/image";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
 
 export default function Header() {
   const [loading, setLoading] = useState(true);
-
   const [user, setUser] = useState<User | null>(null);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
+  const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const toggleDropdown = (key: string) => {
-    setActiveDropdown((prevState) => (prevState === key ? null : key)); // si ouvert, ferme. sinon, ouvre.
-  };
 
   useEffect(() => {
     const cachedUser = localStorage.getItem("userData");
     if (cachedUser) {
       try {
-        const parsedUser = JSON.parse(cachedUser);
-        setUser(parsedUser);
+        setUser(JSON.parse(cachedUser));
         setLoading(false);
-      } catch (e: unknown) {
-        console.error("Erreur de parsing des données utilisateur:", e);
+      } catch {
         localStorage.removeItem("userData");
       }
     }
@@ -44,15 +38,14 @@ export default function Header() {
             ...auth.user,
             admin: auth.user.admin === true,
           };
-
           setUser(transformedUser);
           localStorage.setItem("userData", JSON.stringify(transformedUser));
         } else {
           setUser(null);
           localStorage.removeItem("userData");
         }
-      } catch (error) {
-        console.error("Erreur d'authentification:", error);
+      } catch {
+        // silent
       } finally {
         setLoading(false);
       }
@@ -60,18 +53,20 @@ export default function Header() {
 
     authVerif();
 
-    // Fermer les dropdowns quand on clique à l'extérieur
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+
+      // Si le clic ne vient ni d’un toggle ni d’un menu => on ferme
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !target.closest(".dropdown-toggle") &&
+        !target.closest(".dropdown-menu")
       ) {
-        setActiveDropdown(null);
+        setOpenOthersDropdown(false);
+        setOpenAdminDropdown(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -80,7 +75,7 @@ export default function Header() {
   return (
     <div className="h-[68px] w-full bg-white px-12 py-4 flex items-center">
       <div className="flex-shrink-0 w-[250px]">
-        <Link href={"/"}>
+        <Link href="/">
           <p className="uppercase text-aja-blue font-Bai_Jamjuree italic font-bold text-xl">
             Mémoire d&apos;Auxerrois
           </p>
@@ -88,102 +83,75 @@ export default function Header() {
       </div>
 
       <div className="flex flex-grow justify-center">
-        <nav className="">
-          <ul className="relative flex flex-row gap-10 h-auto p-0 mx-3">
-            {SidebarData.filter((val) => {
-              if (val.type === "admin") {
-                return user?.admin === true;
-              }
-              return true;
-            }).map((val, key) => (
+        <nav>
+          <ul className="relative flex flex-row gap-10 mx-3">
+            {SidebarData.filter((val) =>
+              val.type === "admin" ? user?.admin : true
+            ).map((val, key) => (
               <React.Fragment key={key}>
                 <li
-                  className="relative w-auto h-8 bg-white list-none mb-1 flex flex-row text-gray-500 items-center font-Montserrat text-sm font-semibold cursor-pointer hover:scale-scale-102 hover:transition-transform duration-200 ease-in-out"
+                  className="dropdown-toggle relative flex items-center font-Montserrat text-sm font-semibold text-gray-500 cursor-pointer hover:scale-105 transition-transform"
                   onClick={() => {
                     if (val.dropdown) {
-                      toggleDropdown(val.title); // Toggle le dropdown si clic sur l'élément de navigation
+                      if (val.type === "vanilla") {
+                        setOpenOthersDropdown((prev) => !prev);
+                        setOpenAdminDropdown(false);
+                      } else if (val.type === "admin") {
+                        setOpenAdminDropdown((prev) => !prev);
+                        setOpenOthersDropdown(false);
+                      }
                     } else {
                       window.location.pathname = val.link;
                     }
                   }}
                 >
-                  <div className="mx-1">{val.title}</div>
+                  <span>{val.title}</span>
                   {val.dropdown && (
                     <ChevronDown
-                      className={`ml-3 transition-transform ${
-                        activeDropdown === val.title ? "rotate-180" : ""
+                      className={`ml-2 transition-transform ${
+                        (val.type === "vanilla" && openOthersDropdown) ||
+                        (val.type === "admin" && openAdminDropdown)
+                          ? "rotate-180"
+                          : ""
                       }`}
                     />
                   )}
                 </li>
 
-                {val.dropdown && activeDropdown === val.title && (
+                {(val.type === "vanilla" && openOthersDropdown) ||
+                (val.type === "admin" && openAdminDropdown) ? (
                   <div
-                    ref={dropdownRef} // Ajouter la référence ici
-                    className="absolute top-10 left-1/2 -translate-x-1/2 mt-3 z-50 bg-white shadow-lg rounded-xl p-6 w-screen flex justify-center gap-10"
+                    ref={dropdownRef}
+                    className="dropdown-menu absolute top-10 left-1/2 -translate-x-1/2 mt-1 z-50 bg-white shadow-lg rounded-xl p-6 w-screen flex justify-center gap-10"
                   >
-                    {val.type === "vanilla" &&
-                      AutresDropdownData.map((dropdownVal, dropdownKey) => (
-                        <div
-                          key={dropdownKey}
-                          className="group cursor-pointer hover:bg-gray-100 p-4 rounded-lg transition-colors"
-                          onClick={() => {
-                            window.location.pathname = dropdownVal.link;
-                          }}
-                        >
-                          <div className="w-[250px] flex justify-center items-center gap-4">
-                            <div className="w-full flex flex-col">
-                              <Image
-                                src={dropdownVal.image}
-                                alt={dropdownVal.title}
-                                width={512}
-                                height={512}
-                                className="rounded-md aspect-video object-cover object-top"
-                              />
-                              <div>
-                                <p className="text-lg font-Montserrat uppercase my-2 font-semibold text-gray-800">
-                                  {dropdownVal.title}
-                                </p>
-                                <p className="font-Montserrat text-xs">
-                                  {dropdownVal.description}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+                    {(val.type === "vanilla"
+                      ? AutresDropdownData
+                      : AdminDropdownData
+                    ).map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="group cursor-pointer hover:bg-gray-100 p-4 rounded-lg transition-colors"
+                        onClick={() => (window.location.pathname = item.link)}
+                      >
+                        <div className="w-[250px] flex flex-col gap-2">
+                          <Image
+                            src={item.image}
+                            alt={item.title}
+                            width={512}
+                            height={512}
+                            className="rounded-md aspect-video object-cover object-top"
+                          />
+                          <p className="text-lg font-Montserrat uppercase font-semibold text-gray-800">
+                            {item.title}
+                          </p>
+                          <p className="font-Montserrat text-xs">
+                            {item.description}
+                          </p>
                         </div>
-                      ))}
-                    {val.type === "admin" &&
-                      AdminDropdownData.map((adminVal, adminKey) => (
-                        <div
-                          key={adminKey}
-                          className="group cursor-pointer hover:bg-gray-100 p-4 rounded-lg transition-colors"
-                          onClick={() => {
-                            window.location.pathname = adminVal.link;
-                          }}
-                        >
-                          <div className="w-[250px] flex justify-center items-center gap-4">
-                            <div className="w-full flex flex-col">
-                              <Image
-                                src={adminVal.image}
-                                alt={adminVal.title}
-                                width={512}
-                                height={512}
-                                className="rounded-md aspect-video object-cover object-top"
-                              />
-                              <div>
-                                <p className="text-lg font-Montserrat uppercase my-2 font-semibold text-gray-800">
-                                  {adminVal.title}
-                                </p>
-                                <p className="font-Montserrat text-xs">
-                                  {adminVal.description}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                      </div>
+                    ))}
                   </div>
-                )}
+                ) : null}
               </React.Fragment>
             ))}
           </ul>
@@ -197,13 +165,13 @@ export default function Header() {
             <span>Chargement...</span>
           </div>
         ) : !user ? (
-          <Link href={"/login"}>
+          <Link href="/login">
             <button className="flex items-center gap-2 font-Montserrat text-white bg-aja-blue px-6 py-2 rounded-full">
               Se connecter <LogIn className="text-white" />
             </button>
           </Link>
         ) : (
-          <Link href={"/moncompte"}>
+          <Link href="/moncompte">
             <div className="flex items-center gap-4 font-Montserrat text-gray-800">
               <Image
                 src={user.photodeprofil || "/_assets/img/pdpdebase.png"}

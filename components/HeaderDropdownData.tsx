@@ -83,6 +83,13 @@ export const AdminDropdownData = [
     dropdown: false,
   },
   {
+    title: "Consulter les brouillons",
+    image: "/_assets/img/drafts.jpg",
+    description: "Consulter la liste des brouillons sur Mémoire d'Auxerrois",
+    link: "/brouillons",
+    dropdown: false,
+  },
+  {
     title: "Créer une méthode expert",
     image: "/_assets/img/methodeexpertpic.jpg",
     description: "Accéder au formulaire de création d'une méthode expert",
@@ -93,7 +100,7 @@ export const AdminDropdownData = [
     title: "Dashboard Admin",
     image: "/_assets/img/adminicon.jpg",
     description:
-      "Vous avez accès à l'ensemble des outils administratifs de Mémoire d'Auxerrois.",
+      "Vous avez accès à l'ensemble des outils administratifs de Mémoire d'Auxerrois",
     link: "/admindashboard",
     dropdown: false,
   },
