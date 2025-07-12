@@ -59,7 +59,6 @@ export default function ArticleDisplay({ article }: { article: Article }) {
   const [visibleComments, setVisibleComments] = useState(3);
   const [isUpdatingArticle, setIsUpdatingArticle] = useState(false);
   const [isUpdatingComment, setIsUpdatingComment] = useState(false);
-  const [confirmLeaveChanges, setConfirmLeaveChanges] = useState(false);
   const [selectedComment, setSelectedComment] = useState<{
     id_comment: string;
     title: string;
@@ -155,7 +154,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
       object: "comment",
       type: "delete",
       onConfirm: async () => {
-        await deleteComment(selectedComment!.id_comment);
+        await deleteComment(comment.id_comment);
         window.location.reload();
         setModalParams(null);
       },

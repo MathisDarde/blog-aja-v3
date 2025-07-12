@@ -21,15 +21,12 @@ export const CarouselContent = ({
   const article = articles[currentIndex];
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [fade, setFade] = useState(true);
 
   useEffect(() => {
     const next = () => {
-      setFade(false); // commence fade-out
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % articles.length);
-        setFade(true); // re-fade-in
-      }, 300); // durée du fade-out
+      }, 300);
     };
 
     if (timerRef.current) clearInterval(timerRef.current);
@@ -43,10 +40,8 @@ export const CarouselContent = ({
   if (!article) return null;
 
   const handleDotClick = (index: number) => {
-    setFade(false);
     setTimeout(() => {
       setCurrentIndex(index);
-      setFade(true);
     }, 300);
   };
 

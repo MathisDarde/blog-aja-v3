@@ -3,7 +3,6 @@
 import submitMethodeMatchForm from "@/actions/method/methode-match-form";
 import { MethodeMatchSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
-import { authClient } from "@/lib/auth-client";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

@@ -13,9 +13,9 @@ import {
 } from "lucide-react";
 import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
-import { ArticleSchemaType, DraftArticleSchemaType } from "@/types/forms";
+import { ArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArticleSchema, DraftArticleSchema } from "@/app/schema";
+import { ArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateBrouillonFormProps } from "@/contexts/Interfaces";
@@ -28,7 +28,7 @@ export default function UpdateBrouillonForm({
   setIsEditing,
   id_article,
 }: UpdateBrouillonFormProps) {
-  const { params, user_id, modalParams, setModalParams } = useGlobalContext();
+  const { user_id, modalParams, setModalParams } = useGlobalContext();
 
   const [tags, setTags] = useState<Tags[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

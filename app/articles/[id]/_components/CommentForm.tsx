@@ -4,18 +4,13 @@ import { useForm } from "react-hook-form";
 import { CommentSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CommentSchema } from "@/app/schema";
-import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import Button from "@/components/BlueButton";
 import submitCommentForm from "@/actions/comment/comment-form";
-import { authClient } from "@/lib/auth-client";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function CommentForm() {
   const { params, user_id } = useGlobalContext();
-
-  const [rating, setRating] = useState<number | null>(null);
-  const [hover, setHover] = useState<number | null>(0);
 
   const { register, handleSubmit, reset, formState, watch, setValue } =
     useForm<CommentSchemaType>({
@@ -44,8 +39,6 @@ export default function CommentForm() {
       });
 
       reset();
-      setRating(null);
-      setHover(null);
 
       setTimeout(() => {
         window.location.reload();
@@ -102,8 +95,6 @@ export default function CommentForm() {
                           : "#fff"
                       }
                       stroke="#337cbb"
-                      onMouseEnter={() => setHover(currentRating)}
-                      onMouseLeave={() => setHover(null)}
                     />
                   </label>
                 );

@@ -5,7 +5,6 @@ import { UpdateProfileSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
 import updateProfileForm from "@/actions/user/update-profile-form";
 import { updateProfileSchema } from "@/app/schema";
 import { UpdateUserFromProps } from "@/contexts/Interfaces";

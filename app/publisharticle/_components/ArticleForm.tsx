@@ -16,7 +16,6 @@ import { ArticleSchema, DraftArticleSchema } from "@/app/schema";
 import submitArticleForm from "@/actions/article/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
 import storeDraftArticle from "@/actions/article/store-draft";
 import { Tags } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";

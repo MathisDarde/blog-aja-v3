@@ -18,9 +18,7 @@ export default function UpdateCommentForm({
 }: UpdateCommentFormProps) {
   const { user_id } = useGlobalContext();
 
-  const [rating, setRating] = useState<number | null>(null);
-
-  const { register, handleSubmit, formState, setValue, reset, watch } =
+  const { register, handleSubmit, formState, setValue, watch } =
     useForm<CommentSchemaType>({
       resolver: zodResolver(CommentSchema),
       defaultValues: commentData,
@@ -32,7 +30,6 @@ export default function UpdateCommentForm({
       setValue("title", commentData.title);
       setValue("content", commentData.content);
       setValue("stars", commentData.stars);
-      setRating(commentData.stars);
     }
   }, [commentData, setValue]);
 
@@ -131,7 +128,7 @@ export default function UpdateCommentForm({
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Folder className="mr-4" />
-            Contenu de l&apos;article :
+            Contenu du commentaire :
           </span>
           <textarea
             {...register("content")}
@@ -142,7 +139,7 @@ export default function UpdateCommentForm({
         </div>
 
         <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie l&apos;article</Button>
+          <Button type="submit">Je modifie mon commentaire</Button>
         </div>
       </form>
     </div>
