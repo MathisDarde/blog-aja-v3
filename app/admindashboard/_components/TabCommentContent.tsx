@@ -99,9 +99,7 @@ export default function TabCommentContent() {
                       <Star
                         key={i}
                         size={24}
-                        fill={
-                          i < parseInt(comment.stars, 10) ? "#facc15" : "none"
-                        }
+                        fill={i < (comment.stars, 10) ? "#facc15" : "none"}
                         stroke="#facc15"
                       />
                     ))}
