@@ -5,7 +5,6 @@ import submitMethodeCoachForm from "@/actions/method/methode-coach-form";
 import { MethodeCoachSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { authClient } from "@/lib/auth-client";
 import { MethodeCoachSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

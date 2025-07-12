@@ -3,7 +3,6 @@
 import submitMethodeSaisonForm from "@/actions/method/methode-saison-form";
 import { MethodeSaisonSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
-import { authClient } from "@/lib/auth-client";
 import { MethodeSaisonSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
