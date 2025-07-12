@@ -25,9 +25,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
-
-const session = await authClient.ion();
-const id = session?.data?.user.id || null;
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -35,6 +33,8 @@ const IMAGE_PATHS = {
 };
 
 export default function SaisonForm() {
+  const { user_id } = useGlobalContext();
+
   const {
     register,
     handleSubmit,
@@ -163,7 +163,7 @@ export default function SaisonForm() {
     const response = await submitMethodeSaisonForm(
       processedData,
       selectedFile,
-      id || ""
+      user_id || ""
     );
 
     if (response.success) {
