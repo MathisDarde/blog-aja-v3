@@ -19,19 +19,17 @@ export default function CategoriesPage() {
   }, []);
 
   return (
-    <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
+      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+        Catégories
+      </h1>
       <div>
-        <h2 className="uppercase text-black font-Montserrat font-bold text-3xl text-center">
-          Catégories
-        </h2>
-        <div>
-          <DisplayAllCategories />
-        </div>
-        <div className="text-center">
-          <Link href="/">
-            <Button type="button">Je retourne à l&apos;accueil</Button>
-          </Link>
-        </div>
+        <DisplayAllCategories />
+      </div>
+      <div className="text-center">
+        <Link href="/">
+          <Button type="button">Je retourne à l&apos;accueil</Button>
+        </Link>
       </div>
     </div>
   );

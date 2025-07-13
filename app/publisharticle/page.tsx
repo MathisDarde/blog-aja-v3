@@ -17,10 +17,10 @@ function PublishArticle() {
   }, []);
   return (
     <>
-      <div className="bg-gray-100 h-full flex flex-col justify-center items-center overflow-x-hidden">
-        <h3 className="font-bold text-4xl font-Montserrat uppercase my-10">
-          Publication d&apos;un article
-        </h3>
+      <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
+        <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+          Publier un article
+        </h1>
 
         <ArticleForm />
       </div>

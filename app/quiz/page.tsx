@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Question } from "@/contexts/Interfaces";
+import { questions } from "./_components/Questions";
 
 export default function Home() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -20,106 +20,6 @@ export default function Home() {
       document.head.appendChild(link);
     }
   }, []);
-
-  const questions: Question[] = [
-    {
-      question:
-        "En quelle année l'AJ Auxerre a remporté son seul titre de Champion de France de Ligue 1 ?",
-      answers: [
-        { text: "1994", correct: false },
-        { text: "1995", correct: false },
-        { text: "1996", correct: true },
-        { text: "1997", correct: false },
-      ],
-    },
-    {
-      question: "A quel poste jouait Corentin Martins ?",
-      answers: [
-        { text: "Gardien", correct: false },
-        { text: "Défenseur", correct: false },
-        { text: "Milieu", correct: true },
-        { text: "Attaquant", correct: false },
-      ],
-    },
-    {
-      question:
-        "Quel joueur est le meilleur buteur de l'histoire de l'AJ Auxerre en Ligue des Champions ?",
-      answers: [
-        { text: "Thomas Deniaud", correct: true },
-        { text: "Christian Henna", correct: false },
-        { text: "Benjani", correct: false },
-        { text: "Bonaventure Kalou", correct: false },
-      ],
-    },
-    {
-      question:
-        "Qui a fini meilleur buteur de la saison 2023-2024 qui a vu l'équipe être championne de Ligue 2 ?",
-      answers: [
-        { text: "Gaëtan Perrin", correct: false },
-        { text: "Gauthier Hein", correct: false },
-        { text: "Lassine Sinayoko", correct: false },
-        { text: "Ado Onaiwu", correct: true },
-      ],
-    },
-    {
-      question: "A quel poste évoluait Alain Goma ?",
-      answers: [
-        { text: "Gardien", correct: false },
-        { text: "Défenseur", correct: true },
-        { text: "Milieu", correct: false },
-        { text: "Attaquant", correct: false },
-      ],
-    },
-    {
-      question:
-        "Lors du match Auxerre-AJAX en 2010, Frédéric Sammaritano ouvre le score, mais qui marque le second but auxerrois ?",
-      answers: [
-        { text: "Roy Contout", correct: false },
-        { text: "Steven Langil", correct: true },
-        { text: "Dennis Oliech", correct: false },
-        { text: "Julien Quercia", correct: false },
-      ],
-    },
-    {
-      question:
-        "Quel joueur manque son tir au but en 1993, lors de la demi-finale contre le Borussia Dortmund ?",
-      answers: [
-        { text: "Frank Verlaat", correct: false },
-        { text: "Stéphane Mahé", correct: true },
-        { text: "Franck Silvestre", correct: false },
-        { text: "William Prunier", correct: false },
-      ],
-    },
-    {
-      question: "A quel poste jouait Philippe Méxès ?",
-      answers: [
-        { text: "Gardien", correct: false },
-        { text: "Défenseur", correct: true },
-        { text: "Milieu", correct: false },
-        { text: "Attaquant", correct: false },
-      ],
-    },
-    {
-      question:
-        "En quelle année l'AJ Auxerre a t-elle gagné sa dernière Coupe de France ?",
-      answers: [
-        { text: "2002", correct: false },
-        { text: "2003", correct: false },
-        { text: "2004", correct: false },
-        { text: "2005", correct: true },
-      ],
-    },
-    {
-      question:
-        "Quel joueur finit meilleur buteur de l'AJ Auxerre lors de la saison 1995-1996 (toutes compétitions confondues) ?",
-      answers: [
-        { text: "Lilian Laslandes", correct: true },
-        { text: "Corentin Martins", correct: false },
-        { text: "Sabri Lamouchi", correct: false },
-        { text: "Bernard Diomède", correct: false },
-      ],
-    },
-  ];
 
   const startQuiz = (): void => {
     setCurrentQuestionIndex(0);
@@ -155,12 +55,11 @@ export default function Home() {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="text-center bg-gray-100 h-screen w-screen box-border">
-      <main className="bg-white p-6 mx-auto my-10 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6 font-Montserrat">
-          Quiz AJ Auxerre
-        </h2>
-
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
+      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+        Quiz AJ Auxerre
+      </h1>
+      <div className="bg-white w-[700px] p-6 rounded-md mx-auto">
         <div className="quiz-container">
           {showingQuestion ? (
             <>
@@ -217,7 +116,7 @@ export default function Home() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

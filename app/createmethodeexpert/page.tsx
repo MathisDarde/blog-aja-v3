@@ -22,11 +22,11 @@ export default function CreateMethodeExpert() {
   }, []);
 
   return (
-    <div className="bg-gray-100 h-full flex flex-col justify-start items-center 2xl:h-full">
-      <h1 className="font-bold text-4xl font-Montserrat uppercase mb-4 mt-10">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
+      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
         Formulaire de création de méthode expert
       </h1>
-      <div className="flex items-center justify-center gap-4 my-6">
+      <div className="flex items-center justify-center gap-4 my-6 font-Montserrat">
         <button
           onClick={() => setTypeMethode("saison")}
           className={`p-2 ${

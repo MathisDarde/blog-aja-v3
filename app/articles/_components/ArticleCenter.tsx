@@ -162,188 +162,185 @@ export default function ArticleCenter() {
   };
 
   return (
-    <div className="text-center bg-gray-100 min-h-screen w-screen box-border">
-      <div className="text-center">
-        <h1 className="text-center font-Montserrat text-4xl font-bold uppercase pt-10 mb-10">
-          Rechercher un article
-        </h1>
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
+      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+        Rechercher un article
+      </h1>
 
-        <div className="relative flex items-center justify-center max-w-[500px] mx-auto">
-          <SearchInput
-            value={searchValue}
-            onChange={handleSearchChange}
-            onFilterClick={toggleFilterMenu}
-            onSubmit={handleSearch}
-          />
+      <div className="relative flex items-center justify-center max-w-[500px] mx-auto">
+        <SearchInput
+          value={searchValue}
+          onChange={handleSearchChange}
+          onFilterClick={toggleFilterMenu}
+          onSubmit={handleSearch}
+        />
 
-          {isFilterOpen && (
-            <div
-              ref={filterRef}
-              className="absolute z-10 mt-4 w-[748px] p-4 bg-white ring-1 ring-black ring-opacity-5 top-3 right-1/2 transform translate-x-1/2"
-            >
-              <div className="py-1">
-                <div className="grid grid-cols-3 gap-4 p-4 font-Montserrat">
-                  {/* Années */}
-                  <div>
-                    <h3 className="text-lg font-semibold border-b pb-2 mb-2">
-                      Années
-                    </h3>
-                    {filters
-                      .filter((filter) => filter.type === "year")
-                      .map((filter) => (
-                        <button
-                          key={filter.id}
-                          onClick={() => applyFilter("year", filter.value)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                        >
-                          {filter.tag}
-                        </button>
-                      ))}
-                  </div>
+        {isFilterOpen && (
+          <div
+            ref={filterRef}
+            className="absolute z-10 mt-4 w-[748px] p-4 bg-white ring-1 ring-black ring-opacity-5 top-3 right-1/2 transform translate-x-1/2"
+          >
+            <div className="py-1">
+              <div className="grid grid-cols-3 gap-4 p-4 font-Montserrat">
+                {/* Années */}
+                <div>
+                  <h3 className="text-lg font-semibold border-b pb-2 mb-2">
+                    Années
+                  </h3>
+                  {filters
+                    .filter((filter) => filter.type === "year")
+                    .map((filter) => (
+                      <button
+                        key={filter.id}
+                        onClick={() => applyFilter("year", filter.value)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
+                      >
+                        {filter.tag}
+                      </button>
+                    ))}
+                </div>
 
-                  {/* Joueurs */}
-                  <div>
-                    <h3 className="text-lg font-semibold border-b pb-2 mb-2">
-                      Joueurs
-                    </h3>
-                    {filters
-                      .filter((filter) => filter.type === "player")
-                      .map((filter) => (
-                        <button
-                          key={filter.id}
-                          onClick={() => applyFilter("player", filter.value)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                        >
-                          {filter.tag}
-                        </button>
-                      ))}
-                  </div>
+                {/* Joueurs */}
+                <div>
+                  <h3 className="text-lg font-semibold border-b pb-2 mb-2">
+                    Joueurs
+                  </h3>
+                  {filters
+                    .filter((filter) => filter.type === "player")
+                    .map((filter) => (
+                      <button
+                        key={filter.id}
+                        onClick={() => applyFilter("player", filter.value)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
+                      >
+                        {filter.tag}
+                      </button>
+                    ))}
+                </div>
 
-                  {/* Ligues */}
-                  <div>
-                    <h3 className="text-lg font-semibold border-b pb-2 mb-2">
-                      Ligues
-                    </h3>
-                    {filters
-                      .filter((filter) => filter.type === "league")
-                      .map((filter) => (
-                        <button
-                          key={filter.id}
-                          onClick={() => applyFilter("league", filter.value)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                        >
-                          {filter.tag}
-                        </button>
-                      ))}
-                  </div>
+                {/* Ligues */}
+                <div>
+                  <h3 className="text-lg font-semibold border-b pb-2 mb-2">
+                    Ligues
+                  </h3>
+                  {filters
+                    .filter((filter) => filter.type === "league")
+                    .map((filter) => (
+                      <button
+                        key={filter.id}
+                        onClick={() => applyFilter("league", filter.value)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
+                      >
+                        {filter.tag}
+                      </button>
+                    ))}
                 </div>
               </div>
             </div>
-          )}
-        </div>
-        <div className="mt-4">
-          <Button onClick={clearFilters} className="px-6 py-2">
-            Réinitialiser la recherche
-          </Button>
-        </div>
+          </div>
+        )}
+      </div>
+      <div className="mt-4">
+        <Button onClick={clearFilters} className="px-6 py-2">
+          Réinitialiser la recherche
+        </Button>
+      </div>
 
-        <div className="relative w-[1500px] mx-auto">
-          <p className="text-xl font-Montserrat font-semibold text-left ml-12 py-6 ">
-            Résultats les plus pertinents :
-          </p>
+      <div className="relative w-[1500px] mx-auto">
+        <p className="text-xl font-Montserrat font-semibold text-left ml-12 py-6 ">
+          Résultats les plus pertinents :
+        </p>
 
-          {(searchQuery || yearfilter || playerfilter || leaguefilter) && (
-            <div className="mb-2 flex flex-wrap gap-2 justify-center font-Montserrat">
-              {searchQuery && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
-                  Recherche : {searchQuery}
-                </span>
-              )}
-              {yearfilter && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
-                  Année :{" "}
-                  {filters.find((f) => f.value === yearfilter)?.tag ||
-                    yearfilter}
-                  <button
-                    onClick={() => removeFilter("year")}
-                    className="ml-2 text-white font-bold hover:text-gray-300"
-                    aria-label="Supprimer le filtre Année"
-                  >
-                    ×
-                  </button>
-                </span>
-              )}
-              {playerfilter && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
-                  Joueur :{" "}
-                  {filters.find((f) => f.value === playerfilter)?.tag ||
-                    playerfilter}
-                  <button
-                    onClick={() => removeFilter("player")}
-                    className="ml-2 text-white font-bold hover:text-gray-300"
-                    aria-label="Supprimer le filtre Joueur"
-                  >
-                    ×
-                  </button>
-                </span>
-              )}
-              {leaguefilter && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
-                  Ligue :{" "}
-                  {filters.find((f) => f.value === leaguefilter)?.tag ||
-                    leaguefilter}
-                  <button
-                    onClick={() => removeFilter("league")}
-                    className="ml-2 text-white font-bold hover:text-gray-300"
-                    aria-label="Supprimer le filtre Ligue"
-                  >
-                    ×
-                  </button>
-                </span>
-              )}
-            </div>
-          )}
-
-          <div
-            id="articlecontainerteaser"
-            className="grid grid-cols-3 justify-items-center gap-6 my-2 mx-5"
-          >
-            {articleLoading ? (
-              <div className="relative w-full h-64 flex items-center justify-center col-span-2">
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-8 rounded-full border-t-8 border-white border-t-aja-blue animate-spin"></div>
-              </div>
-            ) : articles.length === 0 ? (
-              <div id="noarticlefound" className="col-span-2">
-                <p className="flex items-center justify-center text-2xl font-bold text-center mt-8">
-                  Aucun article trouvé.
-                </p>
-              </div>
-            ) : (
-              articles.map((article, index) => (
-                <Link
-                  href={`/articles/${article.id_article}`}
-                  key={index}
-                  className="w-full h-full"
+        {(searchQuery || yearfilter || playerfilter || leaguefilter) && (
+          <div className="mb-2 flex flex-wrap gap-2 justify-center font-Montserrat">
+            {searchQuery && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+                Recherche : {searchQuery}
+              </span>
+            )}
+            {yearfilter && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+                Année :{" "}
+                {filters.find((f) => f.value === yearfilter)?.tag || yearfilter}
+                <button
+                  onClick={() => removeFilter("year")}
+                  className="ml-2 text-white font-bold hover:text-gray-300"
+                  aria-label="Supprimer le filtre Année"
                 >
-                  <div className="flex flex-col bg-white rounded text-center p-6 h-full">
-                    <Image
-                      className="inline-block w-full h-auto mx-auto rounded-sm object-cover aspect-video object-top"
-                      width={512}
-                      height={512}
-                      src={article.imageUrl}
-                      alt={article.title}
-                    />
-                    <h2 className="text-justify text-black font-semibold font-Montserrat text-lg pt-4 py-2 pr-2 mx-auto">
-                      {article.title}
-                    </h2>
-                    <p className="text-black text-justify font-Montserrat mx-auto text-sm leading-5">
-                      {article.teaser}
-                    </p>
-                  </div>
-                </Link>
-              ))
+                  ×
+                </button>
+              </span>
+            )}
+            {playerfilter && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+                Joueur :{" "}
+                {filters.find((f) => f.value === playerfilter)?.tag ||
+                  playerfilter}
+                <button
+                  onClick={() => removeFilter("player")}
+                  className="ml-2 text-white font-bold hover:text-gray-300"
+                  aria-label="Supprimer le filtre Joueur"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {leaguefilter && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+                Ligue :{" "}
+                {filters.find((f) => f.value === leaguefilter)?.tag ||
+                  leaguefilter}
+                <button
+                  onClick={() => removeFilter("league")}
+                  className="ml-2 text-white font-bold hover:text-gray-300"
+                  aria-label="Supprimer le filtre Ligue"
+                >
+                  ×
+                </button>
+              </span>
             )}
           </div>
+        )}
+
+        <div
+          id="articlecontainerteaser"
+          className="grid grid-cols-3 justify-items-center gap-6 my-2 mx-5"
+        >
+          {articleLoading ? (
+            <div className="relative w-full h-64 flex items-center justify-center col-span-2">
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-8 rounded-full border-t-8 border-white border-t-aja-blue animate-spin"></div>
+            </div>
+          ) : articles.length === 0 ? (
+            <div id="noarticlefound" className="col-span-2">
+              <p className="flex items-center justify-center text-2xl font-bold text-center mt-8">
+                Aucun article trouvé.
+              </p>
+            </div>
+          ) : (
+            articles.map((article, index) => (
+              <Link
+                href={`/articles/${article.id_article}`}
+                key={index}
+                className="w-full h-full"
+              >
+                <div className="flex flex-col bg-white rounded text-center p-6 h-full">
+                  <Image
+                    className="inline-block w-full h-auto mx-auto rounded-sm object-cover aspect-video object-top"
+                    width={512}
+                    height={512}
+                    src={article.imageUrl}
+                    alt={article.title}
+                  />
+                  <h2 className="text-justify text-black font-semibold font-Montserrat text-lg pt-4 py-2 pr-2 mx-auto">
+                    {article.title}
+                  </h2>
+                  <p className="text-black text-justify font-Montserrat mx-auto text-sm leading-5">
+                    {article.teaser}
+                  </p>
+                </div>
+              </Link>
+            ))
+          )}
         </div>
       </div>
     </div>

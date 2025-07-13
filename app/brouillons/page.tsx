@@ -36,7 +36,7 @@ export default function PageBrouillons() {
   };
 
   return (
-    <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
       {isEditing && selectedBrouillon ? (
         <UpdateBrouillonForm
           articleData={selectedBrouillon}
@@ -45,7 +45,7 @@ export default function PageBrouillons() {
         />
       ) : (
         <>
-          <h1 className="font-Bai_Jamjuree font-semibold text-center text-2xl">
+          <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
             Brouillons
           </h1>
 

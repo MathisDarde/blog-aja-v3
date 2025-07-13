@@ -102,7 +102,7 @@ export default function MonCompte() {
   };
 
   return (
-    <div className="text-center bg-gray-100 h-screen flex flex-col justify-start items-center">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
       {isUpdating ? (
         <div>
           {confirmLeaveChanges && (
@@ -136,7 +136,7 @@ export default function MonCompte() {
             </div>
           )}
           <h2
-            className="font-bold font-Montserrat uppercase text-3xl my-10  flex items-center justify-center gap-3 cursor-pointer"
+            className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
             onClick={() => setConfirmLeaveChanges(true)}
           >
             <ChevronLeft /> Formulaire de modification du profil
@@ -154,9 +154,9 @@ export default function MonCompte() {
         </div>
       ) : (
         <div>
-          <h2 className="font-bold text-4xl font-Montserrat uppercase mb-4 mt-10">
-            Mon compte
-          </h2>
+          <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+            Mon Compte
+          </h1>
           <div className="w-full gap-4 px-4 my-10">
             {loading ? (
               <div className="flex items-center gap-2 font-Montserrat text-gray-500">

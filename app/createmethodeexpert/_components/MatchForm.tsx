@@ -302,7 +302,7 @@ export default function MatchForm() {
   }, [errors]);
 
   return (
-    <div className="w-[750px] ">
+    <div className="w-[750px] mx-auto">
       {modal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white font-Montserrat rounded-lg p-6 w-[500px] max-h-[80vh] overflow-auto">

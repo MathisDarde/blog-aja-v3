@@ -233,7 +233,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen w-full p-0 m-0 box-border">
+    <div className="bg-gray-100 min-h-screen w-full m-0 box-border p-10">
       {/* Delete element popup */}
       {modalParams && (
         <ModalAction
@@ -247,7 +247,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
       {isUpdatingArticle ? (
         <div>
           <h2
-            className="font-bold font-Montserrat uppercase text-3xl my-10  flex items-center justify-center gap-3 cursor-pointer"
+            className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
             onClick={() => openLeaveChangesArticleModal()}
           >
             <ChevronLeft /> Formulaire de modification d&apos;article
@@ -267,9 +267,9 @@ export default function ArticleDisplay({ article }: { article: Article }) {
           <div className="flex justify-center gap-10">
             <div className="flex flex-col gap-6 w-[975px]">
               <div>
-                <h2 className="font-Montserrat font-extrabold text-3xl">
+                <h1 className="font-Bai_Jamjuree font-extrabold text-4xl">
                   {article.title}
-                </h2>
+                </h1>
                 <div className="flex items-center justify-between mt-4">
                   <p className="font-Montserrat flex items-center italic">
                     <Calendar1 className="mr-2" />
@@ -366,7 +366,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                     {isUpdatingComment && selectedComment ? (
                       <>
                         <h2
-                          className="font-bold font-Montserrat uppercase text-3xl my-10 flex items-center justify-center gap-3 cursor-pointer"
+                          className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
                           onClick={() => {
                             setSelectedComment(null);
                             setIsUpdatingComment(false);
@@ -388,9 +388,9 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                     ) : (
                       <>
                         <div className="flex justify-between items-center">
-                          <h2 className="font-bold uppercase text-xl">
+                          <h3 className="font-Bai_Jamjuree text-2xl font-bold uppercase">
                             Commentaires
-                          </h2>
+                          </h3>
                           {isUser ? (
                             <Button
                               className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full m-0"
@@ -522,7 +522,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                 ) : (
                   <div>
                     <div onClick={() => setIsPublishingComment(false)}>
-                      <h2 className="font-bold uppercase text-xl my-4 flex items-center justify-center gap-3 cursor-pointer">
+                      <h2 className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
                         <ChevronLeft /> Formulaire de publication de commentaire
                       </h2>
                     </div>

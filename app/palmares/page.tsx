@@ -65,18 +65,14 @@ const Palmares = () => {
 
   return (
     <>
-      <div className="bg-gray-100 h-full w-full p-0 m-0 box-border font-Montserrat">
+      <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
         <div className="max-w-[1500px] mx-auto">
-          <h3 className="text-center text-4xl font-bold uppercase pt-10 mb-5">
+          <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
             Palmarès
-          </h3>
+          </h1>
 
           <div className="pb-12">
-            <h3 className="my-6 mx-24 text-2xl underline font-semibold">
-              Armoire à trophées :
-            </h3>
-
-            <div className="grid grid-cols-3 grid-rows-3">
+            <div className="grid grid-cols-3">
               {trophees.map((trophee, index) => (
                 <div key={index} className="flex flex-col items-center w-full">
                   <div className="flex flex-row items-center">
@@ -106,7 +102,7 @@ const Palmares = () => {
         </div>
 
         <div className="max-w-[1500px] mx-auto">
-          <h3 className="text-center text-4xl font-bold uppercase mt-10 mb-5">
+          <h3 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
             Records
           </h3>
 
