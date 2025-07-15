@@ -315,7 +315,7 @@ export default function CoachForm() {
           <input
             type="text"
             {...register("nomcoach")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Nom du joueur (ex: Guy Roux)"
           />
         </div>
@@ -328,7 +328,7 @@ export default function CoachForm() {
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             accept="image/*"
           />
         </div>
@@ -434,7 +434,7 @@ export default function CoachForm() {
           <input
             type="text"
             {...register("statistiques")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Stats (ex: 512v - 30n - 85d)"
           />
         </div>

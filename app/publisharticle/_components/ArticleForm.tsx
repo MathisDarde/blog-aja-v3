@@ -141,14 +141,13 @@ function ArticleForm() {
   }, [formState.errors]);
 
   return (
-    <div className="w-w-600 mx-auto">
+    <div className="w-[800px] mx-auto">
       <form
         id="publishform"
         encType="multipart/form-data"
-        className="w-w-600"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
-        <div className="relative w-w-600">
+        <div className="relative w-[800px] mx-auto">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Heading className="mr-4" />
             Titre :
@@ -156,12 +155,12 @@ function ArticleForm() {
           <input
             type="text"
             {...register("title")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Titre de l'article"
           />
         </div>
 
-        <div className="relative w-w-600">
+        <div className="relative w-[800px] mx-auto">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <ImageIcon className="mr-4" />
             Image :
@@ -169,12 +168,12 @@ function ArticleForm() {
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             accept="image/*"
           />
         </div>
 
-        <div className="relative w-w-600">
+        <div className="relative w-[800px] mx-auto">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Film className="mr-4" />
             Teaser :
@@ -182,25 +181,25 @@ function ArticleForm() {
           <input
             type="text"
             {...register("teaser")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Teaser de l'article"
           />
         </div>
 
-        <div className="relative w-w-600">
+        <div className="relative w-[800px] mx-auto">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Folder className="mr-4" />
             Contenu de l&apos;article :
           </span>
           <textarea
             {...register("content")}
-            rows={15}
-            className="w-w-600 h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            rows={20}
+            className="w-[800px] h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
             placeholder="Contenu de l'article"
           ></textarea>
         </div>
 
-        <div className="relative w-w-600">
+        <div className="relative w-[800px] mx-auto">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <PenTool className="mr-4" />
             Auteur :
@@ -208,12 +207,12 @@ function ArticleForm() {
           <input
             type="text"
             {...register("author")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Nom de l'auteur"
           />
         </div>
 
-        <div className="relative w-w-600">
+        <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Tag className="mr-4" />
             Tags :
@@ -224,7 +223,7 @@ function ArticleForm() {
               gridTemplateColumns: "repeat(3, 1fr)",
               gap: "16px",
             }}
-            className="w-w-600 bg-white rounded-2xl border border-gray-600 my-4 p-4"
+            className="w-[800px] bg-white rounded-2xl border border-gray-600 my-4 p-4"
           >
             {tags.map((category: Tags) => (
               <div
@@ -234,11 +233,12 @@ function ArticleForm() {
                 <input
                   type="checkbox"
                   {...register("tags")}
+                  id={`checkbox-${category.value}`}
                   value={category.value}
-                  className="mx-2"
+                  className="mx-2 accent-aja-blue"
                 />
                 <label
-                  htmlFor={`checkbox`}
+                  htmlFor={`checkbox-${category.value}`}
                   className="cursor-pointer font-Montserrat"
                 >
                   {category.tag}

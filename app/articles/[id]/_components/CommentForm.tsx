@@ -67,7 +67,7 @@ export default function CommentForm() {
   }, [formState.errors]);
 
   return (
-    <div className="w-w-600 mx-auto relative">
+    <div className="w-[600px] mx-auto relative">
       <form action="" onSubmit={handleSubmit(handleSubmitForm)}>
         <div className="flex flex-col items-center relative w-[600px]">
           <div>
@@ -103,7 +103,7 @@ export default function CommentForm() {
           </div>
         </div>
 
-        <div className="relative w-w-600">
+        <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Heading className="mr-4" />
             Titre du commentaire :
@@ -111,12 +111,12 @@ export default function CommentForm() {
           <input
             type="text"
             {...register("title")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Titre du commentaire"
           />
         </div>
 
-        <div className="relative w-w-600">
+        <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <AlignLeft className="mr-4" />
             Contenu du commentaire :

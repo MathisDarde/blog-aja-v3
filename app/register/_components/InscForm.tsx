@@ -54,13 +54,13 @@ function InscForm() {
   }, [formState.errors]);
 
   return (
-    <div className="w-w-600 mx-auto">
+    <div className="w-[600px] mx-auto">
       <form
         onSubmit={handleSubmit(handleSubmitForm)}
         id="inscform"
-        className="w-w-600"
+        className="w-[600px]"
       >
-        <div className="relative w-w-600">
+        <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <User className="mr-4" />
             Pseudo :
@@ -68,11 +68,11 @@ function InscForm() {
           <input
             type="text"
             {...register("name")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Pseudo"
           />
         </div>
-        <div className="relative w-w-600">
+        <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <Cake className="mr-4" />
             Date de naissance :
@@ -80,11 +80,11 @@ function InscForm() {
           <input
             type="date"
             {...register("birthday")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Date de naissance"
           />
         </div>
-        <div className="relative w-w-600">
+        <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <Mail className="mr-4" />
             Adresse Mail :
@@ -92,11 +92,11 @@ function InscForm() {
           <input
             type="email"
             {...register("email")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Adresse Mail"
           />
         </div>
-        <div className="relative w-w-600">
+        <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <KeyRound className="mr-4" />
             Mot de passe :
@@ -104,7 +104,7 @@ function InscForm() {
           <input
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Mot de passe"
           />
           <span
@@ -114,7 +114,7 @@ function InscForm() {
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </span>
         </div>
-        <div className="relative w-w-600">
+        <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <KeyRound className="mr-4" />
             Confirmer le mot de passe :
@@ -122,7 +122,7 @@ function InscForm() {
           <input
             type={showConfirmPassword ? "text" : "password"}
             {...register("confirmPassword")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Confirmez votre mot de passe"
           />
           <span

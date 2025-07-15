@@ -19,21 +19,6 @@ export default {
         Montserrat: ["Montserrat", "Arial", "sans-serif"],
         Bai_Jamjuree: ["Bai Jamjuree", "Arial", "sans-serif"],
       },
-      fontSize: {
-        "maxi-xl": "15rem",
-      },
-      width: {
-        "w-600": "600px",
-      },
-      maxWidth: {
-        "max-w-pitch": "37.5rem",
-      },
-      height: {
-        "h-0.25": "1px",
-      },
-      backgroundImage: {
-        "pitch-bg": "url('/assets/terrains/demiterrain.png')",
-      },
       animation: {
         spin: "spin 1s linear infinite",
       },

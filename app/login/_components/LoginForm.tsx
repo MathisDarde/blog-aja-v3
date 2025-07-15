@@ -53,25 +53,25 @@ function LoginForm() {
 
   return (
     <>
-      <div className="w-w-600 mx-auto">
+      <div className="w-[600px] mx-auto">
         <form
           method="POST"
           id="loginform"
-          className="w-w-600"
+          className="w-[600px]"
           onSubmit={handleSubmit(handleSubmitForm)}
         >
-          <div className="relative text-center w-w-600">
+          <div className="relative text-center w-[600px]">
             <input
               {...register("email")}
-              className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
               placeholder="Adresse Mail"
             />
           </div>
-          <div className="relative text-center w-w-600">
+          <div className="relative text-center w-[600px]">
             <input
               type={showPassword ? "text" : "password"}
               {...register("password")}
-              className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
               placeholder="Mot de passe"
             />
             <span

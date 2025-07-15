@@ -303,7 +303,7 @@ export default function SaisonForm() {
           <input
             type="text"
             {...register("saison")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Saison (ex: 2020-2021)"
           />
         </div>
@@ -316,7 +316,7 @@ export default function SaisonForm() {
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             accept="image/*"
           />
         </div>
@@ -329,7 +329,7 @@ export default function SaisonForm() {
           <input
             type="text"
             {...register("coach")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Coach (ex: Jean-Marc Furlan)"
           />
         </div>
@@ -342,7 +342,7 @@ export default function SaisonForm() {
           <input
             type="text"
             {...register("systeme")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Système (ex: 4-3-3)"
           />
         </div>

@@ -314,7 +314,7 @@ export default function JoueurForm() {
           <input
             type="text"
             {...register("joueurnom")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Nom du joueur (ex: Djibril Cissé)"
           />
         </div>
@@ -327,7 +327,7 @@ export default function JoueurForm() {
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             accept="image/*"
           />
         </div>
@@ -340,7 +340,7 @@ export default function JoueurForm() {
           <input
             type="text"
             {...register("poste")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Poste (ex: Attaquant de pointe)"
           />
         </div>
@@ -353,7 +353,7 @@ export default function JoueurForm() {
           <input
             type="text"
             {...register("taille")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Taille du joueur (ex: 1m84)"
           />
         </div>
@@ -366,7 +366,7 @@ export default function JoueurForm() {
           <input
             type="text"
             {...register("piedfort")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Pied fort (ex: Droit)"
           />
         </div>
@@ -433,7 +433,7 @@ export default function JoueurForm() {
           <input
             type="number"
             {...register("matchs")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Nombre de matchs (ex: 354)"
           />
         </div>
@@ -446,7 +446,7 @@ export default function JoueurForm() {
           <input
             type="number"
             {...register("buts")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Nombre de buts marqués (ex: 116)"
           />
         </div>
@@ -459,7 +459,7 @@ export default function JoueurForm() {
           <input
             type="number"
             {...register("passesd")}
-            className="w-w-600 my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Nombre de passes décisives (ex: 38)"
           />
         </div>

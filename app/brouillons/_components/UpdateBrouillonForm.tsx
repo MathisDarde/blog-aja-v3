@@ -184,7 +184,7 @@ export default function UpdateBrouillonForm({
   };
 
   return (
-    <div className="w-[600px] mx-auto">
+    <div className="w-[800px] mx-auto">
       {/* Element management popup */}
       {modalParams && (
         <ModalAction
@@ -204,10 +204,10 @@ export default function UpdateBrouillonForm({
       <form
         id="publishform"
         encType="multipart/form-data"
-        className="w-[600px]"
+        className="w-[800px]"
       >
         {/* Titre */}
-        <div className="relative w-[600px]">
+        <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Heading className="mr-4" />
             Titre :
@@ -215,13 +215,13 @@ export default function UpdateBrouillonForm({
           <input
             type="text"
             {...register("title")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Titre de l'article"
           />
         </div>
 
         {/* Image */}
-        <div className="relative w-[600px]">
+        <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <ImageIcon className="mr-4" />
             Image :
@@ -229,13 +229,13 @@ export default function UpdateBrouillonForm({
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             accept="image/*"
           />
         </div>
 
         {/* Teaser */}
-        <div className="relative w-[600px]">
+        <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Film className="mr-4" />
             Teaser :
@@ -243,27 +243,27 @@ export default function UpdateBrouillonForm({
           <input
             type="text"
             {...register("teaser")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Teaser de l'article"
           />
         </div>
 
         {/* Contenu */}
-        <div className="relative w-[600px]">
+        <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Folder className="mr-4" />
             Contenu de l&apos;article :
           </span>
           <textarea
             {...register("content")}
-            rows={15}
-            className="w-[600px] h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            rows={20}
+            className="w-[800px] h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
             placeholder="Contenu de l'article"
           ></textarea>
         </div>
 
         {/* Auteur */}
-        <div className="relative w-[600px]">
+        <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <PenTool className="mr-4" />
             Auteur :
@@ -271,13 +271,13 @@ export default function UpdateBrouillonForm({
           <input
             type="text"
             {...register("author")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Nom de l'auteur"
           />
         </div>
 
         {/* Tags */}
-        <div className="relative w-[600px]">
+        <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
             <Tag className="mr-4" />
             Tags :
@@ -288,7 +288,7 @@ export default function UpdateBrouillonForm({
               gridTemplateColumns: "repeat(3, 1fr)",
               gap: "16px",
             }}
-            className="w-[600px] bg-white rounded-2xl border border-gray-600 my-4 p-4"
+            className="w-[800px] bg-white rounded-2xl border border-gray-600 my-4 p-4"
           >
             {tags.map((category: Tags) => (
               <div
@@ -298,6 +298,7 @@ export default function UpdateBrouillonForm({
                 <input
                   type="checkbox"
                   {...register("tags")}
+                  id={`checkbox-${category.value}`}
                   value={category.value}
                   checked={watchedTags.includes(category.value)}
                   onChange={(e) => {
@@ -312,10 +313,10 @@ export default function UpdateBrouillonForm({
                     }
                     setValue("tags", updatedTags);
                   }}
-                  className="mx-2"
+                  className="mx-2 accent-aja-blue"
                 />
                 <label
-                  htmlFor={`checkbox`}
+                  htmlFor={`checkbox-${category.value}`}
                   className="cursor-pointer font-Montserrat"
                 >
                   {category.tag}
