@@ -1,57 +1,56 @@
+"use client"
+
 import React, { useEffect, useState } from "react";
 import Button from "@/components/BlueButton";
-import { User, Cake, Mail, X, ImageIcon } from "lucide-react";
+import { User, Cake, Mail, X, ImageIcon, Trash } from "lucide-react";
 import { UpdateProfileSchemaType } from "@/types/forms";
+import { UpdateProfileSchema } from "@/app/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import updateProfileForm from "@/actions/user/update-profile-form";
-import { updateProfileSchema } from "@/app/schema";
 import { UpdateUserFromProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import Image from "next/image";
 
 export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   const { user_id } = useGlobalContext();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(userData.photodeprofil || null);
 
-  console.log(userData);
+  // Formatage date YYYY-MM-DD pour affichage dans input date
+  const formattedBirthday = userData.birthday
+    ? new Date(userData.birthday).toISOString().substring(0, 10)
+    : "";
 
-  const { register, handleSubmit, formState } =
-    useForm<UpdateProfileSchemaType>({
-      resolver: zodResolver(updateProfileSchema),
-      defaultValues: {
-        name: userData.name || "",
-        birthday: userData.birthday,
-        email: userData.email || "",
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UpdateProfileSchemaType>({
+    resolver: zodResolver(UpdateProfileSchema),
+    defaultValues: {
+      name: userData.name,
+      birthday: formattedBirthday,
+      email: userData.email,
+      photodeprofil: userData.photodeprofil || "",
+    },
+  });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setSelectedFile(file);
+      setSelectedFile(event.target.files[0]);
+      setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
     }
   };
 
+  const handleDeletePDP = () => {
+    setSelectedFile(null);
+    setPreviewPhoto("/_assets/img/pdpdebase.png")
+  }
+
   const handleSubmitForm = async (data: UpdateProfileSchemaType) => {
-    const formData = new FormData();
-
-    if (selectedFile) {
-      formData.append("image", selectedFile);
-    }
-
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(
-        key,
-        Array.isArray(value)
-          ? JSON.stringify(value)
-          : value instanceof Date
-          ? value.toISOString()
-          : value
-      );
-    });
-
     if (!user_id) {
       toast.error(
         "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
@@ -59,11 +58,36 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
       return;
     }
 
-    const response = await updateProfileForm(
-      user_id,
-      data,
-      selectedFile ?? undefined
-    );
+    const formData = new FormData();
+
+    const birthdayDate = new Date(data.birthday);
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "birthday") {
+        formData.append(key, birthdayDate.toISOString());
+      } else {
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else if (isDate(value)) {
+          formData.append(key, value.toISOString());
+        } else if (typeof value === "string") {
+          formData.append(key, value);
+        } else if (value !== undefined && value !== null) {
+          formData.append(key, String(value));
+        }
+      }
+    });
+
+    function isDate(value: unknown): value is Date {
+      return value instanceof Date && !isNaN(value.getTime());
+    }
+
+
+    const response = await updateProfileForm(user_id, data, selectedFile ?? undefined);
 
     if (response.success) {
       toast.success(response.message, {
@@ -73,7 +97,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
       window.location.reload();
     } else {
       toast.error(
-        response.message ? response.message : response.errors?.[0].message,
+        response.message ? response.message : response.errors?.[0]?.message,
         {
           icon: <X className="text-white" />,
           className: "bg-red-500 border border-red-200 text-white text-base",
@@ -83,7 +107,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   };
 
   useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
+    Object.values(errors).forEach((error) => {
       if (error && "message" in error) {
         toast.error(error.message as string, {
           icon: <X className="text-white" />,
@@ -92,27 +116,54 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
         });
       }
     });
-  }, [formState.errors]);
+  }, [errors]);
 
   return (
     <div className="w-[600px] mx-auto">
       <form
         onSubmit={handleSubmit(handleSubmitForm)}
-        id="inscform"
         className="w-[600px]"
       >
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
-            <ImageIcon className="mr-4" />
-            Photo de profil :
-          </span>
+        <div className="relative w-[600px] mx-auto">
+          {previewPhoto && (
+            <div className="w-fit mb-4 relative mx-auto">
+              <Image
+                width={128}
+                height={128}
+                src={previewPhoto || "/_assets/img/pdpdebase.png"}
+                alt="Photo de profil"
+                className="w-40 h-40 rounded-full object-cover mr-4"
+              />
+              <button
+                type="button"
+                onClick={handleDeletePDP}
+                className="absolute bg-red-500 text-white p-2 rounded-full bottom-4 right-3"
+                aria-label="Supprimer la photo de profil"
+              >
+                <Trash size={20} />
+              </button>
+            </div>
+          )}
+
+          {/* input file caché */}
           <input
             type="file"
+            id="fileInput"
             onChange={handleFileChange}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="hidden"
             accept="image/*"
           />
+          <p className="font-Montserrat">
+            Photo de profil actuelle,
+            <label
+              htmlFor="fileInput"
+              className="font-Montserrat text-aja-blue underline cursor-pointer ml-1"
+            >
+              modifier ?
+            </label>
+          </p>
         </div>
+
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <User className="mr-4" />
@@ -125,6 +176,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
             placeholder="Pseudo"
           />
         </div>
+
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <Cake className="mr-4" />
@@ -137,6 +189,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
             placeholder="Date de naissance"
           />
         </div>
+
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <Mail className="mr-4" />

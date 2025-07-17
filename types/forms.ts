@@ -8,13 +8,13 @@ import {
   MethodeJoueurSchema,
   MethodeMatchSchema,
   MethodeSaisonSchema,
-  updateProfileSchema,
+  UpdateProfileSchema,
 } from "@/app/schema";
 import { z, ZodIssue } from "zod";
 
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type InscSchemaType = z.infer<typeof InscSchema>;
-export type UpdateProfileSchemaType = z.infer<typeof updateProfileSchema>;
+export type UpdateProfileSchemaType = z.infer<typeof UpdateProfileSchema>;
 export type ArticleSchemaType = z.infer<typeof ArticleSchema>;
 export type DraftArticleSchemaType = z.infer<typeof DraftArticleSchema>;
 export type CommentSchemaType = z.infer<typeof CommentSchema>;

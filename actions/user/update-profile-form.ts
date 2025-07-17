@@ -1,6 +1,6 @@
 "use server";
 
-import { updateProfileSchema } from "@/app/schema";
+import { UpdateProfileSchema } from "@/app/schema";
 import { updateUser } from "@/controllers/UserController";
 import { FormResponse, UpdateProfileSchemaType } from "@/types/forms";
 
@@ -11,15 +11,23 @@ const updateProfileForm = async (
   file?: File
 ): Promise<FormResponse> => {
   try {
-    // Vérifie la validité des données envoyées
-    const parsedData = updateProfileSchema.safeParse(data);
+    const parsedData = UpdateProfileSchema.safeParse(data);
 
     if (!parsedData.success) {
       return { success: false, errors: parsedData.error.errors };
     }
 
-    // Met à jour l'utilisateur avec les données et le fichier
-    const updateProfile = await updateUser(userId, data, file);
+    const birthdayDate =
+      typeof parsedData.data.birthday === "string"
+        ? new Date(parsedData.data.birthday)
+        : parsedData.data.birthday;
+
+    const updateUserData = {
+      ...parsedData.data,
+      birthday: birthdayDate,
+    };
+
+    const updateProfile = await updateUser(userId, updateUserData, file);
 
     if (!updateProfile) {
       return {

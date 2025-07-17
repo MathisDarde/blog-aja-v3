@@ -205,7 +205,12 @@ export type UserSortKey = keyof Pick<
 >;
 
 export interface UpdateUserFromProps {
-  userData: InscSchemaType;
+  userData: {
+    name: string;
+    email: string;
+    birthday: Date;
+    photodeprofil: string | null;
+  };
 }
 
 //Others

@@ -147,8 +147,7 @@ export default function MonCompte() {
               name: user?.name || "",
               email: user?.email || "",
               birthday: user?.birthday || new Date(),
-              password: "",
-              confirmPassword: "",
+              photodeprofil: user?.photodeprofil || "",
             }}
           />
         </div>

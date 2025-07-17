@@ -45,27 +45,16 @@ export const InscSchema = z
     path: ["confirmPassword"],
   });
 
-export const updateProfileSchema = z.object({
+export const UpdateProfileSchema = z.object({
   name: z.string().nonempty({ message: "Veuillez renseigner un pseudo." }),
-  birthday: z.union([
-    z
-      .string()
-      .refine(
-        (val) => {
-          const date = new Date(val);
-          return !isNaN(date.getTime()) && date < new Date();
-        },
-        {
-          message: "La date de naissance doit être valide et dans le passé.",
-        }
-      )
-      .transform((val) => new Date(val)),
-    z.date(),
-  ]),
+  birthday: z
+    .string()
+    .refine(val => !isNaN(Date.parse(val)), "Date de naissance invalide"),
   email: z
     .string()
     .email({ message: "Le mail que vous avez entré n'est pas valide." })
     .nonempty({ message: "Veuillez renseigner un email." }),
+  photodeprofil: z.string().optional(),
 });
 
 export const ArticleSchema = z.object({
