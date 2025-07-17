@@ -128,3 +128,23 @@ export async function getUserPicName(id: SelectUser["id"]) {
 
   return users[0] || null;
 }
+
+export async function deleteUserPic(id: SelectUser["id"]) {
+  const userPic = await getUserPicName(id);
+  if (userPic && userPic.pdp) {
+    const filePath = path.join(process.cwd(), "public", userPic.pdp);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log(`Image supprimée : ${filePath}`);
+    } else {
+      console.log(`Le fichier n'existe pas : ${filePath}`);
+    }
+
+    await db.update(user).set({ photodeprofil: null }).where(eq(user.id, id));
+    console.log(`Chemin de l'image supprimée : ${userPic.pdp}`);
+    return true;
+  } else {
+    console.log("Aucune image à supprimer ou l'utilisateur n'existe pas.");
+    return false;
+  }
+}

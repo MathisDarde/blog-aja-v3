@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
 import Button from "@/components/BlueButton";
@@ -12,12 +12,15 @@ import updateProfileForm from "@/actions/user/update-profile-form";
 import { UpdateUserFromProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
+import deletePhotoDeProfil from "@/actions/user/delete-pdp";
 
 export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   const { user_id } = useGlobalContext();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(userData.photodeprofil || null);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(
+    userData.photodeprofil || "/_assets/img/pdpdebase.png"
+  );
 
   // Formatage date YYYY-MM-DD pour affichage dans input date
   const formattedBirthday = userData.birthday
@@ -45,10 +48,17 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
     }
   };
 
-  const handleDeletePDP = () => {
+  const handleDeletePDP = async () => {
     setSelectedFile(null);
-    setPreviewPhoto("/_assets/img/pdpdebase.png")
-  }
+    setPreviewPhoto("/_assets/img/pdpdebase.png");
+    if (user_id) {
+      await deletePhotoDeProfil(user_id);
+    }
+    toast.success("Photo de profil supprimée avec succès.", {
+      icon: <X className="text-white" />,
+      className: "bg-green-500 border border-green-200 text-white text-base",
+    });
+  };
 
   const handleSubmitForm = async (data: UpdateProfileSchemaType) => {
     if (!user_id) {
@@ -86,8 +96,11 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
       return value instanceof Date && !isNaN(value.getTime());
     }
 
-
-    const response = await updateProfileForm(user_id, data, selectedFile ?? undefined);
+    const response = await updateProfileForm(
+      user_id,
+      data,
+      selectedFile ?? undefined
+    );
 
     if (response.success) {
       toast.success(response.message, {
@@ -120,10 +133,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
 
   return (
     <div className="w-[600px] mx-auto">
-      <form
-        onSubmit={handleSubmit(handleSubmitForm)}
-        className="w-[600px]"
-      >
+      <form onSubmit={handleSubmit(handleSubmitForm)} className="w-[600px]">
         <div className="relative w-[600px] mx-auto">
           {previewPhoto && (
             <div className="w-fit mb-4 relative mx-auto">
