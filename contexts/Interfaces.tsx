@@ -23,7 +23,7 @@ export interface Article {
 
 export type ArticleSortKey = keyof Pick<
   Article,
-  "title" | "author" | "publishedAt"
+  "title" | "author" | "publishedAt" | "state"
 >;
 
 export interface GetURLParams {

@@ -43,7 +43,13 @@ export default function TabArticleContent() {
               Titre de l&apos;article{" "}
               {sortKey === "title" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center">Contenu</th>
+            <th
+              className="p-3 text-center cursor-pointer"
+              onClick={() => handleSort("state")}
+            >
+              Statut
+              {sortKey === "state" && (sortOrder === "asc" ? "↑" : "↓")}
+            </th>
             <th
               className="p-3 text-center cursor-pointer"
               onClick={() => handleSort("author")}
@@ -89,13 +95,11 @@ export default function TabArticleContent() {
                     className="object-cover aspect-video"
                   />
                 </td>
-                <td className="p-3 text-center w-[300px]">
-                  <div className="truncate max-w-[300px]">{article.title}</div>
+                <td className="p-3 text-center w-[500px]">
+                  <div className="truncate max-w-[500px]">{article.title}</div>
                 </td>
                 <td className="p-3 text-center w-[350px]">
-                  <div className="truncate max-w-[350px]">
-                    {article.content}
-                  </div>
+                  <div className="truncate max-w-[350px]">{article.state}</div>
                 </td>
                 <td className="p-3 text-center w-[250px]">{article.author}</td>
                 <td className="p-3 text-center w-[125px]">

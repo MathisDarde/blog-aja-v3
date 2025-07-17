@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Button from "@/components/BlueButton";
-import { User, Cake, Mail, X, ImageIcon, Trash } from "lucide-react";
+import { User, Cake, Mail, X, Trash } from "lucide-react";
 import { UpdateProfileSchemaType } from "@/types/forms";
 import { UpdateProfileSchema } from "@/app/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
