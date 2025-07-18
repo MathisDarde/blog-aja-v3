@@ -6,17 +6,21 @@ import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
 import { UserSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function TabUserContent() {
   const {
-    users,
-    usersLoading,
     sortElements,
     openContextPopup,
     DashboardPopupId,
     DashboardPopupPosition,
     DashboardPopupRef,
   } = useGlobalContext();
+
+  const {
+    users,
+    usersLoading
+  } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<UserSortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");

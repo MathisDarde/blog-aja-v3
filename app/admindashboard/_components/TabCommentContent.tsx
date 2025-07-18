@@ -5,17 +5,21 @@ import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
 import { CommentSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function TabCommentContent() {
   const {
-    comments,
-    commentsLoading,
     sortElements,
     openContextPopup,
     DashboardPopupId,
     DashboardPopupPosition,
     DashboardPopupRef,
   } = useGlobalContext();
+
+  const {
+    comments,
+    commentsLoading,
+  } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<CommentSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");

@@ -3,10 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { Article } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function LastArticle() {
-  const { article, setArticle } = useGlobalContext();
+  const { article, setArticle } = useGettersContext();
 
   const [loading, setLoading] = useState(false);
 

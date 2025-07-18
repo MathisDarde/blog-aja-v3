@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import Header from "@/components/Header";
 import { usePathname } from "next/navigation";
 import { AppProvider } from "@/contexts/GlobalContext";
+import { GettersProvider } from "@/contexts/DataGettersContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,7 +48,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
       >
         {!shouldHideLayout && <Header />}
-        <AppProvider>{children}</AppProvider>
+        <AppProvider><GettersProvider>{children}</GettersProvider></AppProvider>
         <Toaster />
       </body>
     </html>

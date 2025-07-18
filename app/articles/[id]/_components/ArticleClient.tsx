@@ -1,10 +1,10 @@
 "use client";
 
+import { useGettersContext } from "@/contexts/DataGettersContext";
 import ArticleDisplay from "./ArticleDisplay";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function ArticleClient() {
-  const { article, articleLoading } = useGlobalContext();
+  const { article, articleLoading } = useGettersContext();
 
   if (articleLoading) return <p>Chargement...</p>;
   if (!article) return <p>Aucun article trouvé.</p>;

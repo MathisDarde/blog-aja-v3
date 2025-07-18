@@ -1,119 +1,44 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import {
   Calendar1,
   ChevronLeft,
+  Gem,
   Heart,
   MessageCircle,
   PenBox,
-  PenSquare,
-  Plus,
   Trash,
 } from "lucide-react";
 import KeywordHighlighter from "./HighlightKeywords";
-import PlayerMethodeExpert from "./MethodDetails/MethodeExpertJoueur";
-import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
-import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
-import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
-import CommentForm from "./CommentForm";
-import Button from "@/components/BlueButton";
-import { toast } from "sonner";
 import deleteArticleSA from "@/actions/article/delete-article";
 import UpdateArticleForm from "./UpdateArticleForm";
-import getAllMethodes from "@/actions/method/get-all-methodes";
 import {
   Article,
-  BaseMethodeData,
-  MethodeCoach,
-  MethodeMatch,
-  MethodeJoueur,
-  MethodeSaison,
-  Methode,
 } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import deleteCommentAction from "@/actions/comment/delete-comment";
-import UpdateCommentForm from "./UpdateCommentForm";
 import { ModalAction } from "@/components/ModalAction";
+import { useGettersContext } from "@/contexts/DataGettersContext";
+import DisplayArticleComments from "./DisplayComments";
+import MethodPopup from "./MethodPopup";
 
 export default function ArticleDisplay({ article }: { article: Article }) {
   const {
     router,
-    methode,
-    setMethode,
-    methodes,
-    setMethodes,
-    comments,
     isAdmin,
     isUser,
-    user_id,
     modalParams,
     setModalParams,
   } = useGlobalContext();
 
-  const [loading, setLoading] = useState(false);
-  const [keywords, setKeywords] = useState<BaseMethodeData[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isPublishingComment, setIsPublishingComment] = useState(false);
-  const [visibleComments, setVisibleComments] = useState(3);
+  const {
+    articleLoading,
+    allKeywords
+  } = useGettersContext();
+
   const [isUpdatingArticle, setIsUpdatingArticle] = useState(false);
-  const [isUpdatingComment, setIsUpdatingComment] = useState(false);
-  const [selectedComment, setSelectedComment] = useState<{
-    id_comment: string;
-    title: string;
-    content: string;
-    stars: number;
-  } | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-
-    getAllMethodes()
-      .then((data) => {
-        if (data) {
-          const typedMethodes = data.map((item) => {
-            switch (item.typemethode) {
-              case "joueur":
-                return item as unknown as Methode;
-              case "saison":
-                return item as unknown as Methode;
-              case "match":
-                return item as unknown as Methode;
-              case "coach":
-                return item as unknown as Methode;
-              default:
-                throw new Error(
-                  `Type de méthode inconnu : ${item.typemethode}`
-                );
-            }
-          });
-
-          setMethodes(typedMethodes);
-
-          const allKeywords = typedMethodes.flatMap((item) =>
-            item.keywords.map((kw) => ({
-              id_methode: item.id,
-              typemethode: item.typemethode,
-              keywords: [kw],
-            }))
-          );
-
-          setKeywords(allKeywords);
-        } else {
-          setKeywords([]);
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message || "Failed to load keywords");
-        setLoading(false);
-      });
-  }, []);
-
-  const handleVoirPlus = () => {
-    setVisibleComments((prev) => prev + 3);
-  };
+  const [isMethodOpen, setIsMethodOpen] = useState(false);
 
   const openLeaveChangesArticleModal = () => {
     setModalParams({
@@ -144,96 +69,8 @@ export default function ArticleDisplay({ article }: { article: Article }) {
     });
   };
 
-  const openDeleteCommentModal = (comment: {
-    id_comment: string;
-    title: string;
-    content: string;
-    stars: number;
-  }) => {
-    setModalParams({
-      object: "comment",
-      type: "delete",
-      onConfirm: async () => {
-        await deleteComment(comment.id_comment);
-        window.location.reload();
-        setModalParams(null);
-      },
-      onCancel: () => setModalParams(null),
-    });
-  };
-
-  const handleKeywordClick = (id: string, type: string) => {
-    const method = methodes.find((m) => m.id === id && m.typemethode === type);
-
-    if (method) {
-      setMethode(method);
-    } else {
-      toast.error("Méthode non trouvée.");
-    }
-  };
-
-  const closeMethodPanel = () => {
-    setMethode(null);
-  };
-
-  async function deleteComment(id: string) {
-    try {
-      return await deleteCommentAction(id);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  const renderMethodComponent = () => {
-    if (!methode) return null;
-
-    switch (methode.typemethode) {
-      case "joueur":
-        return (
-          <PlayerMethodeExpert
-            methode={methode as unknown as MethodeJoueur}
-            onClose={closeMethodPanel}
-          />
-        );
-      case "saison":
-        return (
-          <SeasonMethodeExpert
-            methode={methode as unknown as MethodeSaison}
-            onClose={closeMethodPanel}
-          />
-        );
-      case "match":
-        return (
-          <GameMethodeExpert
-            methode={methode as unknown as MethodeMatch}
-            onClose={closeMethodPanel}
-          />
-        );
-      case "coach":
-        return (
-          <CoachMethodeExpert
-            methode={methode as unknown as MethodeCoach}
-            onClose={closeMethodPanel}
-          />
-        );
-      default:
-        return (
-          <div className="method-content font-Montserrat">
-            <h4 className="font-bold text-lg mb-2">Méthode</h4>
-            <p className="mb-4 text-justify">Aucune description disponible.</p>
-            <button
-              className="mt-2 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md text-sm font-medium transition-colors"
-              onClick={closeMethodPanel}
-            >
-              Fermer
-            </button>
-          </div>
-        );
-    }
-  };
-
   return (
-    <div className="bg-gray-100 min-h-screen w-full m-0 box-border p-10">
+    <div className={`bg-gray-100 min-h-screen w-full m-0 box-border p-10 ${isMethodOpen && "overflow-hidden"}`}>
       {/* Delete element popup */}
       {modalParams && (
         <ModalAction
@@ -265,7 +102,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
       ) : (
         <>
           <div className="flex justify-center gap-10">
-            <div className="flex flex-col gap-6 w-[975px]">
+            <div className="flex flex-col gap-6 w-[1200px]">
               <div>
                 <h1 className="font-Bai_Jamjuree font-extrabold text-4xl">
                   {article.title}
@@ -337,222 +174,31 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                 className="aspect-video w-full object-cover object-top rounded-xl"
               />
 
-              {loading ? (
-                <div className="bg-white rounded-xl p-8 text-center">
-                  Chargement des mots-clés...
-                </div>
-              ) : error ? (
-                <div className="bg-white rounded-xl p-8 text-center text-red-500">
-                  Erreur: {error}
+              {articleLoading ? (
+                <div className="bg-white rounded-xl p-8 text-center font-Montserrat">
+                  Chargement de l'article...
                 </div>
               ) : (
                 <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">
                   <KeywordHighlighter
                     text={article.content}
-                    keywords={keywords}
-                    onKeywordClick={handleKeywordClick}
+                    keywords={allKeywords}
                   />
                 </div>
               )}
 
-              <div
-                id="commentaire-anchor"
-                className="relative -top-24 opacity-0 transition-opacity duration-500"
-              ></div>
-
-              <div className="w-full bg-white rounded-xl p-8 font-Montserrat">
-                {!isPublishingComment ? (
-                  <>
-                    {isUpdatingComment && selectedComment ? (
-                      <>
-                        <h2
-                          className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
-                          onClick={() => {
-                            setSelectedComment(null);
-                            setIsUpdatingComment(false);
-                          }}
-                        >
-                          <ChevronLeft /> Formulaire de modification du
-                          commentaire
-                        </h2>
-
-                        <UpdateCommentForm
-                          commentId={selectedComment.id_comment}
-                          commentData={{
-                            title: selectedComment.title,
-                            content: selectedComment.content,
-                            stars: selectedComment.stars,
-                          }}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex justify-between items-center">
-                          <h3 className="font-Bai_Jamjuree text-2xl font-bold uppercase">
-                            Commentaires
-                          </h3>
-                          {isUser ? (
-                            <Button
-                              className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full m-0"
-                              onClick={() => setIsPublishingComment(true)}
-                            >
-                              <Plus /> Ajouter un commentaire
-                            </Button>
-                          ) : (
-                            <Button
-                              className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full"
-                              onClick={() => router.push("/login")}
-                            >
-                              Connectez-vous pour publier un commentaire
-                            </Button>
-                          )}
-                        </div>
-
-                        <div className="mt-6 flex flex-col gap-8">
-                          {comments.length > 0 &&
-                          isUpdatingComment === false ? (
-                            <>
-                              {comments
-                                .slice(0, visibleComments)
-                                .map((comment) => (
-                                  <div
-                                    key={comment.id_comment}
-                                    id={comment.id_comment}
-                                    className="border rounded-lg p-4 bg-gray-50 font-Montserrat"
-                                  >
-                                    <div className="flex items-center gap-4">
-                                      {!comment.photodeprofil ? (
-                                        <Image
-                                          src={"/_assets/img/pdpdebase.png"}
-                                          alt="Photo de profil"
-                                          width={128}
-                                          height={128}
-                                          className="w-11 h-11 rounded-full"
-                                        />
-                                      ) : (
-                                        <Image
-                                          src={comment.photodeprofil}
-                                          alt="Photo de profil"
-                                          width={128}
-                                          height={128}
-                                          className="w-11 h-11 rounded-full object-cover"
-                                        />
-                                      )}
-                                      <p className="font-semibold">
-                                        {comment.pseudo}
-                                      </p>
-                                      <p className="font-light text-xs">
-                                        {comment.updatedAt.toLocaleString(
-                                          "fr-FR"
-                                        )}
-                                      </p>
-                                      <div className="flex items-center gap-1 my-2">
-                                        {Array.from({
-                                          length: Number(comment.stars),
-                                        }).map((_, idx) => (
-                                          <span
-                                            key={idx}
-                                            className="text-yellow-400 text-3xl"
-                                          >
-                                            ★
-                                          </span>
-                                        ))}
-                                      </div>
-                                      {comment.userId === user_id && (
-                                        <div className="flex items-center gap-2 ml-auto">
-                                          <button
-                                            className="rounded-full border border-gray-300 p-2"
-                                            onClick={() => {
-                                              setSelectedComment({
-                                                id_comment: comment.id_comment,
-                                                title: comment.title,
-                                                content: comment.content,
-                                                stars: comment.stars,
-                                              });
-                                              setIsUpdatingComment(true);
-                                            }}
-                                          >
-                                            <PenSquare size={20} />
-                                          </button>
-                                          <button
-                                            className="rounded-full border bg-red-500 text-white border-gray-300 p-2"
-                                            onClick={() => {
-                                              openDeleteCommentModal({
-                                                id_comment: comment.id_comment,
-                                                title: comment.title,
-                                                content: comment.content,
-                                                stars: comment.stars,
-                                              });
-                                            }}
-                                          >
-                                            <Trash size={20} />
-                                          </button>
-                                        </div>
-                                      )}
-                                    </div>
-                                    <p className="font-semibold uppercase my-2">
-                                      {comment.title}
-                                    </p>
-                                    <p className="text-sm text-gray-700 mb-2">
-                                      {comment.content}
-                                    </p>
-                                  </div>
-                                ))}
-
-                              {/* Bouton Voir plus */}
-                              {visibleComments < comments.length && (
-                                <Button
-                                  onClick={handleVoirPlus}
-                                  className="mt-4 text-white bg-aja-blue px-6 py-3 rounded-full w-fit mx-auto"
-                                >
-                                  Voir plus
-                                </Button>
-                              )}
-                            </>
-                          ) : (
-                            <p>
-                              Aucun commentaire publié. Soyez le premier à
-                              laisser un commentaire !
-                            </p>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <div>
-                    <div onClick={() => setIsPublishingComment(false)}>
-                      <h2 className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
-                        <ChevronLeft /> Formulaire de publication de commentaire
-                      </h2>
-                    </div>
-                    <div>
-                      <CommentForm />
-                    </div>
-                  </div>
-                )}
-              </div>
+              <DisplayArticleComments />
             </div>
 
-            <div className="relative w-[325px]">
-              <div className="fixed w-[325px] max-h-[80vh] bg-white h-fit border border-black rounded-xl px-4 py-8 overflow-y-auto">
-                <h3 className="text-center font-bold font-Montserrat uppercase text-2xl mb-4">
-                  Méthode Expert
-                </h3>
+          </div>
 
-                {!methode ? (
-                  <p className="font-Montserrat text-justify">
-                    Cliquez sur les mots en surbrillance dans le texte pour
-                    accéder à pleins d&apos;informations supplémentaires !
-                  </p>
-                ) : (
-                  <div className="method-container">
-                    {renderMethodComponent()}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>{" "}
+          {isMethodOpen && (
+            <MethodPopup onClose={() => setIsMethodOpen(false)} />
+          )}
+
+          <div onClick={() => setIsMethodOpen(true)} className="fixed bottom-10 right-10 w-24 h-24 rounded-full text-white bg-aja-blue flex items-center justify-center ">
+            <Gem size={50} />
+          </div>
         </>
       )}
     </div>

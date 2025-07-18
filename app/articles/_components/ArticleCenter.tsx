@@ -8,11 +8,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getArticlesbyKeywords } from "@/actions/article/get-article-by-keywords";
 import Button from "@/components/BlueButton";
 import { Filter, Article } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function ArticleCenter() {
   const { articles, setArticles, articleLoading, setArticleLoading } =
-    useGlobalContext();
+    useGettersContext();
 
   const searchParams = useSearchParams();
   const router = useRouter();

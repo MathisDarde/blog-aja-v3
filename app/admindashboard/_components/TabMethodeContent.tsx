@@ -5,17 +5,21 @@ import { EllipsisVertical, Loader2 } from "lucide-react";
 import ContextPopup from "./ContextPopup";
 import { Methode, MethodeSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function TabMethodeContent() {
   const {
-    methodes,
-    methodesLoading,
     sortElements,
     openContextPopup,
     DashboardPopupId,
     DashboardPopupPosition,
     DashboardPopupRef,
   } = useGlobalContext();
+
+  const {
+    methodes,
+    methodesLoading,
+  } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<MethodeSortKey>("typemethode");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");

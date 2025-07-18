@@ -52,9 +52,9 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
 
   // Apply keyword highlighting
   keywords.forEach((keyword) => {
-    const keywordArray = Array.isArray(keyword.keywords)
-      ? keyword.keywords
-      : [keyword.keywords];
+    const keywordArray = Array.isArray(keyword.keywordsList)
+      ? keyword.keywordsList
+      : [keyword.keywordsList];
 
     keywordArray.forEach((kw) => {
       // Make sure keyword is a string before processing

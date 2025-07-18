@@ -3,7 +3,6 @@
 import {
   ArticleSchemaType,
   CommentSchemaType,
-  InscSchemaType,
 } from "@/types/forms";
 import { ReactNode } from "react";
 
@@ -36,7 +35,7 @@ export interface GetURLParams {
 export interface Keyword {
   id_methode: string;
   typemethode: string;
-  keywords: string[];
+  keywordsList: string[];
 }
 
 export interface KeywordProps {
