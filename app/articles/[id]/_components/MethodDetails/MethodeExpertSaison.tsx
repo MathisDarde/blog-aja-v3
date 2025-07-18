@@ -3,23 +3,13 @@ import Image from "next/image";
 
 interface SeasonMethodeExpertProps {
   methode: MethodeSaison;
-  onClose: () => void;
 }
 
 export default function SeasonMethodeExpert({
   methode,
-  onClose,
 }: SeasonMethodeExpertProps) {
   return (
     <div className="bg-white rounded-lg font-Montserrat">
-      {/* Bouton de fermeture */}
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-xl"
-      >
-        ✖
-      </button>
-
       {/* Titre Saison */}
       <h2 className="text-center text-xl font-bold mt-4">
         Saison {methode.saison}

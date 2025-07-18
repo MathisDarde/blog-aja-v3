@@ -9,6 +9,5 @@ export default function ArticleClient() {
   if (articleLoading) return <p>Chargement...</p>;
   if (!article) return <p>Aucun article trouvé.</p>;
 
-  console.log("Article to display:", article);
   return <ArticleDisplay article={article} />;
 }

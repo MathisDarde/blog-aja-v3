@@ -84,7 +84,7 @@ export interface SearchInputProps {
 // Interfaces Methode
 
 export interface Methode {
-  id: string;
+  id_methode: string;
   typemethode: BaseMethodeData["typemethode"];
   keywords: string[];
   nomcoach: string | null;
@@ -104,11 +104,6 @@ export type MethodeSortKey = keyof Pick<
   | "saison"
   | "created_at"
 >;
-
-export interface MethodeProps {
-  methode: BaseMethodeData;
-  onClose: () => void;
-}
 
 export interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";

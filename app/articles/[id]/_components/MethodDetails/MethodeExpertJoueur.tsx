@@ -3,23 +3,13 @@ import Image from "next/image";
 
 interface PlayerMethodeExpertProps {
   methode: MethodeJoueur;
-  onClose: () => void;
 }
 
 export default function PlayerMethodeExpert({
   methode,
-  onClose,
 }: PlayerMethodeExpertProps) {
   return (
     <div className="bg-white rounded-lg font-Montserrat">
-      {/* Bouton de fermeture */}
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-xl"
-      >
-        ✖
-      </button>
-
       {/* Image du joueur */}
       <Image
         src={methode.imagejoueur}

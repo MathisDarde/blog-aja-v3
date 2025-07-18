@@ -15,7 +15,7 @@ import KeywordHighlighter from "./HighlightKeywords";
 import deleteArticleSA from "@/actions/article/delete-article";
 import UpdateArticleForm from "./UpdateArticleForm";
 import {
-  Article,
+  Article, Methode,
 } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { ModalAction } from "@/components/ModalAction";
@@ -34,10 +34,12 @@ export default function ArticleDisplay({ article }: { article: Article }) {
 
   const {
     articleLoading,
-    allKeywords
+    allKeywords,
+    methodes
   } = useGettersContext();
 
   const [isUpdatingArticle, setIsUpdatingArticle] = useState(false);
+  const [activeMethode, setActiveMethode] = useState<Methode[]>([]);
   const [isMethodOpen, setIsMethodOpen] = useState(false);
 
   const openLeaveChangesArticleModal = () => {
@@ -67,6 +69,15 @@ export default function ArticleDisplay({ article }: { article: Article }) {
       },
       onCancel: () => setModalParams(null),
     });
+  };
+
+  const handleKeywordClick = (id_methode: string, typemethode: string) => {
+
+    const selectedMethodes = methodes.filter(
+      (m) => m.id_methode === id_methode && m.typemethode === typemethode
+    );
+    setActiveMethode(selectedMethodes);
+    setIsMethodOpen(true);
   };
 
   return (
@@ -183,6 +194,7 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                   <KeywordHighlighter
                     text={article.content}
                     keywords={allKeywords}
+                    onKeywordClick={handleKeywordClick}
                   />
                 </div>
               )}
@@ -193,7 +205,11 @@ export default function ArticleDisplay({ article }: { article: Article }) {
           </div>
 
           {isMethodOpen && (
-            <MethodPopup onClose={() => setIsMethodOpen(false)} />
+            <MethodPopup 
+              onClose={() => setIsMethodOpen(false)} 
+              activeMethode={activeMethode}
+              setActiveMethode={setActiveMethode}
+            />
           )}
 
           <div onClick={() => setIsMethodOpen(true)} className="fixed bottom-10 right-10 w-24 h-24 rounded-full text-white bg-aja-blue flex items-center justify-center ">

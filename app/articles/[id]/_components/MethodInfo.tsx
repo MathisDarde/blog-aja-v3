@@ -3,52 +3,37 @@ import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
 import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
 import {
+  Methode,
   MethodeCoach,
   MethodeJoueur,
   MethodeMatch,
   MethodeSaison,
-  MethodeProps,
 } from "@/contexts/Interfaces";
 
-const MethodInfo: React.FC<MethodeProps> = ({ methode, onClose }) => {
-  if (!methode) return null;
+interface MethodeProps {
+  methode: Methode[];
+}
+
+const MethodInfo: React.FC<MethodeProps> = ({ methode }) => {
+  if (!methode || methode.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg relative w-96">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-red-600 text-xl font-bold"
-        >
-          ✖
-        </button>
-
-        {methode.typemethode === "joueur" && (
-          <PlayerMethodeExpert
-            methode={methode as MethodeJoueur}
-            onClose={onClose}
-          />
-        )}
-        {methode.typemethode === "saison" && (
-          <SeasonMethodeExpert
-            methode={methode as MethodeSaison}
-            onClose={onClose}
-          />
-        )}
-        {methode.typemethode === "match" && (
-          <GameMethodeExpert
-            methode={methode as MethodeMatch}
-            onClose={onClose}
-          />
-        )}
-        {methode.typemethode === "coach" && (
-          <CoachMethodeExpert
-            methode={methode as MethodeCoach}
-            onClose={onClose}
-          />
-        )}
-      </div>
-    </div>
+    <>
+      {methode.map((m, index) => {
+        switch (m.typemethode) {
+          case "joueur":
+            return <PlayerMethodeExpert key={index} methode={m as unknown as MethodeJoueur} />;
+          case "saison":
+            return <SeasonMethodeExpert key={index} methode={m as unknown as MethodeSaison} />;
+          case "match":
+            return <GameMethodeExpert key={index} methode={m as unknown as MethodeMatch} />;
+          case "coach":
+            return <CoachMethodeExpert key={index} methode={m as unknown as MethodeCoach} />;
+          default:
+            return null;
+        }
+      })}
+    </>
   );
 };
 

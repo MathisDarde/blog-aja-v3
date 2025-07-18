@@ -3,12 +3,10 @@ import Image from "next/image";
 
 interface CoachMethodeExpertProps {
   methode: MethodeCoach;
-  onClose: () => void;
 }
 
 export default function CoachMethodeExpert({
   methode,
-  onClose,
 }: CoachMethodeExpertProps) {
   const formattedClubs = methode.clubscoach.map(([logo, name, years]) => ({
     logo,
@@ -18,14 +16,6 @@ export default function CoachMethodeExpert({
 
   return (
     <div className="bg-white rounded-lg font-Montserrat">
-      {/* Bouton de fermeture */}
-      <button
-        onClick={onClose}
-        className="text-red-600 text-xl font-bold absolute top-2 right-2"
-      >
-        ✖
-      </button>
-
       {/* Image du coach */}
       {methode.imagecoach && (
         <Image

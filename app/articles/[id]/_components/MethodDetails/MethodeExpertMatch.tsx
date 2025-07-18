@@ -4,23 +4,13 @@ import { MethodeMatch } from "@/contexts/Interfaces";
 
 interface GameMethodeExpertProps {
   methode: MethodeMatch;
-  onClose: () => void;
 }
 
 export default function GameMethodeExpert({
   methode,
-  onClose,
 }: GameMethodeExpertProps) {
   return (
     <div className="bg-white rounded-lg font-Montserrat">
-      {/* Bouton de fermeture */}
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-xl"
-      >
-        ✖
-      </button>
-
       {/* Titre du match */}
       <h2 className="text-center text-xl font-bold mt-4">
         {methode.titrematch}

@@ -162,7 +162,7 @@ export const GettersProvider = ({ children }: { children: React.ReactNode }) => 
                 const result = await getAllMethodes();
                 if (Array.isArray(result)) {
                     const parsed = result.map((u) => ({
-                        id: u.id_methode,
+                        id_methode: u.id_methode,
                         typemethode: u.typemethode as
                             | "joueur"
                             | "saison"
@@ -251,17 +251,19 @@ export const GettersProvider = ({ children }: { children: React.ReactNode }) => 
                     );
                 }
               });
+              console.log("typpedmethodes", typedMethodes)
     
               setMethodes(typedMethodes);
     
               const everyKeywords = typedMethodes.flatMap((item) =>
                 item.keywords.map((kw) => ({
-                  id_methode: item.id,
+                  id_methode: item.id_methode,
                   typemethode: item.typemethode,
                   keywordsList: [kw],
                 }))
               );
     
+              console.log('everykeywords', everyKeywords)
               setAllKeywords(everyKeywords);
             } else {
                 setAllKeywords([]);
@@ -289,7 +291,7 @@ export const GettersProvider = ({ children }: { children: React.ReactNode }) => 
       
         const keywordsWithMeta = relatedMethodes.flatMap((methode) =>
           methode.keywords.map((kw) => ({
-            id_methode: methode.id,
+            id_methode: methode.id_methode,
             typemethode: methode.typemethode,
             keywords: kw,
           }))
