@@ -48,7 +48,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
       >
         {!shouldHideLayout && <Header />}
-        <AppProvider><GettersProvider>{children}</GettersProvider></AppProvider>
+        <AppProvider>
+          <GettersProvider>{children}</GettersProvider>
+        </AppProvider>
         <Toaster />
       </body>
     </html>

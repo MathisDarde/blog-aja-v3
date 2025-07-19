@@ -14,9 +14,7 @@ import {
 import KeywordHighlighter from "./HighlightKeywords";
 import deleteArticleSA from "@/actions/article/delete-article";
 import UpdateArticleForm from "./UpdateArticleForm";
-import {
-  Article, Methode,
-} from "@/contexts/Interfaces";
+import { Article, Methode } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { ModalAction } from "@/components/ModalAction";
 import { useGettersContext } from "@/contexts/DataGettersContext";
@@ -24,19 +22,10 @@ import DisplayArticleComments from "./DisplayComments";
 import MethodPopup from "./MethodPopup";
 
 export default function ArticleDisplay({ article }: { article: Article }) {
-  const {
-    router,
-    isAdmin,
-    isUser,
-    modalParams,
-    setModalParams,
-  } = useGlobalContext();
+  const { router, isAdmin, isUser, modalParams, setModalParams } =
+    useGlobalContext();
 
-  const {
-    articleLoading,
-    allKeywords,
-    methodes
-  } = useGettersContext();
+  const { articleLoading, allKeywords, methodes } = useGettersContext();
 
   const [isUpdatingArticle, setIsUpdatingArticle] = useState(false);
   const [activeMethode, setActiveMethode] = useState<Methode[]>([]);
@@ -72,7 +61,6 @@ export default function ArticleDisplay({ article }: { article: Article }) {
   };
 
   const handleKeywordClick = (id_methode: string, typemethode: string) => {
-
     const selectedMethodes = methodes.filter(
       (m) => m.id_methode === id_methode && m.typemethode === typemethode
     );
@@ -81,7 +69,11 @@ export default function ArticleDisplay({ article }: { article: Article }) {
   };
 
   return (
-    <div className={`bg-gray-100 min-h-screen w-full m-0 box-border p-10 ${isMethodOpen && "overflow-hidden"}`}>
+    <div
+      className={`bg-gray-100 min-h-screen w-full m-0 box-border p-10 ${
+        isMethodOpen && "overflow-hidden"
+      }`}
+    >
       {/* Delete element popup */}
       {modalParams && (
         <ModalAction
@@ -199,20 +191,22 @@ export default function ArticleDisplay({ article }: { article: Article }) {
                 </div>
               )}
 
-              <DisplayArticleComments />
+              <DisplayArticleComments article_id={article.id_article} />
             </div>
-
           </div>
 
           {isMethodOpen && (
-            <MethodPopup 
-              onClose={() => setIsMethodOpen(false)} 
+            <MethodPopup
+              onClose={() => setIsMethodOpen(false)}
               activeMethode={activeMethode}
               setActiveMethode={setActiveMethode}
             />
           )}
 
-          <div onClick={() => setIsMethodOpen(true)} className="fixed bottom-10 right-10 w-24 h-24 rounded-full text-white bg-aja-blue flex items-center justify-center ">
+          <div
+            onClick={() => setIsMethodOpen(true)}
+            className="fixed bottom-10 right-10 w-24 h-24 rounded-full text-white bg-aja-blue flex items-center justify-center "
+          >
             <Gem size={50} />
           </div>
         </>
