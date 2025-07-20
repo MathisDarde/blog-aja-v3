@@ -6,6 +6,7 @@ import {
   Calendar1,
   Gem,
   Heart,
+  Loader2,
   MessageCircle,
   PenBox,
   Trash,
@@ -175,8 +176,11 @@ export default function ArticleDisplay({ article }: { article: Article }) {
           />
 
           {articleLoading ? (
-            <div className="bg-white rounded-xl p-8 text-center font-Montserrat">
-              Chargement de l'article...
+            <div className="flex justify-center items-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+              <span className="ml-2 text-gray-600">
+                Chargement des commentaires...
+              </span>
             </div>
           ) : (
             <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">

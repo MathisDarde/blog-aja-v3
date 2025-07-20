@@ -305,7 +305,7 @@ export default function SaisonForm({
             htmlFor="fileInput"
             className="underline text-aja-blue font-Montserrat cursor-pointer"
           >
-            Modifier l'image du terrain ?
+            Modifier l&apos;image du terrain ?
           </label>
         </div>
 

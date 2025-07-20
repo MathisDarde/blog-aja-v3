@@ -427,7 +427,7 @@ export default function MatchForm({
             htmlFor="fileInput"
             className="underline text-aja-blue font-Montserrat cursor-pointer"
           >
-            Modifier l'image du terrain ?
+            Modifier l&apos;image du terrain ?
           </label>
         </div>
 

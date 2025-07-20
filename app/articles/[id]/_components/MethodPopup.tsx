@@ -49,7 +49,7 @@ export default function MethodPopup({
 
             <p className="w-2/3 mx-auto my-3">
               Plongez au coeur des méthodes expert pour revivre ou découvrir des
-              matchs et des carrières qui ont marqué l'AJ Auxerre !
+              matchs et des carrières qui ont marqué l&apos;AJ Auxerre !
             </p>
 
             <div className="text-center mt-4 space-y-2">
