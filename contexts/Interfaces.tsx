@@ -1,6 +1,10 @@
 // Interfaces Article
 
-import { ArticleSchemaType, CommentSchemaType } from "@/types/forms";
+import {
+  ArticleSchemaType,
+  CommentSchemaType,
+  UpdateArticleSchemaType,
+} from "@/types/forms";
 import { ReactNode } from "react";
 
 export interface Article {
@@ -61,7 +65,7 @@ export interface UpdateArticleFormProps {
 }
 
 export interface UpdateBrouillonFormProps {
-  articleData: ArticleSchemaType;
+  articleData: UpdateArticleSchemaType;
   setIsEditing: React.Dispatch<boolean>;
   id_article: string;
 }

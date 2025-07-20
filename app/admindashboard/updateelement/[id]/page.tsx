@@ -69,12 +69,12 @@ export default function MethodeUpdate() {
         />
       )}
 
-      <h2
+      <h1
         className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
         onClick={() => openLeaveChangesMethodModal()}
       >
         <ChevronLeft /> Formulaire de modification de méthode expert
-      </h2>
+      </h1>
 
       <div>
         {selectedMethode?.typemethode === "joueur" && (

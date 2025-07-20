@@ -10,10 +10,11 @@ import {
   Tag,
   X,
   ChevronLeft,
+  Cctv,
 } from "lucide-react";
 import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
-import { ArticleSchemaType } from "@/types/forms";
+import { UpdateArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
@@ -34,7 +35,7 @@ export default function UpdateBrouillonForm({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const { register, handleSubmit, formState, setValue, watch, getValues } =
-    useForm<ArticleSchemaType>({
+    useForm<UpdateArticleSchemaType>({
       resolver: zodResolver(ArticleSchema),
       defaultValues: articleData,
     });
@@ -66,7 +67,7 @@ export default function UpdateBrouillonForm({
     }
   };
 
-  const handlePublishForm = async (data: ArticleSchemaType) => {
+  const handlePublishForm = async (data: UpdateArticleSchemaType) => {
     const formData = new FormData();
 
     if (selectedFile) {
@@ -195,12 +196,12 @@ export default function UpdateBrouillonForm({
         />
       )}
 
-      <h2
-        className="font-bold font-Montserrat uppercase text-3xl my-10  flex items-center justify-center gap-3 cursor-pointer"
+      <h1
+        className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
         onClick={() => openLeaveChangesBrouillonModal()}
       >
-        <ChevronLeft /> Formulaire de modification d&apos;article
-      </h2>
+        <ChevronLeft /> Formulaire de modification de brouillon
+      </h1>
       <form
         id="publishform"
         encType="multipart/form-data"
@@ -326,17 +327,40 @@ export default function UpdateBrouillonForm({
           </div>
         </div>
 
-        {/* Bouton de confirmation */}
-        <div className="flex justify-center items-center">
-          <Button type="button" onClick={handleSaveForm}>
-            Je sauvegarde l&apos;article
-          </Button>
+        {/* Statut */}
+        <div className="relative w-[800px]">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <Cctv className="mr-4" />
+            Statut :
+          </span>
+          <select
+            {...register("state")}
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            value={watch("state")}
+          >
+            <option value="published">Published</option>
+            <option value="pending">Pending</option>
+            <option value="archived">Archived</option>
+          </select>
         </div>
 
-        <div>
-          <Button type="button" onClick={handleSubmit(handlePublishForm)}>
-            Je publie cet article
-          </Button>
+        <div className="flex items-center gap-10 justify-center">
+          {/* Bouton de confirmation */}
+          <div className="flex justify-center items-center">
+            <Button
+              type="button"
+              className="bg-gray-400 border-0"
+              onClick={handleSaveForm}
+            >
+              Je sauvegarde l&apos;article
+            </Button>
+          </div>
+
+          <div>
+            <Button type="button" onClick={handleSubmit(handlePublishForm)}>
+              Je publie cet article
+            </Button>
+          </div>
         </div>
       </form>
     </div>
