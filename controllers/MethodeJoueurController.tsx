@@ -148,31 +148,96 @@ export async function getMethodeById(methodeId: string): Promise<
 }
 
 export async function updateMethodeJoueur(
-  methodeId: string,
-  data: Partial<
-    Omit<
-      {
-        id_methode: string;
-        typemethode: string;
-        keywords: string[];
-        imagejoueur: string;
-        joueurnom: string;
-        poste: string;
-        taille: string;
-        piedfort: string;
-        matchs: string;
-        buts: string;
-        passesd: string;
-        clubs: string[][];
-      },
-      "id_methode"
-    >
-  >
+  id_methode: string,
+  data: MethodeJoueurSchemaType,
+  userId: string,
+  file?: File
 ) {
-  await db
-    .update(methodeExpertJoueurTable)
-    .set(data)
-    .where(eq(methodeExpertJoueurTable.id_methode, methodeId));
+  let imageUrl = "";
+
+  try {
+    // Si un nouveau fichier est fourni, on traite l’upload
+    if (file) {
+      const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+      const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ];
+
+      if (file.size > MAX_SIZE) {
+        throw new Error(
+          "Le fichier est trop grand. La taille maximale est de 5 Mo."
+        );
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        throw new Error(
+          "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
+        );
+      }
+
+      const uploadDir = path.join(process.cwd(), "/public/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileExtension = path.extname(file.name);
+      const fileName = `${uuidv4()}${fileExtension}`;
+      const filePath = path.join(uploadDir, fileName);
+
+      const buffer = await file.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(buffer));
+
+      imageUrl = `/uploads/${fileName}`;
+    }
+
+    const {
+      joueurnom,
+      poste,
+      taille,
+      piedfort,
+      matchs,
+      buts,
+      passesd,
+      keywords,
+      clubs,
+    } = data;
+
+    // Construction des données à mettre à jour
+    const updatedFields: any = {
+      joueurnom,
+      poste,
+      taille,
+      piedfort,
+      matchs,
+      buts,
+      passesd,
+      keywords: keywords.map((keyword) => keyword.value),
+      clubs,
+      userId,
+    };
+
+    // Si une nouvelle image a été uploadée, on met à jour le champ
+    if (imageUrl) {
+      updatedFields.imagejoueur = imageUrl;
+    }
+
+    // Mise à jour de la base de données
+    const result = await db
+      .update(methodeExpertJoueurTable)
+      .set(updatedFields)
+      .where(eq(methodeExpertJoueurTable.id_methode, id_methode));
+
+    return { success: true, result };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: "Erreur lors de la mise à jour du fichier ou de la méthode.",
+    };
+  }
 }
 
 export async function deleteMethodeJoueur(methodeId: string) {

@@ -126,28 +126,76 @@ export async function getMethodeById(methodeId: string): Promise<
 }
 
 export async function updateMethodeSaison(
-  methodeId: string,
-  data: Partial<
-    Omit<
-      {
-        id_methode: string;
-        typemethode: string;
-        keywords: string[];
-        saison: string;
-        imgterrain: string;
-        coach: string;
-        systeme: string;
-        remplacants: string[][];
-        userId: string;
-      },
-      "id_methode"
-    >
-  >
+  id_methode: string,
+  data: MethodeSaisonSchemaType,
+  userId: string,
+  file?: File
 ) {
-  await db
-    .update(methodeExpertSaisonTable)
-    .set(data)
-    .where(eq(methodeExpertSaisonTable.id_methode, methodeId));
+  let imageUrl: string | undefined = undefined;
+
+  try {
+    // Si un nouveau fichier est fourni, le traiter
+    if (file) {
+      const MAX_SIZE = 5 * 1024 * 1024;
+      const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ];
+
+      if (file.size > MAX_SIZE) {
+        throw new Error("Le fichier est trop grand. Max : 5 Mo.");
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        throw new Error("Type de fichier non autorisé.");
+      }
+
+      const uploadDir = path.join(process.cwd(), "/public/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileExtension = path.extname(file.name);
+      const fileName = `${uuidv4()}${fileExtension}`;
+      const filePath = path.join(uploadDir, fileName);
+
+      const buffer = await file.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(buffer));
+
+      imageUrl = `/uploads/${fileName}`;
+    }
+
+    const { saison, coach, systeme, keywords, remplacants } = data;
+
+    const updateData: any = {
+      saison,
+      coach,
+      systeme,
+      keywords: keywords.map((k) => k.value),
+      remplacants,
+      userId,
+    };
+
+    if (imageUrl) {
+      updateData.imgterrain = imageUrl;
+    }
+
+    const result = await db
+      .update(methodeExpertSaisonTable)
+      .set(updateData)
+      .where(eq(methodeExpertSaisonTable.id_methode, id_methode));
+
+    return { success: true, result };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message:
+        "Erreur lors de la mise à jour de la méthode ou du fichier image.",
+    };
+  }
 }
 
 export async function deleteMethodeSaison(methodeId: string) {

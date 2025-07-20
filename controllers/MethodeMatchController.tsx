@@ -170,36 +170,98 @@ export async function getMethodeById(methodeId: string): Promise<
 }
 
 export async function updateMethodeMatch(
-  methodeId: string,
-  data: Partial<
-    Omit<
-      {
-        id_methode: string;
-        typemethode: string;
-        keywords: string[];
-        titrematch: string;
-        imgterrain: string;
-        couleur1equipe1: string;
-        couleur2equipe1: string;
-        nomequipe1: string;
-        systemeequipe1: string;
-        couleur1equipe2: string;
-        couleur2equipe2: string;
-        nomequipe2: string;
-        systemeequipe2: string;
-        stade: string;
-        date: string;
-        remplacantsequipe1: string[][];
-        remplacantsequipe2: string[][];
-      },
-      "id_methode, typemethode"
-    >
-  >
+  id_methode: string,
+  data: MethodeMatchSchemaType,
+  userId: string,
+  file?: File
 ) {
-  await db
-    .update(methodeExpertMatchTable)
-    .set(data)
-    .where(eq(methodeExpertMatchTable.id_methode, methodeId));
+  let imageUrl: string | undefined;
+
+  try {
+    // Gérer l'upload du fichier si présent
+    if (file) {
+      const MAX_SIZE = 5 * 1024 * 1024;
+      const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ];
+
+      if (file.size > MAX_SIZE) {
+        throw new Error("Le fichier est trop grand. Max: 5 Mo.");
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        throw new Error("Type de fichier non autorisé.");
+      }
+
+      const uploadDir = path.join(process.cwd(), "/public/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileExtension = path.extname(file.name);
+      const fileName = `${uuidv4()}${fileExtension}`;
+      const filePath = path.join(uploadDir, fileName);
+      const buffer = await file.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(buffer));
+
+      imageUrl = `/uploads/${fileName}`;
+    }
+
+    const {
+      titrematch,
+      couleur1equipe1,
+      couleur2equipe1,
+      nomequipe1,
+      systemeequipe1,
+      couleur1equipe2,
+      couleur2equipe2,
+      nomequipe2,
+      systemeequipe2,
+      stade,
+      date,
+      keywords,
+      remplacantsequipe1,
+      remplacantsequipe2,
+    } = data;
+
+    const updateData: any = {
+      titrematch,
+      couleur1equipe1,
+      couleur2equipe1,
+      nomequipe1,
+      systemeequipe1,
+      couleur1equipe2,
+      couleur2equipe2,
+      nomequipe2,
+      systemeequipe2,
+      remplacantsequipe1,
+      remplacantsequipe2,
+      stade,
+      date,
+      keywords: keywords.map((keyword) => keyword.value),
+      userId,
+    };
+
+    if (imageUrl) {
+      updateData.imgterrain = imageUrl;
+    }
+
+    const result = await db
+      .update(methodeExpertMatchTable)
+      .set(updateData)
+      .where(eq(methodeExpertMatchTable.id_methode, id_methode));
+
+    return { success: true, result };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: "Erreur lors de la mise à jour de la méthode.",
+    };
+  }
 }
 
 export async function deleteMethodeMatch(methodeId: string) {
