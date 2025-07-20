@@ -138,8 +138,8 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
           {previewPhoto && (
             <div className="w-fit mb-4 relative mx-auto">
               <Image
-                width={128}
-                height={128}
+                width={256}
+                height={256}
                 src={previewPhoto || "/_assets/img/pdpdebase.png"}
                 alt="Photo de profil"
                 className="w-40 h-40 rounded-full object-cover mr-4"

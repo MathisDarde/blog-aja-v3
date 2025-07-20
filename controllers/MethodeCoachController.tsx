@@ -128,27 +128,82 @@ export async function getMethodeById(methodeId: string): Promise<
 }
 
 export async function updateMethodeCoach(
-  methodeId: string,
-  data: Partial<
-    Omit<
-      {
-        id_methode: string;
-        typemethode: string;
-        keywords: string[];
-        imagecoach: string;
-        nomcoach: string;
-        palmares: string[][];
-        statistiques: string;
-        clubscoach: string[][];
-      },
-      "id_methode"
-    >
-  >
+  id_methode: string,
+  data: MethodeCoachSchemaType,
+  userId: string,
+  file?: File
 ) {
-  await db
-    .update(methodeExpertCoachTable)
-    .set(data)
-    .where(eq(methodeExpertCoachTable.id_methode, methodeId));
+  try {
+    let imageUrl: string | undefined = undefined;
+
+    // Si un fichier est fourni, le traiter
+    if (file) {
+      const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+      const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ];
+
+      if (file.size > MAX_SIZE) {
+        throw new Error(
+          "Le fichier est trop grand. La taille maximale est de 5 Mo."
+        );
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        throw new Error(
+          "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
+        );
+      }
+
+      const uploadDir = path.join(process.cwd(), "/public/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileExtension = path.extname(file.name);
+      const fileName = `${uuidv4()}${fileExtension}`;
+      const filePath = path.join(uploadDir, fileName);
+
+      const buffer = await file.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(buffer));
+
+      imageUrl = `/uploads/${fileName}`;
+    }
+
+    const { nomcoach, palmares, statistiques, keywords, clubscoach } = data;
+
+    // Préparer les champs à mettre à jour
+    const updatedFields: any = {
+      nomcoach,
+      palmares,
+      statistiques,
+      keywords: keywords.map((keyword) => keyword.value),
+      clubscoach,
+      userId,
+    };
+
+    if (imageUrl) {
+      updatedFields.imagecoach = imageUrl;
+    }
+
+    // Mise à jour dans la base de données
+    const result = await db
+      .update(methodeExpertCoachTable)
+      .set(updatedFields)
+      .where(eq(methodeExpertCoachTable.id_methode, id_methode));
+
+    return { success: true, result };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message:
+        "Erreur lors de l'upload du fichier ou de la mise à jour de la méthode.",
+    };
+  }
 }
 
 export async function deleteMethodeCoach(methodeId: string) {

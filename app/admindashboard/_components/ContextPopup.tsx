@@ -15,6 +15,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { DashboardElementProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
 
 export default function ContextPopup({ id, type }: DashboardElementProps) {
   const { router } = useGlobalContext();
@@ -77,7 +78,7 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
     }
   };
 
-  const previewElement = (id: string, type: string) => {
+  const previewElement = async (id: string, type: string) => {
     if (!id) {
       toast.error("Element ID is missing.");
       return;
@@ -89,9 +90,33 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
       case "article":
         return router.push(`/articles/${id}`);
       case "comment":
-        return router.push(`/articles/${id}`);
+        const articleId = await getArticleIdByComment(id);
+        if (articleId) {
+          return router.push(`/articles/${articleId}#comment-${id}`);
+        } else {
+          toast.error("Impossible de retrouver l'article du commentaire");
+        }
+        break;
       case "method":
         return;
+    }
+  };
+
+  const updateElement = (id: string, type: string) => {
+    if (!id) {
+      toast.error("Element ID is missing.");
+      return;
+    }
+
+    switch (type) {
+      case "user":
+        return;
+      case "article":
+        return router.push(`/articles/${id}/update`);
+      case "comment":
+        return;
+      case "method":
+        return router.push(`/admindashboard/updateelement/${id}`);
     }
   };
 
@@ -106,9 +131,10 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
 
       if (result.success) {
         toast.success("Modification réussie");
+        window.location.reload();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Erreur lors de la modification du status");
     }
   };
@@ -129,7 +155,10 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
           </div>
         )}
         {(type == "article" || type == "method") && (
-          <div className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100">
+          <div
+            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
+            onClick={() => updateElement(id, type)}
+          >
             <Pencil size={20} color="oklch(55.4% 0.046 257.417)" /> Modifier
           </div>
         )}

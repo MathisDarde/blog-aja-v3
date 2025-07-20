@@ -38,7 +38,6 @@ export async function getAllUsers(): Promise<
 }
 
 export const signUp = async (data: InscSchemaType) => {
-  console.log(data);
   await auth.api.signUpEmail({
     body: {
       name: data.name,
@@ -107,7 +106,7 @@ export async function updateUser(
 
     return result;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throw new Error("Erreur lors de la modification de l'article");
   }
 }
@@ -135,16 +134,13 @@ export async function deleteUserPic(id: SelectUser["id"]) {
     const filePath = path.join(process.cwd(), "public", userPic.pdp);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
-      console.log(`Image supprimée : ${filePath}`);
     } else {
-      console.log(`Le fichier n'existe pas : ${filePath}`);
+      return;
     }
 
     await db.update(user).set({ photodeprofil: null }).where(eq(user.id, id));
-    console.log(`Chemin de l'image supprimée : ${userPic.pdp}`);
     return true;
   } else {
-    console.log("Aucune image à supprimer ou l'utilisateur n'existe pas.");
     return false;
   }
 }

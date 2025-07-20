@@ -1,10 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import {
-  MatchAPI,
-  ModalParamsType,
-  SortParams,
-  Team,
-} from "./Interfaces";
+import { MatchAPI, ModalParamsType, SortParams, Team } from "./Interfaces";
 import { useParams, useRouter } from "next/navigation";
 import { fetchMatches } from "@/utils/matchsapi";
 import { authClient } from "@/lib/auth-client";
@@ -221,12 +216,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const end = Math.min(teams.length, index + 3);
 
     return teams.slice(start, end);
-  }
-
-  async function getUserId() {
-    const session = await authClient.getSession();
-    const id = session?.data?.user.id || null;
-    return id;
   }
 
   return (

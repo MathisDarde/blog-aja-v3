@@ -95,8 +95,6 @@ function ArticleForm() {
         : [],
     };
 
-    console.log("Normalized Draft Data:", normalizedDraftData);
-
     const parsed = DraftArticleSchema.safeParse(normalizedDraftData);
 
     if (!parsed.success) {

@@ -18,14 +18,14 @@ const submitLoginForm = async (
       await signIn(parsedData.data);
       return { success: true, message: "Connexion effectuée avec succès !" };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return {
         success: false,
         message: "Quelque chose s'est mal passé, veuillez réessayer plus tard.",
       };
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return {
       success: false,
       message: "Erreur lors de connexion",

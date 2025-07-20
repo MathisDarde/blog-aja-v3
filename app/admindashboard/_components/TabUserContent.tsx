@@ -8,7 +8,7 @@ import { UserSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useGettersContext } from "@/contexts/DataGettersContext";
 
-export default function TabUserContent() {
+export default function TabUserContent({ searchTerm }: { searchTerm: string }) {
   const {
     sortElements,
     openContextPopup,
@@ -17,15 +17,23 @@ export default function TabUserContent() {
     DashboardPopupRef,
   } = useGlobalContext();
 
-  const {
-    users,
-    usersLoading
-  } = useGettersContext();
+  const { users, usersLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<UserSortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const usersList = sortElements({ elements: users, sortKey, sortOrder });
+  const sortedUsers = sortElements({ elements: users, sortKey, sortOrder });
+
+  const filteredUsers = sortedUsers.filter(
+    (user) =>
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(user.admin).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      new Date(user.birthday)
+        .toLocaleDateString("fr-FR")
+        .includes(searchTerm) ||
+      new Date(user.createdAt).toLocaleDateString("fr-FR").includes(searchTerm)
+  );
 
   const handleSort = (key: UserSortKey) => {
     if (sortKey === key) {
@@ -92,7 +100,7 @@ export default function TabUserContent() {
               </td>
             </tr>
           ) : (
-            usersList.map((user) => (
+            filteredUsers.map((user) => (
               <tr key={user.id} className="bg-white border-t border-gray-200">
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image

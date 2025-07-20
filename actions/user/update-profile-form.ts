@@ -38,7 +38,7 @@ const updateProfileForm = async (
 
     return { success: true, message: "Profil mis à jour avec succès" };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return {
       success: false,
       message: "Erreur lors de la modification du profil",

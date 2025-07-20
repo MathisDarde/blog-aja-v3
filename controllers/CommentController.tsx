@@ -166,3 +166,15 @@ export async function getCommentsByUser(
     .innerJoin(user, eq(commentsTable.userId, user.id))
     .where(eq(commentsTable.userId, id_user));
 }
+
+export async function getArticleIdByCommentId(
+  commentId: SelectComment["id_comment"]
+): Promise<string | null> {
+  const result = await db
+    .select({ articleId: commentsTable.articleId })
+    .from(commentsTable)
+    .where(eq(commentsTable.id_comment, commentId))
+    .limit(1);
+
+  return result.length > 0 ? result[0].articleId : null;
+}

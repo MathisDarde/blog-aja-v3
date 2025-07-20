@@ -20,14 +20,14 @@ const submitMethodeCoachForm = async (
       await createMethodeCoach(parsedData.data, file, userId);
       return { success: true, message: "Méthode enregistrée avec succès !" };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return {
         success: false,
         message: "Quelque chose s'est mal passé, veuillez réessayer plus tard.",
       };
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return {
       success: false,
       message: "Erreur lors l'enregistrement de la méthode.",

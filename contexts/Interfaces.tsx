@@ -1,9 +1,6 @@
 // Interfaces Article
 
-import {
-  ArticleSchemaType,
-  CommentSchemaType,
-} from "@/types/forms";
+import { ArticleSchemaType, CommentSchemaType } from "@/types/forms";
 import { ReactNode } from "react";
 
 export interface Article {
@@ -52,7 +49,15 @@ export interface Tags {
 }
 
 export interface UpdateArticleFormProps {
-  articleData: ArticleSchemaType;
+  articleData: {
+    title: string;
+    imageUrl: string;
+    teaser: string;
+    content: string;
+    author: string;
+    tags: string[];
+    state: string;
+  };
 }
 
 export interface UpdateBrouillonFormProps {
@@ -124,6 +129,22 @@ export interface MethodeJoueur extends BaseMethodeData {
   passesd: number;
 }
 
+export interface UpdateMethodeJoueurFromProps {
+  selectedMethode: {
+    id_methode: string;
+    keywords: string[];
+    imagejoueur: string | null;
+    joueurnom: string;
+    poste: string;
+    taille: string;
+    piedfort: string;
+    clubs: [string, string, string][];
+    matchs: number;
+    buts: number;
+    passesd: number;
+  };
+}
+
 export interface MethodeSaison extends BaseMethodeData {
   typemethode: "saison";
   saison: string;
@@ -131,6 +152,18 @@ export interface MethodeSaison extends BaseMethodeData {
   coach: string;
   systeme: string;
   remplacants: [string, string, string][];
+}
+
+export interface UpdateMethodeSaisonFromProps {
+  selectedMethode: {
+    id_methode: string;
+    keywords: string[];
+    saison: string;
+    imgterrain: string | null;
+    coach: string;
+    systeme: string;
+    remplacants: [string, string, string][];
+  };
 }
 
 export interface MethodeMatch extends BaseMethodeData {
@@ -151,13 +184,46 @@ export interface MethodeMatch extends BaseMethodeData {
   date: string;
 }
 
+export interface UpdateMethodeMatchFromProps {
+  selectedMethode: {
+    id_methode: string;
+    keywords: string[];
+    titrematch: string;
+    imgterrain: string | null;
+    couleur1equipe1: string;
+    couleur2equipe1: string;
+    nomequipe1: string;
+    systemeequipe1: string;
+    couleur1equipe2: string;
+    couleur2equipe2: string;
+    nomequipe2: string;
+    systemeequipe2: string;
+    remplacantsequipe1: [string, string, string, string?, string?][];
+    remplacantsequipe2: [string, string, string, string?, string?][];
+    stade: string;
+    date: string;
+  };
+}
+
 export interface MethodeCoach extends BaseMethodeData {
   typemethode: "coach";
   imagecoach: string;
   nomcoach: string;
   clubscoach: [string, string, string][];
-  palmares: string[];
+  palmares: [string, string, string][];
   statistiques: string;
+}
+
+export interface UpdateMethodeCoachFromProps {
+  selectedMethode: {
+    id_methode: string;
+    keywords: string[];
+    nomcoach: string;
+    imagecoach: string | null;
+    clubscoach: string[][];
+    palmares: string[][];
+    statistiques: string;
+  };
 }
 
 // Interfaces Comment

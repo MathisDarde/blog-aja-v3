@@ -140,7 +140,7 @@ export default function DisplayArticleComments({
                         .map((comment) => (
                           <div
                             key={comment.id_comment}
-                            id={comment.id_comment}
+                            id={`comment-${comment.id_comment}`}
                             className="border rounded-lg p-4 bg-gray-50 font-Montserrat"
                           >
                             <div className="flex items-center gap-4">

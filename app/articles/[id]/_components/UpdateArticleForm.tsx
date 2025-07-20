@@ -1,38 +1,49 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Heading,
-  Image as ImageIcon,
-  Film,
-  Folder,
-  PenTool,
-  Tag,
-  X,
-} from "lucide-react";
+import { Heading, Film, Folder, PenTool, Tag, X, Cctv } from "lucide-react";
 import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
-import { ArticleSchemaType } from "@/types/forms";
+import { UpdateArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArticleSchema } from "@/app/schema";
+import { UpdateArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import Image from "next/image";
 
 export default function UpdateArticleForm({
   articleData,
 }: UpdateArticleFormProps) {
-  const { params, user_id, setModalParams } = useGlobalContext();
+  const { router, params, user_id } = useGlobalContext();
 
   const [tags, setTags] = useState<Tags[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<string>(
+    articleData.imageUrl || "/_assets/img/pdpdebase.png"
+  );
 
-  const { register, handleSubmit, formState, setValue, watch } =
-    useForm<ArticleSchemaType>({
-      resolver: zodResolver(ArticleSchema),
-      defaultValues: articleData,
+  const { register, handleSubmit, formState, setValue, watch, reset } =
+    useForm<UpdateArticleSchemaType>({
+      resolver: zodResolver(UpdateArticleSchema),
+      defaultValues: {
+        title: "",
+        teaser: "",
+        content: "",
+        author: "",
+        tags: [],
+        state: "pending",
+        imageUrl: "",
+      },
     });
+
+  useEffect(() => {
+    if (articleData) {
+      reset(articleData);
+      setPreviewPhoto(articleData.imageUrl || "/_assets/img/pdpdebase.png");
+    }
+  }, [articleData, reset]);
 
   useEffect(() => {
     fetch("/data/articletags.json")
@@ -42,16 +53,6 @@ export default function UpdateArticleForm({
         console.error("Erreur lors du chargement des tags :", error)
       );
   }, []);
-
-  useEffect(() => {
-    if (articleData) {
-      setValue("title", articleData.title);
-      setValue("teaser", articleData.teaser);
-      setValue("content", articleData.content);
-      setValue("author", articleData.author);
-      setValue("tags", articleData.tags);
-    }
-  }, [articleData, setValue]);
 
   const id_article = React.useRef<string>("");
 
@@ -64,12 +65,14 @@ export default function UpdateArticleForm({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
+      setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
     } else {
       setSelectedFile(null);
+      setPreviewPhoto("/_assets/img/pdpdebase.png");
     }
   };
 
-  const handleSubmitForm = async (data: ArticleSchemaType) => {
+  const handleSubmitForm = async (data: UpdateArticleSchemaType) => {
     const formData = new FormData();
 
     if (selectedFile) {
@@ -90,15 +93,10 @@ export default function UpdateArticleForm({
       return;
     }
 
-    if (!selectedFile) {
-      toast.error("Veuillez sélectionner un fichier avant de soumettre.");
-      return;
-    }
-
     const response = await updateArticleForm(
       id_article.current,
       data,
-      selectedFile
+      selectedFile ?? undefined
     );
 
     if (response.success) {
@@ -106,7 +104,7 @@ export default function UpdateArticleForm({
         icon: <X className="text-white" />,
         className: "bg-green-500 border border-green-200 text-white text-base",
       });
-      window.location.reload();
+      router.push(`/articles/${id_article.current}`);
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,
@@ -131,26 +129,42 @@ export default function UpdateArticleForm({
 
   const watchedTags = watch("tags") || [];
 
-  // 🔥 Fonction appelée quand on clique sur le bouton
-  const onSubmitWithConfirmation = handleSubmit((data) => {
-    setModalParams({
-      object: "article",
-      type: "edit",
-      onConfirm: async () => {
-        await handleSubmitForm(data);
-        setModalParams(null);
-      },
-      onCancel: () => setModalParams(null),
-    });
-  });
-
   return (
     <div className="w-[800px] mx-auto">
       <form
         id="publishform"
         encType="multipart/form-data"
         className="w-[800px]"
+        onSubmit={handleSubmit(handleSubmitForm)}
       >
+        {/* Image */}
+        <div className="relative w-[800px] mx-auto">
+          {previewPhoto && (
+            <div className="w-fit mb-4 relative mx-auto">
+              <Image
+                width={1024}
+                height={1024}
+                src={previewPhoto || "/_assets/img/pdpdebase.png"}
+                alt="Photo de l'article"
+                className="w-full aspect-video object-cover mr-4"
+              />
+            </div>
+          )}
+          <input
+            type="file"
+            id="fileInput"
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+          />
+          <label
+            htmlFor="fileInput"
+            className="underline text-aja-blue font-Montserrat cursor-pointer"
+          >
+            Modifier l&apos;image de bannière de l&apos;article ?
+          </label>
+        </div>
+
         {/* Titre */}
         <div className="relative w-[800px]">
           <span className="font-semibold font-Montserrat flex items-center text-gray-600">
@@ -162,20 +176,6 @@ export default function UpdateArticleForm({
             {...register("title")}
             className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
             placeholder="Titre de l'article"
-          />
-        </div>
-
-        {/* Image */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
-            <ImageIcon className="mr-4" />
-            Image :
-          </span>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            accept="image/*"
           />
         </div>
 
@@ -271,11 +271,26 @@ export default function UpdateArticleForm({
           </div>
         </div>
 
+        {/* Statut */}
+        <div className="relative w-[800px]">
+          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+            <Cctv className="mr-4" />
+            Statut :
+          </span>
+          <select
+            {...register("state")}
+            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            value={watch("state")}
+          >
+            <option value="published">Published</option>
+            <option value="pending">Pending</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+
         {/* Bouton de confirmation */}
         <div className="flex justify-center items-center">
-          <Button type="button" onClick={onSubmitWithConfirmation}>
-            Je modifie l&apos;article
-          </Button>
+          <Button type="submit">Je modifie l&apos;article</Button>
         </div>
       </form>
     </div>

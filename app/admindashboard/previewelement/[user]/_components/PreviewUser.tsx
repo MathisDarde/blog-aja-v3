@@ -6,15 +6,15 @@ import Button from "@/components/BlueButton";
 import { Cake, Calendar1, Loader2, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { useEffect } from "react";
+import { useGettersContext } from "@/contexts/DataGettersContext";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function UserPreview() {
   const { comments, setComments, userLoading, setUserLoading, user, setUser } =
-    useGlobalContext();
+    useGettersContext();
 
-  const params = useParams();
+  const { params } = useGlobalContext();
 
   useEffect(() => {
     if (!params?.user) return;
@@ -47,7 +47,7 @@ export default function UserPreview() {
   }, [params?.user]);
 
   return (
-    <div className="text-center bg-gray-100 h-screen flex flex-col justify-start items-center">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
       <div>
         <h2 className="font-bold text-4xl font-Montserrat uppercase mb-4 mt-10">
           Vue de l&apos;utilisateur

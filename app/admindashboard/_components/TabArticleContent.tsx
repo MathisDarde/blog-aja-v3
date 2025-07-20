@@ -6,7 +6,11 @@ import { ArticleSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useGettersContext } from "@/contexts/DataGettersContext";
 
-export default function TabArticleContent() {
+export default function TabArticleContent({
+  searchTerm,
+}: {
+  searchTerm: string;
+}) {
   const {
     sortElements,
     openContextPopup,
@@ -15,15 +19,31 @@ export default function TabArticleContent() {
     DashboardPopupRef,
   } = useGlobalContext();
 
-  const {
-    articles,
-    articlesLoading,
-  } = useGettersContext();
+  const { articles, articlesLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<ArticleSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const articlesList = sortElements({ elements: articles, sortKey, sortOrder });
+  const sortedArticles = sortElements({
+    elements: articles,
+    sortKey,
+    sortOrder,
+  });
+
+  const filteredArticles = sortedArticles.filter(
+    (article) =>
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.teaser.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      new Date(article.publishedAt)
+        .toLocaleDateString("fr-FR")
+        .includes(searchTerm)
+  );
 
   const handleSort = (key: ArticleSortKey) => {
     if (sortKey === key) {
@@ -85,7 +105,7 @@ export default function TabArticleContent() {
               </td>
             </tr>
           ) : (
-            articlesList.map((article) => (
+            filteredArticles.map((article) => (
               <tr
                 key={article.id_article}
                 className="bg-white border-t border-gray-200"

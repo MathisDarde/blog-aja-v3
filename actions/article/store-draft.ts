@@ -27,7 +27,7 @@ const storeDraftArticle = async (
 
     return { success: true, message: "Article sauvegardé avec succès" };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return {
       success: false,
       message: "Erreur lors de la la sauvegarde du brouillon",

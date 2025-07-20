@@ -7,7 +7,11 @@ import { CommentSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useGettersContext } from "@/contexts/DataGettersContext";
 
-export default function TabCommentContent() {
+export default function TabCommentContent({
+  searchTerm,
+}: {
+  searchTerm: string;
+}) {
   const {
     sortElements,
     openContextPopup,
@@ -16,15 +20,27 @@ export default function TabCommentContent() {
     DashboardPopupRef,
   } = useGlobalContext();
 
-  const {
-    comments,
-    commentsLoading,
-  } = useGettersContext();
+  const { comments, commentsLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<CommentSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const commentsList = sortElements({ elements: comments, sortKey, sortOrder });
+  const sortedComments = sortElements({
+    elements: comments,
+    sortKey,
+    sortOrder,
+  });
+
+  const filteredComments = sortedComments.filter(
+    (comment) =>
+      comment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.pseudo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(comment.stars).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      new Date(comment.createdAt)
+        .toLocaleDateString("fr-FR")
+        .includes(searchTerm)
+  );
 
   const handleSort = (key: CommentSortKey) => {
     if (sortKey === key) {
@@ -84,7 +100,7 @@ export default function TabCommentContent() {
               </td>
             </tr>
           ) : (
-            commentsList.map((comment) => (
+            filteredComments.map((comment) => (
               <tr
                 key={comment.id_comment}
                 className="bg-white border-t border-gray-200"

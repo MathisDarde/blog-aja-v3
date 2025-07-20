@@ -27,7 +27,7 @@ const submitCommentForm = async (
       };
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return {
       success: false,
       message: "Erreur lors de la publication du commentaire",

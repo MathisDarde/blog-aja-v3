@@ -13,7 +13,7 @@ const updateArticleStatus = async (
       message: "Article status updated successfully",
     };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return {
       success: false,
       message: "Erreur lors de la modification de l'article",

@@ -35,8 +35,6 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
         const id = target.getAttribute("data-id");
         const type = target.getAttribute("data-type");
 
-        console.log("Click detected on keyword:", { id, type });
-
         if (id && type) {
           e.stopPropagation(); // Prevent event bubbling
           onKeywordClick(id, type);

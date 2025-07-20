@@ -18,10 +18,10 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import UpdateProfileForm from "./_components/UpdateProfileForm";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function MonCompte() {
-  const { user, setUser } = useGlobalContext();
+  const { user, setUser } = useGettersContext();
 
   const [loading, setLoading] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);

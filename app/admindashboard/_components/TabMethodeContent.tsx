@@ -7,7 +7,11 @@ import { Methode, MethodeSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useGettersContext } from "@/contexts/DataGettersContext";
 
-export default function TabMethodeContent() {
+export default function TabMethodeContent({
+  searchTerm,
+}: {
+  searchTerm: string;
+}) {
   const {
     sortElements,
     openContextPopup,
@@ -16,15 +20,34 @@ export default function TabMethodeContent() {
     DashboardPopupRef,
   } = useGlobalContext();
 
-  const {
-    methodes,
-    methodesLoading,
-  } = useGettersContext();
+  const { methodes, methodesLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<MethodeSortKey>("typemethode");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const methodesList = sortElements({ elements: methodes, sortKey, sortOrder });
+  const sortedMethodes = sortElements({
+    elements: methodes,
+    sortKey,
+    sortOrder,
+  });
+
+  const filteredMethodes = sortedMethodes.filter(
+    (methode) =>
+      methode.typemethode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (methode.joueurnom ?? "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (methode.nomcoach ?? "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (methode.saison ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (methode.titrematch ?? "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      new Date(methode.created_at)
+        .toLocaleDateString("fr-FR")
+        .includes(searchTerm)
+  );
 
   const handleSort = (key: MethodeSortKey) => {
     if (sortKey === key) {
@@ -104,9 +127,9 @@ export default function TabMethodeContent() {
               </td>
             </tr>
           ) : (
-            methodesList.map((methode) => (
+            filteredMethodes.map((methode) => (
               <tr
-                key={methode.id}
+                key={methode.id_methode}
                 className="bg-white border-t border-gray-200"
               >
                 <td className="p-3 text-center w-[250px]">
@@ -125,7 +148,7 @@ export default function TabMethodeContent() {
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
                   onClick={(event: React.MouseEvent) =>
-                    openContextPopup({ id: methode.id, event })
+                    openContextPopup({ id: methode.id_methode, event })
                   }
                 >
                   <EllipsisVertical />
