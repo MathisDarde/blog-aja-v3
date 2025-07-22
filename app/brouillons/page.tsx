@@ -6,29 +6,14 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import UpdateBrouillonForm from "./_components/UpdateBrouillonForm";
 
-export default function PageBrouillons() {
-  const [brouillons, setBrouillons] = useState<Article[]>([]);
+export default async function PageBrouillons() {
   const [selectedBrouillon, setSelectedBrouillon] = useState<Article | null>(
     null
   );
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    async function fetchBrouillons() {
-      setLoading(true);
-      try {
-        const data = await displayBrouillons();
-        setBrouillons(data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des articles :", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBrouillons();
-  }, []);
+  const brouillons = await displayBrouillons();
 
   const handleEditClick = (brouillon: Article) => {
     setSelectedBrouillon(brouillon);

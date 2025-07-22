@@ -6,27 +6,26 @@ import {
   Calendar1,
   Gem,
   Heart,
-  Loader2,
   MessageCircle,
   PenBox,
   Trash,
 } from "lucide-react";
 import KeywordHighlighter from "./HighlightKeywords";
 import deleteArticleSA from "@/actions/article/delete-article";
-import { Article, Methode } from "@/contexts/Interfaces";
+import { Article, Keyword, Methodes } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { ModalAction } from "@/components/ModalAction";
-import { useGettersContext } from "@/contexts/DataGettersContext";
 import DisplayArticleComments from "./DisplayComments";
 import MethodPopup from "./MethodPopup";
+import { useRouter } from "next/navigation";
 
-export default function ArticleDisplay({ article }: { article: Article }) {
-  const { router, isAdmin, isUser, modalParams, setModalParams } =
+export default function ArticleDisplay({ article, articles, methodes, keywords }: { article: Article, articles: Article[], methodes: Methodes[], keywords: Keyword[] }) {
+  const { isAdmin, isUser, modalParams, setModalParams } =
     useGlobalContext();
 
-  const { articleLoading, allKeywords, methodes } = useGettersContext();
+  const router = useRouter();
 
-  const [activeMethode, setActiveMethode] = useState<Methode[]>([]);
+  const [activeMethode, setActiveMethode] = useState<Methodes[]>([]);
   const [isMethodOpen, setIsMethodOpen] = useState(false);
 
   useEffect(() => {
@@ -87,9 +86,8 @@ export default function ArticleDisplay({ article }: { article: Article }) {
 
   return (
     <div
-      className={`bg-gray-100 min-h-screen w-full m-0 box-border p-10 ${
-        isMethodOpen && "overflow-hidden"
-      }`}
+      className={`bg-gray-100 min-h-screen w-full m-0 box-border p-10 ${isMethodOpen && "overflow-hidden"
+        }`}
     >
       {/* Delete element popup */}
       {modalParams && (
@@ -175,22 +173,14 @@ export default function ArticleDisplay({ article }: { article: Article }) {
             className="aspect-video w-full object-cover object-top rounded-xl"
           />
 
-          {articleLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-              <span className="ml-2 text-gray-600">
-                Chargement des commentaires...
-              </span>
-            </div>
-          ) : (
-            <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">
-              <KeywordHighlighter
-                text={article.content}
-                keywords={allKeywords}
-                onKeywordClick={handleKeywordClick}
-              />
-            </div>
-          )}
+
+          <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">
+            <KeywordHighlighter
+              text={article.content}
+              keywords={keywords}
+              onKeywordClick={handleKeywordClick}
+            />
+          </div>
 
           <DisplayArticleComments article_id={article.id_article} />
         </div>
@@ -201,6 +191,9 @@ export default function ArticleDisplay({ article }: { article: Article }) {
           onClose={() => setIsMethodOpen(false)}
           activeMethode={activeMethode}
           setActiveMethode={setActiveMethode}
+          methodes={methodes}
+          id_article={article.id_article}
+          articles={articles}
         />
       )}
 

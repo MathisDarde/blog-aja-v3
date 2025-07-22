@@ -10,13 +10,14 @@ import { ChevronLeft, PenSquare, Plus, Trash } from "lucide-react";
 import Image from "next/image";
 import { Comment } from "@/contexts/Interfaces";
 import displayCommentsbyId from "@/actions/comment/display-comments-by-article";
+import { useRouter } from "next/navigation";
 
 export default function DisplayArticleComments({
   article_id,
 }: {
   article_id: string;
 }) {
-  const { user_id, setModalParams, isUser, router } = useGlobalContext();
+  const { user_id, setModalParams, isUser } = useGlobalContext();
 
   const [articleComments, setArticleComments] = useState<Comment[]>([]);
   const [isPublishingComment, setIsPublishingComment] = useState(false);
@@ -28,6 +29,8 @@ export default function DisplayArticleComments({
     content: string;
     stars: number;
   } | null>(null);
+
+  const router = useRouter();
 
   const handleVoirPlus = () => {
     setVisibleComments((prev) => prev + 3);
@@ -246,7 +249,7 @@ export default function DisplayArticleComments({
               </h2>
             </div>
             <div>
-              <CommentForm />
+              <CommentForm id_article={article_id}/>
             </div>
           </div>
         )}

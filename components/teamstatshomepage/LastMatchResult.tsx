@@ -1,22 +1,13 @@
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { MatchAPI } from "@/contexts/Interfaces";
 import { clubLogos } from "@/contexts/Teams";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import Button from "../BlueButton";
+import Link from "next/link";
 
-export default function LastMatchResult() {
-  const { getLastMatch, router } = useGlobalContext();
+export default async function LastMatchResult() {
+  const { getLastMatch } = useGlobalContext();
 
-  const [lastMatch, setLastMatch] = useState<MatchAPI | null>(null);
-
-  useEffect(() => {
-    const fetchLastMatch = async () => {
-      const match = await getLastMatch();
-      setLastMatch(match);
-    };
-    fetchLastMatch();
-  }, [getLastMatch]);
+  const lastMatch = await getLastMatch();
 
   return (
     <div className="flex flex-col items-center">
@@ -79,9 +70,11 @@ export default function LastMatchResult() {
         )}
       </div>
 
-      <Button onClick={() => router.push("/calendrier")}>
-        Accéder au calendrier
-      </Button>
+      <Link href="/calendrier">
+        <Button>
+          Accéder au calendrier
+        </Button>
+      </Link>
     </div>
   );
 }

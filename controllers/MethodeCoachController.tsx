@@ -1,5 +1,5 @@
 import { db } from "@/app/db/db";
-import { methodeExpertCoachTable } from "@/app/db/schema";
+import { SelectCoachMethode, methodeExpertCoachTable } from "@/app/db/schema";
 import { MethodeCoachSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import path from "path";
@@ -7,18 +7,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 export async function getCoachMethodes(): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    imagecoach: string;
-    nomcoach: string;
-    palmares: string[][];
-    statistiques: string;
-    clubscoach: string[][];
-    created_at: Date;
-    updated_at: Date;
-  }>
+SelectCoachMethode[]
 > {
   const results = await db.select().from(methodeExpertCoachTable);
   return results.map((item) => ({

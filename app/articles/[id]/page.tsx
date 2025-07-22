@@ -1,20 +1,12 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
+import { useParams } from "next/navigation";
 import ArticleClient from "./_components/ArticleClient";
 
-export default function ArticlePage() {
-  useEffect(() => {
-    document.title = "Lire un article - Mémoire d'Auxerrois";
+export default async function ArticlePage() {
+  const params = useParams();
 
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
+  const id_article = params.id as string;
 
-  return <ArticleClient />;
+  return <ArticleClient id_article={id_article} />;
 }

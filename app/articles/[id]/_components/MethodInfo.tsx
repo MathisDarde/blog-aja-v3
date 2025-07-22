@@ -3,15 +3,15 @@ import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";
 import CoachMethodeExpert from "./MethodDetails/MethodeExpertCoach";
 import {
-  Methode,
   MethodeCoach,
   MethodeJoueur,
   MethodeMatch,
   MethodeSaison,
+  Methodes,
 } from "@/contexts/Interfaces";
 
 interface MethodeProps {
-  methode: Methode[];
+  methode: Methodes[];
 }
 
 const MethodInfo: React.FC<MethodeProps> = ({ methode }) => {

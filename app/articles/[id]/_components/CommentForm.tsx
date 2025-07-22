@@ -9,20 +9,13 @@ import Button from "@/components/BlueButton";
 import submitCommentForm from "@/actions/comment/comment-form";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
-export default function CommentForm() {
-  const { params, user_id } = useGlobalContext();
+export default function CommentForm({ id_article } : { id_article : string }) {
+  const { user_id } = useGlobalContext();
 
   const { register, handleSubmit, reset, formState, watch, setValue } =
     useForm<CommentSchemaType>({
       resolver: zodResolver(CommentSchema),
     });
-
-  const id_article = React.useRef<string>("");
-
-  useEffect(() => {
-    if (!params?.id) return;
-    id_article.current = Array.isArray(params.id) ? params.id[0] : params.id;
-  }, [params?.id]);
 
   const handleSubmitForm = async (data: CommentSchemaType) => {
     if (!user_id) {
@@ -30,7 +23,7 @@ export default function CommentForm() {
       return;
     }
 
-    const response = await submitCommentForm(data, user_id, id_article.current);
+    const response = await submitCommentForm(data, user_id, id_article);
 
     if (response.success) {
       toast.success("Commentaire publié !", {

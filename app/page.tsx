@@ -1,32 +1,25 @@
-"use client";
-
 import "./globals.css";
 import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
 import DisplayCategories from "@/components/DisplayCategories";
 import Footer from "@/components/Footer";
-import React, { useEffect } from "react";
+import React from "react";
 import Classement from "@/components/Classement";
 import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
+import { getAllArticles } from "@/controllers/ArticlesController";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
-export default function Page() {
-  useEffect(() => {
-    document.title = "Accueil - Mémoire d'Auxerrois";
+export async function Page() {
+  const { getRandomArticles } = useGlobalContext();
 
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
+  const articles = await getAllArticles();
+  const randomArticles = getRandomArticles(articles, 3);
 
   return (
     <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
       <div className="pb-3">
-        <Carousel />
+        <Carousel randomArticles={randomArticles} />
       </div>
 
       <div className="my-4">
@@ -48,10 +41,10 @@ export default function Page() {
           </div>
           <div className="inline-flex gap-6">
             <div className="w-[75%]">
-              <LastArticle />
+              <LastArticle articles={articles} />
             </div>
             <div className="flex flex-col items-center justify-center w-[25%]">
-              <DisplayRandom />
+              <DisplayRandom articles={articles} />
             </div>
           </div>
         </div>

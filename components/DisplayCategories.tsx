@@ -1,49 +1,20 @@
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "./BlueButton";
-import { Category } from "@/contexts/Interfaces";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
-export default function DisplayCategories() {
-  const [loading, setLoading] = useState(false);
-  const [randomSelection, setRandomSelection] = useState<Category[]>([]);
+export default async function DisplayCategories() {
+  const { getRandomCategories } = useGlobalContext();
 
-  const fetchCategories = async (): Promise<Category[]> => {
-    try {
-      const response = await fetch("/data/articletags.json");
-      if (!response.ok) throw new Error("Erreur de chargement du fichier");
-      return await response.json();
-    } catch (error) {
-      console.error("Erreur lors de la récupération des catégories :", error);
-      return [];
-    }
-  };
-
-  const selectRandomCategories = (categories: Category[]) => {
-    if (categories.length <= 4) return categories;
-    return [...categories].sort(() => Math.random() - 0.5).slice(0, 4);
-  };
-
-  useEffect(() => {
-    const displayThreeCategories = async () => {
-      setLoading(true);
-      const fetchedCategories = await fetchCategories();
-
-      setRandomSelection(selectRandomCategories(fetchedCategories));
-      setLoading(false);
-    };
-
-    displayThreeCategories();
-  }, []);
+  const rawData = await fetch("/data/articletags.json");
+  const categories = await rawData.json();
+  const randomCategories = getRandomCategories(categories, 4);
 
   return (
     <div>
-      {loading ? (
-        <p>Chargement...</p>
-      ) : (
         <div className="flex gap-6 my-10 justify-center">
-          {randomSelection.length > 0 ? (
-            randomSelection.map((category, index) => (
+          {randomCategories.length > 0 ? (
+            randomCategories.map((category, index) => (
               <Link href={`/articles?tag=${category.value}`} key={index}>
                 <div className="text-center relative group">
                   <Image
@@ -69,7 +40,6 @@ export default function DisplayCategories() {
             <p>Aucune catégorie disponible.</p>
           )}
         </div>
-      )}
 
       <div className="text-center">
         <Link href="/categories">

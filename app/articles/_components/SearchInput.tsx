@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Search, ArrowDown } from "lucide-react";
 import { SearchInputProps } from "@/contexts/Interfaces";

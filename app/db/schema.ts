@@ -207,3 +207,13 @@ export type SelectUser = typeof user.$inferSelect;
 export type SelectPost = typeof articlesTable.$inferSelect;
 
 export type SelectComment = typeof commentsTable.$inferSelect;
+
+export type SelectArticle = typeof articlesTable.$inferSelect;
+
+export type SelectCoachMethode = typeof methodeExpertCoachTable.$inferSelect;
+
+export type SelectJoueurMethode = typeof methodeExpertJoueurTable.$inferSelect;
+
+export type SelectSaisonMethode = typeof methodeExpertSaisonTable.$inferSelect;
+
+export type SelectMatchMethode = typeof methodeExpertMatchTable.$inferSelect;

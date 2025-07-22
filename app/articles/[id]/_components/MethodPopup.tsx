@@ -1,20 +1,28 @@
-import { useGettersContext } from "@/contexts/DataGettersContext";
-import { Methode } from "@/contexts/Interfaces";
+import { Article, Methodes } from "@/contexts/Interfaces";
 import MethodInfo from "./MethodInfo";
 import { ChevronLeft, X } from "lucide-react";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function MethodPopup({
   onClose,
   activeMethode,
   setActiveMethode,
+  methodes,
+  id_article,
+  articles
 }: {
   onClose: () => void;
-  activeMethode: Methode[];
-  setActiveMethode: React.Dispatch<React.SetStateAction<Methode[]>>;
+  activeMethode: Methodes[];
+  setActiveMethode: React.Dispatch<React.SetStateAction<Methodes[]>>;
+  methodes: Methodes[];
+  id_article: string;
+  articles: Article[];
 }) {
-  const { articleKeywords, methodes } = useGettersContext();
+  const { getArticleKeywords } = useGlobalContext();
 
-  const keywordsList = articleKeywords.flatMap((k) => k.keywordsList);
+  const keywords = getArticleKeywords(id_article, articles, methodes);
+
+  const keywordsList = keywords.flatMap((k) => k.keywordsList);
 
   const filteredMethodes = methodes.filter((methode) =>
     methode.keywords.some((kw) => keywordsList.includes(kw))
@@ -55,7 +63,7 @@ export default function MethodPopup({
             <div className="text-center mt-4 space-y-2">
               {filteredMethodes.length > 0 ? (
                 <>
-                  {filteredMethodes.map((methode: Methode) => (
+                  {filteredMethodes.map((methode: Methodes) => (
                     <div
                       key={methode.id_methode}
                       className="flex items-center gap-3 justify-center"

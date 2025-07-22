@@ -1,25 +1,14 @@
 import { db } from "@/app/db/db";
-import { articlesTable, SelectPost } from "@/app/db/schema";
+import { articlesTable, SelectArticle, SelectPost } from "@/app/db/schema";
 import { ArticleSchemaType, DraftArticleSchemaType } from "@/types/forms";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, ilike, like, or, sql } from "drizzle-orm";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+import { Article, GetURLParams } from "@/contexts/Interfaces";
 
 export async function getAllArticles(): Promise<
-  Array<{
-    id_article: string;
-    imageUrl: string;
-    title: string;
-    teaser: string;
-    content: string;
-    author: string;
-    state: "pending" | "published" | "archived";
-    tags: string[];
-    userId: string;
-    publishedAt: Date;
-    updatedAt: Date;
-  }>
+SelectArticle[]
 > {
   return db
     .select()
@@ -36,19 +25,7 @@ export async function getAllArticles(): Promise<
 }
 
 export async function getArticles(): Promise<
-  Array<{
-    id_article: string;
-    imageUrl: string;
-    title: string;
-    teaser: string;
-    content: string;
-    author: string;
-    tags: string[];
-    state: "pending" | "published" | "archived";
-    userId: string;
-    publishedAt: Date;
-    updatedAt: Date;
-  }>
+SelectArticle[]
 > {
   return db
     .select()
@@ -66,19 +43,7 @@ export async function getArticles(): Promise<
 }
 
 export async function getBrouillons(): Promise<
-  Array<{
-    id_article: string;
-    imageUrl: string;
-    title: string;
-    teaser: string;
-    content: string;
-    author: string;
-    tags: string[];
-    state: "pending" | "published" | "archived";
-    userId: string;
-    publishedAt: Date;
-    updatedAt: Date;
-  }>
+SelectArticle[]
 > {
   return db
     .select()
@@ -298,35 +263,22 @@ export async function updateBrouillon(
 
 export async function getArticlebyId(
   articleId: SelectPost["id_article"]
-): Promise<
-  Array<{
-    id_article: string;
-    title: string;
-    teaser: string;
-    imageUrl: string;
-    content: string;
-    author: string;
-    userId: string;
-    state: "pending" | "published" | "archived";
-    publishedAt: Date;
-    updatedAt: Date;
-    tags: string[];
-  }>
-> {
-  return db
+): Promise<SelectArticle | null> {
+  const articles = await db
     .select()
     .from(articlesTable)
-    .where(eq(articlesTable.id_article, articleId))
-    .then((articles) =>
-      articles.map((article) => ({
-        ...article,
-        state: (article.state ?? "pending") as
-          | "pending"
-          | "published"
-          | "archived",
-      }))
-    );
+    .where(eq(articlesTable.id_article, articleId));
+
+  if (articles.length === 0) return null;
+
+  const article = articles[0];
+
+  return {
+    ...article,
+    state: (article.state ?? "pending") as "pending" | "published" | "archived",
+  };
 }
+
 
 export async function updateArticle(
   articleId: SelectPost["id_article"],
@@ -413,4 +365,54 @@ export async function getLastPublished() {
     .orderBy(desc(articlesTable.publishedAt))
     .then((results) => results[0]);
   return result;
+}
+
+export async function getArticlesbyKeywords({
+  query,
+  year,
+  player,
+  league,
+}: GetURLParams = {}): Promise<SelectArticle[]> {
+  try {
+    const searchTerms = query?.trim().split(" ") || [];
+
+    const conditions = [];
+
+    // Recherche textuelle
+    if (searchTerms.length > 0) {
+      const searchConditions = searchTerms.map((term) =>
+        or(
+          like(articlesTable.title, `%${term.toLowerCase()}%`),
+          like(articlesTable.teaser, `%${term.toLowerCase()}%`),
+          ilike(articlesTable.content, `%${term}%`)
+        )
+      );
+      conditions.push(or(...searchConditions));
+    }
+
+    // Filtres de tags
+    if (year) {
+      conditions.push(sql`${year} = ANY(${articlesTable.tags})`);
+    }
+    if (league) {
+      conditions.push(sql`${league} = ANY(${articlesTable.tags})`);
+    }
+    if (player) {
+      conditions.push(sql`${player} = ANY(${articlesTable.tags})`);
+    }
+
+    // Toujours vérifier l'état publié
+    conditions.push(eq(articlesTable.state, "published"));
+
+    // Exécution de la requête
+    const results = await db
+      .select()
+      .from(articlesTable)
+      .where(and(...conditions));
+
+    return results as Article[];
+  } catch (error) {
+    console.error("❌ Erreur Drizzle:", error);
+    return [];
+  }
 }

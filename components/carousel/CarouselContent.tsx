@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { CarouselDots } from "./Dots";
 import { Article } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useRouter } from "next/navigation";
 
 type CarouselContentProps = {
   currentIndex: number;
@@ -17,8 +17,8 @@ export const CarouselContent = ({
   setCurrentIndex,
   articles = [],
 }: CarouselContentProps) => {
-  const { router } = useGlobalContext();
   const article = articles[currentIndex];
+  const router = useRouter();
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 

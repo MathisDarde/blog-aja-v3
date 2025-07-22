@@ -15,7 +15,7 @@ export interface Article {
   content: string;
   author: string;
   userId: string;
-  state: string;
+  state: "pending" | "published" | "archived"
   publishedAt: Date;
   updatedAt: Date;
   tags: string[];
@@ -91,6 +91,11 @@ export interface SearchInputProps {
 }
 
 // Interfaces Methode
+export type Methodes =
+ | MethodeCoach
+ | MethodeJoueur
+ | MethodeMatch
+ | MethodeSaison
 
 export interface Methode {
   id_methode: string;

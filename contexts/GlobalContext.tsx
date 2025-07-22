@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { MatchAPI, ModalParamsType, SortParams, Team } from "./Interfaces";
+import { Article, Category, MatchAPI, Methodes, ModalParamsType, SortParams, Team } from "./Interfaces";
 import { useParams, useRouter } from "next/navigation";
 import { fetchMatches } from "@/utils/matchsapi";
 import { authClient } from "@/lib/auth-client";
@@ -21,8 +21,6 @@ interface GlobalContextType {
   DashboardPopupRef: React.RefObject<HTMLDivElement | null>;
   activeMenu: string;
   setActiveMenu: React.Dispatch<string>;
-  params: ReturnType<typeof useParams>;
-  router: ReturnType<typeof useRouter>;
   isUser: boolean;
   setIsUser: React.Dispatch<boolean>;
   isAdmin: boolean;
@@ -37,6 +35,16 @@ interface GlobalContextType {
   setModalParams: React.Dispatch<ModalParamsType>;
   classementLoading: boolean;
   setClassementLoading: React.Dispatch<boolean>;
+  getRandomArticles: (articles: Article[], amount: number) => Article[];
+  getRandomCategories: (categories: Category, amount: number) => Category[];
+  getArticleById: (articles: Article[], id: string) => Article | null;
+  getMethodeById: (methodes: Methodes[], id: string) => Methodes | null;
+  getArticleKeywords: (id_article: string, articles: Article[], methodes: Methodes[]) => {
+    id_methode: string;
+    typemethode: string;
+    keywordsList: string[];
+  }[];
+
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -218,6 +226,74 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return teams.slice(start, end);
   }
 
+  function getRandomArticles(articles: Article[], amount: number): Article[] {
+    if (!Array.isArray(articles)) return [];
+    if (amount >= articles.length) return [...articles];
+  
+    const shuffled = [...articles].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, amount);
+  }
+  
+  function getRandomCategories(categories: Category, amount: number) : Category[] {
+    if (!Array.isArray(categories)) return [];
+    if (amount >= categories.length) return [...categories];
+
+    const shuffled = [...categories].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, amount);
+  }
+
+  {
+    /* get article keywords*/
+  }
+  function getArticleKeywords(id_article: string, articles: Article[], methodes: Methodes[]) {
+    const article = getArticleById(articles, id_article);
+
+    if (!article || !article.content) return [];
+
+    const articleText = article.content.toLowerCase();
+
+    const relatedMethodes = methodes.filter((methode) =>
+      methode.keywords.some((kw) => articleText.includes(kw.toLowerCase()))
+    );
+  
+    const keywordsWithMeta = relatedMethodes.flatMap((methode) =>
+      methode.keywords.map((kw) => ({
+        id_methode: methode.id_methode,
+        typemethode: methode.typemethode,
+        keywords: kw,
+      }))
+    );
+  
+    const uniqueMap = new Map<
+      string,
+      { id_methode: string; typemethode: string; keywords: string }
+    >();
+  
+    for (const kwObj of keywordsWithMeta) {
+      const key = kwObj.keywords.toLowerCase();
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, kwObj);
+      }
+    }
+  
+    return Array.from(uniqueMap.values()).map(
+      ({ id_methode, typemethode, keywords }) => ({
+        id_methode,
+        typemethode,
+        keywordsList: [keywords],
+      })
+    );
+  }
+
+  function getArticleById(articles: Article[], id: string) {
+    const article = articles.find((a) => a.id_article === id);
+    return article || null;
+  }
+  function getMethodeById(methodes: Methodes[], id: string) {
+    const methode = methodes.find((a) => a.id_methode === id);
+    return methode || null;
+  }
+
   return (
     <GlobalContext.Provider
       value={{
@@ -228,8 +304,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         DashboardPopupRef,
         activeMenu,
         setActiveMenu,
-        params,
-        router,
         isUser,
         setIsUser,
         isAdmin,
@@ -244,6 +318,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         loadSession,
         modalParams,
         setModalParams,
+        getRandomArticles,
+        getRandomCategories,
+        getArticleKeywords,
+        getArticleById,
+        getMethodeById
       }}
     >
       {children}
