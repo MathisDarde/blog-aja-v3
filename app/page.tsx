@@ -1,3 +1,5 @@
+"use server"
+
 import "./globals.css";
 import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
@@ -7,19 +9,16 @@ import React from "react";
 import Classement from "@/components/Classement";
 import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
-import { getAllArticles } from "@/controllers/ArticlesController";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { getArticles } from "@/controllers/ArticlesController";
+import categories from "@/public/data/articletags.json"
 
-export async function Page() {
-  const { getRandomArticles } = useGlobalContext();
-
-  const articles = await getAllArticles();
-  const randomArticles = getRandomArticles(articles, 3);
+export default async function Page() {
+  const articles = await getArticles();
 
   return (
     <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
       <div className="pb-3">
-        <Carousel randomArticles={randomArticles} />
+        <Carousel articles={articles} />
       </div>
 
       <div className="my-4">
@@ -55,7 +54,7 @@ export async function Page() {
           Catégories
         </h2>
         <div>
-          <DisplayCategories />
+          <DisplayCategories categories={categories} />
         </div>
       </div>
 

@@ -22,8 +22,8 @@ export const user = pgTable("users_table", {
   birthday: timestamp("birthday").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
   admin: boolean("admin").default(false),
@@ -71,7 +71,7 @@ export const verification = pgTable("verification", {
 
 export const articlesTable = pgTable("articles_table", {
   id_article: text("id_article").primaryKey(),
-  imageUrl: text("image_url").notNull(),
+  imageUrl: text("imageUrl").notNull(),
   title: text("title").notNull(),
   teaser: text("teaser").notNull(),
   content: text("content").notNull(),
@@ -81,8 +81,8 @@ export const articlesTable = pgTable("articles_table", {
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  publishedAt: timestamp("published_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
 });
@@ -95,11 +95,11 @@ export const commentsTable = pgTable("comments_table", {
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  articleId: text("article_id")
+  articleId: text("articleId")
     .notNull()
     .references(() => articlesTable.id_article, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
 });
@@ -116,8 +116,8 @@ export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
   userId: text("userId")
     .notNull()
     .references(() => user.id),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
 });
@@ -143,8 +143,8 @@ export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
   userId: text("userId")
     .notNull()
     .references(() => user.id),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
 });
@@ -165,8 +165,8 @@ export const methodeExpertJoueurTable = pgTable("methode_expert_joueur_table", {
   userId: text("userId")
     .notNull()
     .references(() => user.id),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
 });
@@ -183,8 +183,8 @@ export const methodeExpertCoachTable = pgTable("methode_expert_coach_table", {
   userId: text("userId")
     .notNull()
     .references(() => user.id),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
 });

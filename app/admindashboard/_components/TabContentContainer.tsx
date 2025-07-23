@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+"use server"
+
+import React from "react";
 import TabUserContent from "./TabUserContent";
 import TabArticleContent from "./TabArticleContent";
 import TabMethodeContent from "./TabMethodeContent";
 import TabCommentContent from "./TabCommentContent";
 import { Search } from "lucide-react";
-import { TabContentContainerProps } from "@/contexts/Interfaces";
+import { Article, Comment, Methodes, TabContentContainerProps, User } from "@/contexts/Interfaces";
+import { getAllUsers } from "@/controllers/UserController";
+import { getAllArticles } from "@/controllers/ArticlesController";
+import { getComments } from "@/controllers/CommentController";
+import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
 
-export default function TabContentContainer({
+export default async function TabContentContainer({
   activeMenu,
+  searchTerm,
+  setSearchTerm
 }: TabContentContainerProps) {
-  const [searchTerm, setSearchTerm] = useState("");
+  
+  const users = await getAllUsers();
+  const articles = await getAllArticles();
+  const comments = await getComments();
+  const methodes = await getAllMethodes()
 
   return (
     <div className="bg-white p-6 rounded-xl h-full overflow-y-auto w-fit">
@@ -34,15 +46,15 @@ export default function TabContentContainer({
           </form>
         </div>
       </div>
-      {activeMenu === "users" && <TabUserContent searchTerm={searchTerm} />}
+      {activeMenu === "users" && <TabUserContent searchTerm={searchTerm} users={users as User[]} />}
       {activeMenu === "articles" && (
-        <TabArticleContent searchTerm={searchTerm} />
+        <TabArticleContent searchTerm={searchTerm} articles={articles as Article[]} />
       )}
       {activeMenu === "methodeexpert" && (
-        <TabMethodeContent searchTerm={searchTerm} />
+        <TabMethodeContent searchTerm={searchTerm} methodes={methodes as Methodes[]} />
       )}
       {activeMenu === "comments" && (
-        <TabCommentContent searchTerm={searchTerm} />
+        <TabCommentContent searchTerm={searchTerm} comments={comments as Comment[]} />
       )}
     </div>
   );

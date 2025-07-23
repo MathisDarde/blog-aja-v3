@@ -8,51 +8,15 @@ import SidebarData, {
   AutresDropdownData,
 } from "./HeaderDropdownData";
 import Image from "next/image";
-import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
 
-export default function Header() {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+export default function Header({ user } : { user: User}) {
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
   const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const cachedUser = localStorage.getItem("userData");
-    if (cachedUser) {
-      try {
-        setUser(JSON.parse(cachedUser));
-        setLoading(false);
-      } catch {
-        localStorage.removeItem("userData");
-      }
-    }
-
-    const authVerif = async () => {
-      try {
-        const auth = await isAuthenticated();
-        if (auth) {
-          const transformedUser = {
-            ...auth.user,
-            admin: auth.user.admin === true,
-          };
-          setUser(transformedUser);
-          localStorage.setItem("userData", JSON.stringify(transformedUser));
-        } else {
-          setUser(null);
-          localStorage.removeItem("userData");
-        }
-      } catch {
-        // silent
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    authVerif();
-
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
 
@@ -159,12 +123,7 @@ export default function Header() {
       </div>
 
       <div className="flex-shrink-0 w-[250px] flex justify-end">
-        {loading ? (
-          <div className="flex items-center gap-2 font-Montserrat text-gray-500">
-            <Loader2 className="animate-spin" size={20} />
-            <span>Chargement...</span>
-          </div>
-        ) : !user ? (
+        {!user ? (
           <Link href="/login">
             <button className="flex items-center gap-2 font-Montserrat text-white bg-aja-blue px-6 py-2 rounded-full">
               Se connecter <LogIn className="text-white" />

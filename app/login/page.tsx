@@ -1,22 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import LoginForm from "./_components/LoginForm";
-import { useEffect } from "react";
 
 export default function Login() {
-  useEffect(() => {
-    document.title = "Je me connecte - Mémoire d'Auxerrois";
-
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
-
   return (
     <>
       <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">

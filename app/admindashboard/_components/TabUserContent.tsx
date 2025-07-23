@@ -4,11 +4,10 @@ import { EllipsisVertical, Loader2 } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
-import { UserSortKey } from "@/contexts/Interfaces";
+import { User, UserSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { useGettersContext } from "@/contexts/DataGettersContext";
 
-export default function TabUserContent({ searchTerm }: { searchTerm: string }) {
+export default function TabUserContent({ searchTerm, users }: { searchTerm: string, users: User[] }) {
   const {
     sortElements,
     openContextPopup,
@@ -16,8 +15,6 @@ export default function TabUserContent({ searchTerm }: { searchTerm: string }) {
     DashboardPopupPosition,
     DashboardPopupRef,
   } = useGlobalContext();
-
-  const { users, usersLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<UserSortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -88,19 +85,7 @@ export default function TabUserContent({ searchTerm }: { searchTerm: string }) {
           </tr>
         </thead>
         <tbody>
-          {usersLoading ? (
-            <tr>
-              <td colSpan={3} className="h-64 w-[1150px]">
-                <div className="flex justify-center items-center h-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                  <span className="ml-2 text-gray-600">
-                    Chargement des utilisateurs...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            filteredUsers.map((user) => (
+          {filteredUsers.map((user) => (
               <tr key={user.id} className="bg-white border-t border-gray-200">
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image
@@ -136,7 +121,7 @@ export default function TabUserContent({ searchTerm }: { searchTerm: string }) {
                 </td>
               </tr>
             ))
-          )}
+          }
         </tbody>
       </table>
 

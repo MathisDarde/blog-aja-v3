@@ -3,14 +3,15 @@
 import { EllipsisVertical, Loader2, Star } from "lucide-react";
 import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
-import { CommentSortKey } from "@/contexts/Interfaces";
+import { Comment, CommentSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function TabCommentContent({
   searchTerm,
+  comments
 }: {
   searchTerm: string;
+  comments: Comment[]
 }) {
   const {
     sortElements,
@@ -19,8 +20,6 @@ export default function TabCommentContent({
     DashboardPopupPosition,
     DashboardPopupRef,
   } = useGlobalContext();
-
-  const { comments, commentsLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<CommentSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -88,19 +87,7 @@ export default function TabCommentContent({
           </tr>
         </thead>
         <tbody>
-          {commentsLoading ? (
-            <tr>
-              <td colSpan={5} className="h-64">
-                <div className="flex justify-center items-center h-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                  <span className="ml-2 text-gray-600">
-                    Chargement des commentaires...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            filteredComments.map((comment) => (
+          {filteredComments.map((comment) => (
               <tr
                 key={comment.id_comment}
                 className="bg-white border-t border-gray-200"
@@ -141,7 +128,7 @@ export default function TabCommentContent({
                 </td>
               </tr>
             ))
-          )}
+          }
         </tbody>
       </table>
 

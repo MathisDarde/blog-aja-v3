@@ -4,36 +4,10 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Joueur } from "@/contexts/Interfaces";
 import { Drapeaux } from "@/contexts/Drapeaux";
+import players from "@/public/data/players_data.json"
 
 export default function EffectifActuel() {
-  const [joueurs, setJoueurs] = useState<Joueur[]>([]);
   const [hoveredJoueur, setHoveredJoueur] = useState<string | null>(null);
-
-  useEffect(() => {
-    document.title = "Effectif Actuel - Mémoire d'Auxerrois";
-
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetch("/data/players_data.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Erreur lors du chargement du fichier JSON");
-        }
-        return response.json();
-      })
-      .then((data: Joueur[]) => setJoueurs(data))
-      .catch((error) =>
-        console.error("Erreur lors du chargement JSON :", error)
-      );
-  }, []);
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
@@ -42,7 +16,7 @@ export default function EffectifActuel() {
       </h1>
       <div className="text-left">
         <div className="relative grid grid-cols-5 gap-10 pb-6 mx-10">
-          {joueurs.map((joueur) => {
+          {players.map((joueur) => {
             const {
               nom,
               image_url,

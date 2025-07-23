@@ -1,21 +1,10 @@
-"use client";
-
-import { Geist, Geist_Mono, Montserrat, Bai_Jamjuree } from "next/font/google";
+import { Montserrat, Bai_Jamjuree } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Header from "@/components/Header";
-import { usePathname } from "next/navigation";
+import { redirect } from "next/navigation";
 import { AppProvider } from "@/contexts/GlobalContext";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { isAuthenticated } from "@/actions/user/is-user-connected";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -30,23 +19,30 @@ const baijamjuree = Bai_Jamjuree({
   preload: true,
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
+  const auth = await isAuthenticated();
 
-  const hideLayout = ["/login", "/register"];
+  if (!auth) {
+    return redirect("/login");
+  }
 
-  const shouldHideLayout = hideLayout.includes(pathname);
+  const transformedUser = {
+    ...auth.user,
+    admin: auth.user.admin === true,
+    photodeprofil: auth.user.photodeprofil || null,
+  };
+
   return (
     <html lang="en">
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
+        className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
       >
-        {!shouldHideLayout && <Header />}
+        <Header user={transformedUser} />
         <AppProvider>
           {children}
         </AppProvider>

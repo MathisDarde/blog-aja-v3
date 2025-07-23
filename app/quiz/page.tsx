@@ -9,18 +9,6 @@ export default function Home() {
   const [showingQuestion, setShowingQuestion] = useState<boolean>(true);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
-  useEffect(() => {
-    document.title = "Le Quiz - Mémoire d'Auxerrois";
-
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
-
   const startQuiz = (): void => {
     setCurrentQuestionIndex(0);
     setScore(0);

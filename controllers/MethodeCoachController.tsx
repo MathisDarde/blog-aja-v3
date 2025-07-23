@@ -1,3 +1,5 @@
+"use server"
+
 import { db } from "@/app/db/db";
 import { SelectCoachMethode, methodeExpertCoachTable } from "@/app/db/schema";
 import { MethodeCoachSchemaType } from "@/types/forms";
@@ -93,16 +95,7 @@ export async function createMethodeCoach(
 }
 
 export async function getMethodeById(methodeId: string): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    imagecoach: string;
-    nomcoach: string;
-    palmares: string[][];
-    statistiques: string;
-    clubscoach: string[][];
-  }>
+SelectCoachMethode[]
 > {
   const results = await db
     .select()

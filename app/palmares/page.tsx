@@ -1,67 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import Image from "next/image";
-import { Trophee, RecordType } from "@/contexts/Interfaces";
+import records from "@/public/data/records.json";
+import trophees from "@/public/data/palmares.json"
 
 const Palmares = () => {
-  const [trophees, setTrophees] = useState<Trophee[]>([]);
-  const [records, setRecords] = useState<RecordType[]>([]);
   const [selectedRecordIndex, setSelectedRecordIndex] = useState<number | null>(
     null
   );
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    document.title = "Palmarès et records - Mémoire d'Auxerrois";
-
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetch("/data/records.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Erreur lors du chargement des données JSON");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (
-          Array.isArray(data) &&
-          data.every((item) => item.title && item.image)
-        ) {
-          setRecords(data);
-        } else {
-          throw new Error("Format des données invalide");
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur :", error);
-        setError(error.message);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/data/palmares.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Erreur lors du chargement du fichier JSON");
-        }
-        return response.json();
-      })
-      .then((data: Trophee[]) => setTrophees(data))
-      .catch((error) =>
-        console.error("Erreur lors du chargement JSON :", error)
-      );
-  }, []);
 
   return (
     <>
@@ -107,24 +55,20 @@ const Palmares = () => {
           </h3>
 
           <div
-            className={`grid ${
-              selectedRecordIndex === null ? "grid-cols-2" : "grid-cols-1"
-            } gap-12 mx-auto w-3/4 mt-12 mb-6 place-items-center transition-all duration-300`}
+            className={`grid ${selectedRecordIndex === null ? "grid-cols-2" : "grid-cols-1"
+              } gap-12 mx-auto w-3/4 mt-12 mb-6 place-items-center transition-all duration-300`}
           >
-            {error ? (
-              <p className="text-red-500 text-center text-lg">{error}</p>
-            ) : (
+            {
               records.map((list, index) => {
                 const isActive = selectedRecordIndex === index;
 
                 return (
                   <div
                     key={index}
-                    className={`w-full transition-opacity duration-300 ${
-                      selectedRecordIndex !== null && !isActive
+                    className={`w-full transition-opacity duration-300 ${selectedRecordIndex !== null && !isActive
                         ? "opacity-0 hidden"
                         : "opacity-100"
-                    }`}
+                      }`}
                   >
                     {/* Image et titre cliquable */}
                     {!isActive && (
@@ -189,7 +133,7 @@ const Palmares = () => {
                   </div>
                 );
               })
-            )}
+            }
           </div>
         </div>
       </div>

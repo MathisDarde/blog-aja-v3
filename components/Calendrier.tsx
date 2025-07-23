@@ -3,9 +3,12 @@ import Image from "next/image";
 import { MatchAPI } from "@/contexts/Interfaces";
 import { clubLogos, formatName } from "@/contexts/Teams";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useRouter } from "next/navigation";
 
 function Calendrier() {
-  const { router, matches } = useGlobalContext();
+  const { matches } = useGlobalContext();
+
+  const router = useRouter();
 
   return (
     <div className="bg-white h-48 w-[1000px] mx-auto rounded-xl">

@@ -1,5 +1,7 @@
+"use server"
+
 import { db } from "@/app/db/db";
-import { methodeExpertJoueurTable } from "@/app/db/schema";
+import { SelectJoueurMethode, methodeExpertJoueurTable } from "@/app/db/schema";
 import { MethodeJoueurSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import path from "path";
@@ -7,22 +9,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 export async function getJoueurMethodes(): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    imagejoueur: string;
-    joueurnom: string;
-    poste: string;
-    taille: string;
-    piedfort: string;
-    matchs: string;
-    buts: string;
-    passesd: string;
-    clubs: string[][];
-    created_at: Date;
-    updated_at: Date;
-  }>
+SelectJoueurMethode[]
 > {
   const results = await db.select().from(methodeExpertJoueurTable);
   return results.map((item) => ({
@@ -121,20 +108,7 @@ export async function createMethodeJoueur(
 }
 
 export async function getMethodeById(methodeId: string): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    imagejoueur: string;
-    joueurnom: string;
-    poste: string;
-    taille: string;
-    piedfort: string;
-    matchs: string;
-    buts: string;
-    passesd: string;
-    clubs: string[][];
-  }>
+SelectJoueurMethode[]
 > {
   const results = await db
     .select()

@@ -1,13 +1,14 @@
+"use client"
+
 import Image from "next/image";
 import Link from "next/link";
 import Button from "./BlueButton";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { Category } from "@/contexts/Interfaces";
 
-export default async function DisplayCategories() {
+export default function DisplayCategories({ categories } : { categories : Category[] }) {
   const { getRandomCategories } = useGlobalContext();
 
-  const rawData = await fetch("/data/articletags.json");
-  const categories = await rawData.json();
   const randomCategories = getRandomCategories(categories, 4);
 
   return (

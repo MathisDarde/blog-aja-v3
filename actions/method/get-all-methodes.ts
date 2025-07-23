@@ -1,6 +1,6 @@
 "use server";
 
-import { Methodes } from "@/contexts/Interfaces";
+import { MethodeCoach, MethodeJoueur, MethodeMatch, MethodeSaison } from "@/contexts/Interfaces";
 import { getCoachMethodes } from "@/controllers/MethodeCoachController";
 import { getJoueurMethodes } from "@/controllers/MethodeJoueurController";
 import { getMatchMethodes } from "@/controllers/MethodeMatchController";
@@ -15,7 +15,12 @@ const getAllMethodes = async () => {
       getSaisonMethodes(),
     ]);
 
-    return [...coach, ...joueur, ...match, ...saison] as Methodes[];
+    return [
+      ...coach as MethodeCoach[],
+      ...joueur as MethodeJoueur[],
+      ...match as MethodeMatch[],
+      ...saison as MethodeSaison[],
+    ];
   } catch (error) {
     console.error("Erreur lors de la récupération de la méthode :", error);
     return [];

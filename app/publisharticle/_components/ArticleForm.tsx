@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useState } from "react";
 import {
   Heading,
@@ -19,20 +21,11 @@ import { toast } from "sonner";
 import storeDraftArticle from "@/actions/article/store-draft";
 import { Tags } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import tags from "@/public/data/articletags.json";
 
 function ArticleForm() {
   const { user_id } = useGlobalContext();
-  const [tags, setTags] = useState([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    fetch("/data/articletags.json")
-      .then((response) => response.json())
-      .then((data) => setTags(data))
-      .catch((error) =>
-        console.error("Erreur lors du chargement des tags :", error)
-      );
-  }, []);
 
   const { register, handleSubmit, formState, getValues } =
     useForm<ArticleSchemaType>({

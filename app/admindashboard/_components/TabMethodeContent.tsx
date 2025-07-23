@@ -3,14 +3,15 @@
 import React, { useState } from "react";
 import { EllipsisVertical, Loader2 } from "lucide-react";
 import ContextPopup from "./ContextPopup";
-import { Methode, MethodeSortKey } from "@/contexts/Interfaces";
+import { Methode, MethodeSortKey, Methodes } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function TabMethodeContent({
   searchTerm,
+  methodes
 }: {
   searchTerm: string;
+  methodes: Methodes[]
 }) {
   const {
     sortElements,
@@ -19,8 +20,6 @@ export default function TabMethodeContent({
     DashboardPopupPosition,
     DashboardPopupRef,
   } = useGlobalContext();
-
-  const { methodes, methodesLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<MethodeSortKey>("typemethode");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -34,17 +33,7 @@ export default function TabMethodeContent({
   const filteredMethodes = sortedMethodes.filter(
     (methode) =>
       methode.typemethode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (methode.joueurnom ?? "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (methode.nomcoach ?? "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (methode.saison ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (methode.titrematch ?? "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      new Date(methode.created_at)
+      new Date(methode.createdAt)
         .toLocaleDateString("fr-FR")
         .includes(searchTerm)
   );
@@ -86,28 +75,10 @@ export default function TabMethodeContent({
           <tr>
             <th
               className="p-3 text-center cursor-pointer"
-              onClick={() => handleSort("typemethode")}
-            >
-              Type de la méthode{" "}
-              {sortKey === "typemethode" && (sortOrder === "asc" ? "↑" : "↓")}
-            </th>
-            <th
-              className="p-3 text-center cursor-pointer"
-              onClick={() => handleSort("nomcoach")}
-            >
-              Titre de la méthode{" "}
-              {(sortKey === "nomcoach" ||
-                sortKey === "joueurnom" ||
-                sortKey === "titrematch" ||
-                sortKey === "saison") &&
-                (sortOrder === "asc" ? "↑" : "↓")}
-            </th>
-            <th
-              className="p-3 text-center cursor-pointer"
-              onClick={() => handleSort("created_at")}
+              onClick={() => handleSort("createdAt")}
             >
               Date de publication{" "}
-              {sortKey === "created_at" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th className="p-3 text-center">
               <></>
@@ -115,19 +86,7 @@ export default function TabMethodeContent({
           </tr>
         </thead>
         <tbody>
-          {methodesLoading ? (
-            <tr>
-              <td colSpan={3} className="h-64">
-                <div className="flex justify-center items-center h-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                  <span className="ml-2 text-gray-600">
-                    Chargement des méthodes...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            filteredMethodes.map((methode) => (
+          {filteredMethodes.map((methode) => (
               <tr
                 key={methode.id_methode}
                 className="bg-white border-t border-gray-200"
@@ -137,13 +96,8 @@ export default function TabMethodeContent({
                     {methode.typemethode}
                   </div>
                 </td>
-                <td className="p-3 text-center w-[600px]">
-                  <div className="truncate max-w-[600px]">
-                    {getTitre(methode)}
-                  </div>
-                </td>
                 <td className="p-3 text-center w-[250px]">
-                  {methode.created_at.toLocaleDateString()}
+                  {methode.createdAt.toLocaleDateString()}
                 </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
@@ -155,7 +109,7 @@ export default function TabMethodeContent({
                 </td>
               </tr>
             ))
-          )}
+          }
         </tbody>
       </table>
 

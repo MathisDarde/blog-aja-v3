@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useState } from "react";
 import Button from "@/components/BlueButton";
 import { User, Cake, Mail, KeyRound, Eye, EyeOff, X } from "lucide-react";
@@ -7,10 +9,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import submitInscForm from "@/actions/user/insc-form";
 import { toast } from "sonner";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useRouter } from "next/navigation";
 
 function InscForm() {
-  const { router } = useGlobalContext();
+const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

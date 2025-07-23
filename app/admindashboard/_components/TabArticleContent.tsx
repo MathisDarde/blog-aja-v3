@@ -1,15 +1,18 @@
-import { EllipsisVertical, Loader2 } from "lucide-react";
+"use client"
+
+import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
-import { ArticleSortKey } from "@/contexts/Interfaces";
+import { Article, ArticleSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { useGettersContext } from "@/contexts/DataGettersContext";
 
 export default function TabArticleContent({
   searchTerm,
+  articles
 }: {
   searchTerm: string;
+  articles: Article[]
 }) {
   const {
     sortElements,
@@ -18,8 +21,6 @@ export default function TabArticleContent({
     DashboardPopupPosition,
     DashboardPopupRef,
   } = useGlobalContext();
-
-  const { articles, articlesLoading } = useGettersContext();
 
   const [sortKey, setSortKey] = useState<ArticleSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -40,7 +41,7 @@ export default function TabArticleContent({
       article.tags.some((tag) =>
         tag.toLowerCase().includes(searchTerm.toLowerCase())
       ) ||
-      new Date(article.publishedAt)
+      new Date(article.createdAt)
         .toLocaleDateString("fr-FR")
         .includes(searchTerm)
   );
@@ -82,10 +83,10 @@ export default function TabArticleContent({
             </th>
             <th
               className="p-3 text-center cursor-pointer"
-              onClick={() => handleSort("publishedAt")}
+              onClick={() => handleSort("createdAt")}
             >
               Publié le{" "}
-              {sortKey === "publishedAt" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th className="p-3 text-center">
               <></>
@@ -93,19 +94,7 @@ export default function TabArticleContent({
           </tr>
         </thead>
         <tbody>
-          {articlesLoading ? (
-            <tr>
-              <td colSpan={3} className="h-64">
-                <div className="flex justify-center items-center h-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                  <span className="ml-2 text-gray-600">
-                    Chargement des articles...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            filteredArticles.map((article) => (
+          {filteredArticles.map((article) => (
               <tr
                 key={article.id_article}
                 className="bg-white border-t border-gray-200"
@@ -127,7 +116,7 @@ export default function TabArticleContent({
                 </td>
                 <td className="p-3 text-center w-[250px]">{article.author}</td>
                 <td className="p-3 text-center w-[125px]">
-                  {article.publishedAt.toLocaleDateString()}
+                  {article.createdAt.toLocaleDateString()}
                 </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
@@ -139,7 +128,7 @@ export default function TabArticleContent({
                 </td>
               </tr>
             ))
-          )}
+          }
         </tbody>
       </table>
 

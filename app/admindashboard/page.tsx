@@ -12,6 +12,7 @@ export default function Dashboard() {
 
   const [nbUsers, setNbUsers] = useState(0);
   const [nbArticles, setNbArticles] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +59,7 @@ export default function Dashboard() {
           </div>
 
           <div className="overflow-hidden pb-10">
-            <TabContentContainer activeMenu={activeMenu} />
+            <TabContentContainer activeMenu={activeMenu} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           </div>
         </div>
       </div>

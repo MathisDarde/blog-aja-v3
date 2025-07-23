@@ -1,5 +1,3 @@
-"use client";
-
 import { chants } from "@/contexts/Chants";
 
 export default function PageChants() {

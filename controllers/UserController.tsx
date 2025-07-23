@@ -1,3 +1,5 @@
+"use server"
+
 import { db } from "@/app/db/db";
 import { SelectUser, user } from "@/app/db/schema";
 import { InscSchemaType } from "@/types/forms";
@@ -8,31 +10,13 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 export async function getUserbyId(id: SelectUser["id"]): Promise<
-  Array<{
-    id: string;
-    name: string;
-    photodeprofil: string | null;
-    birthday: Date;
-    email: string;
-    createdAt: Date;
-    updatedAt: Date;
-  }>
+SelectUser[]
 > {
   return db.select().from(user).where(eq(user.id, id));
 }
 
 export async function getAllUsers(): Promise<
-  Array<{
-    id: string;
-    name: string;
-    photodeprofil: string | null;
-    birthday: Date;
-    email: string;
-    emailVerified: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    admin: boolean | null;
-  }>
+SelectUser[]
 > {
   return db.select().from(user);
 }

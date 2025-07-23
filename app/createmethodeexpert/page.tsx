@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import SaisonForm from "./_components/SaisonForm";
 import MatchForm from "./_components/MatchForm";
 import JoueurForm from "./_components/JoueurForm";
@@ -8,18 +8,6 @@ import CoachForm from "./_components/CoachForm";
 
 export default function CreateMethodeExpert() {
   const [typeMethode, setTypeMethode] = useState("saison");
-
-  useEffect(() => {
-    document.title = "Publier une méthode expert - Mémoire d'Auxerrois";
-
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">

@@ -1,22 +1,7 @@
-"use client";
-
 import Button from "@/components/BlueButton";
 import Link from "next/link";
-import { useEffect } from "react";
 
 export default function NotFound() {
-  useEffect(() => {
-    document.title = "Page non trouvée - Mémoire d'Auxerrois";
-
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
-
   if (typeof document !== "undefined") {
     document.body.setAttribute("data-page", "404");
   }

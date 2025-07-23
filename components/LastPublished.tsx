@@ -5,7 +5,7 @@ import { Article } from "@/contexts/Interfaces";
 
 export default function LastArticle({ articles } : { articles : Article[] }) {
   const sortedArticles = [...articles].sort((a, b) => {
-    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   const lastArticle = sortedArticles[0];

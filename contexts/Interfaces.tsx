@@ -1,7 +1,6 @@
 // Interfaces Article
 
 import {
-  ArticleSchemaType,
   CommentSchemaType,
   UpdateArticleSchemaType,
 } from "@/types/forms";
@@ -16,18 +15,18 @@ export interface Article {
   author: string;
   userId: string;
   state: "pending" | "published" | "archived"
-  publishedAt: Date;
+  createdAt: Date;
   updatedAt: Date;
   tags: string[];
 }
 
 export type ArticleSortKey = keyof Pick<
   Article,
-  "title" | "author" | "publishedAt" | "state"
+  "title" | "author" | "createdAt" | "state"
 >;
 
 export interface GetURLParams {
-  query?: string;
+  q?: string;
   year?: string;
   player?: string;
   league?: string;
@@ -105,24 +104,21 @@ export interface Methode {
   joueurnom: string | null;
   titrematch: string | null;
   saison: string | null;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type MethodeSortKey = keyof Pick<
   Methode,
   | "typemethode"
-  | "nomcoach"
-  | "joueurnom"
-  | "titrematch"
-  | "saison"
-  | "created_at"
+  | "createdAt"
 >;
 
 export interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
   id_methode: string;
   keywords: string[];
+  createdAt: Date;
 }
 
 export interface MethodeJoueur extends BaseMethodeData {
@@ -133,9 +129,9 @@ export interface MethodeJoueur extends BaseMethodeData {
   taille: string;
   piedfort: string;
   clubs: [string, string, string][];
-  matchs: number;
-  buts: number;
-  passesd: number;
+  matchs: string;
+  buts: string;
+  passesd: string;
 }
 
 export interface UpdateMethodeJoueurFromProps {
@@ -291,6 +287,8 @@ export interface DashboardElementProps {
 
 export interface TabContentContainerProps {
   activeMenu: string;
+  searchTerm: string;
+  setSearchTerm: React.Dispatch<string>;
 }
 
 export interface MatchAPI {

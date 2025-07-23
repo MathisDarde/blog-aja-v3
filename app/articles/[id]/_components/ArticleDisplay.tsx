@@ -107,7 +107,7 @@ export default function ArticleDisplay({ article, articles, methodes, keywords }
             <div className="flex items-center justify-between mt-4">
               <p className="font-Montserrat flex items-center italic">
                 <Calendar1 className="mr-2" />
-                {new Date(article.publishedAt).toLocaleDateString("fr-FR", {
+                {new Date(article.createdAt).toLocaleDateString("fr-FR", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

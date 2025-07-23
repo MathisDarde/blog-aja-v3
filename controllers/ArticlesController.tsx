@@ -1,3 +1,5 @@
+"use server"
+
 import { db } from "@/app/db/db";
 import { articlesTable, SelectArticle, SelectPost } from "@/app/db/schema";
 import { ArticleSchemaType, DraftArticleSchemaType } from "@/types/forms";
@@ -362,19 +364,22 @@ export async function getLastPublished() {
     .select()
     .from(articlesTable)
     .where(eq(articlesTable.state, "published"))
-    .orderBy(desc(articlesTable.publishedAt))
+    .orderBy(desc(articlesTable.createdAt))
     .then((results) => results[0]);
   return result;
 }
 
 export async function getArticlesbyKeywords({
-  query,
+  q,
   year,
   player,
   league,
 }: GetURLParams = {}): Promise<SelectArticle[]> {
   try {
-    const searchTerms = query?.trim().split(" ") || [];
+    const searchTerms = q
+    ?.trim()
+    .split(/\s+/)
+    .filter((s) => s.length > 0) || [];
 
     const conditions = [];
 

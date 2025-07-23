@@ -1,14 +1,10 @@
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import { clubLogos } from "@/contexts/Teams";
 import Image from "next/image";
 import Button from "../BlueButton";
 import Link from "next/link";
+import { MatchAPI } from "@/contexts/Interfaces";
 
-export default async function LastMatchResult() {
-  const { getLastMatch } = useGlobalContext();
-
-  const lastMatch = await getLastMatch();
-
+export default function LastMatchResult({ lastMatch } : { lastMatch : MatchAPI}) {
   return (
     <div className="flex flex-col items-center">
       <p className="mb-4 text-center font-Montserrat uppercase text-lg font-semibold">

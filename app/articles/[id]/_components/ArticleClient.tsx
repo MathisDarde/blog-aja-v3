@@ -1,3 +1,5 @@
+"use server"
+
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import ArticleDisplay from "./ArticleDisplay";
 import { getAllArticles, getArticlebyId } from "@/controllers/ArticlesController";

@@ -14,11 +14,11 @@ import {
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { DashboardElementProps } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
+import { useRouter } from "next/navigation";
 
 export default function ContextPopup({ id, type }: DashboardElementProps) {
-  const { router } = useGlobalContext();
+  const router = useRouter();
 
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Article, Category, MatchAPI, Methodes, ModalParamsType, SortParams, Team } from "./Interfaces";
 import { useParams, useRouter } from "next/navigation";
@@ -36,7 +38,7 @@ interface GlobalContextType {
   classementLoading: boolean;
   setClassementLoading: React.Dispatch<boolean>;
   getRandomArticles: (articles: Article[], amount: number) => Article[];
-  getRandomCategories: (categories: Category, amount: number) => Category[];
+  getRandomCategories: (categories: Category[], amount: number) => Category[];
   getArticleById: (articles: Article[], id: string) => Article | null;
   getMethodeById: (methodes: Methodes[], id: string) => Methodes | null;
   getArticleKeywords: (id_article: string, articles: Article[], methodes: Methodes[]) => {
@@ -234,7 +236,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return shuffled.slice(0, amount);
   }
   
-  function getRandomCategories(categories: Category, amount: number) : Category[] {
+  function getRandomCategories(categories: Category[], amount: number) : Category[] {
     if (!Array.isArray(categories)) return [];
     if (amount >= categories.length) return [...categories];
 

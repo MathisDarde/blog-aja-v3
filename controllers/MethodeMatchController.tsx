@@ -1,5 +1,7 @@
+"use server"
+
 import { db } from "@/app/db/db";
-import { methodeExpertMatchTable } from "@/app/db/schema";
+import { SelectMatchMethode, methodeExpertMatchTable } from "@/app/db/schema";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import path from "path";
@@ -7,27 +9,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 export async function getMatchMethodes(): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    titrematch: string;
-    imgterrain: string;
-    couleur1equipe1: string;
-    couleur2equipe1: string;
-    nomequipe1: string;
-    systemeequipe1: string;
-    couleur1equipe2: string;
-    couleur2equipe2: string;
-    nomequipe2: string;
-    systemeequipe2: string;
-    stade: string;
-    date: string;
-    remplacantsequipe1: string[][];
-    remplacantsequipe2: string[][];
-    created_at: Date;
-    updated_at: Date;
-  }>
+SelectMatchMethode[]
 > {
   const results = await db.select().from(methodeExpertMatchTable);
   return results.map((item) => ({
@@ -137,25 +119,7 @@ export async function createMethodeMatch(
 }
 
 export async function getMethodeById(methodeId: string): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    titrematch: string;
-    imgterrain: string;
-    couleur1equipe1: string;
-    couleur2equipe1: string;
-    nomequipe1: string;
-    systemeequipe1: string;
-    couleur1equipe2: string;
-    couleur2equipe2: string;
-    nomequipe2: string;
-    systemeequipe2: string;
-    stade: string;
-    date: string;
-    remplacantsequipe1: string[][];
-    remplacantsequipe2: string[][];
-  }>
+SelectMatchMethode[]
 > {
   const results = await db
     .select()

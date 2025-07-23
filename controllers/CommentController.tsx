@@ -1,3 +1,5 @@
+"use server"
+
 import { db } from "@/app/db/db";
 import { commentsTable, SelectComment, user } from "@/app/db/schema";
 import { CommentSchemaType } from "@/types/forms";

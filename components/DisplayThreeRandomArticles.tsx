@@ -1,11 +1,12 @@
+"use client"
+
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { getAllArticles } from "@/controllers/ArticlesController";
 import { Article } from "@/contexts/Interfaces";
 
-export default async function DisplayRandom({ articles } : { articles: Article[] }) {
+export default function DisplayRandom({ articles } : { articles: Article[] }) {
   const { getRandomArticles } = useGlobalContext();
 
   const randomArticles = getRandomArticles(articles, 3);

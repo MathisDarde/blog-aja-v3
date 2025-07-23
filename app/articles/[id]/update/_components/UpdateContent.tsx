@@ -1,28 +1,18 @@
-import { useGlobalContext } from "@/contexts/GlobalContext";
+"use server"
+
 import { ChevronLeft } from "lucide-react";
 import UpdateArticleForm from "../../_components/UpdateArticleForm";
-import { ModalAction } from "@/components/ModalAction";
 import Link from "next/link";
 import { getAllArticles } from "@/controllers/ArticlesController";
+import { Article } from "@/contexts/Interfaces";
 
-export default async function UpdateContent({ id_article } : { id_article : string }) {
-    const { modalParams, setModalParams, getArticleById } = useGlobalContext();
-
+export default async function UpdateContent({ id_article, getArticleById } : { id_article : string, getArticleById: (articles: Article[], id: string) => Article | null; }) {
     const articles = await getAllArticles();
 
     const article = getArticleById(articles, id_article);
 
     return (
         <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-      {modalParams && (
-        <ModalAction
-          object={modalParams.object}
-          type={modalParams.type}
-          onConfirm={modalParams.onConfirm}
-          onCancel={modalParams.onCancel}
-        />
-      )}
-
 <Link href="/articles">
       <h2
         className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"

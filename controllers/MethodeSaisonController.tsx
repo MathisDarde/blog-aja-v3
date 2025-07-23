@@ -1,5 +1,7 @@
+"use server"
+
 import { db } from "@/app/db/db";
-import { methodeExpertSaisonTable } from "@/app/db/schema";
+import { SelectSaisonMethode, methodeExpertSaisonTable } from "@/app/db/schema";
 import { MethodeSaisonSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import path from "path";
@@ -7,18 +9,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 export async function getSaisonMethodes(): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    saison: string;
-    imgterrain: string;
-    coach: string;
-    systeme: string;
-    remplacants: string[][];
-    created_at: Date;
-    updated_at: Date;
-  }>
+SelectSaisonMethode[]
 > {
   const results = await db.select().from(methodeExpertSaisonTable);
   return results.map((item) => ({
@@ -103,16 +94,7 @@ export async function createMethodeSaison(
 }
 
 export async function getMethodeById(methodeId: string): Promise<
-  Array<{
-    id_methode: string;
-    typemethode: string;
-    keywords: string[];
-    saison: string;
-    imgterrain: string;
-    coach: string;
-    systeme: string;
-    remplacants: string[][];
-  }>
+SelectSaisonMethode[]
 > {
   const results = await db
     .select()
