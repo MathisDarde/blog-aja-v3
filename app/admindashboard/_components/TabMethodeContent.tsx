@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { EllipsisVertical } from "lucide-react";
 import ContextPopup from "./ContextPopup";
-import { Methode, MethodeSortKey, Methodes } from "@/contexts/Interfaces";
+import { MethodeSortKey, Methodes } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabMethodeContent({

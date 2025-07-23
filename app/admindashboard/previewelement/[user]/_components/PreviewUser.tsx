@@ -4,7 +4,6 @@ import Button from "@/components/BlueButton";
 import { Cake, Calendar1, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { Comment, User } from "@/contexts/Interfaces";
 
 export default function UserPreview({
