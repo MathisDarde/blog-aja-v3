@@ -9,9 +9,7 @@ import Button from "@/components/BlueButton";
 import submitLoginForm from "@/actions/user/login-form";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
-import { Eye } from "lucide-react";
-import { EyeOff } from "lucide-react";
-import { X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);

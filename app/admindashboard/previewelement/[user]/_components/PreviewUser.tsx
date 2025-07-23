@@ -1,51 +1,19 @@
 "use client";
 
-import displayCommentsbyUser from "@/actions/comment/display-comments-by-user";
-import displayUserInfo from "@/actions/user/get-profile-info";
 import Button from "@/components/BlueButton";
-import { Cake, Calendar1, Loader2, Mail } from "lucide-react";
+import { Cake, Calendar1, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
-import { useGettersContext } from "@/contexts/DataGettersContext";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useParams } from "next/navigation";
+import { Comment, User } from "@/contexts/Interfaces";
 
-export default function UserPreview() {
-  const { comments, setComments, userLoading, setUserLoading, user, setUser } =
-    useGettersContext();
-
-  const { params } = useGlobalContext();
-
-  useEffect(() => {
-    if (!params?.user) return;
-
-    const fetchData = async () => {
-      try {
-        setUserLoading(true);
-        const id_user = params.user as string;
-        if (!id_user) return;
-
-        const [fetchedUser, commentsList] = await Promise.all([
-          displayUserInfo(id_user),
-          displayCommentsbyUser(id_user),
-        ]);
-
-        setUser(
-          fetchedUser ? { ...fetchedUser[0], emailVerified: false } : null
-        );
-        setComments(commentsList || []);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données :", error);
-        setUser(null);
-        setComments([]);
-      } finally {
-        setUserLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [params?.user]);
-
+export default function UserPreview({
+  user,
+  comments,
+}: {
+  user: User;
+  comments: Comment[];
+}) {
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
       <div>
@@ -53,12 +21,7 @@ export default function UserPreview() {
           Vue de l&apos;utilisateur
         </h2>
         <div className="w-full gap-4 px-4 my-10">
-          {userLoading ? (
-            <div className="flex items-center gap-2 font-Montserrat text-gray-500">
-              <Loader2 className="animate-spin" size={20} />
-              <span>Chargement...</span>
-            </div>
-          ) : user ? (
+          {user ? (
             <>
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2 font-Montserrat w-[600px] p-10 bg-white rounded-xl mx-auto">

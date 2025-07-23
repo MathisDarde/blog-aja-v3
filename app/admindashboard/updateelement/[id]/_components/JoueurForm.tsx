@@ -28,6 +28,7 @@ import Image from "next/image";
 import { getTeamLogos } from "@/actions/method/get-logos-files";
 import updateMethodeJoueurForm from "@/actions/method/update-joueur-form";
 import { UpdateMethodeJoueurFromProps } from "@/contexts/Interfaces";
+import { useRouter } from "next/navigation";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -37,7 +38,9 @@ const IMAGE_PATHS = {
 export default function JoueurForm({
   selectedMethode,
 }: UpdateMethodeJoueurFromProps) {
-  const { user_id, router } = useGlobalContext();
+  const { user_id } = useGlobalContext();
+
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
 

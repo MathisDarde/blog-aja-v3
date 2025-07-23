@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { Joueur } from "@/contexts/Interfaces";
 import { Drapeaux } from "@/contexts/Drapeaux";
-import players from "@/public/data/players_data.json"
+import players from "@/public/data/players_data.json";
 
 export default function EffectifActuel() {
   const [hoveredJoueur, setHoveredJoueur] = useState<string | null>(null);

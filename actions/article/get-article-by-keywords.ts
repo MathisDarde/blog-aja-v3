@@ -7,13 +7,13 @@ import { Article, GetURLParams } from "@/contexts/Interfaces";
 import { and, or, like, ilike, sql, eq } from "drizzle-orm";
 
 export async function getArticlesbyKeywords({
-  query,
+  q,
   year,
   player,
   league,
 }: GetURLParams = {}): Promise<Article[]> {
   try {
-    const searchTerms = query?.trim().split(" ") || [];
+    const searchTerms = q?.trim().split(" ") || [];
 
     const conditions = [];
 

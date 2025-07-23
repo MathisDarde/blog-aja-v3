@@ -1,3 +1,5 @@
+"use client";
+
 import { Article, Methodes } from "@/contexts/Interfaces";
 import MethodInfo from "./MethodInfo";
 import { ChevronLeft, X } from "lucide-react";
@@ -9,7 +11,7 @@ export default function MethodPopup({
   setActiveMethode,
   methodes,
   id_article,
-  articles
+  articles,
 }: {
   onClose: () => void;
   activeMethode: Methodes[];

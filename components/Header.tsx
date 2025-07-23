@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, LogIn, Loader2 } from "lucide-react";
+import { ChevronDown, LogIn } from "lucide-react";
 import SidebarData, {
   AdminDropdownData,
   AutresDropdownData,
@@ -10,7 +10,7 @@ import SidebarData, {
 import Image from "next/image";
 import { User } from "@/contexts/Interfaces";
 
-export default function Header({ user } : { user: User}) {
+export default function Header({ user }: { user: User }) {
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
   const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
 

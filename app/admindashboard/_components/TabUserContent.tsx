@@ -1,13 +1,19 @@
 "use client";
 
-import { EllipsisVertical, Loader2 } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
 import { User, UserSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
-export default function TabUserContent({ searchTerm, users }: { searchTerm: string, users: User[] }) {
+export default function TabUserContent({
+  searchTerm,
+  users,
+}: {
+  searchTerm: string;
+  users: User[];
+}) {
   const {
     sortElements,
     openContextPopup,
@@ -86,42 +92,41 @@ export default function TabUserContent({ searchTerm, users }: { searchTerm: stri
         </thead>
         <tbody>
           {filteredUsers.map((user) => (
-              <tr key={user.id} className="bg-white border-t border-gray-200">
-                <td className="p-3 flex justify-center items-center w-[75px]">
-                  <Image
-                    src={user.photodeprofil || "/_assets/img/pdpdebase.png"}
-                    alt="Photo de profil"
-                    width={128}
-                    height={128}
-                    className="rounded-full object-cover size-10"
-                  />
-                </td>
-                <td className="p-3 text-center w-[250px]">
-                  <div className="truncate max-w-[250px]">{user.name}</div>
-                </td>
-                <td className="p-3 text-center w-[250px]">
-                  <div className="truncate max-w-[250px]">{user.email}</div>
-                </td>
-                <td className="p-3 text-center w-[200px]">
-                  {user.birthday.toLocaleDateString()}
-                </td>
-                <td className="p-3 text-center w-[200px]">
-                  {user.createdAt.toLocaleDateString()}
-                </td>
-                <td className="p-3 text-center w-[125px]">
-                  {user.admin ? "Admin" : "Membre"}
-                </td>
-                <td
-                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(event: React.MouseEvent) =>
-                    openContextPopup({ id: user.id, event })
-                  }
-                >
-                  <EllipsisVertical />
-                </td>
-              </tr>
-            ))
-          }
+            <tr key={user.id} className="bg-white border-t border-gray-200">
+              <td className="p-3 flex justify-center items-center w-[75px]">
+                <Image
+                  src={user.photodeprofil || "/_assets/img/pdpdebase.png"}
+                  alt="Photo de profil"
+                  width={128}
+                  height={128}
+                  className="rounded-full object-cover size-10"
+                />
+              </td>
+              <td className="p-3 text-center w-[250px]">
+                <div className="truncate max-w-[250px]">{user.name}</div>
+              </td>
+              <td className="p-3 text-center w-[250px]">
+                <div className="truncate max-w-[250px]">{user.email}</div>
+              </td>
+              <td className="p-3 text-center w-[200px]">
+                {user.birthday.toLocaleDateString()}
+              </td>
+              <td className="p-3 text-center w-[200px]">
+                {user.createdAt.toLocaleDateString()}
+              </td>
+              <td className="p-3 text-center w-[125px]">
+                {user.admin ? "Admin" : "Membre"}
+              </td>
+              <td
+                className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                onClick={(event: React.MouseEvent) =>
+                  openContextPopup({ id: user.id, event })
+                }
+              >
+                <EllipsisVertical />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 

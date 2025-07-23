@@ -30,6 +30,7 @@ import { UpdateMethodeMatchFromProps } from "@/contexts/Interfaces";
 import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeMatchForm from "@/actions/method/update-match-form";
 import Section from "@/app/createmethodeexpert/_components/DropdownContainerDomExt";
+import { useRouter } from "next/navigation";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -39,7 +40,9 @@ const IMAGE_PATHS = {
 export default function MatchForm({
   selectedMethode,
 }: UpdateMethodeMatchFromProps) {
-  const { user_id, router } = useGlobalContext();
+  const { user_id } = useGlobalContext();
+
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
 

@@ -1,20 +1,22 @@
-"use client";
-
-import { useEffect } from "react";
+import { getCommentsByUser } from "@/controllers/CommentController";
 import UserPreview from "./_components/PreviewUser";
+import { isAuthenticated } from "@/actions/user/is-user-connected";
+import { redirect } from "next/navigation";
 
-export default function UserPreviewPage() {
-  useEffect(() => {
-    document.title = "User Preview - Mémoire d'Auxerrois";
+export default async function UserPreviewPage() {
+  const auth = await isAuthenticated();
 
-    if (!document.getElementById("favicon")) {
-      const link = document.createElement("link");
-      link.id = "favicon";
-      link.rel = "icon";
-      link.href = "/_assets/teamlogos/logoauxerre.svg";
-      document.head.appendChild(link);
-    }
-  }, []);
+  if (!auth) {
+    return redirect("/login");
+  }
 
-  return <UserPreview />;
+  const transformedUser = {
+    ...auth.user,
+    admin: auth.user.admin === true,
+    photodeprofil: auth.user.photodeprofil || null,
+  };
+
+  const comments = await getCommentsByUser(auth.user.id);
+
+  return <UserPreview user={transformedUser} comments={comments} />;
 }

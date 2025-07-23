@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisVertical, Loader2, Star } from "lucide-react";
+import { EllipsisVertical, Star } from "lucide-react";
 import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
 import { Comment, CommentSortKey } from "@/contexts/Interfaces";
@@ -8,10 +8,10 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabCommentContent({
   searchTerm,
-  comments
+  comments,
 }: {
   searchTerm: string;
-  comments: Comment[]
+  comments: Comment[];
 }) {
   const {
     sortElements,
@@ -88,47 +88,44 @@ export default function TabCommentContent({
         </thead>
         <tbody>
           {filteredComments.map((comment) => (
-              <tr
-                key={comment.id_comment}
-                className="bg-white border-t border-gray-200"
+            <tr
+              key={comment.id_comment}
+              className="bg-white border-t border-gray-200"
+            >
+              <td className="p-3 text-center w-[250px]">
+                <div className="truncate max-w-[250px]">{comment.title}</div>
+              </td>
+              <td className="p-3 text-center w-[300px]">
+                <div className="truncate max-w-[300px]">{comment.content}</div>
+              </td>
+              <td className="p-3 text-center w-[150px]">
+                <div className="flex justify-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={24}
+                      fill={i < (comment.stars, 10) ? "#facc15" : "none"}
+                      stroke="#facc15"
+                    />
+                  ))}
+                </div>
+              </td>
+              <td className="p-3 text-center w-[200px]">
+                <div className="truncate max-w-[200px]">{comment.pseudo}</div>
+              </td>
+              <td className="p-3 text-center w-[150px]">
+                {comment.createdAt.toLocaleDateString()}
+              </td>
+              <td
+                className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                onClick={(event: React.MouseEvent) =>
+                  openContextPopup({ id: comment.id_comment, event })
+                }
               >
-                <td className="p-3 text-center w-[250px]">
-                  <div className="truncate max-w-[250px]">{comment.title}</div>
-                </td>
-                <td className="p-3 text-center w-[300px]">
-                  <div className="truncate max-w-[300px]">
-                    {comment.content}
-                  </div>
-                </td>
-                <td className="p-3 text-center w-[150px]">
-                  <div className="flex justify-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        size={24}
-                        fill={i < (comment.stars, 10) ? "#facc15" : "none"}
-                        stroke="#facc15"
-                      />
-                    ))}
-                  </div>
-                </td>
-                <td className="p-3 text-center w-[200px]">
-                  <div className="truncate max-w-[200px]">{comment.pseudo}</div>
-                </td>
-                <td className="p-3 text-center w-[150px]">
-                  {comment.createdAt.toLocaleDateString()}
-                </td>
-                <td
-                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(event: React.MouseEvent) =>
-                    openContextPopup({ id: comment.id_comment, event })
-                  }
-                >
-                  <EllipsisVertical />
-                </td>
-              </tr>
-            ))
-          }
+                <EllipsisVertical />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 

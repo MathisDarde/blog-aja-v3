@@ -1,3 +1,5 @@
+"use client";
+
 import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeSaisonForm from "@/actions/method/update-saison-form";
 import { UpdateMethodeSaisonSchema } from "@/app/schema";
@@ -19,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -31,7 +34,9 @@ const IMAGE_PATHS = {
 export default function SaisonForm({
   selectedMethode,
 }: UpdateMethodeSaisonFromProps) {
-  const { user_id, router } = useGlobalContext();
+  const { user_id } = useGlobalContext();
+
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
 

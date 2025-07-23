@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { EllipsisVertical, Loader2 } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import ContextPopup from "./ContextPopup";
 import { Methode, MethodeSortKey, Methodes } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabMethodeContent({
   searchTerm,
-  methodes
+  methodes,
 }: {
   searchTerm: string;
-  methodes: Methodes[]
+  methodes: Methodes[];
 }) {
   const {
     sortElements,
@@ -47,27 +47,6 @@ export default function TabMethodeContent({
     }
   };
 
-  const getTitre = (methode: Methode): string => {
-    switch (methode.typemethode.toLowerCase()) {
-      case "coach":
-        return methode.nomcoach || "N/A";
-      case "joueur":
-        return methode.joueurnom || "N/A";
-      case "match":
-        return methode.titrematch || "N/A";
-      case "season":
-        return methode.saison || "N/A";
-      default:
-        return (
-          methode.nomcoach ||
-          methode.joueurnom ||
-          methode.titrematch ||
-          `saison ${methode.saison}` ||
-          "N/A"
-        );
-    }
-  };
-
   return (
     <div className="overflow-y-auto">
       <table className="w-auto table-auto border border-gray-300">
@@ -87,29 +66,28 @@ export default function TabMethodeContent({
         </thead>
         <tbody>
           {filteredMethodes.map((methode) => (
-              <tr
-                key={methode.id_methode}
-                className="bg-white border-t border-gray-200"
+            <tr
+              key={methode.id_methode}
+              className="bg-white border-t border-gray-200"
+            >
+              <td className="p-3 text-center w-[250px]">
+                <div className="truncate max-w-[250px]">
+                  {methode.typemethode}
+                </div>
+              </td>
+              <td className="p-3 text-center w-[250px]">
+                {methode.createdAt.toLocaleDateString()}
+              </td>
+              <td
+                className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                onClick={(event: React.MouseEvent) =>
+                  openContextPopup({ id: methode.id_methode, event })
+                }
               >
-                <td className="p-3 text-center w-[250px]">
-                  <div className="truncate max-w-[250px]">
-                    {methode.typemethode}
-                  </div>
-                </td>
-                <td className="p-3 text-center w-[250px]">
-                  {methode.createdAt.toLocaleDateString()}
-                </td>
-                <td
-                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(event: React.MouseEvent) =>
-                    openContextPopup({ id: methode.id_methode, event })
-                  }
-                >
-                  <EllipsisVertical />
-                </td>
-              </tr>
-            ))
-          }
+                <EllipsisVertical />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 

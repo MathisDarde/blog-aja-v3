@@ -1,3 +1,5 @@
+"use client";
+
 import { getTeamLogos } from "@/actions/method/get-logos-files";
 import updateMethodeCoachForm from "@/actions/method/update-coach-form";
 import { UpdateMethodeCoachSchema } from "@/app/schema";
@@ -19,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -31,7 +34,9 @@ const IMAGE_PATHS = {
 export default function CoachForm({
   selectedMethode,
 }: UpdateMethodeCoachFromProps) {
-  const { user_id, router } = useGlobalContext();
+  const { user_id } = useGlobalContext();
+
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
 

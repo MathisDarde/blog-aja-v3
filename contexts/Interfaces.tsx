@@ -1,9 +1,6 @@
 // Interfaces Article
 
-import {
-  CommentSchemaType,
-  UpdateArticleSchemaType,
-} from "@/types/forms";
+import { CommentSchemaType, UpdateArticleSchemaType } from "@/types/forms";
 import { ReactNode } from "react";
 
 export interface Article {
@@ -14,7 +11,7 @@ export interface Article {
   content: string;
   author: string;
   userId: string;
-  state: "pending" | "published" | "archived"
+  state: "pending" | "published" | "archived";
   createdAt: Date;
   updatedAt: Date;
   tags: string[];
@@ -91,10 +88,10 @@ export interface SearchInputProps {
 
 // Interfaces Methode
 export type Methodes =
- | MethodeCoach
- | MethodeJoueur
- | MethodeMatch
- | MethodeSaison
+  | MethodeCoach
+  | MethodeJoueur
+  | MethodeMatch
+  | MethodeSaison;
 
 export interface Methode {
   id_methode: string;
@@ -108,11 +105,7 @@ export interface Methode {
   updatedAt: Date;
 }
 
-export type MethodeSortKey = keyof Pick<
-  Methode,
-  | "typemethode"
-  | "createdAt"
->;
+export type MethodeSortKey = keyof Pick<Methode, "typemethode" | "createdAt">;
 
 export interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
@@ -144,9 +137,9 @@ export interface UpdateMethodeJoueurFromProps {
     taille: string;
     piedfort: string;
     clubs: [string, string, string][];
-    matchs: number;
-    buts: number;
-    passesd: number;
+    matchs: string;
+    buts: string;
+    passesd: string;
   };
 }
 

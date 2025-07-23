@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from "react";
 import { AlignLeft, Heading, Star, X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -9,7 +11,7 @@ import Button from "@/components/BlueButton";
 import submitCommentForm from "@/actions/comment/comment-form";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
-export default function CommentForm({ id_article } : { id_article : string }) {
+export default function CommentForm({ id_article }: { id_article: string }) {
   const { user_id } = useGlobalContext();
 
   const { register, handleSubmit, reset, formState, watch, setValue } =

@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import "./globals.css";
 import LastArticle from "@/components/LastPublished";
@@ -10,7 +10,7 @@ import Classement from "@/components/Classement";
 import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
 import { getArticles } from "@/controllers/ArticlesController";
-import categories from "@/public/data/articletags.json"
+import categories from "@/public/data/articletags.json";
 
 export default async function Page() {
   const articles = await getArticles();
