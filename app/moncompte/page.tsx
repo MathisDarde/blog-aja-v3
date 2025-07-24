@@ -1,21 +1,18 @@
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import InfosDisplay from "./_components/InfosDisplay";
-import { redirect } from "next/navigation";
+import { getUserbyId } from "@/controllers/UserController";
+import { User } from "@/contexts/Interfaces";
 
 export default async function PageAccount() {
   const auth = await isAuthenticated();
 
   if (!auth) {
-    return redirect("/login");
+    return;
   }
-
-  const transformedUser = {
-    ...auth.user,
-    admin: auth.user.admin === true,
-    photodeprofil: auth.user.photodeprofil || null,
-  };
+  
+  const user = await getUserbyId(auth.user.id);
 
   return (
-    <InfosDisplay user={transformedUser} />
+    <InfosDisplay user={user as unknown as User} />
   );
 }

@@ -4,7 +4,6 @@ import "./globals.css";
 import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
 import DisplayCategories from "@/components/DisplayCategories";
-import Footer from "@/components/Footer";
 import React from "react";
 import Classement from "@/components/Classement";
 import Carousel from "@/components/carousel/Carousel";
@@ -27,11 +26,12 @@ export default async function Page() {
   const randomCategories = getRandomCategories(categories, 4);
 
   return (
-    <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
+    <div >
       <div className="pb-3">
         <Carousel articles={articles} />
       </div>
 
+      <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10 pt-0">
       <div className="my-4">
         <TeamStatsBlock />
       </div>
@@ -77,8 +77,7 @@ export default async function Page() {
           <Classement />
         </div>
       </div>
-
-      <Footer />
+    </div>
     </div>
   );
 }

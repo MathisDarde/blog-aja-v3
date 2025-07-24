@@ -2,10 +2,12 @@ import { Montserrat, Bai_Jamjuree } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Header from "@/components/Header";
-import { redirect } from "next/navigation";
 import { AppProvider } from "@/contexts/GlobalContext";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import type { Metadata } from "next";
+import Footer from "@/components/Footer";
+import { getUserbyId } from "@/controllers/UserController";
+import { User } from "@/contexts/Interfaces";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -55,14 +57,10 @@ export default async function RootLayout({
   const auth = await isAuthenticated();
 
   if (!auth) {
-    return redirect("/login");
+    return;
   }
-
-  const transformedUser = {
-    ...auth.user,
-    admin: auth.user.admin === true,
-    photodeprofil: auth.user.photodeprofil || null,
-  };
+  
+  const user = await getUserbyId(auth.user.id);
 
   return (
     <html lang="en">
@@ -70,11 +68,12 @@ export default async function RootLayout({
         suppressHydrationWarning
         className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
       >
-        <Header user={transformedUser} />
+        <Header user={user as unknown as User} />
         <AppProvider>
           {children}
         </AppProvider>
         <Toaster />
+        <Footer />
       </body>
     </html>
   );
