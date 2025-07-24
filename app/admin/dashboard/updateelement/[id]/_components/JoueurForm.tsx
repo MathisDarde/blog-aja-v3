@@ -1,40 +1,44 @@
 "use client";
 
-import { getFlags } from "@/actions/method/get-flags-files";
-import updateMethodeSaisonForm from "@/actions/method/update-saison-form";
-import { UpdateMethodeSaisonSchema } from "@/app/schema";
-import Button from "@/components/BlueButton";
-import { useFormErrorToasts } from "@/components/FormErrorsHook";
-import { useGlobalContext } from "@/contexts/GlobalContext";
-import { UpdateMethodeSaisonFromProps } from "@/contexts/Interfaces";
-import { UpdateMethodeSaisonSchemaType } from "@/types/forms";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
 import {
-  ArrowLeftRight,
-  BookCheck,
-  ChartBarBig,
-  Clock4,
+  Drama,
   FileQuestion,
+  FolderPen,
+  Footprints,
+  Handshake,
   Loader2,
   Plus,
+  Ruler,
+  ShieldHalf,
+  Sword,
   Trash,
+  Volleyball,
   WholeWord,
   X,
 } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import Button from "@/components/BlueButton";
 import { useFieldArray, useForm } from "react-hook-form";
+import { UpdateMethodeJoueurSchemaType } from "@/types/forms";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UpdateMethodeJoueurSchema } from "@/app/schema";
 import { toast } from "sonner";
+import { useGlobalContext } from "@/contexts/GlobalContext";
+import Image from "next/image";
+import { getTeamLogos } from "@/actions/method/get-logos-files";
+import updateMethodeJoueurForm from "@/actions/method/update-joueur-form";
+import { UpdateMethodeJoueurFromProps } from "@/contexts/Interfaces";
+import { useRouter } from "next/navigation";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
   drapeaux: "/_assets/flags/",
 };
 
-export default function SaisonForm({
+export default function JoueurForm({
   selectedMethode,
-}: UpdateMethodeSaisonFromProps) {
+}: UpdateMethodeJoueurFromProps) {
   const { user_id } = useGlobalContext();
 
   const router = useRouter();
@@ -47,61 +51,69 @@ export default function SaisonForm({
     control,
     setValue,
     formState: { errors },
-  } = useForm<UpdateMethodeSaisonSchemaType>({
-    resolver: zodResolver(UpdateMethodeSaisonSchema),
+  } = useForm<UpdateMethodeJoueurSchemaType>({
+    resolver: zodResolver(UpdateMethodeJoueurSchema),
     defaultValues: async () => {
       if (!selectedMethode) {
         return {
           keywords: [],
-          coach: "",
-          remplacants: [],
-          saison: "",
-          systeme: "",
-          imgterrain: "",
+          joueurnom: "",
+          imagejoueur: "",
+          clubs: [["", "", ""]],
+          matchs: "",
+          buts: "",
+          passesd: "",
+          piedfort: "",
+          taille: "",
+          poste: "",
         };
       }
 
       return {
         keywords: selectedMethode.keywords?.map((k) => ({ value: k })) || [],
-        coach: selectedMethode.coach || "",
-        imgterrain: selectedMethode.imgterrain || "",
-        remplacants: selectedMethode.remplacants || [],
-        systeme: selectedMethode.systeme || "",
-        saison: selectedMethode.saison || "",
+        joueurnom: selectedMethode.joueurnom || "",
+        imagejoueur: selectedMethode.imagejoueur || "",
+        clubs: selectedMethode.clubs || [["", "", ""]],
+        piedfort: selectedMethode.piedfort || "",
+        taille: selectedMethode.taille || "",
+        poste: selectedMethode.poste || "",
+        matchs: String(selectedMethode.matchs ?? ""),
+        buts: String(selectedMethode.buts ?? ""),
+        passesd: String(selectedMethode.passesd ?? ""),
       };
     },
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>(
-    selectedMethode.imgterrain || "/_assets/terrain/demiterrain.png"
+    selectedMethode.imagejoueur || "/_assets/img/pdpdebase.png"
   );
   const [modal, setModal] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
-  const [activeFlagIndex, setActiveFlagIndex] = useState<number | null>(null);
+  const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const {
     fields: keywordsfield,
     append: appendkeywords,
     remove: removekeywords,
-  } = useFieldArray<UpdateMethodeSaisonSchemaType, "keywords">({
+  } = useFieldArray<UpdateMethodeJoueurSchemaType, "keywords">({
     control,
     name: "keywords",
   });
   const {
-    fields: remplacantsfield,
-    append: appendremplacants,
-    remove: removeremplacants,
-  } = useFieldArray<UpdateMethodeSaisonSchemaType, "remplacants">({
+    fields: clubsfield,
+    append: appendclubs,
+    remove: removeclubs,
+  } = useFieldArray<UpdateMethodeJoueurSchemaType, "clubs">({
     control,
-    name: "remplacants",
+    name: "clubs",
   });
 
   const fetchFiles = async () => {
     setLoading(true);
     try {
-      const result = await getFlags();
+      const result = await getTeamLogos();
 
       if (result.success) {
         setFileList(result.files);
@@ -117,15 +129,15 @@ export default function SaisonForm({
   };
 
   const openModal = (index: number) => {
-    setActiveFlagIndex(index);
+    setActiveClubIndex(index);
     setModal(true);
     fetchFiles();
   };
 
   // Sélectionner un fichier et le mettre dans le champ correspondant
   const selectFile = (filename: string) => {
-    if (activeFlagIndex !== null) {
-      setValue(`remplacants.${activeFlagIndex}.1`, filename);
+    if (activeClubIndex !== null) {
+      setValue(`clubs.${activeClubIndex}.0`, filename);
       setModal(false);
     }
   };
@@ -136,37 +148,37 @@ export default function SaisonForm({
       setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
     } else {
       setSelectedFile(null);
-      setPreviewPhoto("/_assets/terrain/demiterrain.png");
+      setPreviewPhoto("/_assets/img/pdpdebase.png");
     }
   };
 
   // Fonction pour compléter automatiquement les chemins d'images
   const processImagePaths = (
-    data: UpdateMethodeSaisonSchemaType
-  ): UpdateMethodeSaisonSchemaType => {
+    data: UpdateMethodeJoueurSchemaType
+  ): UpdateMethodeJoueurSchemaType => {
     // Crée une copie profonde des données pour éviter de modifier l'original
     const processedData = JSON.parse(
       JSON.stringify(data)
-    ) as UpdateMethodeSaisonSchemaType;
+    ) as UpdateMethodeJoueurSchemaType;
 
     // Traitement des logos de clubs
-    if (processedData.remplacants) {
-      processedData.remplacants = processedData.remplacants.map((remp) => {
+    if (processedData.clubs) {
+      processedData.clubs = processedData.clubs.map((club) => {
         if (
-          remp[1] &&
-          !remp[1].startsWith("http") &&
-          !remp[1].startsWith("/")
+          club[0] &&
+          !club[0].startsWith("http") &&
+          !club[0].startsWith("/")
         ) {
-          remp[1] = `${IMAGE_PATHS.drapeaux}${remp[1]}`;
+          club[0] = `${IMAGE_PATHS.clubs}${club[0]}`;
         }
-        return remp;
+        return club;
       });
     }
 
     return processedData;
   };
 
-  const handleSubmitForm = async (data: UpdateMethodeSaisonSchemaType) => {
+  const handleSubmitForm = async (data: UpdateMethodeJoueurSchemaType) => {
     const processedData = processImagePaths(data);
 
     const formData = new FormData();
@@ -182,7 +194,7 @@ export default function SaisonForm({
       );
     });
 
-    const response = await updateMethodeSaisonForm(
+    const response = await updateMethodeJoueurForm(
       selectedMethode.id_methode,
       processedData,
       user_id || "",
@@ -190,11 +202,7 @@ export default function SaisonForm({
     );
 
     if (response.success) {
-      toast.success(response.message, {
-        icon: <X className="text-white" />,
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
-      router.push("/admindashboard");
+      router.push("/admin/dashboard");
     } else {
       toast.error(
         response.message || response.errors?.[0]?.message || "Erreur inconnue",
@@ -210,7 +218,7 @@ export default function SaisonForm({
     file.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useFormErrorToasts(errors)
+  useFormErrorToasts(errors);
 
   return (
     <div className="w-[600px] mx-auto">
@@ -218,7 +226,9 @@ export default function SaisonForm({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white font-Montserrat rounded-lg p-6 w-[500px] max-h-[80vh] overflow-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Sélection d&apos;un drapeau</h3>
+              <h3 className="text-lg font-bold">
+                Sélection d&apos;un logo de club
+              </h3>
               <button
                 onClick={() => setModal(false)}
                 className="text-gray-500 hover:text-red-500"
@@ -252,7 +262,7 @@ export default function SaisonForm({
                     <Image
                       width={100}
                       height={100}
-                      src={`${IMAGE_PATHS.drapeaux}${file}`}
+                      src={`${IMAGE_PATHS.clubs}${file}`}
                       alt={file}
                       className="h-12 object-contain mb-2"
                     />
@@ -285,9 +295,9 @@ export default function SaisonForm({
               <Image
                 width={1024}
                 height={1024}
-                src={previewPhoto || "/_assets/terrain/demiterrain.png"}
-                alt="Image du terrain"
-                className="h-[300px] w-auto"
+                src={previewPhoto || "/_assets/img/pdpdebase.png"}
+                alt="Photo du joueur"
+                className="w-full aspect-video object-cover mr-4"
               />
             </div>
           )}
@@ -302,10 +312,9 @@ export default function SaisonForm({
             htmlFor="fileInput"
             className="underline text-aja-blue font-Montserrat cursor-pointer"
           >
-            Modifier l&apos;image du terrain ?
+            Modifier la photo du joueur ?
           </label>
         </div>
-
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
             <WholeWord className="mr-4" />
@@ -316,7 +325,7 @@ export default function SaisonForm({
             <div key={field.id} className="flex items-center mb-2 gap-2">
               <input
                 type="text"
-                placeholder={`Mot clé ${index + 1} (ex: saison 2020-2021)`}
+                placeholder={`Mot clé ${index + 1} (ex: Djibril Cissé)`}
                 {...register(`keywords.${index}.value`)}
                 className="flex-1 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
               />
@@ -344,63 +353,70 @@ export default function SaisonForm({
 
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <Clock4 className="mr-4" />
-            Saison :
+            <FolderPen className="mr-4" />
+            Nom du joueur :
           </span>
           <input
             type="text"
-            {...register("saison")}
+            {...register("joueurnom")}
             className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Saison (ex: 2020-2021)"
+            placeholder="Nom du joueur (ex: Djibril Cissé)"
           />
         </div>
 
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <BookCheck className="mr-4" />
-            Coach :
+            <Drama className="mr-4" />
+            Poste :
           </span>
           <input
             type="text"
-            {...register("coach")}
+            {...register("poste")}
             className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Coach (ex: Jean-Marc Furlan)"
+            placeholder="Poste (ex: Attaquant de pointe)"
           />
         </div>
 
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <ChartBarBig className="mr-4" />
-            Système :
+            <Ruler className="mr-4" />
+            Taille :
           </span>
           <input
             type="text"
-            {...register("systeme")}
+            {...register("taille")}
             className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Système (ex: 4-3-3)"
+            placeholder="Taille du joueur (ex: 1m84)"
+          />
+        </div>
+
+        <div className="relative w-[600px]">
+          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <Footprints className="mr-4" />
+            Pied Fort :
+          </span>
+          <input
+            type="text"
+            {...register("piedfort")}
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            placeholder="Pied fort (ex: Droit)"
           />
         </div>
 
         <div className="relative w-[600px] mb-4">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <ArrowLeftRight className="mr-4" />
-            Remplaçants :
+            <ShieldHalf className="mr-4" />
+            Clubs :
           </span>
 
-          {remplacantsfield.map((field, index) => (
+          {clubsfield.map((field, index) => (
             <div key={field.id} className="flex gap-2 mb-2 w-full">
-              <input
-                type="text"
-                {...register(`remplacants.${index}.0`)}
-                placeholder="Nom (ex: Gaëtan Perrin)"
-                className="py-2 px-4 border rounded w-2/5"
-              />
-              <div className="relative w-2/5 flex">
+              <div className="relative w-1/3 flex">
                 <input
                   type="text"
-                  {...register(`remplacants.${index}.1`)}
-                  placeholder="Drapeau (ex: france)"
-                  className="py-2 px-4 border rounded"
+                  {...register(`clubs.${index}.0`)}
+                  placeholder="Logo (ex: auxerre)"
+                  className="py-2 px-4 border rounded w-full"
                 />
                 <button
                   type="button"
@@ -412,13 +428,19 @@ export default function SaisonForm({
               </div>
               <input
                 type="text"
-                {...register(`remplacants.${index}.2`)}
-                placeholder="Poste (ex: G ou Gardien)"
-                className="py-2 px-4 border rounded w-1/5"
+                {...register(`clubs.${index}.1`)}
+                placeholder="Nom du club (ex: AJ Auxerre)"
+                className="py-2 px-4 border rounded w-1/3"
+              />
+              <input
+                type="text"
+                {...register(`clubs.${index}.2`)}
+                placeholder="Années (ex: (1999-2004))"
+                className="py-2 px-4 border rounded w-1/3"
               />
               <button
                 type="button"
-                onClick={() => removeremplacants(index)}
+                onClick={() => removeclubs(index)}
                 className="text-red-500"
               >
                 <Trash size={18} />
@@ -427,12 +449,51 @@ export default function SaisonForm({
           ))}
           <button
             type="button"
-            onClick={() => appendremplacants([""])}
+            onClick={() => appendclubs([""])}
             className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
           >
             <Plus size={18} />
-            Ajouter un remplaçant
+            Ajouter un club
           </button>
+        </div>
+
+        <div className="relative w-[600px]">
+          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <Sword className="mr-4" />
+            Nombre de matchs :
+          </span>
+          <input
+            type="number"
+            {...register("matchs")}
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            placeholder="Nombre de matchs (ex: 354)"
+          />
+        </div>
+
+        <div className="relative w-[600px]">
+          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <Volleyball className="mr-4" />
+            Nombre de buts marqués :
+          </span>
+          <input
+            type="number"
+            {...register("buts")}
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            placeholder="Nombre de buts marqués (ex: 116)"
+          />
+        </div>
+
+        <div className="relative w-[600px]">
+          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <Handshake className="mr-4" />
+            Nombre de passes décisives :
+          </span>
+          <input
+            type="number"
+            {...register("passesd")}
+            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            placeholder="Nombre de passes décisives (ex: 38)"
+          />
         </div>
 
         <div className="flex justify-center items-center">

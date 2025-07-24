@@ -11,9 +11,20 @@ import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
 import { getArticles } from "@/controllers/ArticlesController";
 import categories from "@/public/data/articletags.json";
+import { Category } from "@/contexts/Interfaces";
 
 export default async function Page() {
   const articles = await getArticles();
+
+  function getRandomCategories(categories: Category[], amount: number) : Category[] {
+    if (!Array.isArray(categories)) return [];
+    if (amount >= categories.length) return [...categories];
+
+    const shuffled = [...categories].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, amount);
+  }
+
+  const randomCategories = getRandomCategories(categories, 4);
 
   return (
     <div className="bg-gray-100 h-full w-full p-0 m-0 box-border ">
@@ -54,7 +65,7 @@ export default async function Page() {
           Catégories
         </h2>
         <div>
-          <DisplayCategories categories={categories} />
+          <DisplayCategories randomCategories={randomCategories} />
         </div>
       </div>
 

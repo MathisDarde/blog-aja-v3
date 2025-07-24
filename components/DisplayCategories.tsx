@@ -6,17 +6,13 @@ import Button from "./BlueButton";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { Category } from "@/contexts/Interfaces";
 
-export default function DisplayCategories({ categories } : { categories : Category[] }) {
-  const { getRandomCategories } = useGlobalContext();
-
-  const randomCategories = getRandomCategories(categories, 4);
-
+export default function DisplayCategories({ randomCategories } : { randomCategories : Category[] }) {
   return (
     <div>
         <div className="flex gap-6 my-10 justify-center">
           {randomCategories.length > 0 ? (
             randomCategories.map((category, index) => (
-              <Link href={`/articles?tag=${category.value}`} key={index}>
+              <Link href={`/articles?${category.type}=${category.value}`} key={index}>
                 <div className="text-center relative group">
                   <Image
                     src={category.img}

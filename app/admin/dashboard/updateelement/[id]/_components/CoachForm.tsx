@@ -1,44 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import { getTeamLogos } from "@/actions/method/get-logos-files";
+import updateMethodeCoachForm from "@/actions/method/update-coach-form";
+import { UpdateMethodeCoachSchema } from "@/app/schema";
+import Button from "@/components/BlueButton";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import { useGlobalContext } from "@/contexts/GlobalContext";
+import { UpdateMethodeCoachFromProps } from "@/contexts/Interfaces";
+import { UpdateMethodeCoachSchemaType } from "@/types/forms";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Drama,
+  ChartBarIncreasing,
   FileQuestion,
   FolderPen,
-  Footprints,
-  Handshake,
   Loader2,
   Plus,
-  Ruler,
   ShieldHalf,
-  Sword,
   Trash,
-  Volleyball,
+  Trophy,
   WholeWord,
   X,
 } from "lucide-react";
-import Button from "@/components/BlueButton";
-import { useFieldArray, useForm } from "react-hook-form";
-import { UpdateMethodeJoueurSchemaType } from "@/types/forms";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateMethodeJoueurSchema } from "@/app/schema";
-import { toast } from "sonner";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
-import { getTeamLogos } from "@/actions/method/get-logos-files";
-import updateMethodeJoueurForm from "@/actions/method/update-joueur-form";
-import { UpdateMethodeJoueurFromProps } from "@/contexts/Interfaces";
 import { useRouter } from "next/navigation";
-import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import { useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
   drapeaux: "/_assets/flags/",
 };
 
-export default function JoueurForm({
+export default function CoachForm({
   selectedMethode,
-}: UpdateMethodeJoueurFromProps) {
+}: UpdateMethodeCoachFromProps) {
   const { user_id } = useGlobalContext();
 
   const router = useRouter();
@@ -51,42 +47,34 @@ export default function JoueurForm({
     control,
     setValue,
     formState: { errors },
-  } = useForm<UpdateMethodeJoueurSchemaType>({
-    resolver: zodResolver(UpdateMethodeJoueurSchema),
+  } = useForm<UpdateMethodeCoachSchemaType>({
+    resolver: zodResolver(UpdateMethodeCoachSchema),
     defaultValues: async () => {
       if (!selectedMethode) {
         return {
           keywords: [],
-          joueurnom: "",
-          imagejoueur: "",
-          clubs: [["", "", ""]],
-          matchs: "",
-          buts: "",
-          passesd: "",
-          piedfort: "",
-          taille: "",
-          poste: "",
+          nomcoach: "",
+          imagecoach: "",
+          clubscoach: [],
+          palmares: [],
+          statistiques: "",
         };
       }
 
       return {
         keywords: selectedMethode.keywords?.map((k) => ({ value: k })) || [],
-        joueurnom: selectedMethode.joueurnom || "",
-        imagejoueur: selectedMethode.imagejoueur || "",
-        clubs: selectedMethode.clubs || [["", "", ""]],
-        piedfort: selectedMethode.piedfort || "",
-        taille: selectedMethode.taille || "",
-        poste: selectedMethode.poste || "",
-        matchs: String(selectedMethode.matchs ?? ""),
-        buts: String(selectedMethode.buts ?? ""),
-        passesd: String(selectedMethode.passesd ?? ""),
+        nomcoach: selectedMethode.nomcoach || "",
+        imagecoach: selectedMethode.imagecoach || "",
+        clubscoach: selectedMethode.clubscoach || [],
+        palmares: selectedMethode.palmares || [],
+        statistiques: selectedMethode.statistiques || "",
       };
     },
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>(
-    selectedMethode.imagejoueur || "/_assets/img/pdpdebase.png"
+    selectedMethode.imagecoach || "/_assets/img/pdpdebase.png"
   );
   const [modal, setModal] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
@@ -97,7 +85,7 @@ export default function JoueurForm({
     fields: keywordsfield,
     append: appendkeywords,
     remove: removekeywords,
-  } = useFieldArray<UpdateMethodeJoueurSchemaType, "keywords">({
+  } = useFieldArray<UpdateMethodeCoachSchemaType, "keywords">({
     control,
     name: "keywords",
   });
@@ -105,9 +93,17 @@ export default function JoueurForm({
     fields: clubsfield,
     append: appendclubs,
     remove: removeclubs,
-  } = useFieldArray<UpdateMethodeJoueurSchemaType, "clubs">({
+  } = useFieldArray<UpdateMethodeCoachSchemaType, "clubscoach">({
     control,
-    name: "clubs",
+    name: "clubscoach",
+  });
+  const {
+    fields: palmaresfield,
+    append: appendpalmares,
+    remove: removepalmares,
+  } = useFieldArray<UpdateMethodeCoachSchemaType, "palmares">({
+    control,
+    name: "palmares",
   });
 
   const fetchFiles = async () => {
@@ -137,7 +133,7 @@ export default function JoueurForm({
   // Sélectionner un fichier et le mettre dans le champ correspondant
   const selectFile = (filename: string) => {
     if (activeClubIndex !== null) {
-      setValue(`clubs.${activeClubIndex}.0`, filename);
+      setValue(`clubscoach.${activeClubIndex}.0`, filename);
       setModal(false);
     }
   };
@@ -154,16 +150,16 @@ export default function JoueurForm({
 
   // Fonction pour compléter automatiquement les chemins d'images
   const processImagePaths = (
-    data: UpdateMethodeJoueurSchemaType
-  ): UpdateMethodeJoueurSchemaType => {
+    data: UpdateMethodeCoachSchemaType
+  ): UpdateMethodeCoachSchemaType => {
     // Crée une copie profonde des données pour éviter de modifier l'original
     const processedData = JSON.parse(
       JSON.stringify(data)
-    ) as UpdateMethodeJoueurSchemaType;
+    ) as UpdateMethodeCoachSchemaType;
 
     // Traitement des logos de clubs
-    if (processedData.clubs) {
-      processedData.clubs = processedData.clubs.map((club) => {
+    if (processedData.clubscoach) {
+      processedData.clubscoach = processedData.clubscoach.map((club) => {
         if (
           club[0] &&
           !club[0].startsWith("http") &&
@@ -178,7 +174,8 @@ export default function JoueurForm({
     return processedData;
   };
 
-  const handleSubmitForm = async (data: UpdateMethodeJoueurSchemaType) => {
+  const handleSubmitForm = async (data: UpdateMethodeCoachSchemaType) => {
+    // Traiter les chemins d'images avant l'envoi
     const processedData = processImagePaths(data);
 
     const formData = new FormData();
@@ -194,7 +191,7 @@ export default function JoueurForm({
       );
     });
 
-    const response = await updateMethodeJoueurForm(
+    const response = await updateMethodeCoachForm(
       selectedMethode.id_methode,
       processedData,
       user_id || "",
@@ -202,7 +199,11 @@ export default function JoueurForm({
     );
 
     if (response.success) {
-      router.push("/admindashboard");
+      toast.success(response.message, {
+        icon: <X className="text-white" />,
+        className: "bg-green-500 border border-green-200 text-white text-base",
+      });
+      router.push("/admin/dashboard");
     } else {
       toast.error(
         response.message || response.errors?.[0]?.message || "Erreur inconnue",
@@ -218,7 +219,14 @@ export default function JoueurForm({
     file.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useFormErrorToasts(errors);
+  useFormErrorToasts(errors)
+
+  if (!selectedMethode)
+    return (
+      <div>
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
 
   return (
     <div className="w-[600px] mx-auto">
@@ -296,7 +304,7 @@ export default function JoueurForm({
                 width={1024}
                 height={1024}
                 src={previewPhoto || "/_assets/img/pdpdebase.png"}
-                alt="Photo du joueur"
+                alt="Photo du coach"
                 className="w-full aspect-video object-cover mr-4"
               />
             </div>
@@ -312,9 +320,10 @@ export default function JoueurForm({
             htmlFor="fileInput"
             className="underline text-aja-blue font-Montserrat cursor-pointer"
           >
-            Modifier la photo du joueur ?
+            Modifier la photo du coach ?
           </label>
         </div>
+
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
             <WholeWord className="mr-4" />
@@ -325,7 +334,7 @@ export default function JoueurForm({
             <div key={field.id} className="flex items-center mb-2 gap-2">
               <input
                 type="text"
-                placeholder={`Mot clé ${index + 1} (ex: Djibril Cissé)`}
+                placeholder={`Mot clé ${index + 1} (ex: Guy Roux)`}
                 {...register(`keywords.${index}.value`)}
                 className="flex-1 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
               />
@@ -354,52 +363,13 @@ export default function JoueurForm({
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
             <FolderPen className="mr-4" />
-            Nom du joueur :
+            Nom du coach :
           </span>
           <input
             type="text"
-            {...register("joueurnom")}
+            {...register("nomcoach")}
             className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Nom du joueur (ex: Djibril Cissé)"
-          />
-        </div>
-
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <Drama className="mr-4" />
-            Poste :
-          </span>
-          <input
-            type="text"
-            {...register("poste")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Poste (ex: Attaquant de pointe)"
-          />
-        </div>
-
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <Ruler className="mr-4" />
-            Taille :
-          </span>
-          <input
-            type="text"
-            {...register("taille")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Taille du joueur (ex: 1m84)"
-          />
-        </div>
-
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <Footprints className="mr-4" />
-            Pied Fort :
-          </span>
-          <input
-            type="text"
-            {...register("piedfort")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Pied fort (ex: Droit)"
+            placeholder="Nom du joueur (ex: Guy Roux)"
           />
         </div>
 
@@ -414,8 +384,8 @@ export default function JoueurForm({
               <div className="relative w-1/3 flex">
                 <input
                   type="text"
-                  {...register(`clubs.${index}.0`)}
-                  placeholder="Logo (ex: auxerre)"
+                  {...register(`clubscoach.${index}.0`)}
+                  placeholder="(choisir dans la l"
                   className="py-2 px-4 border rounded w-full"
                 />
                 <button
@@ -428,14 +398,14 @@ export default function JoueurForm({
               </div>
               <input
                 type="text"
-                {...register(`clubs.${index}.1`)}
+                {...register(`clubscoach.${index}.1`)}
                 placeholder="Nom du club (ex: AJ Auxerre)"
                 className="py-2 px-4 border rounded w-1/3"
               />
               <input
                 type="text"
-                {...register(`clubs.${index}.2`)}
-                placeholder="Années (ex: (1999-2004))"
+                {...register(`clubscoach.${index}.2`)}
+                placeholder="Années (ex: (1963-2006))"
                 className="py-2 px-4 border rounded w-1/3"
               />
               <button
@@ -449,7 +419,7 @@ export default function JoueurForm({
           ))}
           <button
             type="button"
-            onClick={() => appendclubs([""])}
+            onClick={() => appendclubs(["", "", ""])}
             className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
           >
             <Plus size={18} />
@@ -457,42 +427,55 @@ export default function JoueurForm({
           </button>
         </div>
 
-        <div className="relative w-[600px]">
+        <div className="relative w-[600px] mb-4">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <Sword className="mr-4" />
-            Nombre de matchs :
+            <Trophy className="mr-4" />
+            Palmarès :
           </span>
-          <input
-            type="number"
-            {...register("matchs")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Nombre de matchs (ex: 354)"
-          />
+
+          {palmaresfield.map((field, index) => (
+            <div key={field.id} className="flex gap-2 mb-2 w-full">
+              <input
+                type="text"
+                {...register(`palmares.${index}.0`)}
+                placeholder="Intitulé (ex: Champion de Ligue 2)"
+                className="py-2 px-4 border rounded w-1/2"
+              />
+              <input
+                type="text"
+                {...register(`palmares.${index}.1`)}
+                placeholder="Nombre associé (ex: 3)"
+                className="py-2 px-4 border rounded w-1/2"
+              />
+              <button
+                type="button"
+                onClick={() => removepalmares(index)}
+                className="text-red-500"
+              >
+                <Trash size={18} />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => appendpalmares(["", ""])}
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+          >
+            <Plus size={18} />
+            Ajouter une ligne au palmarès
+          </button>
         </div>
 
         <div className="relative w-[600px]">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <Volleyball className="mr-4" />
-            Nombre de buts marqués :
+            <ChartBarIncreasing className="mr-4" />
+            Statistiques :
           </span>
           <input
-            type="number"
-            {...register("buts")}
+            type="text"
+            {...register("statistiques")}
             className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Nombre de buts marqués (ex: 116)"
-          />
-        </div>
-
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
-            <Handshake className="mr-4" />
-            Nombre de passes décisives :
-          </span>
-          <input
-            type="number"
-            {...register("passesd")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
-            placeholder="Nombre de passes décisives (ex: 38)"
+            placeholder="Stats (ex: 512v - 30n - 85d)"
           />
         </div>
 

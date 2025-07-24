@@ -118,7 +118,7 @@ export default function UserPreview({
               </div>
 
               <div className="mt-8">
-                <Link href={"/admindashboard"}>
+                <Link href={"/admin/dashboard"}>
                   <Button>Retourner au dashboard</Button>
                 </Link>
               </div>

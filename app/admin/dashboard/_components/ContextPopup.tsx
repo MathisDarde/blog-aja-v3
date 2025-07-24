@@ -86,7 +86,7 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
 
     switch (type) {
       case "user":
-        return router.push(`/admindashboard/previewelement/${id}`);
+        return router.push(`/admin/dashboard/previewelement/${id}`);
       case "article":
         return router.push(`/articles/${id}`);
       case "comment":
@@ -116,7 +116,7 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
       case "comment":
         return;
       case "method":
-        return router.push(`/admindashboard/updateelement/${id}`);
+        return router.push(`/admin/dashboard/updateelement/${id}`);
     }
   };
 

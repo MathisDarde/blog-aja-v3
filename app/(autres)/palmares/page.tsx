@@ -39,7 +39,7 @@ const Palmares = () => {
                     <p className="text-2xl mt-2 w-72 text-center cursor-default font-semibold font-Montserrat">
                       {trophee.title}
                     </p>
-                    <p className="text-xl mt-2 w-72 text-center cursor-default pb-4">
+                    <p className="text-xl font-Montserrat mt-2 w-72 text-center cursor-default pb-4">
                       ({trophee.annee})
                     </p>
                   </div>
@@ -85,7 +85,7 @@ const Palmares = () => {
                           alt={`Image de ${list.title}`}
                           className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100 group-hover:grayscale-0"
                         />
-                        <h4 className="relative z-10 text-3xl font-bold text-black bg-white bg-opacity-75 px-4 py-2 rounded-lg uppercase text-center transition-colors group-hover:text-white group-hover:bg-aja-blue">
+                        <h4 className="relative font-Bai_Jamjuree z-10 text-3xl font-bold text-black bg-white bg-opacity-75 px-4 py-2 rounded-lg uppercase text-center transition-colors group-hover:text-white group-hover:bg-aja-blue">
                           {list.title}
                         </h4>
                       </div>
@@ -100,7 +100,7 @@ const Palmares = () => {
                             className="p-2 text-red-600 bg-gray-100 rounded-full absolute text-2xl top-3 left-3 cursor-pointer transition-colors hover:text-red-800"
                             onClick={() => setSelectedRecordIndex(null)}
                           />
-                          <h3 className="font-semibold uppercase text-3xl text-center mb-5">
+                          <h3 className="font-semibold font-Bai_Jamjuree uppercase text-3xl text-center mb-5">
                             {list.title}
                           </h3>
                           <table className="table border-collapse w-full">

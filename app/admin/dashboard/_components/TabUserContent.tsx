@@ -109,11 +109,20 @@ export default function TabUserContent({
                 <div className="truncate max-w-[250px]">{user.email}</div>
               </td>
               <td className="p-3 text-center w-[200px]">
-                {user.birthday.toLocaleDateString()}
+                {new Date(user.birthday).toLocaleDateString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
               </td>
               <td className="p-3 text-center w-[200px]">
-                {user.createdAt.toLocaleDateString()}
+                {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
               </td>
+
               <td className="p-3 text-center w-[125px]">
                 {user.admin ? "Admin" : "Membre"}
               </td>

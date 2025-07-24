@@ -111,7 +111,7 @@ function ArticleForm() {
     );
 
     if (response.success) {
-      redirect("/brouillons");
+      redirect("/admin/brouillons");
     } else {
       toast.error(response.message || response.errors?.[0].message, {
         icon: <X className="text-white" />,

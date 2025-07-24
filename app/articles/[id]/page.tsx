@@ -1,4 +1,3 @@
-import { getCommentsbyArticle } from "@/controllers/CommentController";
 import ArticleClient from "./_components/ArticleClient";
 
 type Props = {

@@ -37,7 +37,7 @@ export default function MethodeUpdate({ methodes }: { methodes: Methodes[] }) {
       type: "leaveChanges",
       onConfirm: async () => {
         setModalParams(null);
-        router.push(`/admindashboard`);
+        router.push(`/admin/dashboard`);
       },
       onCancel: () => setModalParams(null),
     });

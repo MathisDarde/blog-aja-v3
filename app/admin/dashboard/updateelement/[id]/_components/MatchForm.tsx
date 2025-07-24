@@ -29,7 +29,7 @@ import Image from "next/image";
 import { UpdateMethodeMatchFromProps } from "@/contexts/Interfaces";
 import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeMatchForm from "@/actions/method/update-match-form";
-import Section from "@/app/createmethodeexpert/_components/DropdownContainerDomExt";
+import Section from "@/app/admin/createmethodeexpert/_components/DropdownContainerDomExt";
 import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
@@ -285,7 +285,7 @@ export default function MatchForm({
         icon: <X className="text-white" />,
         className: "bg-green-500 border border-green-200 text-white text-base",
       });
-      router.push("/admindashboard");
+      router.push("/admin/dashboard");
     } else {
       toast.error(
         response.message || response.errors?.[0]?.message || "Erreur inconnue",

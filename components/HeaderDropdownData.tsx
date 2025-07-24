@@ -79,21 +79,21 @@ export const AdminDropdownData = [
     title: "Publier un article",
     image: "/_assets/img/writingpaper.jpg",
     description: "Je souhaite rédiger un article",
-    link: "/publisharticle",
+    link: "/admin/publisharticle",
     dropdown: false,
   },
   {
     title: "Consulter les brouillons",
     image: "/_assets/img/drafts.jpg",
     description: "Consulter la liste des brouillons sur Mémoire d'Auxerrois",
-    link: "/brouillons",
+    link: "/admin/brouillons",
     dropdown: false,
   },
   {
     title: "Créer une méthode expert",
     image: "/_assets/img/methodeexpertpic.jpg",
     description: "Accéder au formulaire de création d'une méthode expert",
-    link: "/createmethodeexpert",
+    link: "/admin/createmethodeexpert",
     dropdown: false,
   },
   {
@@ -101,7 +101,7 @@ export const AdminDropdownData = [
     image: "/_assets/img/adminicon.jpg",
     description:
       "Vous avez accès à l'ensemble des outils administratifs de Mémoire d'Auxerrois",
-    link: "/admindashboard",
+    link: "/admin/dashboard",
     dropdown: false,
   },
 ];
