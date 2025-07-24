@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@/app/db/db";
-import { commentsTable, SelectComment, user } from "@/app/db/schema";
+import { db } from "@/db/db";
+import { commentsTable, SelectComment, user } from "@/db/schema";
 import { CommentSchemaType } from "@/types/forms";
 import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";

@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@/app/db/db";
-import { articlesTable, SelectArticle, SelectPost } from "@/app/db/schema";
+import { db } from "@/db/db";
+import { articlesTable, SelectArticle, SelectPost } from "@/db/schema";
 import { ArticleSchemaType, DraftArticleSchemaType } from "@/types/forms";
 import { and, desc, eq, ilike, like, or, sql } from "drizzle-orm";
 import path from "path";

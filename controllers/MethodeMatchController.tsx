@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@/app/db/db";
-import { SelectMatchMethode, methodeExpertMatchTable } from "@/app/db/schema";
+import { db } from "@/db/db";
+import { SelectMatchMethode, methodeExpertMatchTable } from "@/db/schema";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import path from "path";

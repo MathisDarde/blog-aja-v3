@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@/app/db/db";
-import { SelectUser, user } from "@/app/db/schema";
+import { db } from "@/db/db";
+import { SelectUser, user } from "@/db/schema";
 import { InscSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";

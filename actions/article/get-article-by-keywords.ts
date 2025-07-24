@@ -1,7 +1,7 @@
 "use server";
 
-import { db } from "@/app/db/db";
-import { articlesTable } from "@/app/db/schema";
+import { db } from "@/db/db";
+import { articlesTable } from "@/db/schema";
 import { Article, GetURLParams } from "@/contexts/Interfaces";
 
 import { and, or, like, ilike, sql, eq } from "drizzle-orm";
