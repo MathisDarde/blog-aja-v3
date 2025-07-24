@@ -13,9 +13,22 @@ const teamStyles: Record<string, string> = {
   Relegation: "bg-red-300",
 };
 
+const icons: Record<string, string> = {
+  "Champions League": "/_assets/img/logochampionsleague.svg",
+  "Champions League Qualification": "/_assets/img/logochampionsleague.svg",
+  "UEFA Europa League": "/_assets/img/logoeuropaleague.svg",
+  "Conference League Qualification": "/_assets/img/logoconferenceleague.svg",
+  "Relegation Playoffs": "/_assets/img/logoligue2.svg",
+  "Relegation": "/_assets/img/logoligue2.svg",
+}
+
 const getTeamClass = (description: string): string => {
   return teamStyles[description] ?? "";
 };
+
+const getIcon = (description: string): string => {
+  return icons[description] ?? "";
+}
 
 function Classement() {
   const [loading, setLoading] = useState(false);
@@ -53,7 +66,7 @@ function Classement() {
         <table className="w-full table-fixed border-collapse">
           <thead>
             <tr className="bg-gray-200 text-black border border-black">
-              <th className="p-2 w-[45px] font-bold font-Montserrat border border-black text-center ">
+              <th className="p-2 w-[75px] font-bold font-Montserrat border border-black text-center ">
                 Pos.
               </th>
               <th className="p-2 w-[200px] font-bold font-Montserrat border border-black text-left">
@@ -93,7 +106,15 @@ function Classement() {
                   team.strDescription
                 )}`}
               >
-                <td className="w-[25px] text-center p-2 font-Montserrat font-semibold border border-black">
+                <td className="w-full text-center p-2 font-Montserrat font-semibold border flex items-center gap-3">
+                  {getIcon(team.strDescription) && (
+                    <Image
+                      src={getIcon(team.strDescription)}
+                      width={25}
+                      height={25}
+                      alt="Logo compétition"
+                    />
+                  )}
                   {team.intRank}.
                 </td>
                 <td className="w-[200px] border border-black text-left p-2">

@@ -9,24 +9,23 @@ export default function PlayerMethodeExpert({
   methode,
 }: PlayerMethodeExpertProps) {
   return (
-    <div className="flex gap-10">
-      <div className="w-1/2">
+    <div className="flex flex-col pt-8">
         {/* Image du joueur */}
         <Image
           src={methode.imagejoueur}
           width={512}
           height={512}
           alt={methode.joueurnom}
-          className="aspect-video object-cover mx-auto rounded-lg"
+          className="aspect-video w-full object-cover h-auto mx-auto rounded-lg"
         />
 
         {/* Nom du joueur */}
-        <p className="text-center font-Bai_Jamjuree text-2xl font-bold mt-2">
+        <p className="text-center font-Bai_Jamjuree text-2xl font-bold mt-4">
           {methode.joueurnom}
         </p>
 
         {/* Profil du joueur */}
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 text-left space-y-2">
           <p className="text-lg font-semibold font-Bai_Jamjuree">
             Profil du joueur
           </p>
@@ -34,14 +33,12 @@ export default function PlayerMethodeExpert({
           <p>Taille : {methode.taille}</p>
           <p>Pied fort : {methode.piedfort}</p>
         </div>
-      </div>
 
-      <div className="w-1/2">
         {/* Clubs du joueur */}
-        <p className="text-lg text-left font-semibold font-Bai_Jamjuree">
+        <p className="text-lg mt-4 text-left font-semibold font-Bai_Jamjuree">
           Clubs
         </p>
-        <ul className="mt-2">
+        <ul>
           {methode.clubs.map((club, index) => (
             <li key={index} className="flex items-center gap-2 my-2">
               <Image
@@ -59,7 +56,7 @@ export default function PlayerMethodeExpert({
         </ul>
 
         {/* Statistiques */}
-        <div className="mt-8 text-left space-y-2">
+        <div className="mt-4 text-left space-y-2">
           <p className="text-lg font-semibold font-Bai_Jamjuree">
             Statistiques en carrière
           </p>
@@ -68,6 +65,5 @@ export default function PlayerMethodeExpert({
           <p>{methode.passesd} passes décisives</p>
         </div>
       </div>
-    </div>
   );
 }

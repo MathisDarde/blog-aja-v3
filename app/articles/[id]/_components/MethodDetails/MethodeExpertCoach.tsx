@@ -15,7 +15,7 @@ export default function CoachMethodeExpert({
   }));
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col pt-8">
       {/* Image du coach */}
       {methode.imagecoach && (
         <Image
@@ -28,38 +28,18 @@ export default function CoachMethodeExpert({
       )}
 
       {/* Nom du coach */}
-      <p className="text-center font-Bai_Jamjuree text-2xl font-bold mt-2">
+      <p className="text-center font-Bai_Jamjuree text-2xl font-bold mt-4">
         {methode.nomcoach}
       </p>
 
-      {/* Palmarès */}
-      <div className="mt-6">
-        <p className="text-lg font-semibold font-Bai_Jamjuree">Palmarès :</p>
-        <ul className="">
-          {methode.palmares?.map((item, index) => (
-            <li key={index} className="text-gray-700">
-              {item[0]} ({item[1]})
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Statistiques */}
-      <div className="mt-4">
-        <p className="text-lg font-semibold font-Bai_Jamjuree">
-          Statistiques :
-        </p>
-        <p className="text-gray-700">{methode.statistiques}</p>
-      </div>
-
       {/* Clubs entraînés */}
-      <p className="font-Bai_Jamjuree text-lg font-semibold text-left mb-4">
+      <p className="text-lg mt-4 text-left font-semibold font-Bai_Jamjuree">
         Clubs
       </p>
       <ul className="space-y-2">
         {formattedClubs.map((club, index) =>
           club.logo && club.name && club.years ? (
-            <li key={index} className="flex items-center gap-2">
+            <li key={index} className="flex items-center gap-2 my-2">
               <Image
                 height={512}
                 width={512}
@@ -81,6 +61,26 @@ export default function CoachMethodeExpert({
           )
         )}
       </ul>
+
+            {/* Palmarès */}
+            <div className="mt-4 text-left">
+        <p className="text-lg font-semibold font-Bai_Jamjuree">Palmarès :</p>
+        <ul className="">
+          {methode.palmares?.map((item, index) => (
+            <li key={index} className="text-gray-700">
+              {item[0]} ({item[1]})
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Statistiques */}
+      <div className="mt-4 text-left">
+        <p className="text-lg font-semibold font-Bai_Jamjuree">
+          Statistiques :
+        </p>
+        <p className="text-gray-700">{methode.statistiques}</p>
+      </div>
     </div>
   );
 }

@@ -40,7 +40,7 @@ export default function MethodPopup({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white p-6 rounded-xl shadow-lg w-[1000px] max-h-[500px] overflow-y-scroll text-center relative"
+        className="bg-white p-6 rounded-xl shadow-lg w-[500px] max-h-[650px] overflow-y-scroll text-center relative"
       >
         <button
           onClick={() => {
