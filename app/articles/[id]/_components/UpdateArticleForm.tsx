@@ -12,7 +12,7 @@ import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import tags from '@/public/data/articletags.json';
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
