@@ -1,14 +1,13 @@
+"use client"
+
+import { useParams } from "next/navigation";
 import ArticleClient from "./_components/ArticleClient";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
+export default async function ArticlePage() {
 
+  const params = useParams();
 
-export default async function ArticlePage({ params }: Props) {
+  const id_article = params.id as string
 
-
-  return <ArticleClient id_article={params.id} />;
+  return <ArticleClient id_article={id_article} />;
 }
