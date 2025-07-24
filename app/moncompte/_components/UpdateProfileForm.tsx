@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "@/components/BlueButton";
 import { User, Cake, Mail, X, Trash } from "lucide-react";
 import { UpdateProfileSchemaType } from "@/types/forms";
@@ -13,6 +13,7 @@ import { UpdateUserFromProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
 import deletePhotoDeProfil from "@/actions/user/delete-pdp";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   const { user_id } = useGlobalContext();
@@ -119,17 +120,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
     }
   };
 
-  useEffect(() => {
-    Object.values(errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className:
-            "bg-red-500 !important border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [errors]);
+  useFormErrorToasts(errors);
 
   return (
     <div className="w-[600px] mx-auto">

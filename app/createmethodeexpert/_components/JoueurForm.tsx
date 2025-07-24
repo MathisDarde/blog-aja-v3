@@ -4,6 +4,7 @@ import { getTeamLogos } from "@/actions/method/get-logos-files";
 import submitMethodeJoueurForm from "@/actions/method/methode-joueur-form";
 import { MethodeJoueurSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { MethodeJoueurSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +27,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -191,16 +192,7 @@ export default function JoueurForm() {
     file.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    Object.values(errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [errors]);
+  useFormErrorToasts(errors)
 
   return (
     <div className="w-[600px] mx-auto">

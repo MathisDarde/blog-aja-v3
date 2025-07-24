@@ -23,6 +23,8 @@ import { Tags, UpdateBrouillonFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { ModalAction } from "@/components/ModalAction";
 import updateBrouillonForm from "@/actions/article/update-brouillon-form";
+import tags from '@/public/data/articletags.json';
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 export default function UpdateBrouillonForm({
   articleData,
@@ -31,23 +33,13 @@ export default function UpdateBrouillonForm({
 }: UpdateBrouillonFormProps) {
   const { user_id, modalParams, setModalParams } = useGlobalContext();
 
-  const [tags, setTags] = useState<Tags[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const { register, handleSubmit, formState, setValue, watch, getValues } =
+  const { register, handleSubmit, formState : { errors }, setValue, watch, getValues } =
     useForm<UpdateArticleSchemaType>({
       resolver: zodResolver(ArticleSchema),
       defaultValues: articleData,
     });
-
-  useEffect(() => {
-    fetch("/data/articletags.json")
-      .then((response) => response.json())
-      .then((data) => setTags(data))
-      .catch((error) =>
-        console.error("Erreur lors du chargement des tags :", error)
-      );
-  }, []);
 
   useEffect(() => {
     if (articleData) {
@@ -157,16 +149,7 @@ export default function UpdateBrouillonForm({
     }
   };
 
-  useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [formState.errors]);
+  useFormErrorToasts(errors)
 
   const watchedTags = watch("tags") || [];
 

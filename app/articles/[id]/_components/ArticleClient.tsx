@@ -3,6 +3,7 @@
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import ArticleDisplay from "./ArticleDisplay";
 import { getAllArticles, getArticlebyId } from "@/controllers/ArticlesController";
+import { getCommentsbyArticle } from "@/controllers/CommentController";
 
 export default async function ArticleClient({ id_article }: { id_article: string }) {
   if (!id_article) return <p>Aucun article trouvé.</p>;
@@ -11,6 +12,8 @@ export default async function ArticleClient({ id_article }: { id_article: string
 
   const article = await getArticlebyId(id_article);
   const methodes = await getAllMethodes();
+
+  const articleComments = await getCommentsbyArticle(id_article);
 
   if (!methodes) {
     return <p>Erreur lors du chargement des méthodes.</p>;
@@ -28,5 +31,5 @@ export default async function ArticleClient({ id_article }: { id_article: string
     return <p>Chargement de l&apos;article</p>
   }
     
-  return <ArticleDisplay article={article} articles={articles} methodes={methodes} keywords={keywords} />;
+  return <ArticleDisplay article={article} articles={articles} methodes={methodes} keywords={keywords} articleComments={articleComments} />;
 }

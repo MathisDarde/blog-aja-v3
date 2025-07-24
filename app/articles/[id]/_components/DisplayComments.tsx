@@ -4,22 +4,22 @@ import CommentForm from "./CommentForm";
 import Button from "@/components/BlueButton";
 import UpdateCommentForm from "./UpdateCommentForm";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import deleteCommentAction from "@/actions/comment/delete-comment";
 import { ChevronLeft, PenSquare, Plus, Trash } from "lucide-react";
 import Image from "next/image";
 import { Comment } from "@/contexts/Interfaces";
-import displayCommentsbyId from "@/actions/comment/display-comments-by-article";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function DisplayArticleComments({
   article_id,
+  articleComments
 }: {
   article_id: string;
+  articleComments: Comment[]
 }) {
   const { user_id, setModalParams, isUser } = useGlobalContext();
 
-  const [articleComments, setArticleComments] = useState<Comment[]>([]);
   const [isPublishingComment, setIsPublishingComment] = useState(false);
   const [visibleComments, setVisibleComments] = useState(3);
   const [isUpdatingComment, setIsUpdatingComment] = useState(false);
@@ -29,8 +29,6 @@ export default function DisplayArticleComments({
     content: string;
     stars: number;
   } | null>(null);
-
-  const router = useRouter();
 
   const handleVoirPlus = () => {
     setVisibleComments((prev) => prev + 3);
@@ -61,25 +59,6 @@ export default function DisplayArticleComments({
       console.error(error);
     }
   }
-
-  useEffect(() => {
-    async function getArticleComments() {
-      try {
-        const response = await displayCommentsbyId(article_id);
-        if (response) {
-          setArticleComments(response);
-        } else {
-          console.error("Aucun commentaire trouvé pour cet article.");
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des commentaires :",
-          error
-        );
-      }
-    }
-    getArticleComments();
-  }, [article_id]);
 
   return (
     <>
@@ -126,12 +105,13 @@ export default function DisplayArticleComments({
                       <Plus /> Ajouter un commentaire
                     </Button>
                   ) : (
+                    <Link href={"/login"}>
                     <Button
                       className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full"
-                      onClick={() => router.push("/login")}
                     >
                       Connectez-vous pour publier un commentaire
                     </Button>
+                    </Link>
                   )}
                 </div>
 

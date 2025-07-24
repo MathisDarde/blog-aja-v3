@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   AArrowUp,
   ArrowLeftRight,
@@ -31,6 +31,7 @@ import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeMatchForm from "@/actions/method/update-match-form";
 import Section from "@/app/createmethodeexpert/_components/DropdownContainerDomExt";
 import { useRouter } from "next/navigation";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -329,16 +330,7 @@ export default function MatchForm({
     file.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    Object.values(errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [errors]);
+  useFormErrorToasts(errors)
 
   return (
     <div className="w-[750px] mx-auto">

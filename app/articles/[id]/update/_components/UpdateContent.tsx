@@ -22,6 +22,7 @@ export default async function UpdateContent({ id_article, getArticleById } : { i
       </Link>
 
       <UpdateArticleForm
+      id_article={id_article}
         articleData={{
           title: article?.title ?? "",
           teaser: article?.teaser ?? "",

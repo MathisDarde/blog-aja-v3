@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LoginSchema } from "@/app/schema";
 import { LoginSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,11 +10,12 @@ import submitLoginForm from "@/actions/user/login-form";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 import { Eye, EyeOff, X } from "lucide-react";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const { register, handleSubmit, formState } = useForm<LoginSchemaType>({
+  const { register, handleSubmit, formState : { errors } } = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
   });
 
@@ -37,17 +38,7 @@ function LoginForm() {
     setShowPassword(!showPassword);
   };
 
-  useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className:
-            "bg-red-500 !important border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [formState.errors]);
+  useFormErrorToasts(errors)
 
   return (
     <>
@@ -81,7 +72,7 @@ function LoginForm() {
           </div>
 
           <div className="flex justify-center items-center">
-            <Button type="submit">Je me connecte</Button>
+             <Button type="submit">Je me connecte</Button>
           </div>
         </form>
       </div>

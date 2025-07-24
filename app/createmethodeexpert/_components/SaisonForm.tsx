@@ -19,12 +19,13 @@ import {
   FileQuestion,
 } from "lucide-react";
 import { redirect } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { getFlags } from "@/actions/method/get-flags-files";
 import Image from "next/image";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -182,16 +183,7 @@ export default function SaisonForm() {
     file.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    Object.values(errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [errors]);
+  useFormErrorToasts(errors);
 
   return (
     <div className="w-[600px] mx-auto">

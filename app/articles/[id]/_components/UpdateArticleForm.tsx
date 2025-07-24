@@ -13,8 +13,11 @@ import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import tags from '@/public/data/articletags.json';
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 export default function UpdateArticleForm({
+  id_article,
   articleData,
 }: UpdateArticleFormProps) {
   const { user_id } = useGlobalContext();
@@ -22,13 +25,12 @@ export default function UpdateArticleForm({
   const params = useParams();
   const router = useRouter();
 
-  const [tags, setTags] = useState<Tags[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>(
     articleData.imageUrl || "/_assets/img/pdpdebase.png"
   );
 
-  const { register, handleSubmit, formState, setValue, watch, reset } =
+  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
     useForm<UpdateArticleSchemaType>({
       resolver: zodResolver(UpdateArticleSchema),
       defaultValues: {
@@ -48,23 +50,6 @@ export default function UpdateArticleForm({
       setPreviewPhoto(articleData.imageUrl || "/_assets/img/pdpdebase.png");
     }
   }, [articleData, reset]);
-
-  useEffect(() => {
-    fetch("/data/articletags.json")
-      .then((response) => response.json())
-      .then((data) => setTags(data))
-      .catch((error) =>
-        console.error("Erreur lors du chargement des tags :", error)
-      );
-  }, []);
-
-  const id_article = React.useRef<string>("");
-
-  useEffect(() => {
-    if (!params?.id) return;
-    const articleId = Array.isArray(params.id) ? params.id[0] : params.id;
-    id_article.current = articleId;
-  }, [params?.id]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -98,7 +83,7 @@ export default function UpdateArticleForm({
     }
 
     const response = await updateArticleForm(
-      id_article.current,
+      id_article,
       data,
       selectedFile ?? undefined
     );
@@ -108,7 +93,7 @@ export default function UpdateArticleForm({
         icon: <X className="text-white" />,
         className: "bg-green-500 border border-green-200 text-white text-base",
       });
-      router.push(`/articles/${id_article.current}`);
+      router.push(`/articles/${id_article}`);
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,
@@ -120,16 +105,7 @@ export default function UpdateArticleForm({
     }
   };
 
-  useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [formState.errors]);
+  useFormErrorToasts(errors)
 
   const watchedTags = watch("tags") || [];
 

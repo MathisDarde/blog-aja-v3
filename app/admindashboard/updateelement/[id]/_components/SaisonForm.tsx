@@ -4,6 +4,7 @@ import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeSaisonForm from "@/actions/method/update-saison-form";
 import { UpdateMethodeSaisonSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { UpdateMethodeSaisonFromProps } from "@/contexts/Interfaces";
 import { UpdateMethodeSaisonSchemaType } from "@/types/forms";
@@ -22,7 +23,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -209,16 +210,7 @@ export default function SaisonForm({
     file.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    Object.values(errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [errors]);
+  useFormErrorToasts(errors)
 
   return (
     <div className="w-[600px] mx-auto">

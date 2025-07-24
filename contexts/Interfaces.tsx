@@ -49,6 +49,7 @@ export interface Tags {
 }
 
 export interface UpdateArticleFormProps {
+  id_article: string,
   articleData: {
     title: string;
     imageUrl: string;
@@ -254,7 +255,7 @@ export interface User {
   updatedAt: Date;
   photodeprofil?: string | null;
   birthday: Date;
-  admin?: boolean;
+  admin: boolean | null;
 }
 
 export type UserSortKey = keyof Pick<
@@ -282,6 +283,10 @@ export interface TabContentContainerProps {
   activeMenu: string;
   searchTerm: string;
   setSearchTerm: React.Dispatch<string>;
+  users: User[],
+  articles: Article[],
+  methodes: Methodes[],
+  comments: Comment[]
 }
 
 export interface MatchAPI {

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Heading,
   Image as ImageIcon,
@@ -22,12 +22,13 @@ import storeDraftArticle from "@/actions/article/store-draft";
 import { Tags } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import tags from "@/public/data/articletags.json";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 function ArticleForm() {
   const { user_id } = useGlobalContext();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const { register, handleSubmit, formState, getValues } =
+  const { register, handleSubmit, formState : { errors }, getValues } =
     useForm<ArticleSchemaType>({
       resolver: zodResolver(ArticleSchema),
     });
@@ -119,17 +120,7 @@ function ArticleForm() {
     }
   };
 
-  useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className:
-            "bg-red-500 !important border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [formState.errors]);
+  useFormErrorToasts(errors);
 
   return (
     <div className="w-[800px] mx-auto">

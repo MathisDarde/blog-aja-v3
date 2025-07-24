@@ -101,7 +101,7 @@ export default function TabArticleContent({
               >
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image
-                    src={article.imageUrl}
+                    src={article.imageUrl || "/_assets/img/pdpdebase.png"}
                     alt="Bannière de l'article"
                     width={128}
                     height={128}

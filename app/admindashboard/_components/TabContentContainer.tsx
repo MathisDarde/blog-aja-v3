@@ -1,4 +1,4 @@
-"use server"
+"use client"
 
 import React from "react";
 import TabUserContent from "./TabUserContent";
@@ -7,21 +7,16 @@ import TabMethodeContent from "./TabMethodeContent";
 import TabCommentContent from "./TabCommentContent";
 import { Search } from "lucide-react";
 import { Article, Comment, Methodes, TabContentContainerProps, User } from "@/contexts/Interfaces";
-import { getAllUsers } from "@/controllers/UserController";
-import { getAllArticles } from "@/controllers/ArticlesController";
-import { getComments } from "@/controllers/CommentController";
-import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
 
-export default async function TabContentContainer({
+export default function TabContentContainer({
   activeMenu,
   searchTerm,
-  setSearchTerm
+  setSearchTerm,
+  users,
+  articles,
+  methodes,
+  comments
 }: TabContentContainerProps) {
-  
-  const users = await getAllUsers();
-  const articles = await getAllArticles();
-  const comments = await getComments();
-  const methodes = await getAllMethodes()
 
   return (
     <div className="bg-white p-6 rounded-xl h-full overflow-y-auto w-fit">

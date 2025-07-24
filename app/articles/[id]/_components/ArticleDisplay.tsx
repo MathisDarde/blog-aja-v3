@@ -12,14 +12,14 @@ import {
 } from "lucide-react";
 import KeywordHighlighter from "./HighlightKeywords";
 import deleteArticleSA from "@/actions/article/delete-article";
-import { Article, Keyword, Methodes } from "@/contexts/Interfaces";
+import { Article, Comment, Keyword, Methodes } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { ModalAction } from "@/components/ModalAction";
 import DisplayArticleComments from "./DisplayComments";
 import MethodPopup from "./MethodPopup";
 import { useRouter } from "next/navigation";
 
-export default function ArticleDisplay({ article, articles, methodes, keywords }: { article: Article, articles: Article[], methodes: Methodes[], keywords: Keyword[] }) {
+export default function ArticleDisplay({ article, articles, methodes, keywords, articleComments }: { article: Article, articles: Article[], methodes: Methodes[], keywords: Keyword[], articleComments : Comment[] }) {
   const { isAdmin, isUser, modalParams, setModalParams } =
     useGlobalContext();
 
@@ -182,7 +182,7 @@ export default function ArticleDisplay({ article, articles, methodes, keywords }
             />
           </div>
 
-          <DisplayArticleComments article_id={article.id_article} />
+          <DisplayArticleComments article_id={article.id_article} articleComments={articleComments}/>
         </div>
       </div>
 

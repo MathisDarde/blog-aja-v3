@@ -4,6 +4,7 @@ import { getTeamLogos } from "@/actions/method/get-logos-files";
 import updateMethodeCoachForm from "@/actions/method/update-coach-form";
 import { UpdateMethodeCoachSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { UpdateMethodeCoachFromProps } from "@/contexts/Interfaces";
 import { UpdateMethodeCoachSchemaType } from "@/types/forms";
@@ -22,7 +23,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -218,16 +219,7 @@ export default function CoachForm({
     file.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    Object.values(errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [errors]);
+  useFormErrorToasts(errors)
 
   if (!selectedMethode)
     return (

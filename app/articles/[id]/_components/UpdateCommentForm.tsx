@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { UpdateCommentFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import updateCommentAction from "@/actions/comment/update-comment";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 export default function UpdateCommentForm({
   commentId,
@@ -18,7 +19,7 @@ export default function UpdateCommentForm({
 }: UpdateCommentFormProps) {
   const { user_id } = useGlobalContext();
 
-  const { register, handleSubmit, formState, setValue, watch } =
+  const { register, handleSubmit, formState : { errors }, setValue, watch } =
     useForm<CommentSchemaType>({
       resolver: zodResolver(CommentSchema),
       defaultValues: commentData,
@@ -63,17 +64,7 @@ export default function UpdateCommentForm({
     }
   };
 
-  useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className:
-            "bg-red-500 !important border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [formState.errors]);
+  useFormErrorToasts(errors)
 
   return (
     <div className="w-[600px] mx-auto">

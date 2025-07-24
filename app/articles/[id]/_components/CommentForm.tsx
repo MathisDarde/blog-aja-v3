@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { AlignLeft, Heading, Star, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { CommentSchemaType } from "@/types/forms";
@@ -10,11 +10,12 @@ import { toast } from "sonner";
 import Button from "@/components/BlueButton";
 import submitCommentForm from "@/actions/comment/comment-form";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 export default function CommentForm({ id_article }: { id_article: string }) {
   const { user_id } = useGlobalContext();
 
-  const { register, handleSubmit, reset, formState, watch, setValue } =
+  const { register, handleSubmit, reset, formState: {errors}, watch, setValue } =
     useForm<CommentSchemaType>({
       resolver: zodResolver(CommentSchema),
     });
@@ -49,17 +50,7 @@ export default function CommentForm({ id_article }: { id_article: string }) {
     }
   };
 
-  useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className:
-            "bg-red-500 !important border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [formState.errors]);
+  useFormErrorToasts(errors)
 
   return (
     <div className="w-[600px] mx-auto relative">

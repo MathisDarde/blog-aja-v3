@@ -54,6 +54,13 @@ export default function TabMethodeContent({
           <tr>
             <th
               className="p-3 text-center cursor-pointer"
+              onClick={() => handleSort("typemethode")}
+            >
+              Type de méthode{" "}
+              {sortKey === "typemethode" && (sortOrder === "asc" ? "↑" : "↓")}
+            </th>
+            <th
+              className="p-3 text-center cursor-pointer"
               onClick={() => handleSort("createdAt")}
             >
               Date de publication{" "}

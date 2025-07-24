@@ -1,68 +1,17 @@
-"use client";
+import Dashboard from "./_components/Dashboard";
+import { getAllUsers } from "@/controllers/UserController";
+import { getAllArticles } from "@/controllers/ArticlesController";
+import { getComments } from "@/controllers/CommentController";
+import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
+import { Methodes } from "@/contexts/Interfaces";
 
-import React, { useEffect, useState } from "react";
-import DashboardSidebar from "./_components/DashboardSidebar";
-import TabContentContainer from "./_components/TabContentContainer";
-import getUsersInfos from "@/actions/dashboard/get-users-infos";
-import getArticlesInfos from "@/actions/dashboard/get-articles-infos";
-import { useGlobalContext } from "@/contexts/GlobalContext";
-
-export default function Dashboard() {
-  const { activeMenu, setActiveMenu } = useGlobalContext();
-
-  const [nbUsers, setNbUsers] = useState(0);
-  const [nbArticles, setNbArticles] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const users = await getUsersInfos();
-      const articles = await getArticlesInfos();
-
-      if (Array.isArray(users)) {
-        setNbUsers(users.length);
-      }
-
-      if (Array.isArray(articles)) {
-        setNbArticles(articles.length);
-      }
-    };
-
-    fetchData();
-  }, []);
+export default async function PageDashboard() {
+  const users = await getAllUsers();
+  const articles = await getAllArticles();
+  const comments = await getComments();
+  const methodes = await getAllMethodes();
 
   return (
-    <div className="text-center bg-gray-100 h-[calc(100vh-68px)] w-screen box-border overflow-y-hidden">
-      <div className="flex flex-row gap-10">
-        <div className="font-Montserrat w-[250px] h-[calc(100vh-68px)] bg-white flex justify-center items-center">
-          <DashboardSidebar
-            onMenuClick={setActiveMenu}
-            activeMenu={activeMenu}
-          />
-        </div>
-        <div className="font-Montserrat flex flex-col h-[calc(100vh-68px)]">
-          <div className="flex flex-row justify-between items-center my-10">
-            <div className="bg-white w-[500px] rounded-xl px-10 py-12">
-              <h2 className="text-center font-bold text-2xl uppercase">
-                Nombre total d&apos;articles publiés
-              </h2>
-              <h2 className="text-center font-extrabold text-7xl">
-                {nbArticles}
-              </h2>
-            </div>
-            <div className="bg-white w-[500px] rounded-xl py-12">
-              <h2 className="text-center font-bold text-2xl uppercase">
-                Nombre total d&apos;utilisateurs inscris
-              </h2>
-              <h2 className="text-center font-extrabold text-7xl">{nbUsers}</h2>
-            </div>
-          </div>
-
-          <div className="overflow-hidden pb-10">
-            <TabContentContainer activeMenu={activeMenu} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    <Dashboard users={users} articles={articles} comments={comments} methodes={methodes as Methodes[]} />
+  )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "@/components/BlueButton";
 import { User, Cake, Mail, KeyRound, Eye, EyeOff, X } from "lucide-react";
 import { InscSchema } from "@/app/schema";
@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import submitInscForm from "@/actions/user/insc-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 function InscForm() {
 const router = useRouter();
@@ -17,7 +18,7 @@ const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { register, handleSubmit, formState } = useForm<InscSchemaType>({
+  const { register, handleSubmit, formState : { errors } } = useForm<InscSchemaType>({
     resolver: zodResolver(InscSchema),
   });
 
@@ -43,17 +44,7 @@ const router = useRouter();
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  useEffect(() => {
-    Object.values(formState.errors).forEach((error) => {
-      if (error && "message" in error) {
-        toast.error(error.message as string, {
-          icon: <X className="text-white" />,
-          className:
-            "bg-red-500 !important border border-red-200 text-white text-base",
-        });
-      }
-    });
-  }, [formState.errors]);
+  useFormErrorToasts(errors);
 
   return (
     <div className="w-[600px] mx-auto">
