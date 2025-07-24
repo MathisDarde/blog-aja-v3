@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import ArticleClient from "./_components/ArticleClient";
 
-export default async function ArticlePage() {
+export default function ArticlePage() {
 
   const params = useParams();
 
