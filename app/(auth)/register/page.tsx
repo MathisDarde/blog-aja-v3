@@ -1,7 +1,7 @@
 import Link from "next/link";
 import InscForm from "./_components/InscForm";
 
-export default function Inscription() {
+export default async function Inscription() {
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
       <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">

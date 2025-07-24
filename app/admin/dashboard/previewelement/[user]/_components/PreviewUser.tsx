@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Comment, User } from "@/contexts/Interfaces";
 
-export default function UserPreview({
+export default async function UserPreview({
   user,
   comments,
 }: {

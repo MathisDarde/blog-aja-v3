@@ -1,6 +1,6 @@
 import { chants } from "@/contexts/Chants";
 
-export default function PageChants() {
+export default async function PageChants() {
   function formatChantText(text: string) {
     return text.split(",").map((part, index, arr) => {
       // Trim et majuscule 1re lettre
