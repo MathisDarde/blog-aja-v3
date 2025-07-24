@@ -22,7 +22,6 @@ export default function UpdateArticleForm({
 }: UpdateArticleFormProps) {
   const { user_id } = useGlobalContext();
 
-  const params = useParams();
   const router = useRouter();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

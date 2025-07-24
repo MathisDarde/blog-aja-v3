@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import Button from "./BlueButton";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import { Category } from "@/contexts/Interfaces";
 
 export default function DisplayCategories({ randomCategories } : { randomCategories : Category[] }) {
