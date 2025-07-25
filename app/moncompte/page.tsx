@@ -6,11 +6,12 @@ import { User } from "@/contexts/Interfaces";
 export default async function PageAccount() {
   const auth = await isAuthenticated();
 
-  if (!auth) {
-    return;
+  let user: User | null = null;
+
+  if (auth?.user?.id) {
+    const users = await getUserbyId(auth.user.id);
+    user = users?.[0] ?? null;
   }
-  
-  const user = await getUserbyId(auth.user.id);
 
   return (
     <InfosDisplay user={user as unknown as User} />

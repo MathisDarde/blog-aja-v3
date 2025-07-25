@@ -22,7 +22,7 @@ function LoginForm() {
   const handleSubmitForm = async (data: LoginSchemaType) => {
     const response = await submitLoginForm(data);
     if (response.success) {
-      redirect("/");
+      window.location.href = "/";
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,

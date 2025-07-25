@@ -9,12 +9,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import submitInscForm from "@/actions/user/insc-form";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 function InscForm() {
-const router = useRouter();
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -25,7 +22,7 @@ const router = useRouter();
   const handleSubmitForm = async (data: InscSchemaType) => {
     const response = await submitInscForm(data);
     if (response.success) {
-      router.push("/");
+      window.location.href = "/";
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,

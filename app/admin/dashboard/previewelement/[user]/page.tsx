@@ -7,11 +7,14 @@ import { getUserbyId } from "@/controllers/UserController";
 export default async function UserPreviewPage() {
   const auth = await isAuthenticated();
 
-  if (!auth)
-    return;
+  let user: User | null = null;
+  let comments: Comment[] = [];
 
-  const user = await getUserbyId(auth.user.id);
-  const comments = await getCommentsByUser(auth.user.id);
+  if (auth?.user?.id) {
+    const users = await getUserbyId(auth.user.id);
+    user = users?.[0] ?? null;
+    comments = await getCommentsByUser(auth.user.id);
+  }
 
-  return <UserPreview user={user as unknown as User} comments={comments as Comment[]} />;
+  return <UserPreview user={user as unknown as User} comments={comments as unknown as Comment[] } />;
 }

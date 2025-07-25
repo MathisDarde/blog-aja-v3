@@ -14,8 +14,6 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  console.log("SESSION:", session);
-
   // Si non connecté, rediriger vers /login
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));

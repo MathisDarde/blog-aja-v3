@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   description: "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
   icons: {
-    icon: "/favicon.svg", 
+    icon: "/favicon.svg",
   },
   openGraph: {
     title: "Mémoire d'Auxerrois",
@@ -56,19 +56,19 @@ export default async function RootLayout({
 }>) {
   const auth = await isAuthenticated();
 
-  if (!auth) {
-    return;
-  }
-  
-  const user = await getUserbyId(auth.user.id);
+  let user: User | null = null;
 
+  if (auth?.user?.id) {
+    const users = await getUserbyId(auth.user.id);
+    user = users?.[0] ?? null;
+  }
   return (
     <html lang="en">
       <body
         suppressHydrationWarning
         className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
       >
-        <Header user={user as unknown as User} />
+        <Header user={user || undefined} />
         <AppProvider>
           {children}
         </AppProvider>

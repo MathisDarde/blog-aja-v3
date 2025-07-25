@@ -10,7 +10,7 @@ import SidebarData, {
 import Image from "next/image";
 import { User } from "@/contexts/Interfaces";
 
-export default function Header({ user }: { user: User }) {
+export default function Header({ user }: { user?: User }) {
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
   const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
 
