@@ -15,7 +15,10 @@ import { Category } from "@/contexts/Interfaces";
 export default async function Page() {
   const articles = await getArticles();
 
-  function getRandomCategories(categories: Category[], amount: number) : Category[] {
+  function getRandomCategories(
+    categories: Category[],
+    amount: number
+  ): Category[] {
     if (!Array.isArray(categories)) return [];
     if (amount >= categories.length) return [...categories];
 
@@ -26,58 +29,58 @@ export default async function Page() {
   const randomCategories = getRandomCategories(categories, 4);
 
   return (
-    <div >
-      <div className="pb-3">
+    <div className="bg-gray-100">
+      <div className="pb-3 w-[1300px] mx-auto">
         <Carousel articles={articles} />
       </div>
 
-      <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10 pt-0">
-      <div className="my-4">
-        <TeamStatsBlock />
-      </div>
+      <div className="text-center  min-h-screen w-screen box-border p-10 pt-0">
+        <div className="my-4">
+          <TeamStatsBlock />
+        </div>
 
-      <div className="my-10 text-center">
-        <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
-          A la une sur Mémoire d&apos;Auxerrois
-        </h2>
-        <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 w-[1300px]">
-          <div className="flex items-center">
-            <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[75%]">
-              Dernier article publié
-            </h3>
-            <h3 className="text-xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[25%] ml-auto">
-              Articles que vous pourriez aimer
-            </h3>
-          </div>
-          <div className="inline-flex gap-6">
-            <div className="w-[75%]">
-              <LastArticle articles={articles} />
+        <div className="my-10 text-center">
+          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+            A la une sur Mémoire d&apos;Auxerrois
+          </h2>
+          <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 w-[1300px]">
+            <div className="flex items-center">
+              <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[75%]">
+                Dernier article publié
+              </h3>
+              <h3 className="text-xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[25%] ml-auto">
+                Articles que vous pourriez aimer
+              </h3>
             </div>
-            <div className="flex flex-col items-center justify-center w-[25%]">
-              <DisplayRandom articles={articles} />
+            <div className="inline-flex gap-6">
+              <div className="w-[75%]">
+                <LastArticle articles={articles} />
+              </div>
+              <div className="flex flex-col items-center justify-center w-[25%]">
+                <DisplayRandom articles={articles} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="my-10">
-        <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
-          Catégories
-        </h2>
-        <div>
-          <DisplayCategories randomCategories={randomCategories} />
+        <div className="my-10">
+          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+            Catégories
+          </h2>
+          <div>
+            <DisplayCategories randomCategories={randomCategories} />
+          </div>
+        </div>
+
+        <div className="my-10">
+          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+            Classement Ligue 1
+          </h2>
+          <div>
+            <Classement />
+          </div>
         </div>
       </div>
-
-      <div className="my-10">
-        <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
-          Classement Ligue 1
-        </h2>
-        <div>
-          <Classement />
-        </div>
-      </div>
-    </div>
     </div>
   );
 }

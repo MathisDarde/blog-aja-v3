@@ -27,13 +27,15 @@ export const metadata: Metadata = {
     default: "Mémoire d'Auxerrois",
     template: "%s | Mémoire d'Auxerrois",
   },
-  description: "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
+  description:
+    "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
   icons: {
     icon: "/favicon.svg",
   },
   openGraph: {
     title: "Mémoire d'Auxerrois",
-    description: "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
+    description:
+      "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
     url: "memoiredauxerrois.vercel.app",
     siteName: "Mémoire d'Auxerrois",
     images: [
@@ -69,9 +71,7 @@ export default async function RootLayout({
         className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
       >
         <Header user={user || undefined} />
-        <AppProvider>
-          {children}
-        </AppProvider>
+        <AppProvider>{children}</AppProvider>
         <Toaster />
         <Footer />
       </body>

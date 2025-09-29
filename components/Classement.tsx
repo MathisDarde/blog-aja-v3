@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -19,8 +19,8 @@ const icons: Record<string, string> = {
   "UEFA Europa League": "/_assets/img/logoeuropaleague.svg",
   "Conference League Qualification": "/_assets/img/logoconferenceleague.svg",
   "Relegation Playoffs": "/_assets/img/logoligue2.svg",
-  "Relegation": "/_assets/img/logoligue2.svg",
-}
+  Relegation: "/_assets/img/logoligue2.svg",
+};
 
 const getTeamClass = (description: string): string => {
   return teamStyles[description] ?? "";
@@ -28,7 +28,7 @@ const getTeamClass = (description: string): string => {
 
 const getIcon = (description: string): string => {
   return icons[description] ?? "";
-}
+};
 
 function Classement() {
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ function Classement() {
     const fetchTeamStats = async () => {
       try {
         const response = await fetch(
-          "https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=4334&s=2024-2025"
+          "https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=4334&s=2025-2026"
         );
         const data = await response.json();
         setTeams(data.table);

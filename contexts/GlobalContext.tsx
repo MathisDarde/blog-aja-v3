@@ -1,7 +1,15 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Article, Category, MatchAPI, Methodes, ModalParamsType, SortParams, Team } from "./Interfaces";
+import {
+  Article,
+  Category,
+  MatchAPI,
+  Methodes,
+  ModalParamsType,
+  SortParams,
+  Team,
+} from "./Interfaces";
 import { useParams, useRouter } from "next/navigation";
 import { fetchMatches } from "@/utils/matchsapi";
 import { authClient } from "@/lib/auth-client";
@@ -41,12 +49,15 @@ interface GlobalContextType {
   getRandomCategories: (categories: Category[], amount: number) => Category[];
   getArticleById: (articles: Article[], id: string) => Article | null;
   getMethodeById: (methodes: Methodes[], id: string) => Methodes | null;
-  getArticleKeywords: (id_article: string, articles: Article[], methodes: Methodes[]) => {
+  getArticleKeywords: (
+    id_article: string,
+    articles: Article[],
+    methodes: Methodes[]
+  ) => {
     id_methode: string;
     typemethode: string;
     keywordsList: string[];
   }[];
-
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -153,7 +164,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchMatches(
-      "https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json"
+      "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/fr.1.json"
     ).then((data) => {
       const filteredMatches = data.matches.filter((match: MatchAPI) => {
         return match.team1 === "AJ Auxerre" || match.team2 === "AJ Auxerre";
@@ -178,7 +189,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   async function getLastMatch(): Promise<MatchAPI> {
     const data = await fetchMatches(
-      "https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json"
+      "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/fr.1.json"
     );
     const filteredMatches = data.matches.filter((match: MatchAPI) => {
       return match.team1 === "AJ Auxerre" || match.team2 === "AJ Auxerre";
@@ -201,7 +212,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchTeamStats = async () => {
       try {
         const response = await fetch(
-          "https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=4334&s=2024-2025"
+          "https://www.thesportsdb.com/api/v1/json/lookuptable.php?l=4334&s=2025-2026"
         );
         const data = await response.json();
         setTeams(data.table);
@@ -231,12 +242,15 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   function getRandomArticles(articles: Article[], amount: number): Article[] {
     if (!Array.isArray(articles)) return [];
     if (amount >= articles.length) return [...articles];
-  
+
     const shuffled = [...articles].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, amount);
   }
-  
-  function getRandomCategories(categories: Category[], amount: number) : Category[] {
+
+  function getRandomCategories(
+    categories: Category[],
+    amount: number
+  ): Category[] {
     if (!Array.isArray(categories)) return [];
     if (amount >= categories.length) return [...categories];
 
@@ -247,7 +261,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   {
     /* get article keywords*/
   }
-  function getArticleKeywords(id_article: string, articles: Article[], methodes: Methodes[]) {
+  function getArticleKeywords(
+    id_article: string,
+    articles: Article[],
+    methodes: Methodes[]
+  ) {
     const article = getArticleById(articles, id_article);
 
     if (!article || !article.content) return [];
@@ -257,7 +275,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const relatedMethodes = methodes.filter((methode) =>
       methode.keywords.some((kw) => articleText.includes(kw.toLowerCase()))
     );
-  
+
     const keywordsWithMeta = relatedMethodes.flatMap((methode) =>
       methode.keywords.map((kw) => ({
         id_methode: methode.id_methode,
@@ -265,19 +283,19 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         keywords: kw,
       }))
     );
-  
+
     const uniqueMap = new Map<
       string,
       { id_methode: string; typemethode: string; keywords: string }
     >();
-  
+
     for (const kwObj of keywordsWithMeta) {
       const key = kwObj.keywords.toLowerCase();
       if (!uniqueMap.has(key)) {
         uniqueMap.set(key, kwObj);
       }
     }
-  
+
     return Array.from(uniqueMap.values()).map(
       ({ id_methode, typemethode, keywords }) => ({
         id_methode,
@@ -324,7 +342,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         getRandomCategories,
         getArticleKeywords,
         getArticleById,
-        getMethodeById
+        getMethodeById,
       }}
     >
       {children}

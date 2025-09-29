@@ -13,7 +13,7 @@ import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import tags from '@/public/data/articletags.json';
+import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 export default function UpdateArticleForm({
@@ -26,22 +26,30 @@ export default function UpdateArticleForm({
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>(
-    articleData.imageUrl || "/_assets/img/pdpdebase.png"
+    articleData.imageUrl
   );
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } =
-    useForm<UpdateArticleSchemaType>({
-      resolver: zodResolver(UpdateArticleSchema),
-      defaultValues: {
-        title: "",
-        teaser: "",
-        content: "",
-        author: "",
-        tags: [],
-        state: "pending",
-        imageUrl: "",
-      },
-    });
+  console.log(previewPhoto);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm<UpdateArticleSchemaType>({
+    resolver: zodResolver(UpdateArticleSchema),
+    defaultValues: {
+      title: "",
+      teaser: "",
+      content: "",
+      author: "",
+      tags: [],
+      state: "pending",
+      imageUrl: "",
+    },
+  });
 
   useEffect(() => {
     if (articleData) {
@@ -104,7 +112,7 @@ export default function UpdateArticleForm({
     }
   };
 
-  useFormErrorToasts(errors)
+  useFormErrorToasts(errors);
 
   const watchedTags = watch("tags") || [];
 
