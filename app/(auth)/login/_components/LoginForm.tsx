@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import Button from "@/components/BlueButton";
 import submitLoginForm from "@/actions/user/login-form";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
 import { Eye, EyeOff, X } from "lucide-react";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 

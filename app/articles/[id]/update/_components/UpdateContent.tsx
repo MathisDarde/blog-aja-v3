@@ -4,7 +4,6 @@ import { ChevronLeft } from "lucide-react";
 import UpdateArticleForm from "../../_components/UpdateArticleForm";
 import Link from "next/link";
 import {
-  getAllArticles,
   getArticlebyId,
 } from "@/controllers/ArticlesController";
 
