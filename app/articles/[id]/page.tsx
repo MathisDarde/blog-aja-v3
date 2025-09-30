@@ -1,11 +1,9 @@
 import ArticleClient from "./_components/ArticleClient";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function ArticlePage({ params }: PageProps) {
+export default async function ArticlePage({
+  params,
+}: {
+  params: { id: string };
+}) {
   return <ArticleClient id_article={params.id} />;
 }

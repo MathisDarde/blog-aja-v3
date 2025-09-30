@@ -1,13 +1,9 @@
 import UpdateContent from "./_components/UpdateContent";
 
-interface PageProps {
-  params: {
-    id_article: string;
-  };
-}
-
-export default async function UpdateArticle({ params }: PageProps) {
-  const id_article = params.id_article;
-
-  return <UpdateContent id_article={id_article} />;
+export default async function ArticlePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  return <UpdateContent id_article={params.id} />;
 }
