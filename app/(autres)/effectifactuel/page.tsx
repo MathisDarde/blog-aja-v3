@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Drapeaux } from "@/contexts/Drapeaux";
 import players from "@/public/data/players_data.json";
 
 export default function EffectifActuel() {
@@ -22,19 +21,12 @@ export default function EffectifActuel() {
               date_naissance,
               age,
               ville,
-              nationalite,
               poste,
               numéro,
               taille,
               poids,
               pied,
             } = joueur;
-
-            const natFlag = Drapeaux.find((drapeau) =>
-              drapeau.key.some((k) =>
-                joueur.nationalite?.toLowerCase().includes(k.toLowerCase())
-              )
-            )?.flagUrl;
 
             return (
               <div
@@ -44,15 +36,6 @@ export default function EffectifActuel() {
                 onMouseLeave={() => setHoveredJoueur(null)}
               >
                 <div className="h-[10%]"></div>
-                {natFlag && (
-                  <Image
-                    src={natFlag}
-                    width={128}
-                    height={128}
-                    alt="Flag"
-                    className="w-12 h-8 absolute top-5 left-5 border border-black object-cover"
-                  />
-                )}
                 <svg
                   id="Calque_2"
                   xmlns="http://www.w3.org/2000/svg"
@@ -105,19 +88,6 @@ export default function EffectifActuel() {
                     } overflow-hidden`}
                   >
                     <div className="pt-2">
-                      <div className="text-base text-white my-1 font-Montserrat flex items-center gap-2 justify-center">
-                        {nationalite}{" "}
-                        {natFlag && (
-                          <Image
-                            src={natFlag}
-                            alt="Flag"
-                            width={128}
-                            height={128}
-                            className="h-3 w-5 object-cover"
-                          />
-                        )}
-                      </div>
-
                       {(date_naissance || ville) && (
                         <p className="text-base text-white my-1 font-Montserrat text-center">
                           {date_naissance}, {ville}
