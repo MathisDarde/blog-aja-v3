@@ -3,7 +3,9 @@ import UpdateContent from "./_components/UpdateContent";
 export default async function ArticlePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  return <UpdateContent id_article={params.id} />;
+  const { id } = await params;
+
+  return <UpdateContent id_article={id} />;
 }
