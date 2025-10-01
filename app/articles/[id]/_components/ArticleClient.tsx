@@ -7,6 +7,7 @@ import { getCommentsbyArticle } from "@/controllers/CommentController";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
+import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 
 export default async function ArticleClient({ id_article }: { id_article: string }) {
   const auth = await isAuthenticated();
@@ -27,6 +28,8 @@ export default async function ArticleClient({ id_article }: { id_article: string
 
   const articleComments = await getCommentsbyArticle(id_article);
 
+  const articleLikes = await getLikesByArticle(id_article);
+
   if (!methodes) {
     return <p>Erreur lors du chargement des méthodes.</p>;
   }
@@ -43,5 +46,5 @@ export default async function ArticleClient({ id_article }: { id_article: string
     return <p>Chargement de l&apos;article</p>
   }
     
-  return <ArticleDisplay article={article} articles={articles} methodes={methodes} keywords={keywords} articleComments={articleComments} user={user} />;
+  return <ArticleDisplay article={article} articles={articles} methodes={methodes} keywords={keywords} articleComments={articleComments} articleLikes={articleLikes} user={user} />;
 }

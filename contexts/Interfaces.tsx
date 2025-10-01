@@ -389,3 +389,9 @@ export type ModalParamsType = {
   onConfirm: () => void;
   onCancel: () => void;
 } | null;
+
+export interface ArticleLikes {
+  id: string;
+  userId: string;
+  likedAt: Date;
+}

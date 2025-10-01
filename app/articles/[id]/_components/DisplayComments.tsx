@@ -11,7 +11,6 @@ import Image from "next/image";
 import { Comment, User } from "@/contexts/Interfaces";
 import Link from "next/link";
 import ActionPopup from "@/components/ActionPopup";
-import { toast } from "sonner";
 
 export default function DisplayArticleComments({
   article_id,
@@ -34,6 +33,8 @@ export default function DisplayArticleComments({
     stars: number;
   } | null>(null);
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
+
+  const numberOfComments = articleComments.length;
 
   const handleVoirPlus = () => {
     setVisibleComments((prev) => prev + 3);
@@ -113,7 +114,7 @@ export default function DisplayArticleComments({
               <>
                 <div className="flex justify-between items-center">
                   <h3 className="font-Bai_Jamjuree text-2xl font-bold uppercase">
-                    Commentaires
+                    Commentaires ({numberOfComments})
                   </h3>
                   {user ? (
                     <Button

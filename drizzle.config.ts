@@ -4,8 +4,8 @@ import { defineConfig } from "drizzle-kit";
 config({ path: ".env.local" });
 
 export default defineConfig({
-  schema: "./app/db/schema.ts",
-  out: "./app/db/migrations",
+  schema: "./db/schema.ts",
+  out: "./db/migrations",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,

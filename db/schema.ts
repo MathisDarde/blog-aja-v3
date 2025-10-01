@@ -189,6 +189,17 @@ export const methodeExpertCoachTable = pgTable("methode_expert_coach_table", {
     .$onUpdate(() => new Date()),
 });
 
+export const likedArticles = pgTable("likedArticles", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+  .notNull()
+  .references(() => user.id),
+  articleId: text("articleId")
+  .notNull()
+  .references(() => articlesTable.id_article),
+  likedAt: timestamp("likedAt").notNull().defaultNow()
+})
+
 export const schema = {
   user,
   session,
@@ -217,3 +228,5 @@ export type SelectJoueurMethode = typeof methodeExpertJoueurTable.$inferSelect;
 export type SelectSaisonMethode = typeof methodeExpertSaisonTable.$inferSelect;
 
 export type SelectMatchMethode = typeof methodeExpertMatchTable.$inferSelect;
+
+export type SelectLikedArticles = typeof likedArticles.$inferSelect;
