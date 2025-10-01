@@ -1,11 +1,10 @@
 "use server";
 
-import { ChevronLeft } from "lucide-react";
-import UpdateArticleForm from "../../_components/UpdateArticleForm";
-import Link from "next/link";
 import {
   getArticlebyId,
 } from "@/controllers/ArticlesController";
+import UpdateArticleForm from "./UpdateArticleForm";
+import UpdateArticleGuard from "./UpdateArticleGuard";
 
 export default async function UpdateContent({
   id_article,
@@ -16,11 +15,12 @@ export default async function UpdateContent({
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-      <Link href={`/articles`}>
-        <h2 className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
-          <ChevronLeft /> Formulaire de modification d&apos;article
-        </h2>
-      </Link>
+
+      <UpdateArticleGuard />
+
+      <h2 className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
+        Formulaire de modification d&apos;article
+      </h2>
 
       <UpdateArticleForm
         id_article={id_article}

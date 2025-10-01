@@ -4,8 +4,20 @@ import getAllMethodes from "@/actions/method/get-all-methodes";
 import ArticleDisplay from "./ArticleDisplay";
 import { getAllArticles, getArticlebyId } from "@/controllers/ArticlesController";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
+import { isAuthenticated } from "@/actions/user/is-user-connected";
+import { User } from "@/contexts/Interfaces";
+import { getUserbyId } from "@/controllers/UserController";
 
 export default async function ArticleClient({ id_article }: { id_article: string }) {
+  const auth = await isAuthenticated();
+
+  let user: User | null = null;
+
+  if (auth?.user?.id) {
+    const users = await getUserbyId(auth.user.id);
+    user = users?.[0] ?? null;
+  }
+
   if (!id_article) return <p>Aucun article trouvé.</p>;
 
   const articles = await getAllArticles();
@@ -31,5 +43,5 @@ export default async function ArticleClient({ id_article }: { id_article: string
     return <p>Chargement de l&apos;article</p>
   }
     
-  return <ArticleDisplay article={article} articles={articles} methodes={methodes} keywords={keywords} articleComments={articleComments} />;
+  return <ArticleDisplay article={article} articles={articles} methodes={methodes} keywords={keywords} articleComments={articleComments} user={user} />;
 }

@@ -8,17 +8,21 @@ import { useState } from "react";
 import deleteCommentAction from "@/actions/comment/delete-comment";
 import { ChevronLeft, PenSquare, Plus, Trash } from "lucide-react";
 import Image from "next/image";
-import { Comment } from "@/contexts/Interfaces";
+import { Comment, User } from "@/contexts/Interfaces";
 import Link from "next/link";
+import ActionPopup from "@/components/ActionPopup";
+import { toast } from "sonner";
 
 export default function DisplayArticleComments({
   article_id,
-  articleComments
+  articleComments,
+  user
 }: {
   article_id: string;
-  articleComments: Comment[]
+  articleComments: Comment[];
+  user: User | null;
 }) {
-  const { user_id, setModalParams, isUser } = useGlobalContext();
+  const { user_id } = useGlobalContext();
 
   const [isPublishingComment, setIsPublishingComment] = useState(false);
   const [visibleComments, setVisibleComments] = useState(3);
@@ -29,27 +33,10 @@ export default function DisplayArticleComments({
     content: string;
     stars: number;
   } | null>(null);
+  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 
   const handleVoirPlus = () => {
     setVisibleComments((prev) => prev + 3);
-  };
-
-  const openDeleteCommentModal = (comment: {
-    id_comment: string;
-    title: string;
-    content: string;
-    stars: number;
-  }) => {
-    setModalParams({
-      object: "comment",
-      type: "delete",
-      onConfirm: async () => {
-        await deleteComment(comment.id_comment);
-        window.location.reload();
-        setModalParams(null);
-      },
-      onCancel: () => setModalParams(null),
-    });
   };
 
   async function deleteComment(id: string) {
@@ -66,6 +53,37 @@ export default function DisplayArticleComments({
         id="commentaire-anchor"
         className="relative -top-24 opacity-0 transition-opacity duration-500"
       ></div>
+
+      {/* delete comment modal */}
+      {deletePopupOpen &&
+        <ActionPopup
+          onClose={() => setDeletePopupOpen(false)}
+          title="Supprimer ce commentaire ?"
+          description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setDeletePopupOpen(false),
+              theme: "discard",
+            },
+            {
+              label: "Supprimer",
+              onClick: async () => {
+                try {
+                  if (selectedComment) {
+                    await deleteComment(selectedComment?.id_comment);
+                    window.location.reload();
+                    setDeletePopupOpen(false);
+                  }
+                } catch (e) {
+                  console.error("error", e)
+                }
+              },
+              theme: "delete",
+            },
+          ]}
+        />
+      }
 
       <div className="w-full bg-white rounded-xl p-8 font-Montserrat">
         {!isPublishingComment ? (
@@ -97,7 +115,7 @@ export default function DisplayArticleComments({
                   <h3 className="font-Bai_Jamjuree text-2xl font-bold uppercase">
                     Commentaires
                   </h3>
-                  {isUser ? (
+                  {user ? (
                     <Button
                       className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full m-0"
                       onClick={() => setIsPublishingComment(true)}
@@ -106,11 +124,11 @@ export default function DisplayArticleComments({
                     </Button>
                   ) : (
                     <Link href={"/login"}>
-                    <Button
-                      className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full"
-                    >
-                      Connectez-vous pour publier un commentaire
-                    </Button>
+                      <Button
+                        className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full"
+                      >
+                        Connectez-vous pour publier un commentaire
+                      </Button>
                     </Link>
                   )}
                 </div>
@@ -179,7 +197,8 @@ export default function DisplayArticleComments({
                                   <button
                                     className="rounded-full border bg-red-500 text-white border-gray-300 p-2"
                                     onClick={() => {
-                                      openDeleteCommentModal({
+                                      setDeletePopupOpen(true);
+                                      setSelectedComment({
                                         id_comment: comment.id_comment,
                                         title: comment.title,
                                         content: comment.content,
@@ -229,7 +248,7 @@ export default function DisplayArticleComments({
               </h2>
             </div>
             <div>
-              <CommentForm id_article={article_id}/>
+              <CommentForm id_article={article_id} />
             </div>
           </div>
         )}

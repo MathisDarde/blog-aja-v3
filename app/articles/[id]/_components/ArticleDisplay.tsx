@@ -12,21 +12,19 @@ import {
 } from "lucide-react";
 import KeywordHighlighter from "./HighlightKeywords";
 import deleteArticleSA from "@/actions/article/delete-article";
-import { Article, Comment, Keyword, Methodes } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
-import { ModalAction } from "@/components/ModalAction";
+import { Article, Comment, Keyword, Methodes, User } from "@/contexts/Interfaces";
 import DisplayArticleComments from "./DisplayComments";
 import MethodPopup from "./MethodPopup";
 import { useRouter } from "next/navigation";
+import ActionPopup from "@/components/ActionPopup";
 
-export default function ArticleDisplay({ article, articles, methodes, keywords, articleComments }: { article: Article, articles: Article[], methodes: Methodes[], keywords: Keyword[], articleComments : Comment[] }) {
-  const { isAdmin, isUser, modalParams, setModalParams } =
-    useGlobalContext();
-
+export default function ArticleDisplay({ article, articles, methodes, keywords, articleComments, user }: { article: Article, articles: Article[], methodes: Methodes[], keywords: Keyword[], articleComments: Comment[], user: User | null }) {
   const router = useRouter();
 
+  const isAdmin = user?.admin;
   const [activeMethode, setActiveMethode] = useState<Methodes[]>([]);
   const [isMethodOpen, setIsMethodOpen] = useState(false);
+  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -59,23 +57,6 @@ export default function ArticleDisplay({ article, articles, methodes, keywords, 
     }
   }, []);
 
-  const openDeleteArticleModal = () => {
-    setModalParams({
-      object: "article",
-      type: "delete",
-      onConfirm: async () => {
-        try {
-          await deleteArticleSA(article.id_article);
-          router.push("/");
-          setModalParams(null);
-        } catch (error) {
-          console.error("Erreur suppression article :", error);
-        }
-      },
-      onCancel: () => setModalParams(null),
-    });
-  };
-
   const handleKeywordClick = (id_methode: string, typemethode: string) => {
     const selectedMethodes = methodes.filter(
       (m) => m.id_methode === id_methode && m.typemethode === typemethode
@@ -89,15 +70,34 @@ export default function ArticleDisplay({ article, articles, methodes, keywords, 
       className={`bg-gray-100 min-h-screen w-full m-0 box-border p-10 ${isMethodOpen && "overflow-hidden"
         }`}
     >
-      {/* Delete element popup */}
-      {modalParams && (
-        <ModalAction
-          object={modalParams.object}
-          type={modalParams.type}
-          onConfirm={modalParams.onConfirm}
-          onCancel={modalParams.onCancel}
+      {/* Delete article popup */}
+      {deletePopupOpen &&
+        <ActionPopup
+          onClose={() => setDeletePopupOpen(false)}
+          title="Supprimer cet article ?"
+          description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setDeletePopupOpen(false),
+              theme: "discard",
+            },
+            {
+              label: "Supprimer",
+              onClick: async () => {
+                try {
+                  await deleteArticleSA(article.id_article);
+                  router.push("/");
+                  setDeletePopupOpen(false);
+                } catch (error) {
+                  console.error("Erreur suppression article :", error);
+                }
+              },
+              theme: "delete",
+            },
+          ]}
         />
-      )}
+      }
       <div className="flex justify-center gap-10">
         <div className="flex flex-col gap-6 w-[1200px]">
           <div>
@@ -130,7 +130,7 @@ export default function ArticleDisplay({ article, articles, methodes, keywords, 
                 </div>
 
                 {/* Heart pour user */}
-                {isUser && (
+                {user && (
                   <div className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-rose-600 group">
                     <Heart
                       width={20}
@@ -155,7 +155,7 @@ export default function ArticleDisplay({ article, articles, methodes, keywords, 
                     {/* Delete */}
                     <div className="border border-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:bg-red-500 hover:text-white">
                       <Trash
-                        onClick={() => openDeleteArticleModal()}
+                        onClick={() => setDeletePopupOpen(true)}
                         width={20}
                         height={20}
                       />
@@ -182,7 +182,7 @@ export default function ArticleDisplay({ article, articles, methodes, keywords, 
             />
           </div>
 
-          <DisplayArticleComments article_id={article.id_article} articleComments={articleComments}/>
+          <DisplayArticleComments article_id={article.id_article} articleComments={articleComments} user={user} />
         </div>
       </div>
 

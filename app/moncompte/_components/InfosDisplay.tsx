@@ -6,7 +6,6 @@ import Button from "@/components/BlueButton";
 import {
   Cake,
   Calendar1,
-  ChevronLeft,
   LogOut,
   Mail,
   Trash,
@@ -16,13 +15,10 @@ import { redirect } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { User } from "@/contexts/Interfaces";
-import UpdateProfileForm from "./UpdateProfileForm";
 import ActionPopup from "@/components/ActionPopup";
 
 export default function InfosDisplay({ user }: { user: User }) {
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [confirmLeaveChanges, setConfirmLeaveChanges] = useState(false);
 
   const handleDeleteAccount = async () => {
     const userId = user?.id;
@@ -42,31 +38,6 @@ export default function InfosDisplay({ user }: { user: User }) {
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-
-      {/* leave update mode popup */}
-      {confirmLeaveChanges &&
-        <ActionPopup
-          onClose={() => setConfirmLeaveChanges(false)}
-          title="Quitter la modification ?"
-          description="Êtes-vous sur de vouloir quitter la page ? Vous perdrez toutes vos modifications et celles-ci ne pourront pas être récupérées."
-          actions={[
-            {
-              label: "Annuler",
-              onClick: () => setConfirmLeaveChanges(false),
-              theme: "discard",
-            },
-            {
-              label: "Quitter",
-              onClick: () => {
-                setConfirmLeaveChanges(false);
-                window.location.reload();
-              },
-              theme: "confirm",
-            },
-          ]}
-        />
-      }
-
       {/* delete account popup */}
       {deletePopupOpen &&
         <ActionPopup
@@ -91,25 +62,6 @@ export default function InfosDisplay({ user }: { user: User }) {
         />
       }
 
-      {isUpdating ? (
-        <div>
-          <h2
-            className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
-            onClick={() => setConfirmLeaveChanges(true)}
-          >
-            <ChevronLeft /> Formulaire de modification du profil
-          </h2>
-
-          <UpdateProfileForm
-            userData={{
-              name: user?.name || "",
-              email: user?.email || "",
-              birthday: user?.birthday || new Date(),
-              photodeprofil: user?.photodeprofil || "",
-            }}
-          />
-        </div>
-      ) : (
         <div>
           <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
             Mon Compte
@@ -164,7 +116,7 @@ export default function InfosDisplay({ user }: { user: User }) {
                     </div>
 
                     <div>
-                      <Button type="button" onClick={() => setIsUpdating(true)}>
+                      <Button type="button" onClick={() => redirect("/moncompte/update")}>
                         Modifier mon profil
                       </Button>
                     </div>
@@ -197,7 +149,6 @@ export default function InfosDisplay({ user }: { user: User }) {
             )}
           </div>
         </div>
-      )}
     </div>
   );
 }

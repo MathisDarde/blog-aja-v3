@@ -14,6 +14,7 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
 import deletePhotoDeProfil from "@/actions/user/delete-pdp";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import { redirect } from "next/navigation";
 
 export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   const { user_id } = useGlobalContext();
@@ -108,7 +109,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
         icon: <X className="text-white" />,
         className: "bg-green-500 border border-green-200 text-white text-base",
       });
-      window.location.reload();
+      redirect("/moncompte")
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0]?.message,

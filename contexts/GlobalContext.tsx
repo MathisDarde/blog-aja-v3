@@ -6,11 +6,9 @@ import {
   Category,
   MatchAPI,
   Methodes,
-  ModalParamsType,
   SortParams,
   Team,
 } from "./Interfaces";
-import { useParams, useRouter } from "next/navigation";
 import { fetchMatches } from "@/utils/matchsapi";
 import { authClient } from "@/lib/auth-client";
 
@@ -70,8 +68,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   } | null>(null);
   const DashboardPopupRef = useRef<HTMLDivElement | null>(null);
   const [activeMenu, setActiveMenu] = useState("users");
-  const params = useParams();
-  const router = useRouter();
   const [isUser, setIsUser] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -139,22 +135,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  useEffect(() => {
-    const cachedUser = localStorage.getItem("userData");
-    if (cachedUser) {
-      try {
-        const parsedUser = JSON.parse(cachedUser);
-        setIsUser(true);
-        if (parsedUser.admin === true) {
-          setIsAdmin(true);
-        }
-      } catch (e: unknown) {
-        console.error("Erreur de parsing des données utilisateur:", e);
-        localStorage.removeItem("userData");
-      }
-    }
   }, []);
 
   const [matches, setMatches] = useState<MatchAPI[]>([]);

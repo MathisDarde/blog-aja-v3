@@ -16,11 +16,12 @@ import { toast } from "sonner";
 import { DashboardElementProps } from "@/contexts/Interfaces";
 import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
 import { useRouter } from "next/navigation";
+import ActionPopup from "@/components/ActionPopup";
 
 export default function ContextPopup({ id, type }: DashboardElementProps) {
   const router = useRouter();
 
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 
   const deleteElement = async (id: string, type: string) => {
     if (!id) {
@@ -173,7 +174,7 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
         )}
         <div
           className="group px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-red-400 hover:text-white"
-          onClick={() => setIsDeletePopupOpen(true)}
+          onClick={() => setDeletePopupOpen(true)}
         >
           <Trash
             size={20}
@@ -183,35 +184,31 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
         </div>
       </div>
 
-      {isDeletePopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-Montserrat">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-96 text-center">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
-              Supprimer l&apos;élément ?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Cette action est irréversible. Êtes-vous sûr de vouloir continuer
-              ?
-            </p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => setIsDeletePopupOpen(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg transition-colors hover:bg-gray-500 hover:text-white"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={() => {
-                  deleteElement(id, type);
-                  setIsDeletePopupOpen(false);
-                }}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg transition-colors hover:bg-red-800"
-              >
-                Supprimer
-              </button>
-            </div>
-          </div>
-        </div>
+      {deletePopupOpen && (
+        <ActionPopup 
+        onClose={() => setDeletePopupOpen(false)}
+        title="Supprimer cet élément ?"
+        description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
+        actions={[
+          {
+            label: "Annuler",
+            onClick: () => setDeletePopupOpen(false),
+            theme: "discard",
+          },
+          {
+            label: "Supprimer",
+            onClick: async () => {
+              try {
+                deleteElement(id, type);
+                setDeletePopupOpen(false);
+              } catch (error) {
+                console.error("Erreur suppression élément :", error);
+              }
+            },
+            theme: "delete",
+          },
+        ]}
+        />
       )}
     </>
   );

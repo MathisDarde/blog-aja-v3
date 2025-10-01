@@ -249,7 +249,7 @@ export default function UpdateArticleForm({
                 />
                 <label
                   htmlFor={`checkbox-${category.value}`}
-                  className="cursor-pointer font-Montserrat"
+                  className="cursor-pointer text-sm font-Montserrat"
                 >
                   {category.tag}
                 </label>
