@@ -41,8 +41,6 @@ interface GlobalContextType {
   getReducedClassement: () => Team[];
   user_id: string | null;
   loadSession: () => Promise<void>;
-  modalParams: ModalParamsType;
-  setModalParams: React.Dispatch<ModalParamsType>;
   classementLoading: boolean;
   setClassementLoading: React.Dispatch<boolean>;
   getRandomArticles: (articles: Article[], amount: number) => Article[];
@@ -65,7 +63,6 @@ const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [user_id, setuser_id] = useState<string | null>(null);
   const [classementLoading, setClassementLoading] = useState(false);
-  const [modalParams, setModalParams] = useState<ModalParamsType>(null);
   const [DashboardPopupId, setDashboardPopupId] = useState<string | null>(null);
   const [DashboardPopupPosition, setDashboardPopupPosition] = useState<{
     top: number;
@@ -336,8 +333,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         getReducedClassement,
         user_id,
         loadSession,
-        modalParams,
-        setModalParams,
         getRandomArticles,
         getRandomCategories,
         getArticleKeywords,

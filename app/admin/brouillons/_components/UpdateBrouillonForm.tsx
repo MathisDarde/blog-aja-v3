@@ -21,21 +21,22 @@ import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateBrouillonFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { ModalAction } from "@/components/ModalAction";
 import updateBrouillonForm from "@/actions/article/update-brouillon-form";
 import tags from '@/public/data/articletags.json';
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import ActionPopup from "@/components/ActionPopup";
 
 export default function UpdateBrouillonForm({
   articleData,
   setIsEditing,
   id_article,
 }: UpdateBrouillonFormProps) {
-  const { user_id, modalParams, setModalParams } = useGlobalContext();
+  const { user_id } = useGlobalContext();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [leaveChangesModal, setLeaveChangesModal] = useState(false);
 
-  const { register, handleSubmit, formState : { errors }, setValue, watch, getValues } =
+  const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } =
     useForm<UpdateArticleSchemaType>({
       resolver: zodResolver(ArticleSchema),
       defaultValues: articleData,
@@ -153,35 +154,35 @@ export default function UpdateBrouillonForm({
 
   const watchedTags = watch("tags") || [];
 
-  const openLeaveChangesBrouillonModal = () => {
-    setModalParams({
-      object: "article",
-      type: "leaveChanges",
-      onConfirm: async () => {
-        setIsEditing(false);
-        setModalParams(null);
-      },
-      onCancel: () => {
-        setModalParams(null);
-      },
-    });
-  };
-
   return (
     <div className="w-[800px] mx-auto">
       {/* Element management popup */}
-      {modalParams && (
-        <ModalAction
-          object={modalParams.object}
-          type={modalParams.type}
-          onConfirm={modalParams.onConfirm}
-          onCancel={modalParams.onCancel}
+      {leaveChangesModal && (
+        <ActionPopup
+          onClose={() => setLeaveChangesModal(false)}
+          title="Quitter la modification ?"
+          description="Êtes-vous sur de vouloir quitter la page ? Vous perdrez toutes vos modifications et celles-ci ne pourront pas être récupérées."
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setLeaveChangesModal(false),
+              theme: "discard",
+            },
+            {
+              label: "Quitter",
+              onClick: () => {
+                setIsEditing(false);
+                setLeaveChangesModal(false);
+              },
+              theme: "confirm",
+            },
+          ]}
         />
       )}
 
       <h1
         className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
-        onClick={() => openLeaveChangesBrouillonModal()}
+        onClick={() => setLeaveChangesModal(true)}
       >
         <ChevronLeft /> Formulaire de modification de brouillon
       </h1>

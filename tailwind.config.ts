@@ -10,6 +10,7 @@ export default {
     extend: {
       colors: {
         "aja-blue": "#3c77b4",
+        "orange-third": "#f76200",
         "nav-overlay-color": "rgba(0, 0, 0, 0.7)",
       },
       scale: {

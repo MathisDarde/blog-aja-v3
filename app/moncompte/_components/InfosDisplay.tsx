@@ -17,9 +17,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { User } from "@/contexts/Interfaces";
 import UpdateProfileForm from "./UpdateProfileForm";
+import ActionPopup from "@/components/ActionPopup";
 
 export default function InfosDisplay({ user }: { user: User }) {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [confirmLeaveChanges, setConfirmLeaveChanges] = useState(false);
 
@@ -41,38 +42,57 @@ export default function InfosDisplay({ user }: { user: User }) {
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
+
+      {/* leave update mode popup */}
+      {confirmLeaveChanges &&
+        <ActionPopup
+          onClose={() => setConfirmLeaveChanges(false)}
+          title="Quitter la modification ?"
+          description="Êtes-vous sur de vouloir quitter la page ? Vous perdrez toutes vos modifications et celles-ci ne pourront pas être récupérées."
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setConfirmLeaveChanges(false),
+              theme: "discard",
+            },
+            {
+              label: "Quitter",
+              onClick: () => {
+                setConfirmLeaveChanges(false);
+                window.location.reload();
+              },
+              theme: "confirm",
+            },
+          ]}
+        />
+      }
+
+      {/* delete account popup */}
+      {deletePopupOpen &&
+        <ActionPopup
+          onClose={() => setDeletePopupOpen(false)}
+          title="Supprimer ce compte ?"
+          description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setDeletePopupOpen(false),
+              theme: "discard",
+            },
+            {
+              label: "Supprimer",
+              onClick: () => {
+                handleDeleteAccount();
+                setDeletePopupOpen(false);
+              },
+              theme: "delete",
+            },
+          ]}
+        />
+      }
+
       {isUpdating ? (
         <div>
-          {confirmLeaveChanges && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-Montserrat">
-              <div className="bg-white p-6 rounded-xl shadow-lg w-96 text-center">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">
-                  Revenir en arrière ?
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  SI vous revenez en arrière, vous perdrez toutes vos
-                  modifications, voulez-vous continuer ?
-                </p>
-                <div className="flex justify-center gap-4">
-                  <button
-                    onClick={() => setConfirmLeaveChanges(false)}
-                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg transition-colors hover:bg-gray-500 hover:text-white"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    onClick={() => {
-                      setConfirmLeaveChanges(false);
-                      window.location.reload();
-                    }}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg transition-colors hover:bg-red-800"
-                  >
-                    Continuer
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
           <h2
             className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
             onClick={() => setConfirmLeaveChanges(true)}
@@ -158,41 +178,10 @@ export default function InfosDisplay({ user }: { user: User }) {
                       Se déconnecter
                     </button>
                   </div>
-                  <div className="">
-                    {isPopupOpen && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-Montserrat">
-                        <div className="bg-white p-6 rounded-xl shadow-lg w-96 text-center">
-                          <h3 className="text-xl font-bold text-gray-800 mb-4">
-                            Supprimer le compte ?
-                          </h3>
-                          <p className="text-gray-600 mb-6">
-                            Cette action est irréversible. Êtes-vous sûr de
-                            vouloir continuer ?
-                          </p>
-                          <div className="flex justify-center gap-4">
-                            <button
-                              onClick={() => setIsPopupOpen(false)}
-                              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg transition-colors hover:bg-gray-500 hover:text-white"
-                            >
-                              Annuler
-                            </button>
-                            <button
-                              onClick={() => {
-                                handleDeleteAccount();
-                                setIsPopupOpen(false);
-                              }}
-                              className="px-4 py-2 bg-red-600 text-white rounded-lg transition-colors hover:bg-red-800"
-                            >
-                              Supprimer
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
+                  <div>
                     <button
                       type="button"
-                      onClick={() => setIsPopupOpen(true)}
+                      onClick={() => setDeletePopupOpen(true)}
                       className="flex items-center gap-2 bg-red-600 px-6 py-2 rounded-full text-white transition-colors hover:bg-red-800"
                     >
                       <Trash />
