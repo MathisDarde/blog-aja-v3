@@ -6,11 +6,11 @@ import { ChevronDown, LogIn } from "lucide-react";
 import SidebarData, {
   AdminDropdownData,
   AutresDropdownData,
-} from "./HeaderDropdownData";
+} from "../HeaderDropdownData";
 import Image from "next/image";
 import { User } from "@/contexts/Interfaces";
 
-export default function Header({ user }: { user?: User }) {
+export default function HeaderLarge({ user }: { user?: User }) {
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
   const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
 
@@ -38,9 +38,9 @@ export default function Header({ user }: { user?: User }) {
 
   return (
     <div className="h-[68px] w-full bg-white px-12 py-4 flex items-center">
-      <div className="flex-shrink-0 w-[250px]">
+      <div className="flex-shrink-0 w-[185px] xl:w-[250px]">
         <Link href="/">
-          <p className="uppercase text-aja-blue font-Bai_Jamjuree italic font-bold text-xl">
+          <p className="uppercase text-aja-blue font-Bai_Jamjuree italic font-bold text-base xl:text-xl">
             Mémoire d&apos;Auxerrois
           </p>
         </Link>
@@ -122,7 +122,7 @@ export default function Header({ user }: { user?: User }) {
         </nav>
       </div>
 
-      <div className="flex-shrink-0 w-[250px] flex justify-end">
+      <div className="flex-shrink-0 w-[75px] xl:w-[250px] flex justify-end">
         {!user ? (
           <Link href="/login">
             <button className="flex items-center gap-2 font-Montserrat text-white bg-aja-blue px-6 py-2 rounded-full">
@@ -139,7 +139,7 @@ export default function Header({ user }: { user?: User }) {
                 height={128}
                 className="size-9 object-cover rounded-full"
               />
-              <p>{user.name}</p>
+              <p className="hidden xl:block">{user.name}</p>
             </div>
           </Link>
         )}

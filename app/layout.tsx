@@ -1,13 +1,13 @@
 import { Montserrat, Bai_Jamjuree } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import Header from "@/components/Header";
 import { AppProvider } from "@/contexts/GlobalContext";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import { getUserbyId } from "@/controllers/UserController";
 import { User } from "@/contexts/Interfaces";
+import Header from "@/components/header/Header";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -68,7 +68,7 @@ export default async function RootLayout({
     <html lang="en">
       <body
         suppressHydrationWarning
-        className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden`}
+        className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden bg-gray-100`}
       >
         <Header user={user || undefined} />
         <AppProvider>{children}</AppProvider>
