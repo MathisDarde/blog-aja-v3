@@ -13,7 +13,11 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const { register, handleSubmit, formState : { errors } } = useForm<LoginSchemaType>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
   });
 
@@ -36,7 +40,7 @@ function LoginForm() {
     setShowPassword(!showPassword);
   };
 
-  useFormErrorToasts(errors)
+  useFormErrorToasts(errors);
 
   return (
     <>
@@ -65,12 +69,16 @@ function LoginForm() {
               onClick={togglePasswordVisibility}
               className="cursor-pointer absolute top-[25px] sm:top-8 right-4 sm:right-5 text-gray-600"
             >
-              {showPassword ? <EyeOff className="w-5 sm:w-6" /> : <Eye className="w-5 sm:w-6" />}
+              {showPassword ? (
+                <EyeOff className="w-5 sm:w-6" />
+              ) : (
+                <Eye className="w-5 sm:w-6" />
+              )}
             </span>
           </div>
 
-          <div className="flex justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
-             <button type="submit">Je me connecte</button>
+          <div className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
+            <button type="submit">Je me connecte</button>
           </div>
         </form>
       </div>

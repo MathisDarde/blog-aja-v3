@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import { User, Cake, Mail, KeyRound, Eye, EyeOff, X } from "lucide-react";
@@ -14,7 +14,11 @@ function InscForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<InscSchemaType>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<InscSchemaType>({
     resolver: zodResolver(InscSchema),
   });
 
@@ -100,7 +104,11 @@ function InscForm() {
             onClick={togglePasswordVisibility}
             className="cursor-pointer absolute top-12 sm:top-14 right-4 sm:right-5 text-gray-600"
           >
-            {showPassword ? <EyeOff className="w-5 sm:w-6" /> : <Eye className="w-5 sm:w-6" />}
+            {showPassword ? (
+              <EyeOff className="w-5 sm:w-6" />
+            ) : (
+              <Eye className="w-5 sm:w-6" />
+            )}
           </span>
         </div>
         <div className="relative w-full">
@@ -118,13 +126,17 @@ function InscForm() {
             onClick={toggleConfirmPasswordVisibility}
             className="cursor-pointer absolute top-12 sm:top-14 right-4 sm:right-5 text-gray-600"
           >
-            {showConfirmPassword ? <EyeOff className="w-5 sm:w-6" /> : <Eye className="w-5 sm:w-6" />}
+            {showConfirmPassword ? (
+              <EyeOff className="w-5 sm:w-6" />
+            ) : (
+              <Eye className="w-5 sm:w-6" />
+            )}
           </span>
         </div>
 
-        <div className="flex justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
-             <button type="submit">Je m&apos;inscris</button>
-          </div>
+        <div className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
+          <button type="submit">Je m&apos;inscris</button>
+        </div>
       </form>
     </div>
   );

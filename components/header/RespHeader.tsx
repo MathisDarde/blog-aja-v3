@@ -1,7 +1,7 @@
 "use client";
 
 import { User } from "@/contexts/Interfaces";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export default function RespHeader({ user }: { user?: User }) {
@@ -76,7 +76,9 @@ export default function RespHeader({ user }: { user?: User }) {
       <div
         className={`fixed left-0 p-4 top-0 h-screen w-[250px] bg-white z-20 transform transition-transform duration-300
           ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
-      ></div>
+      >
+        <p>{user?.name}</p>
+      </div>
     </>
   );
 }

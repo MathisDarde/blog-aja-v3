@@ -3,6 +3,7 @@
 import Link from "next/link";
 import LoginForm from "./_components/LoginForm";
 import handleLoginWithGoogle from "@/actions/user/login-google";
+import Image from "next/image";
 
 export default function Login() {
   return (
@@ -16,7 +17,18 @@ export default function Login() {
             <Link href="/register">Je ne possède pas de compte</Link>
           </button>
 
-          <button onClick={handleLoginWithGoogle}>Google</button>
+          <button
+            className="flex items-center gap-4 bg-white px-4 py-2 rounded-md border border-gray-600"
+            onClick={handleLoginWithGoogle}
+          >
+            <Image
+              src="/_assets/img/LogoGoogle.svg"
+              width={25}
+              height={25}
+              alt="Google Logo"
+            />
+            <p className="font-Montserrat">Se connecter avec Google</p>
+          </button>
         </div>
 
         <LoginForm />
