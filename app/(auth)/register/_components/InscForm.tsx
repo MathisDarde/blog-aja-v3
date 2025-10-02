@@ -15,7 +15,7 @@ function InscForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { register, handleSubmit, formState : { errors } } = useForm<InscSchemaType>({
+  const { register, handleSubmit, formState: { errors } } = useForm<InscSchemaType>({
     resolver: zodResolver(InscSchema),
   });
 
@@ -44,13 +44,13 @@ function InscForm() {
   useFormErrorToasts(errors);
 
   return (
-    <div className="w-[600px] mx-auto">
+    <div className="max-w-[600px] mx-auto">
       <form
         onSubmit={handleSubmit(handleSubmitForm)}
         id="inscform"
-        className="w-[600px]"
+        className="w-full"
       >
-        <div className="relative w-[600px]">
+        <div className="relative w-full">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <User className="mr-4" />
             Pseudo :
@@ -58,11 +58,11 @@ function InscForm() {
           <input
             type="text"
             {...register("name")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-4 py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Pseudo"
           />
         </div>
-        <div className="relative w-[600px]">
+        <div className="relative w-full">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <Cake className="mr-4" />
             Date de naissance :
@@ -70,11 +70,11 @@ function InscForm() {
           <input
             type="date"
             {...register("birthday")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-4 py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Date de naissance"
           />
         </div>
-        <div className="relative w-[600px]">
+        <div className="relative w-full">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <Mail className="mr-4" />
             Adresse Mail :
@@ -82,11 +82,11 @@ function InscForm() {
           <input
             type="email"
             {...register("email")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-4 py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Adresse Mail"
           />
         </div>
-        <div className="relative w-[600px]">
+        <div className="relative w-full">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <KeyRound className="mr-4" />
             Mot de passe :
@@ -94,17 +94,17 @@ function InscForm() {
           <input
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-4 py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Mot de passe"
           />
           <span
-            className="text-gray-600 absolute top-14 right-5 cursor-pointer"
             onClick={togglePasswordVisibility}
+            className="cursor-pointer absolute top-12 sm:top-14 right-4 sm:right-5 text-gray-600"
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPassword ? <EyeOff className="w-5 sm:w-6" /> : <Eye className="w-5 sm:w-6" />}
           </span>
         </div>
-        <div className="relative w-[600px]">
+        <div className="relative w-full">
           <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
             <KeyRound className="mr-4" />
             Confirmer le mot de passe :
@@ -112,20 +112,20 @@ function InscForm() {
           <input
             type={showConfirmPassword ? "text" : "password"}
             {...register("confirmPassword")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-4 py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Confirmez votre mot de passe"
           />
           <span
-            className="text-gray-600 absolute top-14 right-5 cursor-pointer"
             onClick={toggleConfirmPasswordVisibility}
+            className="cursor-pointer absolute top-12 sm:top-14 right-4 sm:right-5 text-gray-600"
           >
-            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showConfirmPassword ? <EyeOff className="w-5 sm:w-6" /> : <Eye className="w-5 sm:w-6" />}
           </span>
         </div>
 
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je m&apos;inscris</Button>
-        </div>
+        <div className="flex justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
+             <button type="submit">Je m&apos;inscris</button>
+          </div>
       </form>
     </div>
   );

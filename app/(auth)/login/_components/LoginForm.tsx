@@ -5,7 +5,6 @@ import { LoginSchema } from "@/app/schema";
 import { LoginSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import Button from "@/components/BlueButton";
 import submitLoginForm from "@/actions/user/login-form";
 import { toast } from "sonner";
 import { Eye, EyeOff, X } from "lucide-react";
@@ -41,37 +40,37 @@ function LoginForm() {
 
   return (
     <>
-      <div className="w-[600px] mx-auto">
+      <div className="max-w-[600px] mx-auto">
         <form
           method="POST"
           id="loginform"
-          className="w-[600px]"
+          className="w-full"
           onSubmit={handleSubmit(handleSubmitForm)}
         >
-          <div className="relative text-center w-[600px]">
+          <div className="relative text-center w-full">
             <input
               {...register("email")}
-              className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-full my-4 py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               placeholder="Adresse Mail"
             />
           </div>
-          <div className="relative text-center w-[600px]">
+          <div className="relative text-center w-full">
             <input
               type={showPassword ? "text" : "password"}
               {...register("password")}
-              className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-full my-4 py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               placeholder="Mot de passe"
             />
             <span
               onClick={togglePasswordVisibility}
-              className="cursor-pointer absolute top-8 right-5"
+              className="cursor-pointer absolute top-[25px] sm:top-8 right-4 sm:right-5 text-gray-600"
             >
-              {showPassword ? <EyeOff /> : <Eye />}
+              {showPassword ? <EyeOff className="w-5 sm:w-6" /> : <Eye className="w-5 sm:w-6" />}
             </span>
           </div>
 
-          <div className="flex justify-center items-center">
-             <Button type="submit">Je me connecte</Button>
+          <div className="flex justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
+             <button type="submit">Je me connecte</button>
           </div>
         </form>
       </div>
