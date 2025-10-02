@@ -63,7 +63,6 @@ export interface UpdateArticleFormProps {
 
 export interface UpdateBrouillonFormProps {
   articleData: UpdateArticleSchemaType;
-  setIsEditing: React.Dispatch<boolean>;
   id_article: string;
 }
 
@@ -277,6 +276,7 @@ export interface UpdateUserFromProps {
 export interface DashboardElementProps {
   id: string;
   type: string;
+  state?: string;
 }
 
 export interface TabContentContainerProps {

@@ -18,7 +18,7 @@ import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-i
 import { useRouter } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
 
-export default function ContextPopup({ id, type }: DashboardElementProps) {
+export default function ContextPopup({ id, type, state }: DashboardElementProps) {
   const router = useRouter();
 
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
@@ -113,7 +113,14 @@ export default function ContextPopup({ id, type }: DashboardElementProps) {
       case "user":
         return;
       case "article":
-        return router.push(`/articles/${id}/update`);
+        switch (state) {
+          case "published":
+            return router.push(`/articles/${id}/update`);
+          case "archived":
+            return toast.error("Impossible de modifier cet article étant donné qu'il est archivé.")
+          case "pending":
+            return router.push(`/admin/brouillons/${id}`)
+        }
       case "comment":
         return;
       case "method":

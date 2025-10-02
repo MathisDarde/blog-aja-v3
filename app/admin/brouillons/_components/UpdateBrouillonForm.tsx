@@ -9,7 +9,6 @@ import {
   PenTool,
   Tag,
   X,
-  ChevronLeft,
   Cctv,
 } from "lucide-react";
 import Button from "@/components/BlueButton";
@@ -24,17 +23,15 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 import updateBrouillonForm from "@/actions/article/update-brouillon-form";
 import tags from '@/public/data/articletags.json';
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
-import ActionPopup from "@/components/ActionPopup";
+import { redirect } from "next/navigation";
 
 export default function UpdateBrouillonForm({
   articleData,
-  setIsEditing,
   id_article,
 }: UpdateBrouillonFormProps) {
   const { user_id } = useGlobalContext();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [leaveChangesModal, setLeaveChangesModal] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } =
     useForm<UpdateArticleSchemaType>({
@@ -138,7 +135,7 @@ export default function UpdateBrouillonForm({
         icon: <X className="text-white" />,
         className: "bg-green-500 border border-green-200 text-white text-base",
       });
-      window.location.reload();
+      redirect('/admin/brouillons')
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,
@@ -156,35 +153,10 @@ export default function UpdateBrouillonForm({
 
   return (
     <div className="w-[800px] mx-auto">
-      {/* Element management popup */}
-      {leaveChangesModal && (
-        <ActionPopup
-          onClose={() => setLeaveChangesModal(false)}
-          title="Quitter la modification ?"
-          description="Êtes-vous sur de vouloir quitter la page ? Vous perdrez toutes vos modifications et celles-ci ne pourront pas être récupérées."
-          actions={[
-            {
-              label: "Annuler",
-              onClick: () => setLeaveChangesModal(false),
-              theme: "discard",
-            },
-            {
-              label: "Quitter",
-              onClick: () => {
-                setIsEditing(false);
-                setLeaveChangesModal(false);
-              },
-              theme: "confirm",
-            },
-          ]}
-        />
-      )}
-
       <h1
         className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
-        onClick={() => setLeaveChangesModal(true)}
       >
-        <ChevronLeft /> Formulaire de modification de brouillon
+        Formulaire de modification de brouillon
       </h1>
       <form
         id="publishform"

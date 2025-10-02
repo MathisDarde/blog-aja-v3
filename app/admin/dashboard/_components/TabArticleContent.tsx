@@ -141,7 +141,7 @@ export default function TabArticleContent({
           }}
           ref={DashboardPopupRef}
         >
-          <ContextPopup id={DashboardPopupId} type="article" />
+          <ContextPopup id={DashboardPopupId} type="article" state={articles.find(a => a.id_article === DashboardPopupId)?.state ?? ""}  />
         </div>
       )}
     </div>
