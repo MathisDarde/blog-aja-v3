@@ -9,11 +9,11 @@ export default function EffectifActuel() {
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+      <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase mb-4 sm:mb-10">
         Effectif Actuel
       </h1>
       <div className="text-left">
-        <div className="relative grid grid-cols-5 gap-10 pb-6 mx-10">
+        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10 pb-6 mx-0 xl:mx-10">
           {players.map((joueur) => {
             const {
               nom,
