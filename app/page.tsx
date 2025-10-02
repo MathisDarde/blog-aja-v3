@@ -71,15 +71,6 @@ export default async function Page() {
             <DisplayCategories randomCategories={randomCategories} />
           </div>
         </div>
-
-        <div className="my-10">
-          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
-            Classement Ligue 1
-          </h2>
-          <div>
-            <Classement />
-          </div>
-        </div>
       </div>
     </div>
   );
