@@ -5,7 +5,6 @@ import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
 import DisplayCategories from "@/components/DisplayCategories";
 import React from "react";
-import Classement from "@/components/Classement";
 import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
 import { getArticles } from "@/controllers/ArticlesController";
