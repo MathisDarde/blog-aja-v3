@@ -9,7 +9,7 @@ const SearchInput = ({
   onSubmit,
 }: SearchInputProps) => {
   return (
-    <div className="relative z-20">
+    <div className="relative z-10">
       <form onSubmit={onSubmit}>
         <span>
           <Search className="absolute hidden md:block left-4 top-1/2 -translate-y-1/2 text-lg text-gray-600 cursor-pointer" />

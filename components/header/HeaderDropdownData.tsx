@@ -1,5 +1,5 @@
 import React from "react";
-import { House, Newspaper, ShoppingCart, Ellipsis } from "lucide-react";
+import { House, Newspaper, ShoppingCart, Ellipsis, Trophy, List, Calendar1, ChartBarBig, MessageCircle, Mic2, DraftingCompass, GlassesIcon, LayoutDashboard, FolderLock } from "lucide-react";
 
 export const SidebarData = [
   {
@@ -32,7 +32,7 @@ export const SidebarData = [
   },
   {
     title: "Admin",
-    icon: <Ellipsis size={20} />,
+    icon: <FolderLock size={20} />,
     link: "/dropdownadmin",
     type: "admin",
     dropdown: true,
@@ -41,7 +41,8 @@ export const SidebarData = [
 
 export const AutresDropdownData = [
   {
-    title: "Palmarès et Records",
+    title: "Palmarès & Records",
+    icon: <Trophy size={20} />,
     image: "/_assets/img/djibrilcisserecords.avif",
     description:
       "Découvrez le palmarès et les records de l'AJ Auxerre, notamment durant les années d'or de l'histoire du club.",
@@ -50,6 +51,7 @@ export const AutresDropdownData = [
   },
   {
     title: "Effectif Actuel",
+    icon: <List size={20} />,
     image: "/_assets/img/gawet.webp",
     description:
       "Vous avez accès à l'ensemble des membres de l'effectif de l'AJA et leurs informations personnelles, ainsi que les membres du staff.",
@@ -57,7 +59,26 @@ export const AutresDropdownData = [
     dropdown: false,
   },
   {
+    title: "Calendrier",
+    icon: <Calendar1 size={20} />,
+    image: "/_assets/img/gawet.webp",
+    description:
+      "Accédez maintenant au calendrier complet des matchs de l'AJ Auxerre sur la saison 2025-2026.",
+    link: "/calendrier",
+    dropdown: false,
+  },
+  {
+    title: "Classements & Stats",
+    icon: <ChartBarBig size={20} />,
+    image: "/_assets/img/gawet.webp",
+    description:
+      "Visualiser le classement actuel de la Ligue 1 et consultez les statistiques de vos joueurs préférés.",
+    link: "/classement&statistics",
+    dropdown: false,
+  },
+  {
     title: "Quiz",
+    icon: <MessageCircle size={20} />,
     image: "/_assets/img/martins.webp",
     description:
       "Essayez-vous au quiz 100% AJA et testez vos connaissances sur le plus grand club bourguignon.",
@@ -66,6 +87,7 @@ export const AutresDropdownData = [
   },
   {
     title: "Chants",
+    icon: <Mic2 size={20} />,
     image: "/_assets/img/public.webp",
     description:
       "Retrouvez la liste des chants auxerrois pour être plongés dans l'ambiance la prochaine fois que vous irez au stade !",
@@ -77,6 +99,7 @@ export const AutresDropdownData = [
 export const AdminDropdownData = [
   {
     title: "Publier un article",
+    icon: <Newspaper size={20} />,
     image: "/_assets/img/writingpaper.jpg",
     description: "Je souhaite rédiger un article",
     link: "/admin/publisharticle",
@@ -84,6 +107,7 @@ export const AdminDropdownData = [
   },
   {
     title: "Consulter les brouillons",
+    icon: <DraftingCompass size={20} />,
     image: "/_assets/img/drafts.jpg",
     description: "Consulter la liste des brouillons sur Mémoire d'Auxerrois",
     link: "/admin/brouillons",
@@ -91,6 +115,7 @@ export const AdminDropdownData = [
   },
   {
     title: "Créer une méthode expert",
+    icon: <GlassesIcon size={20} />,
     image: "/_assets/img/methodeexpertpic.jpg",
     description: "Accéder au formulaire de création d'une méthode expert",
     link: "/admin/createmethodeexpert",
@@ -98,6 +123,7 @@ export const AdminDropdownData = [
   },
   {
     title: "Dashboard Admin",
+    icon: <LayoutDashboard size={20} />,
     image: "/_assets/img/adminicon.jpg",
     description:
       "Vous avez accès à l'ensemble des outils administratifs de Mémoire d'Auxerrois",
