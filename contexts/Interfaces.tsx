@@ -49,7 +49,7 @@ export interface Tags {
 }
 
 export interface UpdateArticleFormProps {
-  id_article: string,
+  id_article: string;
   articleData: {
     title: string;
     imageUrl: string;
@@ -283,22 +283,22 @@ export interface TabContentContainerProps {
   activeMenu: string;
   searchTerm: string;
   setSearchTerm: React.Dispatch<string>;
-  users: User[],
-  articles: Article[],
-  methodes: Methodes[],
-  comments: Comment[]
+  users: User[];
+  articles: Article[];
+  methodes: Methodes[];
+  comments: Comment[];
 }
 
 export interface MatchAPI {
-  round: string;
+  journee: string;
   date: string;
-  time: string;
-  team1: string;
-  team2: string;
-  score: {
-    ht: string[];
-    ft: string[];
-  };
+  horaire: string;
+  dom_ext: string;
+  classement: string;
+  contre: string;
+  formation: string;
+  spectateurs: string;
+  resultat: string;
 }
 
 export interface Category {
@@ -327,18 +327,17 @@ export interface ButtonProps {
 }
 
 export interface Team {
-  idTeam: string;
-  intRank: number;
-  strTeam: string;
-  intPlayed: number;
-  intWin: number;
-  intDraw: number;
-  intLoss: number;
-  intGoalsFor: number;
-  intGoalsAgainst: number;
-  intGoalDifference: number;
-  intPoints: number;
-  strDescription: string;
+  position: number;
+  equipe: string;
+  matchs_joues: number;
+  gagnes: number;
+  nuls: number;
+  perdus: number;
+  buts_marques: number;
+  buts_encaisses: number;
+  difference: number;
+  points: number;
+  positionStatus: string;
 }
 
 export interface SortParams<T> {

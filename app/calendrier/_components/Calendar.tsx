@@ -1,68 +1,70 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
-import { fetchMatches } from "@/utils/matchsapi";
-import { ChevronLeftCircle, ChevronRightCircle } from "lucide-react";
 import { MatchAPI } from "@/contexts/Interfaces";
+import { getTeamInfo } from "@/utils/get-team-info";
+import { ChevronLeftCircle, ChevronRightCircle } from "lucide-react";
 
 dayjs.locale("fr");
 
-const clubLogos: { [key: string]: string } = {
-  "AJ Auxerre": "/_assets/teamlogos/logoauxerre.svg",
-  "Paris Saint-Germain FC": "/_assets/teamlogos/logoparissg.svg",
-  "Olympique de Marseille": "/_assets/teamlogos/logomarseille.svg",
-  "Stade Brestois 29": "/_assets/teamlogos/logobrest.svg",
-  "Le Havre AC": "/_assets/teamlogos/logolehavre.svg",
-  "Racing Club de Lens": "/_assets/teamlogos/logolens.svg",
-  "Toulouse FC": "/_assets/teamlogos/logotoulouse.svg",
-  "Olympique Lyonnais": "/_assets/teamlogos/logolyon.svg",
-  "AS Saint-Étienne": "/_assets/teamlogos/logostetienne.svg",
-  "Lille OSC": "/_assets/teamlogos/logolille.svg",
-  "Stade Rennais FC 1901": "/_assets/teamlogos/logorennes.svg",
-  "FC Nantes": "/_assets/teamlogos/logonantes.svg",
-  "Angers SCO": "/_assets/teamlogos/logoangers.svg",
-  "AS Monaco FC": "/_assets/teamlogos/logomonaco.svg",
-  "OGC Nice": "/_assets/teamlogos/logonice.svg",
-  "Montpellier HSC": "/_assets/teamlogos/logomontpellier.svg",
-  "Stade de Reims": "/_assets/teamlogos/logostadedereims.svg",
-  "RC Strasbourg Alsace": "/_assets/teamlogos/logostrasbourg.svg",
+// mapping des mois français en index 0-11
+const monthMap: { [key: string]: number } = {
+  janv: 0,
+  févr: 1,
+  mars: 2,
+  avr: 3,
+  mai: 4,
+  juin: 5,
+  juil: 6,
+  août: 7,
+  sept: 8,
+  oct: 9,
+  nov: 10,
+  déc: 11,
 };
 
-const formatName: { [key: string]: string } = {
-  "AJ Auxerre": "AJA",
-  "Paris Saint-Germain FC": "PSG",
-  "Olympique de Marseille": "OM",
-  "Stade Brestois 29": "SB29",
-  "Le Havre AC": "HAC",
-  "Racing Club de Lens": "RCL",
-  "Toulouse FC": "TFC",
-  "Olympique Lyonnais": "OL",
-  "AS Saint-Étienne": "ASSE",
-  "Lille OSC": "LOSC",
-  "Stade Rennais FC 1901": "SRFC",
-  "FC Nantes": "NAN",
-  "Angers SCO": "SCO",
-  "AS Monaco FC": "ASM",
-  "OGC Nice": "OGCN",
-  "Montpellier HSC": "MHSC",
-  "Stade de Reims": "SDR",
-  "RC Strasbourg Alsace": "RSCA",
+const parseFrenchDate = (dateStr: string) => {
+  try {
+    const parts = dateStr.replace(/\./g, "").split(" "); // ["sam", "27", "sept", "2025"]
+    const day = parseInt(parts[1], 10);
+    const month = monthMap[parts[2].toLowerCase()] ?? 0;
+    const year = parseInt(parts[3], 10);
+    const dateObj = dayjs(new Date(year, month, day));
+    return dateObj;
+  } catch (err) {
+    console.log("Erreur parse date:", dateStr, err);
+    return dayjs();
+  }
 };
 
-const formatDateTime = (date: string, time?: string) => {
-  if (!time) return dayjs(date).format("DD/MM/YYYY");
-  return dayjs(`${date}T${time}`).format("DD/MM/YYYY, HH:mm");
+const formatDateTime = (date: dayjs.Dayjs, time?: string) => {
+  if (!time) return date.format("DD/MM/YYYY");
+  return date.format(`DD/MM/YYYY, ${time}`);
 };
 
-export default function Calendar() {
-  const startDate = dayjs(new Date());
+export default function Calendar({ matches }: { matches: MatchAPI[] }) {
+  const [currentMonth, setCurrentMonth] = useState(dayjs());
 
-  const [currentMonth, setCurrentMonth] = useState(startDate);
-  const [matches, setMatches] = useState<MatchAPI[]>([]);
+  // parser toutes les dates une fois
+  const parsedMatches = useMemo(() => {
+    const result = matches.map((m) => ({
+      ...m,
+      parsedDate: parseFrenchDate(m.date),
+    }));
+    console.log(
+      "parsedMatches:",
+      result.map((m) => ({
+        date: m.date,
+        parsed: m.parsedDate.format("DD/MM/YYYY"),
+      }))
+    );
+    return result;
+  }, [matches]);
 
+  // créer la grille des jours du mois
   const days = useMemo(() => {
     const startOfMonth = currentMonth.startOf("month");
     const endOfMonth = currentMonth.endOf("month");
@@ -80,39 +82,25 @@ export default function Calendar() {
     return tempDays;
   }, [currentMonth]);
 
-  useEffect(() => {
-    fetchMatches(
-      "https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json"
-    ).then((data) => {
-      const filteredMatches = data.matches.filter((match: MatchAPI) => {
-        return match.team1 === "AJ Auxerre" || match.team2 === "AJ Auxerre";
-      });
-
-      setMatches(filteredMatches);
-    });
-  }, []);
-
   const getMatchColor = (match: MatchAPI) => {
-    if (!match.score?.ft || match.score.ft.length !== 2) {
-      return "bg-white"; // match pas encore joué
-    }
+    if (!match.resultat || match.resultat === "-:-") return "bg-white";
+    const [home, away] = match.resultat.split(":").map(Number);
+    const auxScore = match.dom_ext === "D" ? home : away;
+    const oppScore = match.dom_ext === "D" ? away : home;
 
-    const [score1, score2] = match.score.ft.map((s) => parseInt(s));
+    if (auxScore > oppScore) return "bg-green-200";
+    if (auxScore < oppScore) return "bg-red-200";
+    return "bg-gray-200";
+  };
 
-    if (isNaN(score1) || isNaN(score2)) return "bg-white"; // au cas où
-
-    const isAuxerreTeam1 = match.team1 === "AJ Auxerre";
-
-    const auxerreScore = isAuxerreTeam1 ? score1 : score2;
-    const opponentScore = isAuxerreTeam1 ? score2 : score1;
-
-    if (auxerreScore > opponentScore) return "bg-green-200";
-    if (auxerreScore < opponentScore) return "bg-red-200";
-    return "bg-gray-200"; // nul
+  const getOpponentRanking = (contre: string) => {
+    const match = contre.match(/\(([^)]+)\)/);
+    return match ? match[0] : "";
   };
 
   return (
     <div className="p-6 w-[1300px] bg-white mx-auto">
+      {/* Header mois */}
       <div className="flex justify-between mb-4 font-Montserrat">
         <button
           onClick={() => setCurrentMonth((prev) => prev.subtract(1, "month"))}
@@ -126,16 +114,19 @@ export default function Calendar() {
           <ChevronRightCircle />
         </button>
       </div>
+
+      {/* Grille */}
       <div className="grid grid-cols-7 gap-1 font-Montserrat">
         {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
           <div key={d} className="text-center font-semibold">
             {d}
           </div>
         ))}
+
         {days.map((d, i) => {
           const isCurrentMonth = d.month() === currentMonth.month();
-          const matchOfTheDay = matches.find((match) =>
-            dayjs(match.date).isSame(d, "day")
+          const matchOfTheDay = parsedMatches.find((match) =>
+            match.parsedDate.isSame(d, "day")
           );
 
           return (
@@ -153,53 +144,98 @@ export default function Calendar() {
                     matchOfTheDay
                   )}`}
                 >
+                  {/* Header match */}
                   <div className="flex flex-col items-center justify-between mb-2">
-                    {!matchOfTheDay.score?.ft?.length ? (
-                      <p className="font-bold font-Montserrat text-xs uppercase italic">
-                        À venir
-                      </p>
-                    ) : (
-                      <p className="font-bold font-Montserrat text-xs uppercase italic">
-                        Terminé
-                      </p>
-                    )}
+                    <p className="font-bold font-Montserrat text-xs uppercase italic">
+                      {matchOfTheDay.resultat &&
+                      matchOfTheDay.resultat !== "-:-"
+                        ? "Terminé"
+                        : "À venir"}
+                    </p>
                     <p className="font-Montserrat text-xs">
-                      {formatDateTime(matchOfTheDay.date, matchOfTheDay.time)}
+                      {formatDateTime(
+                        matchOfTheDay.parsedDate,
+                        matchOfTheDay.horaire
+                      )}
                     </p>
                   </div>
+
+                  {/* Équipe 1 */}
                   <div className="flex items-center gap-2">
                     <Image
-                      src={clubLogos[matchOfTheDay.team1]}
-                      alt="Logo Équipe 1"
-                      height={9}
-                      width={18}
-                      className="object-contain aspect-auto h-6"
+                      src={`/_assets/teamlogos/${
+                        getTeamInfo(
+                          matchOfTheDay.dom_ext === "D"
+                            ? "AJA"
+                            : matchOfTheDay.contre.split(" (")[0]
+                        ).logo
+                      }`}
+                      alt="Logo équipe 1"
+                      height={24}
+                      width={24}
+                      className="object-contain"
                     />
                     <p className="font-Montserrat font-bold text-lg">
-                      {formatName[matchOfTheDay.team1]}
+                      {
+                        getTeamInfo(
+                          matchOfTheDay.dom_ext === "D"
+                            ? "AJA"
+                            : matchOfTheDay.contre.split(" (")[0]
+                        ).abr
+                      }
+                      <span className="text-xs font-medium ml-2">
+                        {
+                          matchOfTheDay.dom_ext === "D"
+                            ? matchOfTheDay.classement // AJ Auxerre classement
+                            : getOpponentRanking(matchOfTheDay.contre) // adversaire classement
+                        }
+                      </span>
                     </p>
-                    {matchOfTheDay.score?.ft && (
-                      <p className="font-Montserrat font-bold text-lg ml-auto">
-                        {matchOfTheDay.score.ft[0]}
-                      </p>
-                    )}
+                    {matchOfTheDay.resultat &&
+                      matchOfTheDay.resultat !== "-:-" && (
+                        <p className="font-Montserrat font-bold text-lg ml-auto">
+                          {matchOfTheDay.resultat.split(":")[0]}
+                        </p>
+                      )}
                   </div>
+
+                  {/* Équipe 2 */}
                   <div className="flex items-center gap-2 my-2">
                     <Image
-                      src={clubLogos[matchOfTheDay.team2]}
-                      alt="Logo Équipe 2"
-                      height={9}
-                      width={18}
-                      className="object-contain aspect-auto h-6"
+                      src={`/_assets/teamlogos/${
+                        getTeamInfo(
+                          matchOfTheDay.dom_ext === "E"
+                            ? "AJA"
+                            : matchOfTheDay.contre.split(" (")[0]
+                        ).logo
+                      }`}
+                      alt="Logo équipe 2"
+                      height={24}
+                      width={24}
+                      className="object-contain"
                     />
                     <p className="font-Montserrat font-bold text-lg">
-                      {formatName[matchOfTheDay.team2]}
+                      {
+                        getTeamInfo(
+                          matchOfTheDay.dom_ext === "E"
+                            ? "AJA"
+                            : matchOfTheDay.contre.split(" (")[0]
+                        ).abr
+                      }
+                      <span className="text-xs font-medium ml-2">
+                        {
+                          matchOfTheDay.dom_ext === "E"
+                            ? matchOfTheDay.classement // AJ Auxerre classement
+                            : getOpponentRanking(matchOfTheDay.contre) // adversaire classement
+                        }
+                      </span>
                     </p>
-                    {matchOfTheDay.score?.ft && (
-                      <p className="font-Montserrat font-bold text-lg ml-auto">
-                        {matchOfTheDay.score.ft[1]}
-                      </p>
-                    )}
+                    {matchOfTheDay.resultat &&
+                      matchOfTheDay.resultat !== "-:-" && (
+                        <p className="font-Montserrat font-bold text-lg ml-auto">
+                          {matchOfTheDay.resultat.split(":")[1]}
+                        </p>
+                      )}
                   </div>
                 </div>
               ) : (

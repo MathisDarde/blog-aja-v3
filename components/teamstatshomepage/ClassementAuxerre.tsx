@@ -1,8 +1,20 @@
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
+import { Team } from "@/contexts/Interfaces";
+import { getTeamInfo } from "@/utils/get-team-info";
 
-export default function ClassementAuxerre() {
-  const { getReducedClassement } = useGlobalContext();
+export default function ClassementAuxerre({ teams }: { teams: Team[] }) {
+  function getReducedClassement() {
+    const index = teams.findIndex((team) =>
+      team.equipe.toLowerCase().includes("auxerre")
+    );
+
+    if (index === -1) return [];
+
+    const start = Math.max(0, index - 2);
+    const end = Math.min(teams.length, index + 3);
+
+    return teams.slice(start, end);
+  }
 
   const classement = getReducedClassement();
 
@@ -12,59 +24,47 @@ export default function ClassementAuxerre() {
         Classement de l&apos;AJ Auxerre
       </p>
       <div className="flex flex-col gap-1">
-        {classement.map((team, index) => (
-          <div
-            key={index}
-            className={`flex items-center gap-3 mx-auto p-4 rounded-md border border-gray-400 ${
-              team.strTeam === "Auxerre"
-                ? "w-[450px] h-[65px]"
-                : "w-[350px] h-[50px]"
-            } `}
-          >
-            <p
-              className={`font-Bai_Jamjuree ${
-                team.strTeam === "Auxerre" ? "text-xl" : "text-lg"
-              } font-semibold`}
+        {classement.map((team, index) => {
+          const teamInfo = getTeamInfo(team.equipe); // <-- récupère le logo correct
+          const isAuxerre = team.equipe.toLowerCase().includes("auxerre");
+
+          return (
+            <div
+              key={index}
+              className={`flex items-center gap-3 mx-auto p-4 rounded-md border border-gray-400 ${
+                isAuxerre ? "w-[450px] h-[65px]" : "w-[350px] h-[50px]"
+              } `}
             >
-              {team.intRank}.
-            </p>
-            {team.strTeam === "Auxerre" ? (
+              <p
+                className={`font-Bai_Jamjuree ${
+                  isAuxerre ? "text-xl" : "text-lg"
+                } font-semibold`}
+              >
+                {team.position}.
+              </p>
               <Image
-                src={`/_assets/teamlogos/logo${team.strTeam
-                  .replace(/\s+/g, "")
-                  .replace(/[^\w]/g, "")
-                  .toLowerCase()}.svg`}
-                width={38}
-                height={38}
-                alt="team logo"
+                src={`/_assets/teamlogos/${teamInfo.logo}`}
+                width={isAuxerre ? 38 : 30}
+                height={isAuxerre ? 38 : 30}
+                alt={`${teamInfo.actualName} logo`}
               />
-            ) : (
-              <Image
-                src={`/_assets/teamlogos/logo${team.strTeam
-                  .replace(/\s+/g, "")
-                  .replace(/[^\w]/g, "")
-                  .toLowerCase()}.svg`}
-                width={30}
-                height={30}
-                alt="logo auxerre"
-              />
-            )}
-            <p
-              className={`font-Bai_Jamjuree font-semibold ${
-                team.strTeam === "Auxerre" ? "text-xl" : "text-lg"
-              }`}
-            >
-              {team.strTeam}
-            </p>
-            <p
-              className={`ml-auto font-Bai_Jamjuree font-semibold ${
-                team.strTeam === "Auxerre" ? "text-xl" : "text-lg"
-              }`}
-            >
-              {team.intPoints} pts
-            </p>
-          </div>
-        ))}
+              <p
+                className={`font-Bai_Jamjuree font-semibold ${
+                  isAuxerre ? "text-xl" : "text-lg"
+                }`}
+              >
+                {teamInfo.actualName}
+              </p>
+              <p
+                className={`ml-auto font-Bai_Jamjuree font-semibold ${
+                  isAuxerre ? "text-xl" : "text-lg"
+                }`}
+              >
+                {team.points} pts
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
