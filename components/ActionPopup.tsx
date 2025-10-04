@@ -43,11 +43,11 @@ export default function ActionPopup({
         </button>
 
         {/* Contenu */}
-        <h2 className="text-2xl font-semibold text-center font-Bai_Jamjuree mb-2">
+        <h2 className="text-xl sm:text-2xl font-semibold text-center font-Bai_Jamjuree mb-2">
           {title}
         </h2>
         {description && (
-          <p className="text-gray-600 mb-4 font-Montserrat text-center">
+          <p className="text-gray-600 mb-4 font-Montserrat text-sm sm:text-base text-center">
             {description}
           </p>
         )}
@@ -58,7 +58,7 @@ export default function ActionPopup({
             <button
               key={idx}
               onClick={action.onClick}
-              className={`px-4 py-2 rounded-lg font-medium transition cursor-pointer ${getButtonClass(
+              className={`px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition cursor-pointer ${getButtonClass(
                 action.theme
               )}`}
             >

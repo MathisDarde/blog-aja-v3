@@ -5,5 +5,10 @@ export function getTeamInfo(name: string) {
     t.namesList.some((n) => n.toLowerCase() === name.toLowerCase())
   );
   if (!team) return { actualName: name, logo: "logoligue1.svg" }; // fallback
-  return { actualName: team.actualName, logo: team.logo, abr: team.abr };
+  return {
+    actualName: team.actualName,
+    logo: team.logo,
+    abr: team.abr,
+    stade: team.stade,
+  };
 }
