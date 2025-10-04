@@ -11,7 +11,6 @@ import {
   X,
   Cctv,
 } from "lucide-react";
-import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
 import { UpdateArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,25 +18,31 @@ import { ArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateBrouillonFormProps } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import updateBrouillonForm from "@/actions/article/update-brouillon-form";
-import tags from '@/public/data/articletags.json';
+import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { redirect } from "next/navigation";
 
 export default function UpdateBrouillonForm({
   articleData,
   id_article,
+  user,
 }: UpdateBrouillonFormProps) {
-  const { user_id } = useGlobalContext();
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } =
-    useForm<UpdateArticleSchemaType>({
-      resolver: zodResolver(ArticleSchema),
-      defaultValues: articleData,
-    });
+  const user_id = user?.id;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    getValues,
+  } = useForm<UpdateArticleSchemaType>({
+    resolver: zodResolver(ArticleSchema),
+    defaultValues: articleData,
+  });
 
   useEffect(() => {
     if (articleData) {
@@ -135,7 +140,7 @@ export default function UpdateBrouillonForm({
         icon: <X className="text-white" />,
         className: "bg-green-500 border border-green-200 text-white text-base",
       });
-      redirect('/admin/brouillons')
+      redirect("/admin/brouillons");
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message,
@@ -147,106 +152,93 @@ export default function UpdateBrouillonForm({
     }
   };
 
-  useFormErrorToasts(errors)
+  useFormErrorToasts(errors);
 
   const watchedTags = watch("tags") || [];
 
   return (
-    <div className="w-[800px] mx-auto">
-      <h1
-        className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
-      >
+    <div className="max-w-[800px] mx-auto">
+      <h1 className="font-bold font-Bai_Jamjuree text-center uppercase text-2xl sm:text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
         Formulaire de modification de brouillon
       </h1>
-      <form
-        id="publishform"
-        encType="multipart/form-data"
-        className="w-[800px]"
-      >
+      <form id="publishform" encType="multipart/form-data" className="w-full">
         {/* Titre */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Heading className="mr-4" />
             Titre :
           </span>
           <input
             type="text"
             {...register("title")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Titre de l'article"
           />
         </div>
 
         {/* Image */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <ImageIcon className="mr-4" />
             Image :
           </span>
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             accept="image/*"
           />
         </div>
 
         {/* Teaser */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Film className="mr-4" />
             Teaser :
           </span>
           <input
             type="text"
             {...register("teaser")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Teaser de l'article"
           />
         </div>
 
         {/* Contenu */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Folder className="mr-4" />
             Contenu de l&apos;article :
           </span>
           <textarea
             {...register("content")}
             rows={20}
-            className="w-[800px] h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            className="w-full h-auto my-3 sm:my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Contenu de l'article"
           ></textarea>
         </div>
 
         {/* Auteur */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <PenTool className="mr-4" />
             Auteur :
           </span>
           <input
             type="text"
             {...register("author")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nom de l'auteur"
           />
         </div>
 
         {/* Tags */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Tag className="mr-4" />
             Tags :
           </span>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "16px",
-            }}
-            className="w-[800px] bg-white rounded-2xl border border-gray-600 my-4 p-4"
-          >
+          <div className="w-full bg-white rounded-2xl text-left border border-gray-600 my-4 p-4 grid grid-cols-2 lg:grid-cols-3 gap-4">
             {tags.map((category: Tags) => (
               <div
                 key={category.value}
@@ -274,7 +266,7 @@ export default function UpdateBrouillonForm({
                 />
                 <label
                   htmlFor={`checkbox-${category.value}`}
-                  className="cursor-pointer font-Montserrat"
+                  className="cursor-pointer font-Montserrat text-xs sm:text-base"
                 >
                   {category.tag}
                 </label>
@@ -284,14 +276,14 @@ export default function UpdateBrouillonForm({
         </div>
 
         {/* Statut */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Cctv className="mr-4" />
             Statut :
           </span>
           <select
             {...register("state")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             value={watch("state")}
           >
             <option value="published">Published</option>
@@ -300,23 +292,22 @@ export default function UpdateBrouillonForm({
           </select>
         </div>
 
-        <div className="flex items-center gap-10 justify-center">
-          {/* Bouton de confirmation */}
-          <div className="flex justify-center items-center">
-            <Button
-              type="button"
-              className="bg-gray-400 border-0"
-              onClick={handleSaveForm}
-            >
-              Je sauvegarde l&apos;article
-            </Button>
-          </div>
+        <div className="flex flex-col gap-4 lg:flex-row justify-center items-center">
+          <button
+            type="button"
+            className="justify-center items-center bg-gray-500 inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+            onClick={handleSaveForm}
+          >
+            Je sauvegarde l&apos;article
+          </button>
 
-          <div>
-            <Button type="button" onClick={handleSubmit(handlePublishForm)}>
-              Je publie cet article
-            </Button>
-          </div>
+          <button
+            type="button"
+            className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+            onClick={handleSubmit(handlePublishForm)}
+          >
+            Je publie cet article
+          </button>
         </div>
       </form>
     </div>

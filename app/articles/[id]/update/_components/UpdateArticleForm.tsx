@@ -10,7 +10,6 @@ import { UpdateArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import tags from "@/public/data/articletags.json";
@@ -19,10 +18,11 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 export default function UpdateArticleForm({
   id_article,
   articleData,
+  user,
 }: UpdateArticleFormProps) {
-  const { user_id } = useGlobalContext();
-
   const router = useRouter();
+
+  const user_id = user?.id;
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>(
@@ -117,15 +117,15 @@ export default function UpdateArticleForm({
   const watchedTags = watch("tags") || [];
 
   return (
-    <div className="w-[800px] mx-auto">
+    <div className="max-w-[800px] mx-auto">
       <form
         id="publishform"
         encType="multipart/form-data"
-        className="w-[800px]"
+        className="w-full"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
         {/* Image */}
-        <div className="relative w-[800px] mx-auto">
+        <div className="relative w-full mx-auto mb-4">
           {previewPhoto && (
             <div className="w-fit mb-4 relative mx-auto">
               <Image
@@ -133,7 +133,7 @@ export default function UpdateArticleForm({
                 height={1024}
                 src={previewPhoto || "/_assets/img/pdpdebase.png"}
                 alt="Photo de l'article"
-                className="w-full aspect-video object-cover mr-4"
+                className="w-full aspect-video object-cover"
               />
             </div>
           )}
@@ -146,82 +146,75 @@ export default function UpdateArticleForm({
           />
           <label
             htmlFor="fileInput"
-            className="underline text-aja-blue font-Montserrat cursor-pointer"
+            className="underline text-aja-blue font-Montserrat cursor-pointer text-sm"
           >
             Modifier l&apos;image de bannière de l&apos;article ?
           </label>
         </div>
 
         {/* Titre */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Heading className="mr-4" />
             Titre :
           </span>
           <input
             type="text"
             {...register("title")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Titre de l'article"
           />
         </div>
 
         {/* Teaser */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Film className="mr-4" />
             Teaser :
           </span>
           <input
             type="text"
             {...register("teaser")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Teaser de l'article"
           />
         </div>
 
         {/* Contenu */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Folder className="mr-4" />
             Contenu de l&apos;article :
           </span>
           <textarea
             {...register("content")}
             rows={20}
-            className="w-[800px] h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            className="w-full h-auto my-3 sm:my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Contenu de l'article"
           ></textarea>
         </div>
 
         {/* Auteur */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <PenTool className="mr-4" />
             Auteur :
           </span>
           <input
             type="text"
             {...register("author")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nom de l'auteur"
           />
         </div>
 
         {/* Tags */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Tag className="mr-4" />
             Tags :
           </span>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "16px",
-            }}
-            className="w-[800px] bg-white rounded-2xl border border-gray-600 my-4 p-4"
-          >
+          <div className="w-full bg-white rounded-2xl text-left border border-gray-600 my-4 p-4 grid grid-cols-2 lg:grid-cols-3 gap-4">
             {tags.map((category: Tags) => (
               <div
                 key={category.value}
@@ -249,7 +242,7 @@ export default function UpdateArticleForm({
                 />
                 <label
                   htmlFor={`checkbox-${category.value}`}
-                  className="cursor-pointer text-sm font-Montserrat"
+                  className="cursor-pointer font-Montserrat text-xs sm:text-base"
                 >
                   {category.tag}
                 </label>
@@ -259,14 +252,14 @@ export default function UpdateArticleForm({
         </div>
 
         {/* Statut */}
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Cctv className="mr-4" />
             Statut :
           </span>
           <select
             {...register("state")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             value={watch("state")}
           >
             <option value="published">Published</option>
@@ -276,9 +269,12 @@ export default function UpdateArticleForm({
         </div>
 
         {/* Bouton de confirmation */}
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie l&apos;article</Button>
-        </div>
+        <button
+          type="submit"
+          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+        >
+          Je modifie l&apos;article
+        </button>
       </form>
     </div>
   );

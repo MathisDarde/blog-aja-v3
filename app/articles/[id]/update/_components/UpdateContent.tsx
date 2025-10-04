@@ -1,24 +1,24 @@
 "use server";
 
-import {
-  getArticlebyId,
-} from "@/controllers/ArticlesController";
+import { getArticlebyId } from "@/controllers/ArticlesController";
 import UpdateArticleForm from "./UpdateArticleForm";
 import UpdateArticleGuard from "./UpdateArticleGuard";
+import { User } from "@/contexts/Interfaces";
 
 export default async function UpdateContent({
   id_article,
+  user,
 }: {
   id_article: string;
+  user: User | null;
 }) {
   const article = await getArticlebyId(id_article);
 
   return (
-    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">
       <UpdateArticleGuard />
 
-      <h2 className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
+      <h2 className="font-bold font-Bai_Jamjuree uppercase text-2xl sm:text-3xl mb-4 sm:mb-10 flex items-center justify-center gap-3 cursor-pointer">
         Formulaire de modification d&apos;article
       </h2>
 
@@ -33,6 +33,7 @@ export default async function UpdateContent({
           state: article?.state ?? "pending",
           imageUrl: article?.imageUrl ?? "",
         }}
+        user={user}
       />
     </div>
   );

@@ -2,31 +2,38 @@
 
 import React, { useState } from "react";
 import Button from "@/components/BlueButton";
-import { User, Cake, Mail, X, Trash } from "lucide-react";
+import { Cake, Mail, X, Trash, UserIcon } from "lucide-react";
 import { UpdateProfileSchemaType } from "@/types/forms";
 import { UpdateProfileSchema } from "@/app/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import updateProfileForm from "@/actions/user/update-profile-form";
-import { UpdateUserFromProps } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { User } from "@/contexts/Interfaces";
 import Image from "next/image";
 import deletePhotoDeProfil from "@/actions/user/delete-pdp";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { redirect } from "next/navigation";
+import ActionPopup from "@/components/ActionPopup";
 
-export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
-  const { user_id } = useGlobalContext();
+export default function UpdateProfileForm({ user }: { user: User | null }) {
+  if (!user) {
+    return (
+      <p className="text-center font-Montserrat text-red-500">
+        Utilisateur non connecté.
+      </p>
+    );
+  }
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(
-    userData.photodeprofil || "/_assets/img/pdpdebase.png"
+    user.photodeprofil || "/_assets/img/pdpdebase.png"
   );
+  const [deletePDPPopupOpen, setDeletePDPPopupOpen] = useState(false);
 
   // Formatage date YYYY-MM-DD pour affichage dans input date
-  const formattedBirthday = userData.birthday
-    ? new Date(userData.birthday).toISOString().substring(0, 10)
+  const formattedBirthday = user.birthday
+    ? new Date(user.birthday).toISOString().substring(0, 10)
     : "";
 
   const {
@@ -36,10 +43,10 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   } = useForm<UpdateProfileSchemaType>({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
-      name: userData.name,
+      name: user.name,
       birthday: formattedBirthday,
-      email: userData.email,
-      photodeprofil: userData.photodeprofil || "",
+      email: user.email,
+      photodeprofil: user.photodeprofil || "",
     },
   });
 
@@ -53,8 +60,8 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   const handleDeletePDP = async () => {
     setSelectedFile(null);
     setPreviewPhoto("/_assets/img/pdpdebase.png");
-    if (user_id) {
-      await deletePhotoDeProfil(user_id);
+    if (user?.id) {
+      await deletePhotoDeProfil(user.id);
     }
     toast.success("Photo de profil supprimée avec succès.", {
       icon: <X className="text-white" />,
@@ -63,7 +70,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   };
 
   const handleSubmitForm = async (data: UpdateProfileSchemaType) => {
-    if (!user_id) {
+    if (!user.id) {
       toast.error(
         "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
       );
@@ -99,7 +106,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
     }
 
     const response = await updateProfileForm(
-      user_id,
+      user.id,
       data,
       selectedFile ?? undefined
     );
@@ -109,7 +116,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
         icon: <X className="text-white" />,
         className: "bg-green-500 border border-green-200 text-white text-base",
       });
-      redirect("/moncompte")
+      redirect("/moncompte");
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0]?.message,
@@ -124,9 +131,33 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
   useFormErrorToasts(errors);
 
   return (
-    <div className="w-[600px] mx-auto">
-      <form onSubmit={handleSubmit(handleSubmitForm)} className="w-[600px]">
-        <div className="relative w-[600px] mx-auto">
+    <div className="max-w-[600px] mx-auto">
+      <form onSubmit={handleSubmit(handleSubmitForm)} className="w-full">
+        {/* Confirm delete PDP */}
+        {deletePDPPopupOpen && (
+          <ActionPopup
+            onClose={() => setDeletePDPPopupOpen(false)}
+            title="Supprimer la photo de profil ?"
+            description="Êtes-vous sur de vouloir supprimer votre photo de profil ? Une fois supprimée, elle ne pourra plus être récupérée."
+            actions={[
+              {
+                label: "Annuler",
+                onClick: () => setDeletePDPPopupOpen(false),
+                theme: "discard",
+              },
+              {
+                label: "Supprimer",
+                onClick: () => {
+                  handleDeletePDP();
+                  setDeletePDPPopupOpen(false);
+                },
+                theme: "delete",
+              },
+            ]}
+          />
+        )}
+
+        <div className="relative w-full mx-auto">
           {previewPhoto && (
             <div className="w-fit mb-4 relative mx-auto">
               <Image
@@ -138,7 +169,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
               />
               <button
                 type="button"
-                onClick={handleDeletePDP}
+                onClick={() => setDeletePDPPopupOpen(true)}
                 className="absolute bg-red-500 text-white p-2 rounded-full bottom-4 right-3"
                 aria-label="Supprimer la photo de profil"
               >
@@ -155,7 +186,7 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
             className="hidden"
             accept="image/*"
           />
-          <p className="font-Montserrat">
+          <p className="font-Montserrat text-sm sm:text-base text-center mb-4">
             Photo de profil actuelle,
             <label
               htmlFor="fileInput"
@@ -166,47 +197,52 @@ export default function UpdateProfileForm({ userData }: UpdateUserFromProps) {
           </p>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
-            <User className="mr-4" />
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
+            <UserIcon className="mr-4" />
             Pseudo :
           </span>
           <input
             type="text"
             {...register("name")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Pseudo"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Cake className="mr-4" />
             Date de naissance :
           </span>
           <input
             type="date"
             {...register("birthday")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Date de naissance"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Mail className="mr-4" />
             Adresse Mail :
           </span>
           <input
             type="email"
             {...register("email")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Adresse Mail"
           />
         </div>
 
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie mes informations</Button>
+        <div className="flex justify-center mt-2">
+          <button
+            type="submit"
+            className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+          >
+            Je modifie mon profil
+          </button>
         </div>
       </form>
     </div>

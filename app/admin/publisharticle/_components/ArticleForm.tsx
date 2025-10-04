@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import {
@@ -10,7 +10,6 @@ import {
   Tag,
   X,
 } from "lucide-react";
-import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,19 +18,23 @@ import submitArticleForm from "@/actions/article/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
 import storeDraftArticle from "@/actions/article/store-draft";
-import { Tags } from "@/contexts/Interfaces";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { Tags, User } from "@/contexts/Interfaces";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
-function ArticleForm() {
-  const { user_id } = useGlobalContext();
+export default function ArticleForm({ user }: { user: User | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const { register, handleSubmit, formState : { errors }, getValues } =
-    useForm<ArticleSchemaType>({
-      resolver: zodResolver(ArticleSchema),
-    });
+  const user_id = user?.id;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm<ArticleSchemaType>({
+    resolver: zodResolver(ArticleSchema),
+  });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -123,90 +126,83 @@ function ArticleForm() {
   useFormErrorToasts(errors);
 
   return (
-    <div className="w-[800px] mx-auto">
+    <div className="max-w-[800px] mx-auto">
       <form
         id="publishform"
         encType="multipart/form-data"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
-        <div className="relative w-[800px] mx-auto">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full mx-auto">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Heading className="mr-4" />
             Titre :
           </span>
           <input
             type="text"
             {...register("title")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Titre de l'article"
           />
         </div>
 
-        <div className="relative w-[800px] mx-auto">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full mx-auto">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <ImageIcon className="mr-4" />
             Image :
           </span>
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             accept="image/*"
           />
         </div>
 
-        <div className="relative w-[800px] mx-auto">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full mx-auto">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Film className="mr-4" />
             Teaser :
           </span>
           <input
             type="text"
             {...register("teaser")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Teaser de l'article"
           />
         </div>
 
-        <div className="relative w-[800px] mx-auto">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full mx-auto">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Folder className="mr-4" />
             Contenu de l&apos;article :
           </span>
           <textarea
             {...register("content")}
             rows={20}
-            className="w-[800px] h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            className="w-full h-auto my-3 sm:my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Contenu de l'article"
           ></textarea>
         </div>
 
-        <div className="relative w-[800px] mx-auto">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full mx-auto">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <PenTool className="mr-4" />
             Auteur :
           </span>
           <input
             type="text"
             {...register("author")}
-            className="w-[800px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nom de l'auteur"
           />
         </div>
 
-        <div className="relative w-[800px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Tag className="mr-4" />
             Tags :
           </span>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "16px",
-            }}
-            className="w-[800px] bg-white rounded-2xl border border-gray-600 my-4 p-4"
-          >
+          <div className="w-full bg-white rounded-2xl text-left border border-gray-600 my-4 p-4 grid grid-cols-2 lg:grid-cols-3 gap-4">
             {tags.map((category: Tags) => (
               <div
                 key={category.value}
@@ -221,7 +217,7 @@ function ArticleForm() {
                 />
                 <label
                   htmlFor={`checkbox-${category.value}`}
-                  className="cursor-pointer font-Montserrat"
+                  className="cursor-pointer font-Montserrat text-xs sm:text-base"
                 >
                   {category.tag}
                 </label>
@@ -230,19 +226,22 @@ function ArticleForm() {
           </div>
         </div>
 
-        <div className="flex justify-center items-center">
-          <Button
+        <div className="flex flex-col gap-4 lg:flex-row justify-center items-center">
+          <button
             type="button"
-            className="bg-gray-400 border-0 hover:border-none hover:bg-gray-500 hover:text-white"
+            className="justify-center items-center bg-gray-500 inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
             onClick={storeBrouillon}
           >
-            Sauvegarder le brouillon
-          </Button>
-          <Button type="submit">Je publie l&apos;article</Button>
+            Je sauvgarde le brouillon
+          </button>
+          <button
+            type="submit"
+            className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+          >
+            Je publie l&apos;article
+          </button>
         </div>
       </form>
     </div>
   );
 }
-
-export default ArticleForm;
