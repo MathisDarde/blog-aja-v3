@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Team } from "@/contexts/Interfaces";
 import Image from "next/image";
 import { getTeamInfo } from "@/utils/get-team-info";
@@ -38,28 +38,7 @@ const getIcon = (description: string): string => {
 };
 
 // --- Composant Classement ---
-function Classement() {
-  const [loading, setLoading] = useState(true);
-  const [teams, setTeams] = useState<Team[]>([]);
-
-  useEffect(() => {
-    fetch(
-      "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setTeams(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Erreur :", err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Chargement des données...</p>;
-  if (!teams || teams.length === 0) return <p>Aucune équipe trouvée.</p>;
-
+export default function Classement({ teams }: { teams: Team[] }) {
   return (
     <div className="px-4 mt-10 h-auto w-[800px] mx-auto">
       {/* Header */}
@@ -148,5 +127,3 @@ function Classement() {
     </div>
   );
 }
-
-export default Classement;

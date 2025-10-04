@@ -394,3 +394,20 @@ export interface ArticleLikes {
   userId: string;
   likedAt: Date;
 }
+
+export interface PlayerStats {
+  numero: string;
+  nom: string;
+  age: string;
+  position: string;
+  matches: string;
+  titularisations: string;
+  goals: string;
+  assists: string;
+  yellow_cards: string;
+  red_cards: number;
+  substitutions_in: string;
+  substitutions_out: string;
+  points_per_match: string;
+  minutes: string;
+}
