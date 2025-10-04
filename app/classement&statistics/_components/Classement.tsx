@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { Team } from "@/contexts/Interfaces";
 import Image from "next/image";
-import { teamsNames } from "@/components/TeamsNames";
 import { getTeamInfo } from "@/utils/get-team-info";
 
 // --- Styles pour les positions ---
