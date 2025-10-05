@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Heading, Film, Folder, PenTool, Tag, X, Cctv } from "lucide-react";
-import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
 import { UpdateArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
