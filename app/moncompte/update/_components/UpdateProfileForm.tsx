@@ -16,22 +16,14 @@ import { redirect } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
 
 export default function UpdateProfileForm({ user }: { user: User | null }) {
-  if (!user) {
-    return (
-      <p className="text-center font-Montserrat text-red-500">
-        Utilisateur non connecté.
-      </p>
-    );
-  }
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(
-    user.photodeprofil || "/_assets/img/pdpdebase.png"
+    user?.photodeprofil || "/_assets/img/pdpdebase.png"
   );
   const [deletePDPPopupOpen, setDeletePDPPopupOpen] = useState(false);
 
   // Formatage date YYYY-MM-DD pour affichage dans input date
-  const formattedBirthday = user.birthday
+  const formattedBirthday = user?.birthday
     ? new Date(user.birthday).toISOString().substring(0, 10)
     : "";
 
@@ -42,12 +34,20 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
   } = useForm<UpdateProfileSchemaType>({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
-      name: user.name,
+      name: user?.name,
       birthday: formattedBirthday,
-      email: user.email,
-      photodeprofil: user.photodeprofil || "",
+      email: user?.email,
+      photodeprofil: user?.photodeprofil || "",
     },
   });
+
+  if (!user) {
+    return (
+      <p className="text-center font-Montserrat text-red-500">
+        Utilisateur non connecté.
+      </p>
+    );
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
