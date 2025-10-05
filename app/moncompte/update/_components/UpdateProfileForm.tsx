@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Button from "@/components/BlueButton";
 import { Cake, Mail, X, Trash, UserIcon } from "lucide-react";
 import { UpdateProfileSchemaType } from "@/types/forms";
 import { UpdateProfileSchema } from "@/app/schema";
