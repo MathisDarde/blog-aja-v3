@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import SearchInput from "./SearchInput";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "@/components/BlueButton";
 import { Article, Filter } from "@/contexts/Interfaces";
 import FilterContent from "./FilterContent";
 

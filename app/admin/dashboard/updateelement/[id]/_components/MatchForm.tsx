@@ -11,7 +11,6 @@ import {
   Dumbbell,
   FileQuestion,
   FolderPen,
-  Loader2,
   PaintbrushVertical,
   Plus,
   Trash,
@@ -326,10 +325,6 @@ export default function MatchForm({
       setValue("couleur2equipe2", value);
     }
   };
-
-  const filteredFiles = fileList.filter((file) =>
-    file.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   useFormErrorToasts(errors);
 

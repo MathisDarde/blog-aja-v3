@@ -669,7 +669,7 @@ export default function MatchForm() {
                     />
                     <button
                       type="button"
-                      onClick={() => openModalTeam1(index)}
+                      onClick={() => openModalTeam2(index)}
                       className="ml-1 text-aja-blue"
                     >
                       <FileQuestion size={20} />

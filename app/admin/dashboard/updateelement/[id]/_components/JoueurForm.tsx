@@ -7,7 +7,6 @@ import {
   FolderPen,
   Footprints,
   Handshake,
-  Loader2,
   Plus,
   Ruler,
   ShieldHalf,
@@ -214,10 +213,6 @@ export default function JoueurForm({
       );
     }
   };
-
-  const filteredFiles = fileList.filter((file) =>
-    file.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   useFormErrorToasts(errors);
 

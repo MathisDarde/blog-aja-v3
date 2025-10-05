@@ -16,7 +16,6 @@ import {
   ChartBarBig,
   Clock4,
   FileQuestion,
-  Loader2,
   Plus,
   Trash,
   WholeWord,
@@ -206,10 +205,6 @@ export default function SaisonForm({
       );
     }
   };
-
-  const filteredFiles = fileList.filter((file) =>
-    file.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   useFormErrorToasts(errors);
 

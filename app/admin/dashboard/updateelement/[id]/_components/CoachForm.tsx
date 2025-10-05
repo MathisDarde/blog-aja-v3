@@ -216,10 +216,6 @@ export default function CoachForm({
     }
   };
 
-  const filteredFiles = fileList.filter((file) =>
-    file.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   useFormErrorToasts(errors);
 
   if (!selectedMethode)
