@@ -17,7 +17,7 @@ export default function Section({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center bg-gray-100 px-4 py-3 font-semibold text-gray-700"
+        className="w-full flex text-left justify-between items-center bg-gray-100 px-4 py-3 font-semibold text-gray-700"
       >
         {title}
         {open ? <ChevronUp /> : <ChevronDown />}
