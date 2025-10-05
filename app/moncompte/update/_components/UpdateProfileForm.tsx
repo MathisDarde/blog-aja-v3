@@ -41,6 +41,8 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
     },
   });
 
+  useFormErrorToasts(errors);
+
   if (!user) {
     return (
       <p className="text-center font-Montserrat text-red-500">
@@ -126,8 +128,6 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
       );
     }
   };
-
-  useFormErrorToasts(errors);
 
   return (
     <div className="max-w-[600px] mx-auto">
