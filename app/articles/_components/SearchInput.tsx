@@ -9,7 +9,7 @@ const SearchInput = ({
   onSubmit,
 }: SearchInputProps) => {
   return (
-    <div className="relative z-10">
+    <div className="w-full relative z-10">
       <form onSubmit={onSubmit}>
         <span>
           <Search className="absolute hidden md:block left-4 top-1/2 -translate-y-1/2 text-lg text-gray-600 cursor-pointer" />
@@ -18,14 +18,14 @@ const SearchInput = ({
           type="text"
           value={value}
           onChange={onChange}
-          className="md:w-[750px] h-12 rounded-full md:pl-14 pl-4 pr-28 text-sm border border-gray-600 font-Montserrat"
+          className="w-full h-12 rounded-full md:pl-14 pl-4 pr-28 text-xs sm:text-sm border border-gray-600 font-Montserrat"
           placeholder="Rechercher un article..."
         />
 
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-lg text-gray-600 cursor-pointer border-l border-gray-600 pl-4">
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-lg text-gray-600 cursor-pointer border-l border-gray-600 pl-2 sm:pl-4">
           <button
             type="button"
-            className="flex gap-2 items-center text-sm font-Montserrat"
+            className="flex gap-1 sm:gap-2 items-center text-xs sm:text-sm font-Montserrat"
             onClick={onFilterClick}
           >
             Filtrer <ArrowDown size={16} />

@@ -7,8 +7,15 @@ import SearchInput from "./SearchInput";
 import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/components/BlueButton";
 import { Article, Filter } from "@/contexts/Interfaces";
+import FilterContent from "./FilterContent";
 
-export default function ArticleCenter({ articles, filters }: { articles: Article[], filters: Filter[] }) {
+export default function ArticleCenter({
+  articles,
+  filters,
+}: {
+  articles: Article[];
+  filters: Filter[];
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -23,7 +30,10 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
         setIsFilterOpen(false);
       }
     }
@@ -101,19 +111,21 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
     const qLower = searchQuery.toLowerCase();
 
     return articles.filter((article) => {
-      const tags = article.tags?.map(t => t.toLowerCase()) || [];
+      const tags = article.tags?.map((t) => t.toLowerCase()) || [];
       const content = article.content?.toLowerCase() || "";
       const teaser = article.teaser?.toLowerCase() || "";
       const author = article.author?.toLowerCase() || "";
 
       // Filtre exact sur les tags year, player, league
       if (yearfilter && !tags.includes(yearfilter.toLowerCase())) return false;
-      if (playerfilter && !tags.includes(playerfilter.toLowerCase())) return false;
-      if (leaguefilter && !tags.includes(leaguefilter.toLowerCase())) return false;
+      if (playerfilter && !tags.includes(playerfilter.toLowerCase()))
+        return false;
+      if (leaguefilter && !tags.includes(leaguefilter.toLowerCase()))
+        return false;
 
       // Recherche textuelle sur contenu, teaser, auteur ou tags
       if (qLower) {
-        const inTags = tags.some(tag => tag.includes(qLower));
+        const inTags = tags.some((tag) => tag.includes(qLower));
         if (
           !(
             content.includes(qLower) ||
@@ -131,12 +143,12 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
   }, [articles, searchQuery, yearfilter, playerfilter, leaguefilter]);
 
   return (
-    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 md:p-10">
+      <h1 className="text-center font-Bai_Jamjuree text-3xl md:text-4xl font-bold uppercase mb-4 md:mb-10">
         Rechercher un article
       </h1>
 
-      <div className="relative flex items-center justify-center max-w-[500px] mx-auto">
+      <div className="w-full max-w-[750px] mx-auto relative flex items-center justify-center">
         <SearchInput
           value={searchValue}
           onChange={handleSearchChange}
@@ -147,91 +159,40 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
         {isFilterOpen && (
           <div
             ref={filterRef}
-            className="absolute z-10 mt-4 w-[748px] p-4 bg-white ring-1 ring-black ring-opacity-5 top-3 right-1/2 transform translate-x-1/2"
+            className="absolute z-[5] mt-4 w-full max-w-[748px] p-4 bg-white ring-1 ring-black ring-opacity-5 top-3 right-1/2 transform translate-x-1/2"
           >
             <div className="py-1">
-              <div className="grid grid-cols-3 gap-4 p-4 font-Montserrat">
-                {/* Années */}
-                <div>
-                  <h3 className="text-lg font-semibold border-b pb-2 mb-2">
-                    Années
-                  </h3>
-                  {filters
-                    .filter(filter => filter.type === "year")
-                    .map(filter => (
-                      <button
-                        key={filter.id}
-                        onClick={() => applyFilter("year", filter.value)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                      >
-                        {filter.tag}
-                      </button>
-                    ))}
-                </div>
-
-                {/* Joueurs */}
-                <div>
-                  <h3 className="text-lg font-semibold border-b pb-2 mb-2">
-                    Joueurs
-                  </h3>
-                  {filters
-                    .filter(filter => filter.type === "player")
-                    .map(filter => (
-                      <button
-                        key={filter.id}
-                        onClick={() => applyFilter("player", filter.value)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                      >
-                        {filter.tag}
-                      </button>
-                    ))}
-                </div>
-
-                {/* Ligues */}
-                <div>
-                  <h3 className="text-lg font-semibold border-b pb-2 mb-2">
-                    Ligues
-                  </h3>
-                  {filters
-                    .filter(filter => filter.type === "league")
-                    .map(filter => (
-                      <button
-                        key={filter.id}
-                        onClick={() => applyFilter("league", filter.value)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                      >
-                        {filter.tag}
-                      </button>
-                    ))}
-                </div>
-              </div>
+              <FilterContent filters={filters} applyFilter={applyFilter} />
             </div>
           </div>
         )}
       </div>
 
       <div className="mt-4">
-        <Button onClick={clearFilters} className="px-6 py-2">
+        <button
+          onClick={clearFilters}
+          className="justify-center items-center bg-aja-blue inline-flex px-6 py-2 rounded-full font-Montserrat text-white text-xs sm:text-sm"
+        >
           Réinitialiser la recherche
-        </Button>
+        </button>
       </div>
 
-      <div className="relative w-[1500px] mx-auto">
-        <p className="text-xl font-Montserrat font-semibold text-left ml-12 py-6 ">
+      <div className="relative max-w-[1500px] mx-auto">
+        <p className="text-base sm:text-lg md:text-xl font-Montserrat font-semibold text-center md:text-left ml-0 md:ml-12 py-3 md:py-6 ">
           Résultats les plus pertinents :
         </p>
 
         {(searchQuery || yearfilter || playerfilter || leaguefilter) && (
           <div className="mb-2 flex flex-wrap gap-2 justify-center font-Montserrat">
             {searchQuery && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
                 Recherche : {searchQuery}
               </span>
             )}
             {yearfilter && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
                 Année :{" "}
-                {filters.find(f => f.value === yearfilter)?.tag || yearfilter}
+                {filters.find((f) => f.value === yearfilter)?.tag || yearfilter}
                 <button
                   onClick={() => removeFilter("year")}
                   className="ml-2 text-white font-bold hover:text-gray-300"
@@ -242,9 +203,10 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
               </span>
             )}
             {playerfilter && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
                 Joueur :{" "}
-                {filters.find(f => f.value === playerfilter)?.tag || playerfilter}
+                {filters.find((f) => f.value === playerfilter)?.tag ||
+                  playerfilter}
                 <button
                   onClick={() => removeFilter("player")}
                   className="ml-2 text-white font-bold hover:text-gray-300"
@@ -255,9 +217,10 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
               </span>
             )}
             {leaguefilter && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
                 Ligue :{" "}
-                {filters.find(f => f.value === leaguefilter)?.tag || leaguefilter}
+                {filters.find((f) => f.value === leaguefilter)?.tag ||
+                  leaguefilter}
                 <button
                   onClick={() => removeFilter("league")}
                   className="ml-2 text-white font-bold hover:text-gray-300"
@@ -272,10 +235,10 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
 
         <div
           id="articlecontainerteaser"
-          className="grid grid-cols-3 justify-items-center gap-6 my-2 mx-5"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center gap-3 lg:gap-6 my-2 mx-0 lg:mx-5"
         >
           {filteredArticles.length === 0 ? (
-            <p className="col-span-3 text-center text-gray-600 font-Montserrat py-10">
+            <p className="col-span-3 text-center text-sm sm:text-base text-gray-600 font-Montserrat py-5 sm:py-10">
               Aucun article ne correspond à votre recherche.
             </p>
           ) : (
@@ -285,7 +248,7 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
                 key={index}
                 className="w-full h-full"
               >
-                <div className="flex flex-col bg-white rounded text-center p-6 h-full">
+                <div className="flex flex-col bg-white rounded text-center p-4 lg:p-6 h-full">
                   <Image
                     className="inline-block w-full h-auto mx-auto rounded-sm object-cover aspect-video object-top"
                     width={512}
@@ -293,12 +256,12 @@ export default function ArticleCenter({ articles, filters }: { articles: Article
                     src={article.imageUrl}
                     alt={article.title}
                   />
-                  <h2 className="text-justify text-black font-semibold font-Montserrat text-lg pt-4 py-2 pr-2 mx-auto">
+                  <h2 className="text-justify text-black font-semibold font-Montserrat text-base sm:text-lg md:text-base lg:text-lg pt-4 py-2 pr-2 mx-auto">
                     {article.title}
                   </h2>
-                  <p className="text-black text-justify font-Montserrat mx-auto text-sm leading-5">
+                  <p className="text-black text-justify font-Montserrat mx-auto text-xs sm:text-sm md:text-xs lg:text-sm leading-5">
                     {article.teaser}
-                    </p>
+                  </p>
                 </div>
               </Link>
             ))
