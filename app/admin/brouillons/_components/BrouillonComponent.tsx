@@ -4,7 +4,11 @@ import { Article } from "@/contexts/Interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export default function BrouillonComponent({ brouillons }: { brouillons: Article[] }) {
+export default function BrouillonComponent({
+  brouillons,
+}: {
+  brouillons: Article[];
+}) {
   const router = useRouter();
 
   const handleEditClick = (brouillon: Article) => {
@@ -12,12 +16,12 @@ export default function BrouillonComponent({ brouillons }: { brouillons: Article
   };
 
   return (
-    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-10">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 md:p-10">
+      <h1 className="text-center font-Bai_Jamjuree text-4xl font-bold uppercase mb-6 sm:mb-10">
         Brouillons
       </h1>
 
-      <div className="grid grid-cols-3 justify-items-center gap-6 my-2 mx-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-6 my-2 mx-0 md:mx-5">
         {brouillons.length === 0 ? (
           <div id="noarticlefound" className="col-span-2">
             <p className="flex items-center justify-center text-2xl font-bold text-center mt-8">

@@ -30,6 +30,7 @@ import updateMethodeJoueurForm from "@/actions/method/update-joueur-form";
 import { UpdateMethodeJoueurFromProps } from "@/contexts/Interfaces";
 import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import LogoSelectorModal from "@/components/ClubLogoSelector";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -223,63 +224,15 @@ export default function JoueurForm({
   return (
     <div className="w-[600px] mx-auto">
       {modal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white font-Montserrat rounded-lg p-6 w-[500px] max-h-[80vh] overflow-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">
-                Sélection d&apos;un logo de club
-              </h3>
-              <button
-                onClick={() => setModal(false)}
-                className="text-gray-500 hover:text-red-500"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Rechercher un logo..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-
-            {loading ? (
-              <div className="flex justify-center items-center h-40">
-                <Loader2 className="animate-spin" />
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 gap-3">
-                {filteredFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className="border rounded p-2 cursor-pointer hover:bg-gray-100 flex flex-col items-center"
-                    onClick={() => selectFile(file)}
-                  >
-                    <Image
-                      width={100}
-                      height={100}
-                      src={`${IMAGE_PATHS.clubs}${file}`}
-                      alt={file}
-                      className="h-12 object-contain mb-2"
-                    />
-                    <span className="text-xs text-center truncate w-full">
-                      {file.split(".")[0]}
-                    </span>
-                  </div>
-                ))}
-                {filteredFiles.length === 0 && (
-                  <div className="col-span-3 text-center py-4 text-gray-500">
-                    Aucun fichier trouvé
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        <LogoSelectorModal
+          open={modal}
+          onClose={() => setModal(false)}
+          files={fileList}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          loading={loading}
+          onSelect={selectFile}
+        />
       )}
 
       <form
