@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
@@ -9,10 +9,10 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 
 export default function TabArticleContent({
   searchTerm,
-  articles
+  articles,
 }: {
   searchTerm: string;
-  articles: Article[]
+  articles: Article[];
 }) {
   const {
     sortElements,
@@ -60,41 +60,42 @@ export default function TabArticleContent({
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
-            <th className="p-3 text-center">Image</th>
+            <th className="p-3 text-center w-[75px]">Image</th>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[500px]"
               onClick={() => handleSort("title")}
             >
               Titre de l&apos;article{" "}
               {sortKey === "title" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[350px]"
               onClick={() => handleSort("state")}
             >
               Statut
               {sortKey === "state" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[250px]"
               onClick={() => handleSort("author")}
             >
               Auteur {sortKey === "author" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[125px]"
               onClick={() => handleSort("createdAt")}
             >
               Publié le{" "}
               {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center">
+            <th className="p-3 text-center w-[50px]">
               <></>
             </th>
           </tr>
         </thead>
         <tbody>
-          {filteredArticles.map((article) => (
+          {filteredArticles.length > 0 ? (
+            filteredArticles.map((article) => (
               <tr
                 key={article.id_article}
                 className="bg-white border-t border-gray-200"
@@ -128,7 +129,13 @@ export default function TabArticleContent({
                 </td>
               </tr>
             ))
-          }
+          ) : (
+            <tr>
+              <td colSpan={7} className="p-3 text-center text-gray-500">
+                Aucun article ne correspond.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
@@ -141,7 +148,14 @@ export default function TabArticleContent({
           }}
           ref={DashboardPopupRef}
         >
-          <ContextPopup id={DashboardPopupId} type="article" state={articles.find(a => a.id_article === DashboardPopupId)?.state ?? ""}  />
+          <ContextPopup
+            id={DashboardPopupId}
+            type="article"
+            state={
+              articles.find((a) => a.id_article === DashboardPopupId)?.state ??
+              ""
+            }
+          />
         </div>
       )}
     </div>

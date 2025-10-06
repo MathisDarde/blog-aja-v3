@@ -1,15 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import {
-  Article,
-  Category,
-  MatchAPI,
-  Methodes,
-  SortParams,
-  Team,
-} from "./Interfaces";
-import { fetchMatches } from "@/utils/matchsapi";
+import { Article, Category, Methodes, SortParams } from "./Interfaces";
 import { authClient } from "@/lib/auth-client";
 
 type SortElementsType = <T>(params: SortParams<T>) => T[];
@@ -80,21 +72,33 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     sortOrder,
   }: SortParams<T>): T[] {
     return [...elements].sort((a, b) => {
-      const aValue = a[sortKey];
-      const bValue = b[sortKey];
+      let aValue: any = a[sortKey];
+      let bValue: any = b[sortKey];
 
+      // Cas spécial pour Date
       if (aValue instanceof Date && bValue instanceof Date) {
         return sortOrder === "asc"
           ? aValue.getTime() - bValue.getTime()
           : bValue.getTime() - aValue.getTime();
       }
 
+      // Cas spécial pour admin (bool → number)
+      if (sortKey === "admin") {
+        const aBool = aValue as boolean;
+        const bBool = bValue as boolean;
+        return sortOrder === "asc"
+          ? Number(aBool) - Number(bBool)
+          : Number(bBool) - Number(aBool);
+      }
+
+      // String
       if (typeof aValue === "string" && typeof bValue === "string") {
         return sortOrder === "asc"
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       }
 
+      // Number (y compris admin transformé en 0/1)
       if (typeof aValue === "number" && typeof bValue === "number") {
         return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
       }

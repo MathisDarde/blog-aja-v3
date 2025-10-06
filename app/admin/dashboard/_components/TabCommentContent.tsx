@@ -56,76 +56,86 @@ export default function TabCommentContent({
         <thead className="bg-gray-200">
           <tr>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[250px]"
               onClick={() => handleSort("title")}
             >
               Titre {sortKey === "title" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center">Contenu</th>
+            <th className="p-3 text-center w-[350px]">Contenu</th>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[150px]"
               onClick={() => handleSort("stars")}
             >
               Note {sortKey === "stars" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[200px]"
               onClick={() => handleSort("pseudo")}
             >
               Pseudo {sortKey === "pseudo" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th
-              className="p-3 text-center cursor-pointer"
+              className="p-3 text-center cursor-pointer w-[150px]"
               onClick={() => handleSort("createdAt")}
             >
               Publié le{" "}
               {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center">
+            <th className="p-3 text-center w-[50px]">
               <></>
             </th>
           </tr>
         </thead>
         <tbody>
-          {filteredComments.map((comment) => (
-            <tr
-              key={comment.id_comment}
-              className="bg-white border-t border-gray-200"
-            >
-              <td className="p-3 text-center w-[250px]">
-                <div className="truncate max-w-[250px]">{comment.title}</div>
-              </td>
-              <td className="p-3 text-center w-[300px]">
-                <div className="truncate max-w-[300px]">{comment.content}</div>
-              </td>
-              <td className="p-3 text-center w-[150px]">
-                <div className="flex justify-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={24}
-                      fill={i < comment.stars ? "#facc15" : "none"}
-                      stroke="#facc15"
-                    />
-                  ))}
-                </div>
-              </td>
-              <td className="p-3 text-center w-[200px]">
-                <div className="truncate max-w-[200px]">{comment.pseudo}</div>
-              </td>
-              <td className="p-3 text-center w-[150px]">
-                {comment.createdAt.toLocaleDateString()}
-              </td>
-              <td
-                className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                onClick={(event: React.MouseEvent) =>
-                  openContextPopup({ id: comment.id_comment, event })
-                }
+          {filteredComments.length > 0 ? (
+            filteredComments.map((comment) => (
+              <tr
+                key={comment.id_comment}
+                className="bg-white border-t border-gray-200"
               >
-                <EllipsisVertical />
+                <td className="p-3 text-center w-[250px]">
+                  <div className="truncate max-w-[250px]">{comment.title}</div>
+                </td>
+                <td className="p-3 text-center w-[350px]">
+                  <div className="truncate max-w-[350px]">
+                    {comment.content}
+                  </div>
+                </td>
+                <td className="p-3 text-center w-[150px]">
+                  <div className="flex justify-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={24}
+                        fill={i < comment.stars ? "#facc15" : "none"}
+                        stroke="#facc15"
+                      />
+                    ))}
+                  </div>
+                </td>
+                <td className="p-3 text-center w-[200px]">
+                  <div className="truncate max-w-[200px]">{comment.pseudo}</div>
+                </td>
+                <td className="p-3 text-center w-[150px]">
+                  {comment.createdAt.toLocaleDateString()}
+                </td>
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(event: React.MouseEvent) =>
+                    openContextPopup({ id: comment.id_comment, event })
+                  }
+                >
+                  <EllipsisVertical />
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={7} className="p-3 text-center text-gray-500">
+                Aucun commentaire ne correspond.
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 

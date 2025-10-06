@@ -12,6 +12,13 @@ export default async function PageDashboard() {
   const methodes = await getAllMethodes();
 
   return (
-    <Dashboard users={users} articles={articles} comments={comments} methodes={methodes as Methodes[]} />
-  )
+    <div className="text-center bg-gray-100 h-[calc(100vh-68px)] w-screen box-border overflow-y-hidden">
+      <Dashboard
+        users={users}
+        articles={articles}
+        comments={comments}
+        methodes={methodes as Methodes[]}
+      />
+    </div>
+  );
 }

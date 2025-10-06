@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { db } from "@/db/db";
 import { commentsTable, SelectComment, user } from "@/db/schema";
@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 export async function getComments(): Promise<
   Array<{
     id_comment: string;
+    articleId: string;
     stars: number;
     title: string;
     content: string;
@@ -22,6 +23,7 @@ export async function getComments(): Promise<
   return db
     .select({
       id_comment: commentsTable.id_comment,
+      articleId: commentsTable.articleId,
       stars: commentsTable.stars,
       title: commentsTable.title,
       content: commentsTable.content,
@@ -142,6 +144,7 @@ export async function getCommentsByUser(
 ): Promise<
   Array<{
     id_comment: string;
+    articleId: string;
     stars: number;
     title: string;
     content: string;
@@ -155,6 +158,7 @@ export async function getCommentsByUser(
   return db
     .select({
       id_comment: commentsTable.id_comment,
+      articleId: commentsTable.articleId,
       stars: commentsTable.stars,
       title: commentsTable.title,
       content: commentsTable.content,

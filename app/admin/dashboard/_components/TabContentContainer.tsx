@@ -1,27 +1,74 @@
-"use client"
+"use client";
 
-import React from "react";
+import React, { useState } from "react";
 import TabUserContent from "./TabUserContent";
 import TabArticleContent from "./TabArticleContent";
 import TabMethodeContent from "./TabMethodeContent";
 import TabCommentContent from "./TabCommentContent";
 import { Search } from "lucide-react";
-import { Article, Comment, Methodes, TabContentContainerProps, User } from "@/contexts/Interfaces";
+import {
+  Article,
+  Comment,
+  Methodes,
+  TabContentContainerProps,
+  User,
+} from "@/contexts/Interfaces";
 
 export default function TabContentContainer({
-  activeMenu,
   searchTerm,
   setSearchTerm,
   users,
   articles,
   methodes,
-  comments
+  comments,
 }: TabContentContainerProps) {
+  const [activeMenu, setActiveMenu] = useState("users");
 
   return (
-    <div className="bg-white p-6 rounded-xl h-full overflow-y-auto w-fit">
+    <div className="bg-white p-6 rounded-xl h-full overflow-y-auto w-full">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-left uppercase font-semibold">Éléments publiés</h3>
+        <div className="flex items-center gap-10">
+          <p
+            className={`cursor-pointer ${
+              activeMenu === "users"
+                ? "border-b-2 border-aja-blue font-semibold"
+                : ""
+            }`}
+            onClick={() => setActiveMenu("users")}
+          >
+            Utilisateurs
+          </p>
+          <p
+            className={`cursor-pointer ${
+              activeMenu === "articles"
+                ? "border-b-2 border-aja-blue font-semibold"
+                : ""
+            }`}
+            onClick={() => setActiveMenu("articles")}
+          >
+            Articles
+          </p>
+          <p
+            className={`cursor-pointer ${
+              activeMenu === "methodes"
+                ? "border-b-2 border-aja-blue font-semibold"
+                : ""
+            }`}
+            onClick={() => setActiveMenu("methodes")}
+          >
+            Méthodes expert
+          </p>
+          <p
+            className={`cursor-pointer ${
+              activeMenu === "comments"
+                ? "border-b-2 border-aja-blue font-semibold"
+                : ""
+            }`}
+            onClick={() => setActiveMenu("comments")}
+          >
+            Commentaires
+          </p>
+        </div>
 
         <div className="relative">
           <form onSubmit={(e) => e.preventDefault()}>
@@ -41,15 +88,26 @@ export default function TabContentContainer({
           </form>
         </div>
       </div>
-      {activeMenu === "users" && <TabUserContent searchTerm={searchTerm} users={users as User[]} />}
-      {activeMenu === "articles" && (
-        <TabArticleContent searchTerm={searchTerm} articles={articles as Article[]} />
+      {activeMenu === "users" && (
+        <TabUserContent searchTerm={searchTerm} users={users as User[]} />
       )}
-      {activeMenu === "methodeexpert" && (
-        <TabMethodeContent searchTerm={searchTerm} methodes={methodes as Methodes[]} />
+      {activeMenu === "articles" && (
+        <TabArticleContent
+          searchTerm={searchTerm}
+          articles={articles as Article[]}
+        />
+      )}
+      {activeMenu === "methodes" && (
+        <TabMethodeContent
+          searchTerm={searchTerm}
+          methodes={methodes as Methodes[]}
+        />
       )}
       {activeMenu === "comments" && (
-        <TabCommentContent searchTerm={searchTerm} comments={comments as Comment[]} />
+        <TabCommentContent
+          searchTerm={searchTerm}
+          comments={comments as Comment[]}
+        />
       )}
     </div>
   );

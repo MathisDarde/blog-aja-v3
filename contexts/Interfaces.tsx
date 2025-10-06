@@ -230,6 +230,7 @@ export interface UpdateMethodeCoachFromProps {
 
 export interface Comment {
   id_comment: string;
+  articleId: string;
   stars: number;
   title: string;
   content: string;
@@ -282,7 +283,6 @@ export interface DashboardElementProps {
 }
 
 export interface TabContentContainerProps {
-  activeMenu: string;
   searchTerm: string;
   setSearchTerm: React.Dispatch<string>;
   users: User[];

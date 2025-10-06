@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { db } from "@/db/db";
 import { SelectUser, user } from "@/db/schema";
@@ -9,15 +9,11 @@ import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
-export async function getUserbyId(id: SelectUser["id"]): Promise<
-SelectUser[]
-> {
+export async function getUserbyId(id: SelectUser["id"]): Promise<SelectUser[]> {
   return db.select().from(user).where(eq(user.id, id));
 }
 
-export async function getAllUsers(): Promise<
-SelectUser[]
-> {
+export async function getAllUsers(): Promise<SelectUser[]> {
   return db.select().from(user);
 }
 
