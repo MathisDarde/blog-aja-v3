@@ -1,6 +1,5 @@
 "use client";
 
-import Button from "@/components/BlueButton";
 import { Cake, Calendar1, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,7 +23,7 @@ export default function UserPreview({
         <h2 className="font-bold text-3xl sm:text-4xl font-Montserrat uppercase mb-4 mt-0 lg:mt-10">
           Vue de l&apos;utilisateur
         </h2>
-        <div className="w-full gap-4 px-0 sm:px-4 my-10">
+        <div className="w-full max-w-[1300px] mx-auto gap-4 px-0 sm:px-4 my-10">
           {user ? (
             <>
               <div className="flex flex-col lg:flex-row gap-4">
@@ -45,7 +44,9 @@ export default function UserPreview({
                   <div className="flex items-center gap-2 text-sm sm:text-base">
                     <Mail width={20} height={20} />
                     <span className="font-medium hidden sm:block">Email :</span>
-                    <p className="sm:max-w-[200px] sm:truncate">{user.email}</p>
+                    <p className="max-w-[200px] sm:max-w-[300px] truncate">
+                      {user.email}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2 text-sm sm:text-base">
                     <Cake width={20} height={20} />
@@ -187,12 +188,17 @@ export default function UserPreview({
 
               <div className="mt-8">
                 <Link href={"/admin/dashboard"}>
-                  <Button>Retourner au dashboard</Button>
+                  <button
+                    type="button"
+                    className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+                  >
+                    Retourner au dashboard
+                  </button>
                 </Link>
               </div>
             </>
           ) : (
-            <p className="text-gray-600">
+            <p className="text-gray-600 font-Montserrat text-center">
               Aucune information utilisateur trouvée.
             </p>
           )}
