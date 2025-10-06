@@ -404,8 +404,8 @@ export interface PlayerStats {
   position: string;
   matches: string;
   titularisations: string;
-  goals: string;
-  assists: string;
+  goals: number;
+  assists: number;
   yellow_cards: string;
   red_cards: number;
   substitutions_in: string;
