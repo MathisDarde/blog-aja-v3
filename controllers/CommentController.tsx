@@ -61,6 +61,7 @@ export async function getCommentbyId(
 ): Promise<
   Array<{
     id_comment: string;
+    articleId: string;
     stars: number;
     title: string;
     content: string;
@@ -74,6 +75,7 @@ export async function getCommentbyId(
   return db
     .select({
       id_comment: commentsTable.id_comment,
+      articleId: commentsTable.articleId,
       stars: commentsTable.stars,
       title: commentsTable.title,
       content: commentsTable.content,
@@ -112,6 +114,7 @@ export async function getCommentsbyArticle(
 ): Promise<
   Array<{
     id_comment: string;
+    articleId: string;
     stars: number;
     title: string;
     content: string;
@@ -125,6 +128,7 @@ export async function getCommentsbyArticle(
   return db
     .select({
       id_comment: commentsTable.id_comment,
+      articleId: commentsTable.articleId,
       stars: commentsTable.stars,
       title: commentsTable.title,
       content: commentsTable.content,
