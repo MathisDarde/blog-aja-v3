@@ -1,5 +1,20 @@
 import React from "react";
-import { House, Newspaper, ShoppingCart, Ellipsis, Trophy, List, Calendar1, ChartBarBig, MessageCircle, Mic2, DraftingCompass, GlassesIcon, LayoutDashboard, FolderLock } from "lucide-react";
+import {
+  House,
+  Newspaper,
+  ShoppingCart,
+  Ellipsis,
+  Trophy,
+  List,
+  Calendar1,
+  ChartBarBig,
+  MessageCircle,
+  Mic2,
+  DraftingCompass,
+  GlassesIcon,
+  LayoutDashboard,
+  FolderLock,
+} from "lucide-react";
 
 export const SidebarData = [
   {
@@ -52,7 +67,7 @@ export const AutresDropdownData = [
   {
     title: "Effectif Actuel",
     icon: <List size={20} />,
-    image: "/_assets/img/gawet.webp",
+    image: "/_assets/img/danois.webp",
     description:
       "Vous avez accès à l'ensemble des membres de l'effectif de l'AJA et leurs informations personnelles, ainsi que les membres du staff.",
     link: "/effectifactuel",
@@ -61,7 +76,7 @@ export const AutresDropdownData = [
   {
     title: "Calendrier",
     icon: <Calendar1 size={20} />,
-    image: "/_assets/img/gawet.webp",
+    image: "/_assets/img/imagecalendrier.jfif",
     description:
       "Accédez maintenant au calendrier complet des matchs de l'AJ Auxerre sur la saison 2025-2026.",
     link: "/calendrier",
@@ -70,9 +85,9 @@ export const AutresDropdownData = [
   {
     title: "Classements & Stats",
     icon: <ChartBarBig size={20} />,
-    image: "/_assets/img/gawet.webp",
+    image: "/_assets/img/ligue2.jpg",
     description:
-      "Visualiser le classement actuel de la Ligue 1 et consultez les statistiques de vos joueurs préférés.",
+      "Visualisez le classement actuel de la Ligue 1 et consultez les statistiques de vos joueurs préférés.",
     link: "/classement&statistics",
     dropdown: false,
   },
