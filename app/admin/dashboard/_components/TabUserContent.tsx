@@ -2,10 +2,11 @@
 
 import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ContextPopup from "./ContextPopup";
 import { User, UserSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { createPortal } from "react-dom";
 
 export default function TabUserContent({
   searchTerm,
@@ -16,14 +17,14 @@ export default function TabUserContent({
 }) {
   const {
     sortElements,
-    openContextPopup,
-    DashboardPopupId,
-    DashboardPopupPosition,
-    DashboardPopupRef,
   } = useGlobalContext();
 
   const [sortKey, setSortKey] = useState<UserSortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
+
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const sortedUsers = sortElements({ elements: users, sortKey, sortOrder });
 
@@ -46,6 +47,28 @@ export default function TabUserContent({
       setSortOrder("asc");
     }
   };
+
+  const handleOpenPopup = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    setSelectedUserId((prev) => (prev === id ? null : id));
+    setPopupPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+    });
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        setSelectedUserId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedUser = users.find((a) => a.id === selectedUserId);
 
   return (
     <div className="overflow-x-auto w-fit">
@@ -127,12 +150,8 @@ export default function TabUserContent({
                 <td className="p-3 text-center w-[125px]">
                   {user.admin ? "Admin" : "Membre"}
                 </td>
-                <td
-                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(event: React.MouseEvent) =>
-                    openContextPopup({ id: user.id, event })
-                  }
-                >
+                <td className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e) => handleOpenPopup(user.id, e)}>
                   <EllipsisVertical />
                 </td>
               </tr>
@@ -147,18 +166,13 @@ export default function TabUserContent({
         </tbody>
       </table>
 
-      {DashboardPopupId && DashboardPopupPosition && (
-        <div
-          className="absolute z-50"
-          style={{
-            top: DashboardPopupPosition.top,
-            left: DashboardPopupPosition.left,
-          }}
-          ref={DashboardPopupRef}
-        >
-          <ContextPopup id={DashboardPopupId} type="user" />
-        </div>
-      )}
+      {selectedUser && popupPosition &&
+        createPortal(
+          <div ref={popupRef} className="absolute z-50" style={{ top: popupPosition.top, left: popupPosition.left }}>
+            <ContextPopup id={selectedUser.id} type="user" isAdmin={selectedUser.admin} />
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

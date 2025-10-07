@@ -279,6 +279,7 @@ export interface DashboardElementProps {
   id: string;
   type: string;
   state?: string;
+  isAdmin?: boolean | null;
 }
 
 export interface TabContentContainerProps {

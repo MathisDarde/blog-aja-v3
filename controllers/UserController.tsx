@@ -124,3 +124,19 @@ export async function deleteUserPic(id: SelectUser["id"]) {
     return false;
   }
 }
+
+export async function setUserAdmin(id: SelectUser["id"]) {
+  const result = await db.update(user)
+    .set({ admin: true })
+    .where(eq(user.id, id));
+
+  return result;
+}
+
+export async function removeUserAdmin(id: SelectUser["id"]) {
+  const result = await db.update(user)
+    .set({ admin: false })
+    .where(eq(user.id, id));
+
+  return result;
+}

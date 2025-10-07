@@ -10,6 +10,7 @@ import {
   Pencil,
   SquareArrowOutUpRight,
   Trash,
+  UserPlus2,
 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -17,11 +18,15 @@ import { DashboardElementProps } from "@/contexts/Interfaces";
 import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
 import { useRouter } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
+import giveUserAdmin from "@/actions/user/set-user-admin";
+import removeUserAdminRole from "@/actions/user/remove-user-admin";
 
-export default function ContextPopup({ id, type, state }: DashboardElementProps) {
+export default function ContextPopup({ id, type, state, isAdmin }: DashboardElementProps) {
   const router = useRouter();
 
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [giveAdminPopupOpen, setGiveAdminPopupOpen] = useState(false);
+  const [removeAdminPopupOpen, setRemoveAdminPopupOpen] = useState(false);
 
   const deleteElement = async (id: string, type: string) => {
     if (!id) {
@@ -147,9 +152,27 @@ export default function ContextPopup({ id, type, state }: DashboardElementProps)
     }
   };
 
+  const handleAdminRole = async (id: string) => {
+    if (isAdmin) {
+      try {
+        const update = await giveUserAdmin(id);
+        toast.success("L'utilisateur est désormais administrateur.")
+      } catch {
+        toast.error("Une erreur s'est produite lors de la mise à jour.")
+      }
+    } else {
+      try {
+        const update = await removeUserAdminRole(id);
+        toast.success("L'utilisateur ne possède plus administrateur.")
+      } catch {
+        toast.error("Une erreur s'est produite lors de la mise à jour.")
+      }
+    }
+  }
+
   return (
     <>
-      <div className="bg-white p-2 rounded-xl flex flex-col gap-2 border border-gray-300">
+      <div className="bg-white p-2 rounded-xl flex flex-col gap-2 border border-gray-300 font-Montserrat">
         {type !== "method" && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
@@ -179,6 +202,15 @@ export default function ContextPopup({ id, type, state }: DashboardElementProps)
             Archiver
           </div>
         )}
+        {type == "user" && (
+          <div
+            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
+            onClick={() => handleAdminRole(id)}
+          >
+            <UserPlus2 size={20} color="oklch(55.4% 0.046 257.417)" />{" "}
+              {isAdmin ? "Rétrograder" : "Promouvoir"}
+          </div>
+        )}
         <div
           className="group px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-red-400 hover:text-white"
           onClick={() => setDeletePopupOpen(true)}
@@ -191,6 +223,55 @@ export default function ContextPopup({ id, type, state }: DashboardElementProps)
         </div>
       </div>
 
+      {/* Confirm give admin popup */}
+      {giveAdminPopupOpen && (
+        <ActionPopup
+          onClose={() => setGiveAdminPopupOpen(false)}
+          title="Conférer le rôle admin ?"
+          description="Souhaitez-vous donner à cet utilisateur le rôle admin. Par conséquent, l'utilisateur aura l'intégralité des droits et pourra ainsi modifier et supprimer des données ?"
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setGiveAdminPopupOpen(false),
+              theme: "discard",
+            },
+            {
+              label: "Confirmer",
+              onClick: async () => {
+                await handleAdminRole(id);
+                setGiveAdminPopupOpen(false);
+              },
+              theme: "confirm",
+            },
+          ]}
+        />
+      )}
+
+      {/* Confirm remove admin popup */}
+      {removeAdminPopupOpen && (
+        <ActionPopup
+          onClose={() => setRemoveAdminPopupOpen(false)}
+          title="Supprimer le rôle admin ?"
+          description="Souhaitez-vous retirer à cet utilisateur le rôle admin. Par conséquent, l'utilisateur ne pourra ainsi plus modifier ou supprimer des données, à l'exception des siennes."
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setRemoveAdminPopupOpen(false),
+              theme: "discard",
+            },
+            {
+              label: "Supprimer",
+              onClick: async () => {
+                await handleAdminRole(id);
+                setRemoveAdminPopupOpen(false);
+              },
+              theme: "delete",
+            },
+          ]}
+        />
+      )}
+
+      {/* Confirm delete element popup */}
       {deletePopupOpen && (
         <ActionPopup 
         onClose={() => setDeletePopupOpen(false)}
