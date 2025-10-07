@@ -7,14 +7,12 @@ import {
   MethodeMatch,
   MethodeSaison,
 } from "@/contexts/Interfaces";
-import { ChevronLeft } from "lucide-react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useParams, useRouter } from "next/navigation";
 import JoueurForm from "./JoueurForm";
 import CoachForm from "./CoachForm";
 import SaisonForm from "./SaisonForm";
 import MatchForm from "./MatchForm";
-import ActionPopup from "@/components/ActionPopup";
 
 export type Methodes =
   | MethodeJoueur
@@ -34,35 +32,10 @@ export default function MethodeUpdate({ methodes }: { methodes: Methodes[] }) {
   const methode = getMethodeById(methodes, methodeId);
 
   return (
-    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-      {leaveChangesPopupOpen && (
-        <ActionPopup
-          onClose={() => setLeaveChangesPopupOpen(false)}
-          title="Quitter la modification ?"
-          description="Êtes-vous sur de vouloir quitter la page ? Vous perdrez toutes vos modifications et celles-ci ne pourront pas être récupérées."
-          actions={[
-            {
-              label: "Annuler",
-              onClick: () => setLeaveChangesPopupOpen(false),
-              theme: "discard",
-            },
-            {
-              label: "Quitter",
-              onClick: () => {
-                router.push(`/admin/dashboard`);
-                setLeaveChangesPopupOpen(false);
-              },
-              theme: "confirm",
-            },
-          ]}
-        />
-      )}
-
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">
       <h1
-        className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
-        onClick={() => setLeaveChangesPopupOpen(true) }
-      >
-        <ChevronLeft /> Formulaire de modification de méthode expert
+        className="font-bold font-Bai_Jamjuree uppercase text-2xl sm:text-3xl mb-4 sm:mb-10 flex items-center justify-center gap-3 cursor-pointer"
+      > Formulaire de modification de méthode expert
       </h1>
 
       <div>

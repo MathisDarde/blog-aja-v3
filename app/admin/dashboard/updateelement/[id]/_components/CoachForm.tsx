@@ -3,7 +3,6 @@
 import { getTeamLogos } from "@/actions/method/get-logos-files";
 import updateMethodeCoachForm from "@/actions/method/update-coach-form";
 import { UpdateMethodeCoachSchema } from "@/app/schema";
-import Button from "@/components/BlueButton";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -226,7 +225,7 @@ export default function CoachForm({
     );
 
   return (
-    <div className="w-[600px] mx-auto">
+    <div className="w-full mx-auto">
       {modal && (
         <LogoSelectorModal
           open={modal}
@@ -242,11 +241,11 @@ export default function CoachForm({
       <form
         method="POST"
         id="methodesaisonform"
-        className="w-[600px]"
+        className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
         {/* Image coach */}
-        <div className="relative w-[600px] mx-auto">
+        <div className="relative w-full mx-auto">
           {previewPhoto && (
             <div className="w-fit mb-4 relative mx-auto">
               <Image
@@ -267,14 +266,14 @@ export default function CoachForm({
           />
           <label
             htmlFor="fileInput"
-            className="underline text-aja-blue font-Montserrat cursor-pointer"
+            className="underline text-aja-blue font-Montserrat text-sm sm:text-base cursor-pointer"
           >
             Modifier la photo du coach ?
           </label>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
             Mots-clés :
           </span>
@@ -285,7 +284,7 @@ export default function CoachForm({
                 type="text"
                 placeholder={`Mot clé ${index + 1} (ex: Guy Roux)`}
                 {...register(`keywords.${index}.value`)}
-                className="flex-1 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+                className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               />
               {keywordsfield.length > 1 && (
                 <button
@@ -302,40 +301,40 @@ export default function CoachForm({
           <button
             type="button"
             onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter un mot-clé
           </button>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <FolderPen className="mr-4" />
             Nom du coach :
           </span>
           <input
             type="text"
             {...register("nomcoach")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nom du joueur (ex: Guy Roux)"
           />
         </div>
 
-        <div className="relative w-[600px] mb-4">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ShieldHalf className="mr-4" />
             Clubs :
           </span>
 
           {clubsfield.map((field, index) => (
-            <div key={field.id} className="flex gap-2 mb-2 w-full">
-              <div className="relative w-1/3 flex">
+            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm">
+              <div className="relative w-full md:w-1/3 flex">
                 <input
                   type="text"
                   {...register(`clubscoach.${index}.0`)}
                   placeholder="(choisir dans la l"
-                  className="py-2 px-4 border rounded w-full"
+                  className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
                 <button
                   type="button"
@@ -349,18 +348,18 @@ export default function CoachForm({
                 type="text"
                 {...register(`clubscoach.${index}.1`)}
                 placeholder="Nom du club (ex: AJ Auxerre)"
-                className="py-2 px-4 border rounded w-1/3"
+                className="py-2 px-4 border rounded w-full md:w-1/3 text-xs sm:text-sm"
               />
               <input
                 type="text"
                 {...register(`clubscoach.${index}.2`)}
                 placeholder="Années (ex: (1963-2006))"
-                className="py-2 px-4 border rounded w-1/3"
+                className="py-2 px-4 border rounded w-full md:w-1/3 text-xs sm:text-sm"
               />
               <button
                 type="button"
                 onClick={() => removeclubs(index)}
-                className="text-red-500"
+                className="text-white md:text-red-500 bg-red-500 md:bg-transparent p-2 md:p-0 rounded-full mx-auto"
               >
                 <Trash size={18} />
               </button>
@@ -369,37 +368,37 @@ export default function CoachForm({
           <button
             type="button"
             onClick={() => appendclubs(["", "", ""])}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter un club
           </button>
         </div>
 
-        <div className="relative w-[600px] mb-4">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Trophy className="mr-4" />
             Palmarès :
           </span>
 
           {palmaresfield.map((field, index) => (
-            <div key={field.id} className="flex gap-2 mb-2 w-full">
+            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm">
               <input
                 type="text"
                 {...register(`palmares.${index}.0`)}
                 placeholder="Intitulé (ex: Champion de Ligue 2)"
-                className="py-2 px-4 border rounded w-1/2"
+                className="py-2 px-4 border rounded w-full md:w-1/2 text-xs sm:text-sm"
               />
               <input
                 type="text"
                 {...register(`palmares.${index}.1`)}
                 placeholder="Nombre associé (ex: 3)"
-                className="py-2 px-4 border rounded w-1/2"
+                className="py-2 px-4 border rounded w-full md:w-1/2 text-xs sm:text-sm"
               />
               <button
                 type="button"
                 onClick={() => removepalmares(index)}
-                className="text-red-500"
+                className="text-white md:text-red-500 bg-red-500 md:bg-transparent p-2 md:p-0 rounded-full mx-auto"
               >
                 <Trash size={18} />
               </button>
@@ -408,29 +407,32 @@ export default function CoachForm({
           <button
             type="button"
             onClick={() => appendpalmares(["", ""])}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter une ligne au palmarès
           </button>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ChartBarIncreasing className="mr-4" />
             Statistiques :
           </span>
           <input
             type="text"
             {...register("statistiques")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Stats (ex: 512v - 30n - 85d)"
           />
         </div>
 
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie cette méthode</Button>
-        </div>
+        <button
+          type="submit"
+          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+        >
+          Je modifie cette méthode
+        </button>
       </form>
     </div>
   );

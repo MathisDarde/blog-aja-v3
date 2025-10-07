@@ -209,7 +209,7 @@ export default function SaisonForm({
   useFormErrorToasts(errors);
 
   return (
-    <div className="w-[600px] mx-auto">
+    <div className="w-full mx-auto">
       {modal && (
         <FlagSelectorModal
           open={!!modal}
@@ -225,19 +225,19 @@ export default function SaisonForm({
       <form
         method="POST"
         id="methodesaisonform"
-        className="w-[600px]"
+        className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
         {/* Image coach */}
-        <div className="relative w-[600px] mx-auto">
+        <div className="relative w-full mx-auto">
           {previewPhoto && (
-            <div className="w-fit mb-4 relative mx-auto">
+            <div className="mb-4 relative mx-auto">
               <Image
                 width={1024}
                 height={1024}
                 src={previewPhoto || "/_assets/terrain/demiterrain.png"}
                 alt="Image du terrain"
-                className="h-[300px] w-auto"
+                className="aspect-video object-contain mr-4"
               />
             </div>
           )}
@@ -250,14 +250,14 @@ export default function SaisonForm({
           />
           <label
             htmlFor="fileInput"
-            className="underline text-aja-blue font-Montserrat cursor-pointer"
+            className="underline text-aja-blue font-Montserrat text-sm sm:text-base cursor-pointer"
           >
             Modifier l&apos;image du terrain ?
           </label>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
             Mots-clés :
           </span>
@@ -268,7 +268,7 @@ export default function SaisonForm({
                 type="text"
                 placeholder={`Mot clé ${index + 1} (ex: saison 2020-2021)`}
                 {...register(`keywords.${index}.value`)}
-                className="flex-1 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+                className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               />
               {keywordsfield.length > 1 && (
                 <button
@@ -285,72 +285,72 @@ export default function SaisonForm({
           <button
             type="button"
             onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter un mot-clé
           </button>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Clock4 className="mr-4" />
             Saison :
           </span>
           <input
             type="text"
             {...register("saison")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Saison (ex: 2020-2021)"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <BookCheck className="mr-4" />
             Coach :
           </span>
           <input
             type="text"
             {...register("coach")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Coach (ex: Jean-Marc Furlan)"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ChartBarBig className="mr-4" />
             Système :
           </span>
           <input
             type="text"
             {...register("systeme")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Système (ex: 4-3-3)"
           />
         </div>
 
-        <div className="relative w-[600px] mb-4">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ArrowLeftRight className="mr-4" />
             Remplaçants :
           </span>
 
           {remplacantsfield.map((field, index) => (
-            <div key={field.id} className="flex gap-2 mb-2 w-full">
+            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat">
               <input
                 type="text"
                 {...register(`remplacants.${index}.0`)}
                 placeholder="Nom (ex: Gaëtan Perrin)"
-                className="py-2 px-4 border rounded w-2/5"
+                className="py-2 px-4 border rounded w-full md:w-2/5 text-xs sm:text-sm"
               />
-              <div className="relative w-2/5 flex">
+              <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
                   {...register(`remplacants.${index}.1`)}
                   placeholder="Drapeau (ex: france)"
-                  className="py-2 px-4 border rounded"
+                  className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
                 <button
                   type="button"
@@ -364,12 +364,12 @@ export default function SaisonForm({
                 type="text"
                 {...register(`remplacants.${index}.2`)}
                 placeholder="Poste (ex: G ou Gardien)"
-                className="py-2 px-4 border rounded w-1/5"
+                className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
               />
               <button
                 type="button"
                 onClick={() => removeremplacants(index)}
-                className="text-red-500"
+                className="text-white md:text-red-500 bg-red-500 md:bg-transparent p-2 md:p-0 rounded-full mx-auto"
               >
                 <Trash size={18} />
               </button>
@@ -378,16 +378,19 @@ export default function SaisonForm({
           <button
             type="button"
             onClick={() => appendremplacants([""])}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter un remplaçant
           </button>
         </div>
 
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie cette méthode</Button>
-        </div>
+        <button
+          type="submit"
+          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+        >
+          Je modifie cette méthode
+        </button>
       </form>
     </div>
   );

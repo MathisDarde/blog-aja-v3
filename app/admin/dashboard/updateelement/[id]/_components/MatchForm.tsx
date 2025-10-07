@@ -17,7 +17,6 @@ import {
   WholeWord,
   X,
 } from "lucide-react";
-import Button from "@/components/BlueButton";
 import { useFieldArray, useForm } from "react-hook-form";
 import { UpdateMethodeMatchSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -329,7 +328,7 @@ export default function MatchForm({
   useFormErrorToasts(errors);
 
   return (
-    <div className="w-[750px] mx-auto">
+    <div className="w-full mx-auto">
       {modal && (
         <FlagSelectorModal
           open={!!modal}
@@ -345,7 +344,7 @@ export default function MatchForm({
       <form
         method="POST"
         id="methodesaisonform"
-        className="w-[750px] flex flex-col items-center justify-center"
+        className="max-w-[750px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
         {/* Image terrain */}
@@ -370,14 +369,14 @@ export default function MatchForm({
           />
           <label
             htmlFor="fileInput"
-            className="underline text-aja-blue font-Montserrat cursor-pointer"
+            className="underline text-aja-blue font-Montserrat text-sm sm:text-base cursor-pointer"
           >
             Modifier l&apos;image du terrain ?
           </label>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
             Mots-clés :
           </span>
@@ -388,7 +387,7 @@ export default function MatchForm({
                 type="text"
                 placeholder={`Mot clé ${index + 1} (ex: dimanche 16 mai 2022)`}
                 {...register(`keywords.${index}.value`)}
-                className="flex-1 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+                className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               />
               {keywordsfield.length > 1 && (
                 <button
@@ -405,55 +404,55 @@ export default function MatchForm({
           <button
             type="button"
             onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter un mot-clé
           </button>
         </div>
 
-        <div className="relative w-[600px] my-4">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <AArrowUp className="mr-4" />
             Nom du match :
           </span>
           <input
             type="text"
             {...register("titrematch")}
-            className="w-full my-2 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nom du match (ex: DOM X - X EXT)"
           />
         </div>
 
-        <div className="relative w-[600px] my-4">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Dumbbell className="mr-4" />
             Stade :
           </span>
           <input
             type="text"
             {...register("stade")}
-            className="w-full my-2 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Stade (ex: Stade de l'Abbé Deschamps, Auxerre)"
           />
         </div>
 
-        <div className="relative w-[600px] my-4">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Clock className="mr-4" />
             Horaire et Date :
           </span>
           <input
             type="text"
             {...register("date")}
-            className="w-full my-2 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Date (samedi 16 mai 2022, 20h45)"
           />
         </div>
 
         <Section title="Infos sur équipe à domicile">
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <PaintbrushVertical className="mr-4" />
               Couleur principale de l&apos;équipe à domicile (Code héx.) :
             </span>
@@ -463,7 +462,7 @@ export default function MatchForm({
                 id="inputcolor"
                 {...register("couleur1equipe1")}
                 onChange={handleColorChangeDom1}
-                className="my-2 w-10 h-10 border-none cursor-pointer appearance-none"
+                className="aspect-square border-none cursor-pointer appearance-none"
               />
               <input
                 type="text"
@@ -471,13 +470,13 @@ export default function MatchForm({
                 {...register("couleur1equipe1")}
                 value={watch("couleur1equipe1")}
                 onChange={handleColorChangeDom1}
-                className="bg-white w-1/3 px-6 py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-2 md:py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
 
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <PaintbrushVertical className="mr-4" />
               Couleur secondaire de l&apos;équipe à domicile (Code héx.) :
             </span>
@@ -487,7 +486,7 @@ export default function MatchForm({
                 id="inputcolor"
                 {...register("couleur2equipe1")}
                 onChange={handleColorChangeDom2}
-                className="my-2 w-10 h-10 border-none cursor-pointer appearance-none"
+                className="aspect-square border-none cursor-pointer appearance-none"
               />
               <input
                 type="text"
@@ -495,67 +494,69 @@ export default function MatchForm({
                 {...register("couleur2equipe1")}
                 value={watch("couleur2equipe1")}
                 onChange={handleColorChangeDom2}
-                className="bg-white w-1/3 px-6 py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-2 md:py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
 
-          <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+          <div className="relative w-full my-4">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <FolderPen className="mr-4" />
               Nom de l&apos;équipe à domicile :
             </span>
             <input
               type="text"
               {...register("nomequipe1")}
-              className="w-full my-2 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               placeholder="Nom de l'équipe (ex: AJ Auxerre)"
             />
           </div>
 
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <ChartBarBig className="mr-4" />
               Système de jeu de l&apos;équipe à domicile :
             </span>
             <input
               type="text"
               {...register("systemeequipe1")}
-              className="w-full my-2 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               placeholder="Système de jeu (ex: 4-3-3)"
             />
           </div>
 
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <ArrowLeftRight className="mr-4" />
               Remplaçants de l&apos;équipe à domicile :
             </span>
 
             {remplacantseq1field.map((field, index) => (
               <React.Fragment key={field.id}>
-                <div className="flex items-center gap-2 mb-2 w-full">
-                  {expandedIndices.equipe1.includes(index) ? (
-                    <ChevronDown
-                      onClick={() => toggleExpand("equipe1", index)}
+                <div className="flex flex-col md:flex-row items-center gap-2 mb-2 w-full">
+                  <div className="flex items-center gap-2 w-full md:w-2/5">
+                    {expandedIndices.equipe1.includes(index) ? (
+                      <ChevronDown
+                        onClick={() => toggleExpand("equipe1", index)}
+                      />
+                    ) : (
+                      <ChevronRight
+                        onClick={() => toggleExpand("equipe1", index)}
+                      />
+                    )}
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe1.${index}.0`)}
+                      placeholder="Nom (ex: Gaëtan Perrin)"
+                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
                     />
-                  ) : (
-                    <ChevronRight
-                      onClick={() => toggleExpand("equipe1", index)}
-                    />
-                  )}
-                  <input
-                    type="text"
-                    {...register(`remplacantsequipe1.${index}.0`)}
-                    placeholder="Nom (ex: Gaëtan Perrin)"
-                    className="py-2 px-4 border rounded w-2/5"
-                  />
-                  <div className="relative w-2/5 flex">
+                  </div>
+                  <div className="relative w-full md:w-2/5 flex">
                     <input
                       type="text"
                       {...register(`remplacantsequipe1.${index}.1`)}
                       placeholder="Drapeau (ex: france)"
-                      className="py-2 px-4 border rounded"
+                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
                     />
                     <button
                       type="button"
@@ -569,40 +570,40 @@ export default function MatchForm({
                     type="text"
                     {...register(`remplacantsequipe1.${index}.2`)}
                     placeholder="Poste (ex: G ou Gardien)"
-                    className="py-2 px-4 border rounded w-1/5"
+                    className="py-2 px-4 border rounded w-full md:w-1/5 text-sm sm:text-base"
                   />
-                  <button
-                    type="button"
-                    onClick={() => removeremplacantseq1(index)}
-                    className="text-red-500"
-                  >
-                    <Trash size={18} />
-                  </button>
                 </div>
 
                 {expandedIndices.equipe1.includes(index) && (
-                  <div className="flex gap-4 items-center px-12 mb-2">
+                  <div className="flex flex-col md:flex-row gap-2 items-center px-0 md:px-12 mb-2">
                     <input
                       type="text"
                       {...register(`remplacantsequipe1.${index}.3`)}
                       placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-2/4"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
                     />
                     <input
                       type="text"
                       {...register(`remplacantsequipe1.${index}.4`)}
                       placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-2/4"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
                     />
                   </div>
                 )}
+                <button
+                  type="button"
+                  onClick={() => removeremplacantseq1(index)}
+                  className="text-white  bg-red-500 p-2 rounded-full mx-auto mb-2"
+                >
+                  <Trash size={18} />
+                </button>
               </React.Fragment>
             ))}
 
             <button
               type="button"
               onClick={() => appendremplacantseq1([""])}
-              className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+              className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
             >
               <Plus size={18} />
               Ajouter un remplaçant
@@ -612,7 +613,7 @@ export default function MatchForm({
 
         <Section title="Infos sur équipe à l'extérieur">
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <PaintbrushVertical className="mr-4" />
               Couleur principale de l&apos;équipe à l&apos;extérieur (Code héx.)
               :
@@ -623,7 +624,7 @@ export default function MatchForm({
                 id="inputcolor"
                 {...register("couleur1equipe2")}
                 onChange={handleColorChangeAway1}
-                className="my-2 w-10 h-10 border-none cursor-pointer appearance-none"
+                className="aspect-square border-none cursor-pointer appearance-none"
               />
               <input
                 type="text"
@@ -631,13 +632,13 @@ export default function MatchForm({
                 {...register("couleur1equipe2")}
                 value={watch("couleur1equipe2")}
                 onChange={handleColorChangeAway1}
-                className="bg-white w-1/3 px-6 py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
 
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <PaintbrushVertical className="mr-4" />
               Couleur secondaire de l&apos;équipe à l&apos;extérieur (Code héx.)
               :
@@ -648,7 +649,7 @@ export default function MatchForm({
                 id="inputcolor"
                 {...register("couleur2equipe2")}
                 onChange={handleColorChangeAway2}
-                className="my-2 w-10 h-10 border-none cursor-pointer appearance-none"
+                className="aspect-square border-none cursor-pointer appearance-none"
               />
               <input
                 type="text"
@@ -656,67 +657,69 @@ export default function MatchForm({
                 {...register("couleur2equipe2")}
                 value={watch("couleur2equipe2")}
                 onChange={handleColorChangeAway2}
-                className="bg-white w-1/3 px-6 py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
 
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <FolderPen className="mr-4" />
               Nom de l&apos;équipe à l&apos;extérieur :
             </span>
             <input
               type="text"
               {...register("nomequipe2")} // Modifié de nomequipe1 à nomequipe2
-              className="w-full my-2 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               placeholder="Nom de l'équipe (ex: RC Lens)"
             />
           </div>
 
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <ChartBarBig className="mr-4" />
               Système de jeu de l&apos;équipe à l&apos;extérieur :
             </span>
             <input
               type="text"
               {...register("systemeequipe2")} // Modifié de systemeequipe1 à systemeequipe2
-              className="w-full my-2 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               placeholder="Système de jeu (ex: 3-4-3)"
             />
           </div>
 
           <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
               <ArrowLeftRight className="mr-4" />
               Remplaçants de l&apos;équipe à l&apos;extérieur :
             </span>
 
             {remplacantseq2field.map((field, index) => (
               <React.Fragment key={field.id}>
-                <div className="flex items-center gap-2 mb-2 w-full">
-                  {expandedIndices.equipe2.includes(index) ? (
-                    <ChevronDown
-                      onClick={() => toggleExpand("equipe2", index)}
+                <div className="flex flex-col md:flex-row items-center gap-2 mb-2 w-full">
+                  <div className="flex items-center gap-2 w-full md:w-2/5">
+                    {expandedIndices.equipe2.includes(index) ? (
+                      <ChevronDown
+                        onClick={() => toggleExpand("equipe2", index)}
+                      />
+                    ) : (
+                      <ChevronRight
+                        onClick={() => toggleExpand("equipe2", index)}
+                      />
+                    )}
+                    <input
+                      type="text"
+                      {...register(`remplacantsequipe2.${index}.0`)}
+                      placeholder="Nom (ex: Gaëtan Perrin)"
+                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
                     />
-                  ) : (
-                    <ChevronRight
-                      onClick={() => toggleExpand("equipe2", index)}
-                    />
-                  )}
-                  <input
-                    type="text"
-                    {...register(`remplacantsequipe2.${index}.0`)}
-                    placeholder="Nom (ex: Gaëtan Perrin)"
-                    className="py-2 px-4 border rounded w-2/5"
-                  />
-                  <div className="relative w-2/5 flex">
+                  </div>
+                  <div className="relative w-full md:w-2/5 flex">
                     <input
                       type="text"
                       {...register(`remplacantsequipe2.${index}.1`)}
                       placeholder="Drapeau (ex: france)"
-                      className="py-2 px-4 border rounded"
+                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
                     />
                     <button
                       type="button"
@@ -730,39 +733,39 @@ export default function MatchForm({
                     type="text"
                     {...register(`remplacantsequipe2.${index}.2`)}
                     placeholder="Poste (ex: G ou Gardien)"
-                    className="py-2 px-4 border rounded w-1/5"
+                    className="py-2 px-4 border rounded w-full md:w-1/5 text-sm sm:text-base"
                   />
-                  <button
-                    type="button"
-                    onClick={() => removeremplacantseq2(index)}
-                    className="text-red-500"
-                  >
-                    <Trash size={18} />
-                  </button>
                 </div>
 
                 {expandedIndices.equipe2.includes(index) && (
-                  <div className="flex gap-4 items-center px-12 mb-2">
+                  <div className="flex flex-col md:flex-row gap-2 items-center px-0 md:px-12 mb-2">
                     <input
                       type="text"
                       {...register(`remplacantsequipe2.${index}.3`)}
                       placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-2/4"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
                     />
                     <input
                       type="text"
                       {...register(`remplacantsequipe2.${index}.4`)}
                       placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-2/4"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
                     />
                   </div>
                 )}
+                <button
+                  type="button"
+                  onClick={() => removeremplacantseq2(index)}
+                  className="text-white  bg-red-500 p-2 rounded-full mx-auto mb-2"
+                >
+                  <Trash size={18} />
+                </button>
               </React.Fragment>
             ))}
             <button
               type="button"
               onClick={() => appendremplacantseq2([""])}
-              className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+              className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
             >
               <Plus size={18} />
               Ajouter un remplaçant
@@ -770,9 +773,12 @@ export default function MatchForm({
           </div>
         </Section>
 
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie cette méthode</Button>
-        </div>
+        <button
+          type="submit"
+          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+        >
+          Je modifie cette méthode
+        </button>
       </form>
     </div>
   );

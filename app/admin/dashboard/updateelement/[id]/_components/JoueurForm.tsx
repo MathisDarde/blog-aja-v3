@@ -16,7 +16,6 @@ import {
   WholeWord,
   X,
 } from "lucide-react";
-import Button from "@/components/BlueButton";
 import { useFieldArray, useForm } from "react-hook-form";
 import { UpdateMethodeJoueurSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -217,7 +216,7 @@ export default function JoueurForm({
   useFormErrorToasts(errors);
 
   return (
-    <div className="w-[600px] mx-auto">
+    <div className="w-full mx-auto">
       {modal && (
         <LogoSelectorModal
           open={modal}
@@ -233,11 +232,11 @@ export default function JoueurForm({
       <form
         method="POST"
         id="methodesaisonform"
-        className="w-[600px]"
+        className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
         {/* Image coach */}
-        <div className="relative w-[600px] mx-auto">
+        <div className="relative w-full mx-auto">
           {previewPhoto && (
             <div className="w-fit mb-4 relative mx-auto">
               <Image
@@ -245,7 +244,7 @@ export default function JoueurForm({
                 height={1024}
                 src={previewPhoto || "/_assets/img/pdpdebase.png"}
                 alt="Photo du joueur"
-                className="w-full aspect-video object-cover mr-4"
+                className="w-full aspect-video object-cover"
               />
             </div>
           )}
@@ -258,13 +257,13 @@ export default function JoueurForm({
           />
           <label
             htmlFor="fileInput"
-            className="underline text-aja-blue font-Montserrat cursor-pointer"
+            className="underline text-aja-blue font-Montserrat text-sm sm:text-base cursor-pointer"
           >
             Modifier la photo du joueur ?
           </label>
         </div>
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
             Mots-clés :
           </span>
@@ -275,7 +274,7 @@ export default function JoueurForm({
                 type="text"
                 placeholder={`Mot clé ${index + 1} (ex: Djibril Cissé)`}
                 {...register(`keywords.${index}.value`)}
-                className="flex-1 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+                className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
               />
               {keywordsfield.length > 1 && (
                 <button
@@ -292,79 +291,79 @@ export default function JoueurForm({
           <button
             type="button"
             onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter un mot-clé
           </button>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <FolderPen className="mr-4" />
             Nom du joueur :
           </span>
           <input
             type="text"
             {...register("joueurnom")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nom du joueur (ex: Djibril Cissé)"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Drama className="mr-4" />
             Poste :
           </span>
           <input
             type="text"
             {...register("poste")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Poste (ex: Attaquant de pointe)"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Ruler className="mr-4" />
             Taille :
           </span>
           <input
             type="text"
-            {...register("taille")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            {...register("taille")}            
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Taille du joueur (ex: 1m84)"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Footprints className="mr-4" />
             Pied Fort :
           </span>
           <input
             type="text"
             {...register("piedfort")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Pied fort (ex: Droit)"
           />
         </div>
 
-        <div className="relative w-[600px] mb-4">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ShieldHalf className="mr-4" />
             Clubs :
           </span>
 
           {clubsfield.map((field, index) => (
-            <div key={field.id} className="flex gap-2 mb-2 w-full">
-              <div className="relative w-1/3 flex">
+            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm">
+              <div className="relative w-full md:w-1/3 flex">
                 <input
                   type="text"
                   {...register(`clubs.${index}.0`)}
-                  placeholder="Logo (ex: auxerre)"
-                  className="py-2 px-4 border rounded w-full"
+                  placeholder="(choisir dans la l"
+                  className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
                 <button
                   type="button"
@@ -378,18 +377,18 @@ export default function JoueurForm({
                 type="text"
                 {...register(`clubs.${index}.1`)}
                 placeholder="Nom du club (ex: AJ Auxerre)"
-                className="py-2 px-4 border rounded w-1/3"
+                className="py-2 px-4 border rounded w-full md:w-1/3 text-xs sm:text-sm"
               />
               <input
                 type="text"
                 {...register(`clubs.${index}.2`)}
-                placeholder="Années (ex: (1999-2004))"
-                className="py-2 px-4 border rounded w-1/3"
+                placeholder="Années (ex: (1963-2006))"
+                className="py-2 px-4 border rounded w-full md:w-1/3 text-xs sm:text-sm"
               />
               <button
                 type="button"
                 onClick={() => removeclubs(index)}
-                className="text-red-500"
+                className="text-white md:text-red-500 bg-red-500 md:bg-transparent p-2 md:p-0 rounded-full mx-auto"
               >
                 <Trash size={18} />
               </button>
@@ -398,55 +397,58 @@ export default function JoueurForm({
           <button
             type="button"
             onClick={() => appendclubs([""])}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue"
+            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />
             Ajouter un club
           </button>
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Sword className="mr-4" />
             Nombre de matchs :
           </span>
           <input
             type="number"
             {...register("matchs")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nombre de matchs (ex: 354)"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Volleyball className="mr-4" />
             Nombre de buts marqués :
           </span>
           <input
             type="number"
             {...register("buts")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nombre de buts marqués (ex: 116)"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat text-gray-600 flex items-center mb-2">
+        <div className="relative w-full my-4">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Handshake className="mr-4" />
             Nombre de passes décisives :
           </span>
           <input
             type="number"
             {...register("passesd")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Nombre de passes décisives (ex: 38)"
           />
         </div>
 
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie cette méthode</Button>
-        </div>
+        <button
+          type="submit"
+          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+        >
+          Je modifie cette méthode
+        </button>
       </form>
     </div>
   );

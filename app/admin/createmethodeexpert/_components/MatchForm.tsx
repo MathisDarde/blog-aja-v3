@@ -415,7 +415,7 @@ export default function MatchForm() {
                 {...register("couleur1equipe1")}
                 value={watch("couleur1equipe1")}
                 onChange={handleColorChangeDom1}
-                className="bg-white w-full md:w-1/3 px-6 py-2 md:py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-2 md:py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
@@ -439,7 +439,7 @@ export default function MatchForm() {
                 {...register("couleur2equipe1")}
                 value={watch("couleur2equipe1")}
                 onChange={handleColorChangeDom2}
-                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
@@ -578,7 +578,7 @@ export default function MatchForm() {
                 {...register("couleur1equipe2")}
                 value={watch("couleur1equipe2")}
                 onChange={handleColorChangeAway1}
-                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
@@ -603,7 +603,7 @@ export default function MatchForm() {
                 {...register("couleur2equipe2")}
                 value={watch("couleur2equipe2")}
                 onChange={handleColorChangeAway2}
-                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border"
+                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
               />
             </div>
           </div>
