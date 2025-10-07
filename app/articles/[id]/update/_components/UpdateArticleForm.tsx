@@ -1,14 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Heading, Film, Folder, PenTool, Tag, X, Cctv } from "lucide-react";
+import {
+  Heading,
+  Film,
+  Folder,
+  PenTool,
+  Tag,
+  X,
+  Cctv,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { UpdateArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
-import { Tags, UpdateArticleFormProps } from "@/contexts/Interfaces";
+import { UpdateArticleFormProps } from "@/contexts/Interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import tags from "@/public/data/articletags.json";
@@ -17,26 +27,32 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 export default function UpdateArticleForm({
   id_article,
   articleData,
-  user,
 }: UpdateArticleFormProps) {
   const router = useRouter();
 
-  const user_id = user?.id;
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>(
-    articleData.imageUrl
+    articleData?.imageUrl || "/_assets/img/pdpdebase.png"
   );
+  const [selectedTags, setSelectedTags] = useState<string[]>(articleData?.tags || []);
+  const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
 
-  console.log(previewPhoto);
+  const toggleCategory = (category: string) => {
+    setOpenTagsCategory(openTagsCategory === category ? null : category);
+  };
+
+  const categories = {
+    year: tags.filter((t) => t.type === "year"),
+    player: tags.filter((t) => t.type === "player"),
+    league: tags.filter((t) => t.type === "league"),
+  };
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
     reset,
+    watch,
   } = useForm<UpdateArticleSchemaType>({
     resolver: zodResolver(UpdateArticleSchema),
     defaultValues: {
@@ -50,10 +66,12 @@ export default function UpdateArticleForm({
     },
   });
 
+  // Reset form et preview image quand articleData change
   useEffect(() => {
     if (articleData) {
       reset(articleData);
       setPreviewPhoto(articleData.imageUrl || "/_assets/img/pdpdebase.png");
+      setSelectedTags(articleData.tags || []);
     }
   }, [articleData, reset]);
 
@@ -68,29 +86,11 @@ export default function UpdateArticleForm({
   };
 
   const handleSubmitForm = async (data: UpdateArticleSchemaType) => {
-    const formData = new FormData();
-
-    if (selectedFile) {
-      formData.append("image", selectedFile);
-    }
-
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(
-        key,
-        Array.isArray(value) ? JSON.stringify(value) : value
-      );
-    });
-
-    if (!user_id) {
-      toast.error(
-        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
-      );
-      return;
-    }
+    const finalData = { ...data, tags: selectedTags }; // <-- on envoie les tags du state
 
     const response = await updateArticleForm(
       id_article,
-      data,
+      finalData,
       selectedFile ?? undefined
     );
 
@@ -113,8 +113,6 @@ export default function UpdateArticleForm({
 
   useFormErrorToasts(errors);
 
-  const watchedTags = watch("tags") || [];
-
   return (
     <div className="max-w-[800px] mx-auto">
       <form
@@ -130,7 +128,7 @@ export default function UpdateArticleForm({
               <Image
                 width={1024}
                 height={1024}
-                src={previewPhoto || "/_assets/img/pdpdebase.png"}
+                src={previewPhoto}
                 alt="Photo de l'article"
                 className="w-full aspect-video object-cover"
               />
@@ -213,41 +211,45 @@ export default function UpdateArticleForm({
             <Tag className="mr-4" />
             Tags :
           </span>
-          <div className="w-full bg-white rounded-2xl text-left border border-gray-600 my-4 p-4 grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {tags.map((category: Tags) => (
-              <div
-                key={category.value}
-                className="relative cursor-pointer flex items-center"
-              >
-                <input
-                  type="checkbox"
-                  {...register("tags")}
-                  id={`checkbox-${category.value}`}
-                  value={category.value}
-                  checked={watchedTags.includes(category.value)}
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    const value = category.value;
 
-                    let updatedTags = [...watchedTags];
-                    if (isChecked) {
-                      updatedTags.push(value);
-                    } else {
-                      updatedTags = updatedTags.filter((tag) => tag !== value);
-                    }
-                    setValue("tags", updatedTags);
-                  }}
-                  className="mx-2 accent-aja-blue"
-                />
-                <label
-                  htmlFor={`checkbox-${category.value}`}
-                  className="cursor-pointer font-Montserrat text-xs sm:text-base"
-                >
-                  {category.tag}
-                </label>
-              </div>
-            ))}
-          </div>
+          {(["year", "player", "league"] as const).map((type) => (
+            <div key={type} className="border border-gray-600 rounded-2xl my-4">
+              <button
+                type="button"
+                onClick={() => toggleCategory(type)}
+                className="w-full flex justify-between items-center px-4 py-3 text-left font-Montserrat text-sm sm:text-base"
+              >
+                {type === "year" ? "Années" : type === "player" ? "Joueurs" : "Ligues"}
+                {openTagsCategory === type ? <ChevronUp /> : <ChevronDown />}
+              </button>
+
+              {openTagsCategory === type && (
+                <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {categories[type].map((tag) => (
+                    <label
+                      key={tag.value}
+                      className="flex items-center text-xs sm:text-sm font-Montserrat"
+                    >
+                      <input
+                        type="checkbox"
+                        value={tag.value}
+                        checked={selectedTags.includes(tag.value)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedTags([...selectedTags, tag.value]);
+                          } else {
+                            setSelectedTags(selectedTags.filter((t) => t !== tag.value));
+                          }
+                        }}
+                        className="mr-2 accent-aja-blue"
+                      />
+                      {tag.tag}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Statut */}
@@ -267,7 +269,6 @@ export default function UpdateArticleForm({
           </select>
         </div>
 
-        {/* Bouton de confirmation */}
         <button
           type="submit"
           className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"

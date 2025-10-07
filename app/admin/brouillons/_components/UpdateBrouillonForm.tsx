@@ -10,6 +10,8 @@ import {
   Tag,
   X,
   Cctv,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { UpdateArticleSchemaType } from "@/types/forms";
@@ -17,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
-import { Tags, UpdateBrouillonFormProps } from "@/contexts/Interfaces";
+import { UpdateBrouillonFormProps } from "@/contexts/Interfaces";
 import updateBrouillonForm from "@/actions/article/update-brouillon-form";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
@@ -29,6 +31,18 @@ export default function UpdateBrouillonForm({
   user,
 }: UpdateBrouillonFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>(articleData?.tags || []);
+  const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
+
+  const toggleCategory = (category: string) => {
+    setOpenTagsCategory(openTagsCategory === category ? null : category);
+  };
+
+  const categories = {
+    year: tags.filter((t) => t.type === "year"),
+    player: tags.filter((t) => t.type === "player"),
+    league: tags.filter((t) => t.type === "league"),
+  };
 
   const user_id = user?.id;
 
@@ -108,33 +122,28 @@ export default function UpdateBrouillonForm({
   };
 
   const handleSaveForm = async () => {
-    const data = getValues();
-
+    const data = { ...getValues(), tags: selectedTags }; // <-- sync tags
+  
     const formData = new FormData();
-
+  
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
-
+  
     Object.entries(data).forEach(([key, value]) => {
       formData.append(
         key,
         Array.isArray(value) ? JSON.stringify(value) : value
       );
     });
-
+  
     if (!user_id) {
-      toast.error(
-        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
-      );
+      toast.error("L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter.");
       return;
     }
-    const response = await updateBrouillonForm(
-      id_article,
-      data,
-      selectedFile ?? undefined
-    );
-
+  
+    const response = await updateBrouillonForm(id_article, data, selectedFile ?? undefined);
+  
     if (response.success) {
       toast.success(response.message, {
         icon: <X className="text-white" />,
@@ -150,11 +159,9 @@ export default function UpdateBrouillonForm({
         }
       );
     }
-  };
+  };  
 
   useFormErrorToasts(errors);
-
-  const watchedTags = watch("tags") || [];
 
   return (
     <div className="max-w-[800px] mx-auto">
@@ -238,41 +245,45 @@ export default function UpdateBrouillonForm({
             <Tag className="mr-4" />
             Tags :
           </span>
-          <div className="w-full bg-white rounded-2xl text-left border border-gray-600 my-4 p-4 grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {tags.map((category: Tags) => (
-              <div
-                key={category.value}
-                className="relative cursor-pointer flex items-center"
-              >
-                <input
-                  type="checkbox"
-                  {...register("tags")}
-                  id={`checkbox-${category.value}`}
-                  value={category.value}
-                  checked={watchedTags.includes(category.value)}
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    const value = category.value;
 
-                    let updatedTags = [...watchedTags];
-                    if (isChecked) {
-                      updatedTags.push(value);
-                    } else {
-                      updatedTags = updatedTags.filter((tag) => tag !== value);
-                    }
-                    setValue("tags", updatedTags);
-                  }}
-                  className="mx-2 accent-aja-blue"
-                />
-                <label
-                  htmlFor={`checkbox-${category.value}`}
-                  className="cursor-pointer font-Montserrat text-xs sm:text-base"
-                >
-                  {category.tag}
-                </label>
-              </div>
-            ))}
-          </div>
+          {(["year", "player", "league"] as const).map((type) => (
+            <div key={type} className="border border-gray-600 rounded-2xl my-4">
+              <button
+                type="button"
+                onClick={() => toggleCategory(type)}
+                className="w-full flex justify-between items-center px-4 py-3 text-left font-Montserrat text-sm sm:text-base"
+              >
+                {type === "year" ? "Années" : type === "player" ? "Joueurs" : "Ligues"}
+                {openTagsCategory === type ? <ChevronUp /> : <ChevronDown />}
+              </button>
+
+              {openTagsCategory === type && (
+                <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {categories[type].map((tag) => (
+                    <label
+                      key={tag.value}
+                      className="flex items-center text-xs sm:text-sm font-Montserrat"
+                    >
+                      <input
+                        type="checkbox"
+                        value={tag.value}
+                        checked={selectedTags.includes(tag.value)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedTags([...selectedTags, tag.value]);
+                          } else {
+                            setSelectedTags(selectedTags.filter((t) => t !== tag.value));
+                          }
+                        }}
+                        className="mr-2 accent-aja-blue"
+                      />
+                      {tag.tag}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Statut */}

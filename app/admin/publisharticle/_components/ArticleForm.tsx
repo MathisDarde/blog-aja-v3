@@ -9,6 +9,8 @@ import {
   PenTool,
   Tag,
   X,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
@@ -18,12 +20,23 @@ import submitArticleForm from "@/actions/article/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
 import storeDraftArticle from "@/actions/article/store-draft";
-import { Tags, User } from "@/contexts/Interfaces";
+import { User } from "@/contexts/Interfaces";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 
 export default function ArticleForm({ user }: { user: User | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
+
+  const toggleCategory = (category: string) => {
+    setOpenTagsCategory(openTagsCategory === category ? null : category);
+  };
+
+  const categories = {
+    year: tags.filter((t) => t.type === "year"),
+    player: tags.filter((t) => t.type === "player"),
+    league: tags.filter((t) => t.type === "league"),
+  };
 
   const user_id = user?.id;
 
@@ -88,8 +101,8 @@ export default function ArticleForm({ user }: { user: User | null }) {
       tags: Array.isArray(rawData.tags)
         ? rawData.tags
         : rawData.tags
-        ? [rawData.tags]
-        : [],
+          ? [rawData.tags]
+          : [],
     };
 
     const parsed = DraftArticleSchema.safeParse(normalizedDraftData);
@@ -202,27 +215,84 @@ export default function ArticleForm({ user }: { user: User | null }) {
             <Tag className="mr-4" />
             Tags :
           </span>
-          <div className="w-full bg-white rounded-2xl text-left border border-gray-600 my-4 p-4 grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {tags.map((category: Tags) => (
-              <div
-                key={category.value}
-                className="relative cursor-pointer flex items-center"
-              >
-                <input
-                  type="checkbox"
-                  {...register("tags")}
-                  id={`checkbox-${category.value}`}
-                  value={category.value}
-                  className="mx-2 accent-aja-blue"
-                />
-                <label
-                  htmlFor={`checkbox-${category.value}`}
-                  className="cursor-pointer font-Montserrat text-xs sm:text-base"
-                >
-                  {category.tag}
-                </label>
+          <div className="border border-gray-600 rounded-2xl my-4">
+            <button
+              type="button"
+              onClick={() => toggleCategory("year")}
+              className="w-full flex justify-between items-center px-4 py-3 text-left font-Montserrat text-sm sm:text-base"
+            >
+              Années
+              {openTagsCategory === "year" ? <ChevronUp /> : <ChevronDown />}
+            </button>
+            {openTagsCategory === "year" && (
+              <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {categories.year.map((tag) => (
+                  <label key={tag.value} className="flex items-center text-xs sm:text-sm font-Montserrat">
+                    <input
+                      type="checkbox"
+                      {...register("tags")}
+                      value={tag.value}
+                      className="mr-2 accent-aja-blue"
+                    />
+                    {tag.tag}
+                  </label>
+                ))}
               </div>
-            ))}
+            )}
+          </div>
+
+          {/* Player Dropdown */}
+          <div className="border border-gray-600 rounded-2xl my-4">
+            <button
+              type="button"
+              onClick={() => toggleCategory("player")}
+              className="w-full flex justify-between items-center px-4 py-3 text-left font-Montserrat text-sm sm:text-base"
+            >
+              Joueurs
+              {openTagsCategory === "player" ? <ChevronUp /> : <ChevronDown />}
+            </button>
+            {openTagsCategory === "player" && (
+              <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {categories.player.map((tag) => (
+                  <label key={tag.value} className="flex items-center text-xs sm:text-sm font-Montserrat">
+                    <input
+                      type="checkbox"
+                      {...register("tags")}
+                      value={tag.value}
+                      className="mr-2 accent-aja-blue"
+                    />
+                    {tag.tag}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* League Dropdown */}
+          <div className="border border-gray-600 rounded-2xl my-4">
+            <button
+              type="button"
+              onClick={() => toggleCategory("league")}
+              className="w-full flex justify-between items-center px-4 py-3 text-left font-Montserrat text-sm sm:text-base"
+            >
+              Ligues
+              {openTagsCategory === "league" ? <ChevronUp /> : <ChevronDown />}
+            </button>
+            {openTagsCategory === "league" && (
+                <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {categories.league.map((tag) => (
+                  <label key={tag.value} className="flex items-center text-xs sm:text-sm font-Montserrat">
+                    <input
+                      type="checkbox"
+                      {...register("tags")}
+                      value={tag.value}
+                      className="mr-2 accent-aja-blue"
+                    />
+                    {tag.tag}
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

@@ -33,7 +33,6 @@ export default async function UpdateContent({
           state: article?.state ?? "pending",
           imageUrl: article?.imageUrl ?? "",
         }}
-        user={user}
       />
     </div>
   );

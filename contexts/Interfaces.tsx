@@ -59,7 +59,6 @@ export interface UpdateArticleFormProps {
     tags: string[];
     state: string;
   };
-  user: User | null;
 }
 
 export interface UpdateBrouillonFormProps {
