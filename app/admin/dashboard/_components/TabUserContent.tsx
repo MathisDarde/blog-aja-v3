@@ -15,14 +15,15 @@ export default function TabUserContent({
   searchTerm: string;
   users: User[];
 }) {
-  const {
-    sortElements,
-  } = useGlobalContext();
+  const { sortElements } = useGlobalContext();
 
   const [sortKey, setSortKey] = useState<UserSortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +61,10 @@ export default function TabUserContent({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setSelectedUserId(null);
       }
     };
@@ -108,7 +112,7 @@ export default function TabUserContent({
             >
               Admin {sortKey === "admin" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center w-[75px]">
+            <th className="p-3 text-center w-[50px]">
               <></>
             </th>
           </tr>
@@ -150,8 +154,10 @@ export default function TabUserContent({
                 <td className="p-3 text-center w-[125px]">
                   {user.admin ? "Admin" : "Membre"}
                 </td>
-                <td className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(e) => handleOpenPopup(user.id, e)}>
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e) => handleOpenPopup(user.id, e)}
+                >
                   <EllipsisVertical />
                 </td>
               </tr>
@@ -166,10 +172,19 @@ export default function TabUserContent({
         </tbody>
       </table>
 
-      {selectedUser && popupPosition &&
+      {selectedUser &&
+        popupPosition &&
         createPortal(
-          <div ref={popupRef} className="absolute z-50" style={{ top: popupPosition.top, left: popupPosition.left }}>
-            <ContextPopup id={selectedUser.id} type="user" isAdmin={selectedUser.admin} />
+          <div
+            ref={popupRef}
+            className="absolute z-50"
+            style={{ top: popupPosition.top, left: popupPosition.left }}
+          >
+            <ContextPopup
+              id={selectedUser.id}
+              type="user"
+              isAdmin={selectedUser.admin}
+            />
           </div>,
           document.body
         )}

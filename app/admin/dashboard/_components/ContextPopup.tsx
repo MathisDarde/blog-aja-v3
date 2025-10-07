@@ -21,7 +21,12 @@ import ActionPopup from "@/components/ActionPopup";
 import giveUserAdmin from "@/actions/user/set-user-admin";
 import removeUserAdminRole from "@/actions/user/remove-user-admin";
 
-export default function ContextPopup({ id, type, state, isAdmin }: DashboardElementProps) {
+export default function ContextPopup({
+  id,
+  type,
+  state,
+  isAdmin,
+}: DashboardElementProps) {
   const router = useRouter();
 
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
@@ -122,9 +127,11 @@ export default function ContextPopup({ id, type, state, isAdmin }: DashboardElem
           case "published":
             return router.push(`/articles/${id}/update`);
           case "archived":
-            return toast.error("Impossible de modifier cet article étant donné qu'il est archivé.")
+            return toast.error(
+              "Impossible de modifier cet article étant donné qu'il est archivé."
+            );
           case "pending":
-            return router.push(`/admin/brouillons/${id}`)
+            return router.push(`/admin/brouillons/${id}`);
         }
       case "comment":
         return;
@@ -156,19 +163,19 @@ export default function ContextPopup({ id, type, state, isAdmin }: DashboardElem
     if (isAdmin) {
       try {
         const update = await giveUserAdmin(id);
-        toast.success("L'utilisateur est désormais administrateur.")
+        toast.success("L'utilisateur est désormais administrateur.");
       } catch {
-        toast.error("Une erreur s'est produite lors de la mise à jour.")
+        toast.error("Une erreur s'est produite lors de la mise à jour.");
       }
     } else {
       try {
         const update = await removeUserAdminRole(id);
-        toast.success("L'utilisateur ne possède plus administrateur.")
+        toast.success("L'utilisateur ne possède plus administrateur.");
       } catch {
-        toast.error("Une erreur s'est produite lors de la mise à jour.")
+        toast.error("Une erreur s'est produite lors de la mise à jour.");
       }
     }
-  }
+  };
 
   return (
     <>
@@ -208,7 +215,7 @@ export default function ContextPopup({ id, type, state, isAdmin }: DashboardElem
             onClick={() => handleAdminRole(id)}
           >
             <UserPlus2 size={20} color="oklch(55.4% 0.046 257.417)" />{" "}
-              {isAdmin ? "Rétrograder" : "Promouvoir"}
+            {isAdmin ? "Rétrograder" : "Promouvoir"}
           </div>
         )}
         <div
@@ -273,29 +280,29 @@ export default function ContextPopup({ id, type, state, isAdmin }: DashboardElem
 
       {/* Confirm delete element popup */}
       {deletePopupOpen && (
-        <ActionPopup 
-        onClose={() => setDeletePopupOpen(false)}
-        title="Supprimer cet élément ?"
-        description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
-        actions={[
-          {
-            label: "Annuler",
-            onClick: () => setDeletePopupOpen(false),
-            theme: "discard",
-          },
-          {
-            label: "Supprimer",
-            onClick: async () => {
-              try {
-                deleteElement(id, type);
-                setDeletePopupOpen(false);
-              } catch (error) {
-                console.error("Erreur suppression élément :", error);
-              }
+        <ActionPopup
+          onClose={() => setDeletePopupOpen(false)}
+          title="Supprimer cet élément ?"
+          description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
+          actions={[
+            {
+              label: "Annuler",
+              onClick: () => setDeletePopupOpen(false),
+              theme: "discard",
             },
-            theme: "delete",
-          },
-        ]}
+            {
+              label: "Supprimer",
+              onClick: async () => {
+                try {
+                  deleteElement(id, type);
+                  setDeletePopupOpen(false);
+                } catch (error) {
+                  console.error("Erreur suppression élément :", error);
+                }
+              },
+              theme: "delete",
+            },
+          ]}
         />
       )}
     </>
