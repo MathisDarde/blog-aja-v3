@@ -8,20 +8,21 @@ import { useState } from "react";
 import deleteCommentAction from "@/actions/comment/delete-comment";
 import { ChevronLeft, PenSquare, Plus, Trash } from "lucide-react";
 import Image from "next/image";
-import { Comment, User } from "@/contexts/Interfaces";
+import { Article, Comment, User } from "@/contexts/Interfaces";
 import Link from "next/link";
 import ActionPopup from "@/components/ActionPopup";
 
 export default function DisplayArticleComments({
-  article_id,
+  article,
   articleComments,
   user
 }: {
-  article_id: string;
+  article: Article;
   articleComments: Comment[];
   user: User | null;
 }) {
   const { user_id } = useGlobalContext();
+  const article_id = article.id_article;
 
   const [isPublishingComment, setIsPublishingComment] = useState(false);
   const [visibleComments, setVisibleComments] = useState(3);
@@ -116,21 +117,25 @@ export default function DisplayArticleComments({
                   <h3 className="font-Bai_Jamjuree text-2xl font-bold uppercase">
                     Commentaires ({numberOfComments})
                   </h3>
-                  {user ? (
-                    <Button
-                      className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full m-0"
-                      onClick={() => setIsPublishingComment(true)}
-                    >
-                      <Plus /> Ajouter un commentaire
-                    </Button>
-                  ) : (
-                    <Link href={"/login"}>
-                      <Button
-                        className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full"
-                      >
-                        Connectez-vous pour publier un commentaire
-                      </Button>
-                    </Link>
+                  {article.state === "published" && (
+                    <>
+                      {user ? (
+                        <Button
+                          className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full m-0"
+                          onClick={() => setIsPublishingComment(true)}
+                        >
+                          <Plus /> Ajouter un commentaire
+                        </Button>
+                      ) : (
+                        <Link href={"/login"}>
+                          <Button
+                            className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full"
+                          >
+                            Connectez-vous pour publier un commentaire
+                          </Button>
+                        </Link>
+                      )}
+                    </>
                   )}
                 </div>
 

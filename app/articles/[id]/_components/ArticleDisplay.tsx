@@ -149,18 +149,20 @@ export default function ArticleDisplay({
 
               <div className="flex items-center gap-2">
                 {/* Comment button */}
-                <div
-                  className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-gray-800"
-                  onClick={() => {
-                    const anchor = document.getElementById("commentaire-anchor");
-                    anchor?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  <MessageCircle width={20} height={20} />
-                </div>
+                {article.state === "published" && (
+                  <div
+                    className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-gray-800"
+                    onClick={() => {
+                      const anchor = document.getElementById("commentaire-anchor");
+                      anchor?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    <MessageCircle width={20} height={20} />
+                  </div>
+                )}
 
                 {/* Like button */}
-                {user && (
+                {user && article.state === "published" && (
                   <>
                     <div
                       className="border border-gray-300 hover:bg-gray-300 rounded-full py-2 px-3 text-gray-500 flex items-center justify-center gap-2 transition-colors cursor-pointer hover:text-rose-600 group"
@@ -213,7 +215,13 @@ export default function ArticleDisplay({
             <KeywordHighlighter text={article.content} keywords={keywords} onKeywordClick={handleKeywordClick} />
           </div>
 
-          <DisplayArticleComments article_id={article.id_article} articleComments={articleComments} user={user} />
+          {article.state !== "pending" && (
+            <DisplayArticleComments
+              article={article}
+              articleComments={articleComments}
+              user={user}
+            />
+          )}
         </div>
       </div>
 
