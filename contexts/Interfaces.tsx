@@ -413,3 +413,13 @@ export interface PlayerStats {
   points_per_match: string;
   minutes: string;
 }
+
+export type ClassementSortKey = keyof Pick<
+  Team,
+  "buts_encaisses" | "buts_marques" | "difference" | "equipe" | "gagnes" | "matchs_joues" | "nuls" | "perdus" | "points" | "position"
+>;
+
+export type StatsSortKey = keyof Pick<
+  PlayerStats,
+  "assists" | "goals" | "matches" | "minutes" | "nom" | "numero" | "position" | "red_cards" | "substitutions_in" | "titularisations" | "yellow_cards"
+>

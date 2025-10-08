@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Team } from "@/contexts/Interfaces";
+import React, { useState } from "react";
+import { ClassementSortKey, Team } from "@/contexts/Interfaces";
 import Image from "next/image";
 import { getTeamInfo } from "@/utils/get-team-info";
 
@@ -27,36 +27,76 @@ const icons: Record<string, string> = {
   "": "/_assets/img/logoligue1.svg",
 };
 
-// --- Fonction pour obtenir la classe CSS de la position ---
 const getTeamClass = (description: string): string => {
   return teamStyles[description] ?? "";
 };
 
-// --- Fonction pour obtenir le logo de la compétition ---
 const getIcon = (description: string): string => {
   return icons[description] ?? "";
 };
 
-// --- Composant Classement ---
 export default function Classement({ teams }: { teams: Team[] }) {
+  const [sortKey, setSortKey] = useState<ClassementSortKey>("position");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const sortedTeams = [...teams].sort((a, b) => {
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
+
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+    }
+    return sortOrder === "asc"
+      ? String(aValue).localeCompare(String(bValue))
+      : String(bValue).localeCompare(String(aValue));
+  });
+
+  const handleSort = (key: ClassementSortKey) => {
+    if (sortKey === key) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    else {
+      setSortKey(key);
+      setSortOrder("asc");
+    }
+  };
+
   return (
     <div className="px-4 mt-10 h-auto w-[800px] mx-auto">
       {/* Header */}
       <div className="grid grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] bg-gray-200 p-2 font-Montserrat font-semibold text-center rounded">
-        <div>Pos.</div>
-        <div className="text-left">Équipe</div>
-        <div>J</div>
-        <div>G</div>
-        <div>N</div>
-        <div>P</div>
-        <div>BP</div>
-        <div>BC</div>
-        <div>Diff</div>
-        <div>Pts</div>
+        <div className="cursor-pointer" onClick={() => handleSort("position")}>
+          Pos. {sortKey === "position" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="text-left cursor-pointer" onClick={() => handleSort("equipe")}>
+          Équipe {sortKey === "equipe" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("matchs_joues")}>
+          J {sortKey === "matchs_joues" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("gagnes")}>
+          G {sortKey === "gagnes" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("nuls")}>
+          N {sortKey === "nuls" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("perdus")}>
+          P {sortKey === "perdus" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("buts_marques")}>
+          BP {sortKey === "buts_marques" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("buts_encaisses")}>
+          BC {sortKey === "buts_encaisses" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("difference")}>
+          Diff {sortKey === "difference" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
+        <div className="cursor-pointer" onClick={() => handleSort("points")}>
+          Pts {sortKey === "points" && (sortOrder === "asc" ? "↑" : "↓")}
+        </div>
       </div>
 
       <div className="space-y-2 mt-2">
-        {teams.map((team: Team, index) => {
+        {sortedTeams.map((team: Team, index) => {
           const { actualName, logo } = getTeamInfo(team.equipe);
 
           return (
