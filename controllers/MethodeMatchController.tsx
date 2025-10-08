@@ -11,14 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 export async function getMatchMethodes(): Promise<
 SelectMatchMethode[]
 > {
-  const results = await db.select().from(methodeExpertMatchTable);
-  return results.map((item) => ({
-    ...item,
-    remplacantsequipe1: item.remplacantsequipe1 as string[][],
-    remplacantsequipe2: item.remplacantsequipe2 as string[][],
-    created_at: new Date(item.createdAt),
-    updated_at: new Date(item.updatedAt),
-  }));
+ return await db.select().from(methodeExpertMatchTable);
 }
 
 export async function createMethodeMatch(

@@ -160,22 +160,28 @@ export default function ContextPopup({
   };
 
   const handleAdminRole = async (id: string) => {
-    if (isAdmin) {
-      try {
+    try {
+      if (!isAdmin) {
         const update = await giveUserAdmin(id);
-        toast.success("L'utilisateur est désormais administrateur.");
-      } catch {
-        toast.error("Une erreur s'est produite lors de la mise à jour.");
-      }
-    } else {
-      try {
+        if (update?.success) {
+          toast.success("L'utilisateur est désormais administrateur.");
+        }
+      } else {
         const update = await removeUserAdminRole(id);
-        toast.success("L'utilisateur ne possède plus administrateur.");
-      } catch {
-        toast.error("Une erreur s'est produite lors de la mise à jour.");
+        if (update?.success) {
+          toast.success("L'utilisateur ne possède plus administrateur.");
+        }
       }
+  
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+  
+    } catch {
+      toast.error("Une erreur s'est produite lors de la mise à jour.");
     }
   };
+  
 
   return (
     <>
@@ -212,7 +218,7 @@ export default function ContextPopup({
         {type == "user" && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => handleAdminRole(id)}
+            onClick={() => {isAdmin ? setRemoveAdminPopupOpen(true) : setGiveAdminPopupOpen(true)}}
           >
             <UserPlus2 size={20} color="oklch(55.4% 0.046 257.417)" />{" "}
             {isAdmin ? "Rétrograder" : "Promouvoir"}

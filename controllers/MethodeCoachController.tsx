@@ -11,14 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 export async function getCoachMethodes(): Promise<
 SelectCoachMethode[]
 > {
-  const results = await db.select().from(methodeExpertCoachTable);
-  return results.map((item) => ({
-    ...item,
-    clubscoach: item.clubscoach as string[][],
-    palmares: item.palmares as string[][],
-    created_at: new Date(item.createdAt),
-    updated_at: new Date(item.updatedAt),
-  }));
+  return await db.select().from(methodeExpertCoachTable);
 }
 
 export async function createMethodeCoach(

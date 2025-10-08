@@ -11,13 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 export async function getJoueurMethodes(): Promise<
 SelectJoueurMethode[]
 > {
-  const results = await db.select().from(methodeExpertJoueurTable);
-  return results.map((item) => ({
-    ...item,
-    clubs: item.clubs as string[][],
-    created_at: new Date(item.createdAt),
-    updated_at: new Date(item.updatedAt),
-  }));
+  return await db.select().from(methodeExpertJoueurTable);
 }
 
 export async function createMethodeJoueur(

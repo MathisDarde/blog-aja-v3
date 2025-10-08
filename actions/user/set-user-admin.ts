@@ -6,10 +6,11 @@ const giveUserAdmin = async (id_user: string) => {
   try {
     if (!id_user) throw new Error("ID user manquant.");
 
-    return await setUserAdmin(id_user);
+    await setUserAdmin(id_user); // Ne récupère pas le QueryResult
+    return { success: true }; // objet simple, sérialisable
   } catch (error) {
-    console.error("Erreur lors de la récupération de l'utilisateur :", error);
-    return null;
+    console.error("Erreur lors de la mise à jour de l'utilisateur :", error);
+    return { success: false, error: (error as Error).message };
   }
 };
 

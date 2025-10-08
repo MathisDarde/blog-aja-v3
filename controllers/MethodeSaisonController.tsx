@@ -11,13 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 export async function getSaisonMethodes(): Promise<
 SelectSaisonMethode[]
 > {
-  const results = await db.select().from(methodeExpertSaisonTable);
-  return results.map((item) => ({
-    ...item,
-    remplacants: item.remplacants as string[][],
-    created_at: new Date(item.createdAt),
-    updated_at: new Date(item.updatedAt),
-  }));
+  return await db.select().from(methodeExpertSaisonTable);
 }
 
 export async function createMethodeSaison(
