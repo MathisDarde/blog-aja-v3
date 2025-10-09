@@ -14,11 +14,11 @@ export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
     if (sortKey === key) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     else {
       setSortKey(key);
-      setSortOrder("desc"); // par défaut décroissant
+      setSortOrder("desc"); 
     }
   };
 
-  const normalizeValue = (key: StatsSortKey, val: any): number => {
+  const normalizeValue = (key: StatsSortKey, val: string | number | null | undefined): number => {
     if (key === "minutes") {
       if (val === "-" || val == null) return 0;
       return Number(String(val).replace("'", "")) || 0;

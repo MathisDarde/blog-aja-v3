@@ -218,7 +218,11 @@ export default function ContextPopup({
         {type == "user" && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => {isAdmin ? setRemoveAdminPopupOpen(true) : setGiveAdminPopupOpen(true)}}
+            onClick={() => 
+              isAdmin
+                ? setRemoveAdminPopupOpen(true)
+                : setGiveAdminPopupOpen(true)
+            }
           >
             <UserPlus2 size={20} color="oklch(55.4% 0.046 257.417)" />{" "}
             {isAdmin ? "Rétrograder" : "Promouvoir"}

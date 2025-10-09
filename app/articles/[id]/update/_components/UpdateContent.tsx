@@ -3,14 +3,11 @@
 import { getArticlebyId } from "@/controllers/ArticlesController";
 import UpdateArticleForm from "./UpdateArticleForm";
 import UpdateArticleGuard from "./UpdateArticleGuard";
-import { User } from "@/contexts/Interfaces";
 
 export default async function UpdateContent({
   id_article,
-  user,
 }: {
   id_article: string;
-  user: User | null;
 }) {
   const article = await getArticlebyId(id_article);
 

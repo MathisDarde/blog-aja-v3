@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   MethodeCoach,
   MethodeJoueur,
@@ -8,7 +8,7 @@ import {
   MethodeSaison,
 } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import JoueurForm from "./JoueurForm";
 import CoachForm from "./CoachForm";
 import SaisonForm from "./SaisonForm";
@@ -22,10 +22,7 @@ export type Methodes =
 
 export default function MethodeUpdate({ methodes }: { methodes: Methodes[] }) {
   const { getMethodeById } = useGlobalContext();
-  const router = useRouter();
   const params = useParams();
-
-  const [leaveChangesPopupOpen, setLeaveChangesPopupOpen] = useState(false);
 
   const methodeId = params.id as string;
 
