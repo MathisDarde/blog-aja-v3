@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisVertical, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, EllipsisVertical, Star } from "lucide-react";
 import React, { useState } from "react";
 import ContextPopup from "./ContextPopup";
 import { Comment, CommentSortKey } from "@/contexts/Interfaces";
@@ -23,6 +23,9 @@ export default function TabCommentContent({
 
   const [sortKey, setSortKey] = useState<CommentSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState("1");
+  const itemsPerPage = 10;
 
   const sortedComments = sortElements({
     elements: comments,
@@ -50,8 +53,31 @@ export default function TabCommentContent({
     }
   };
 
+  const totalPages = Math.ceil(filteredComments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedComments = filteredComments.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      setPageInput(String(newPage));
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const newPage = parseInt(pageInput, 10);
+      if (!isNaN(newPage)) handlePageChange(newPage);
+    }
+  };
+
   return (
-    <div className="overflow-x-auto">
+    <div className="w-full">
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
@@ -87,8 +113,8 @@ export default function TabCommentContent({
           </tr>
         </thead>
         <tbody>
-          {filteredComments.length > 0 ? (
-            filteredComments.map((comment) => (
+          {paginatedComments.length > 0 ? (
+            paginatedComments.map((comment) => (
               <tr
                 key={comment.id_comment}
                 className="bg-white border-t border-gray-200"
@@ -138,6 +164,50 @@ export default function TabCommentContent({
           )}
         </tbody>
       </table>
+
+      {/* PAGINATION */}
+      {filteredComments.length > 0 && (
+        <div className="flex items-center justify-start md:justify-center gap-4 mt-4">
+          {/* Bouton précédent */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white"
+              }`}
+          >
+            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+          </button>
+
+          {/* Input de page */}
+          <div className="flex items-center gap-2">
+          <span className="hidden sm:block text-sm">Page</span>
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={pageInput}
+              onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
+              className="w-12 text-center border rounded-md text-sm py-1"
+            />
+            <span className="text-sm">sur {totalPages}</span>
+          </div>
+
+          {/* Bouton suivant */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white"
+              }`}
+          >
+            <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
+          </button>
+        </div>
+      )}
 
       {DashboardPopupId && DashboardPopupPosition && (
         <div

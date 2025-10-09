@@ -17,27 +17,33 @@ export default function Dashboard({
 }) {
   const nbUsers = users.length;
   const nbArticles = articles.length;
+  const nbMethodes = methodes.length;
+  const nbComments = comments.length;
 
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
-    <div className="font-Montserrat flex max-w-[1300px] mx-auto flex-col h-[calc(100vh-68px)] p-10">
-      <div className="flex flex-row justify-between items-center mb-10">
-        <div className="bg-white w-[500px] rounded-xl px-10 py-12">
-          <h2 className="text-center font-bold text-2xl uppercase">
-            Nombre total d&apos;articles publiés
-          </h2>
-          <h2 className="text-center font-extrabold text-7xl">{nbArticles}</h2>
+    <div className="font-Montserrat flex gap-6 max-w-[1300px] h-full mx-auto flex-col p-10">
+      <div className="w-full bg-white h-auto rounded-md grid grid-cols-1 sm:grid-cols-2 md:flex items-center justify-around gap-4 p-4">
+        <div>
+          <h3 className="font-Bai_Jamjuree font-semibold text-xl uppercase">Utilisateurs inscrits</h3>
+          <p className="text-5xl font-Bai_Jamjuree font-bold">{nbUsers}</p>
         </div>
-        <div className="bg-white w-[500px] rounded-xl py-12">
-          <h2 className="text-center font-bold text-2xl uppercase">
-            Nombre total d&apos;utilisateurs inscris
-          </h2>
-          <h2 className="text-center font-extrabold text-7xl">{nbUsers}</h2>
+        <div>
+        <h3 className="font-Bai_Jamjuree font-semibold text-xl uppercase">Articles publiés</h3>
+          <p className="text-5xl font-Bai_Jamjuree font-bold">{nbArticles}</p>
+        </div>
+        <div>
+        <h3 className="font-Bai_Jamjuree font-semibold text-xl uppercase">Méthodes publiées</h3>
+          <p className="text-5xl font-Bai_Jamjuree font-bold">{nbMethodes}</p>
+        </div>
+        <div>
+        <h3 className="font-Bai_Jamjuree font-semibold text-xl uppercase">Commentaires publiés</h3>
+          <p className="text-5xl font-Bai_Jamjuree font-bold">{nbComments}</p>
         </div>
       </div>
 
-      <div className="overflow-hidden w-full pb-10">
+      <div className="w-full mb-10">
         <TabContentContainer
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisVertical } from "lucide-react";
+import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import ContextPopup from "./ContextPopup";
@@ -24,6 +24,10 @@ export default function TabUserContent({
     top: number;
     left: number;
   } | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState("1");
+  const itemsPerPage = 10;
 
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -74,8 +78,31 @@ export default function TabUserContent({
 
   const selectedUser = users.find((a) => a.id === selectedUserId);
 
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      setPageInput(String(newPage));
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const newPage = parseInt(pageInput, 10);
+      if (!isNaN(newPage)) handlePageChange(newPage);
+    }
+  };
+
   return (
-    <div className="overflow-x-auto w-fit">
+    <div className="w-full">
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
@@ -118,8 +145,8 @@ export default function TabUserContent({
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
+          {paginatedUsers.length > 0 ? (
+            paginatedUsers.map((user) => (
               <tr key={user.id} className="bg-white border-t border-gray-200">
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image
@@ -171,6 +198,50 @@ export default function TabUserContent({
           )}
         </tbody>
       </table>
+
+      {/* PAGINATION */}
+      {filteredUsers.length > 0 && (
+        <div className="flex items-center justify-start md:justify-center gap-4 mt-4">
+          {/* Bouton précédent */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white"
+              }`}
+          >
+            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+          </button>
+
+          {/* Input de page */}
+          <div className="flex items-center gap-2">
+          <span className="hidden sm:block text-sm">Page</span>
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={pageInput}
+              onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
+              className="w-12 text-center border rounded-md text-sm py-1"
+            />
+            <span className="text-sm">sur {totalPages}</span>
+          </div>
+
+          {/* Bouton suivant */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white"
+              }`}
+          >
+            <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
+          </button>
+        </div>
+      )}
 
       {selectedUser &&
         popupPosition &&

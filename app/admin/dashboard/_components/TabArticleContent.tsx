@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisVertical } from "lucide-react";
+import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -20,6 +20,10 @@ export default function TabArticleContent({
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState("1");
+  const itemsPerPage = 10;
 
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -73,8 +77,31 @@ export default function TabArticleContent({
 
   const selectedArticle = articles.find((a) => a.id_article === selectedArticleId);
 
+  const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedArticles = filteredArticles.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      setPageInput(String(newPage));
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const newPage = parseInt(pageInput, 10);
+      if (!isNaN(newPage)) handlePageChange(newPage);
+    }
+  };
+
   return (
-    <div className="overflow-x-auto relative">
+    <div className="w-full">
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
@@ -95,8 +122,8 @@ export default function TabArticleContent({
           </tr>
         </thead>
         <tbody>
-          {filteredArticles.length > 0 ? (
-            filteredArticles.map((article) => (
+          {paginatedArticles.length > 0 ? (
+            paginatedArticles.map((article) => (
               <tr key={article.id_article} className="bg-white border-t border-gray-200">
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image
@@ -132,6 +159,50 @@ export default function TabArticleContent({
           )}
         </tbody>
       </table>
+
+      {/* PAGINATION */}
+      {filteredArticles.length > 0 && (
+        <div className="flex items-center justify-start md:justify-center gap-4 mt-4">
+          {/* Bouton précédent */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white"
+              }`}
+          >
+            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+          </button>
+
+          {/* Input de page */}
+          <div className="flex items-center gap-2">
+          <span className="hidden sm:block text-sm">Page</span>
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={pageInput}
+              onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
+              className="w-12 text-center border rounded-md text-sm py-1"
+            />
+            <span className="text-sm">sur {totalPages}</span>
+          </div>
+
+          {/* Bouton suivant */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white"
+              }`}
+          >
+            <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
+          </button>
+        </div>
+      )}
 
       {selectedArticle && popupPosition &&
         createPortal(
