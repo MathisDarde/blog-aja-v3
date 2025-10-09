@@ -91,7 +91,7 @@ export default function HeaderLarge({ user }: { user?: User }) {
                     ref={dropdownRef}
                     className="dropdown-menu absolute top-full left-0 w-full z-50 bg-white shadow-lg py-6"
                   >
-                    <div className="mx-auto max-w-[1000px] xl:max-w-[1250px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-6">
+                    <div className="mx-auto max-w-[1000px] xl:max-w-[1250px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-6 px-6">
                       {(val.type === "vanilla"
                         ? AutresDropdownData
                         : AdminDropdownData
@@ -127,10 +127,10 @@ export default function HeaderLarge({ user }: { user?: User }) {
         </nav>
       </div>
 
-      <div className="flex-shrink-0 w-[75px] xl:w-[250px] flex justify-end">
+      <div className={`flex-shrink-0 ${!user ? "w-[185px]" : "w-[75px]"}  xl:w-[250px] flex justify-end`}>
         {!user ? (
           <Link href="/login">
-            <button className="flex items-center gap-2 font-Montserrat text-white bg-aja-blue px-6 py-2 rounded-full">
+            <button className="flex items-center gap-2 font-Montserrat text-white bg-aja-blue px-6 py-2 rounded-full text-sm xl:text-base">
               Se connecter <LogIn className="text-white" />
             </button>
           </Link>

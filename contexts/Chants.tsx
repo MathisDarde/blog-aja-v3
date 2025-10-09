@@ -10,7 +10,7 @@ export const chants = [
   {
     title: "Auxerre dans la peau",
     chant:
-      "Auxerre je t’aime, Auxerre je t’adore, je chanterais pour toi jusqu’à la mort !",
+      "Auxerre je t’aime, Auxerre je t’adore, je chanterai pour toi jusqu’à la mort !",
   },
   {
     title: "Bleu et blanc",
@@ -74,11 +74,6 @@ export const chants = [
     title: "Supporters bleus et blancs",
     chant:
       "Quelque part, dans la Bourgogne, subsistaient les supporters, d’une équipe bleue et blanche, les couleurs d’l’AJ Auxerre, lalala...",
-  },
-  {
-    title: "Passion bleue et blanche",
-    chant:
-      "Et tous ensemble ce soir on va chanter, bleu et blanc ce soir les couleurs qu’on va supporter, Auxerre est pour nous notre unique passion, nous ne lâcherons jamais notre passion !",
   },
   {
     title: "Fierté bourguignonne",

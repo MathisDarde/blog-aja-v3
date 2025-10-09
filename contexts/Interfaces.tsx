@@ -83,7 +83,6 @@ export interface Filter {
 export interface SearchInputProps {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onFilterClick: () => void;
   onSubmit: (event: React.FormEvent) => void;
 }
 
