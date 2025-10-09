@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Search } from "lucide-react";
-import { SearchInputProps } from "@/contexts/Interfaces";
 
 export default function SearchBar({
     value,
