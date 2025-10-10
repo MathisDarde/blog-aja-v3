@@ -56,16 +56,16 @@ export const CarouselContent = ({
         src={article.imageUrl}
         alt={article.title}
         priority
-        className="w-full h-[700px] object-cover object-top"
+        className="w-full h-[500px] md:h-[700px] object-cover object-top"
       />
 
       <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black to-transparent z-0" />
 
-      <div className="absolute bottom-2 left-0 m-8">
-        <h2 className="font-Bai_Jamjuree text-white uppercase text-2xl font-bold w-1/2">
+      <div className="absolute bottom-2 left-0 m-4 md:m-8">
+        <h2 className="font-Bai_Jamjuree text-white uppercase text-sl md:text-2xl font-bold w-full sm:w-1/2">
           {article.title}
         </h2>
-        <p className="font-Montserrat text-white text-sm w-1/2">
+        <p className="font-Montserrat text-white text-xs md:text-sm w-full sm:w-1/2">
           {article.teaser}
         </p>
 

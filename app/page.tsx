@@ -29,11 +29,11 @@ export default async function Page() {
 
   return (
     <div className="bg-gray-100">
-      <div className="pb-3 w-[1300px] mx-auto">
+      <div className="pb-3 max-w-[1300px] mx-auto">
         <Carousel articles={articles} />
       </div>
 
-      <div className="text-center  min-h-screen w-screen box-border p-10 pt-0">
+      <div className="text-center min-h-screen w-screen box-border p-4 sm:p-10 pt-0">
         <div className="my-4">
           <TeamStatsBlock />
         </div>
@@ -42,20 +42,22 @@ export default async function Page() {
           <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
             A la une sur Mémoire d&apos;Auxerrois
           </h2>
-          <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 w-[1300px]">
-            <div className="flex items-center">
-              <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[75%]">
+          <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 max-w-[1000px]">
+              <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
                 Dernier article publié
               </h3>
-              <h3 className="text-xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-[25%] ml-auto">
+              <div className="w-full">
+                <LastArticle articles={articles} />
+              </div>
+
+            {/* Responsive bloc duplicated to move place */}
+            <div className="flex items-center justify-center mt-4">
+              <h3 className="block lg:hidden text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
                 Articles que vous pourriez aimer
               </h3>
             </div>
-            <div className="inline-flex gap-6">
-              <div className="w-[75%]">
-                <LastArticle articles={articles} />
-              </div>
-              <div className="flex flex-col items-center justify-center w-[25%]">
+            <div className="flex gap-6 w-full">
+              <div className="flex lg:hidden items-center justify-center">
                 <DisplayRandom articles={articles} />
               </div>
             </div>

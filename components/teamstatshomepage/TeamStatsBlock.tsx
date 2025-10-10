@@ -19,7 +19,7 @@ export default async function TeamStatsBlock() {
 
   return (
     <div className="bg-white mx-auto max-w-[1300px] h-auto">
-      <div className="flex justify-center items-center p-6 rounded-md">
+      <div className="flex flex-col lg:flex-row justify-center items-center gap-6 p-6 rounded-md">
         <div className="flex-1">
           <LastMatchResult lastMatch={lastMatch} />
         </div>
