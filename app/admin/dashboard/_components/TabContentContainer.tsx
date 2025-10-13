@@ -50,7 +50,7 @@ export default function TabContentContainer({
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-xl overflow-y-hidden h-full w-full">
+    <div className="bg-white p-6 rounded-xl h-full w-full">
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-4">
         <div className="hidden lg:flex items-center gap-8">
           {menuItems.map((item) => (

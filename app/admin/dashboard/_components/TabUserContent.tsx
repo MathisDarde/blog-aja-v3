@@ -56,19 +56,27 @@ export default function TabUserContent({
   const handleOpenPopup = (id: string, event: React.MouseEvent) => {
     event.stopPropagation();
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+
+    const popupWidth = 220; // largeur estimée de la popup, ajuste selon ton design
+
+    // Position de base : coin supérieur droit du bouton cliqué
+    let top = rect.bottom + window.scrollY + 4; // petit espace (4px)
+    let left = rect.right + window.scrollX - popupWidth;
+
+    // ✅ Empêche la popup de sortir à droite
+    const maxLeft = window.innerWidth - popupWidth - 8;
+    if (left > maxLeft) left = maxLeft;
+
+    // ✅ Empêche la popup de sortir à gauche
+    if (left < 8) left = 8;
+
     setSelectedUserId((prev) => (prev === id ? null : id));
-    setPopupPosition({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-    });
+    setPopupPosition({ top, left });
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
         setSelectedUserId(null);
       }
     };
@@ -102,7 +110,7 @@ export default function TabUserContent({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
@@ -201,7 +209,7 @@ export default function TabUserContent({
 
       {/* PAGINATION */}
       {filteredUsers.length > 0 && (
-        <div className="flex items-center justify-start md:justify-center gap-4 mt-4">
+        <div className="flex items-center justify-start md:justify-center gap-4 my-4">
           {/* Bouton précédent */}
           <button
             onClick={() => handlePageChange(currentPage - 1)}

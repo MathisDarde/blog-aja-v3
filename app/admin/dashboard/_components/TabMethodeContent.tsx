@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 import ContextPopup from "./ContextPopup";
 import { MethodeSortKey, Methodes } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { createPortal } from "react-dom";
 
 export default function TabMethodeContent({
   searchTerm,
@@ -15,19 +16,19 @@ export default function TabMethodeContent({
 }) {
   const {
     sortElements,
-    openContextPopup,
-    DashboardPopupId,
-    DashboardPopupPosition,
-    DashboardPopupRef,
   } = useGlobalContext();
 
   const [sortKey, setSortKey] = useState<MethodeSortKey>("typemethode");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedMethodeId, setSelectedMethodeId] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
 
   // 👇 Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
   const itemsPerPage = 10;
+
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const sortedMethodes = sortElements({
     elements: methodes,
@@ -42,6 +43,40 @@ export default function TabMethodeContent({
         .toLocaleDateString("fr-FR")
         .includes(searchTerm)
   );
+
+  const handleOpenPopup = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+
+    const popupWidth = 220; // largeur estimée de la popup, ajuste selon ton design
+
+    // Position de base : coin supérieur droit du bouton cliqué
+    let top = rect.bottom + window.scrollY + 4; // petit espace (4px)
+    let left = rect.right + window.scrollX - popupWidth;
+
+    // ✅ Empêche la popup de sortir à droite
+    const maxLeft = window.innerWidth - popupWidth - 8;
+    if (left > maxLeft) left = maxLeft;
+
+    // ✅ Empêche la popup de sortir à gauche
+    if (left < 8) left = 8;
+
+    setSelectedMethodeId((prev) => (prev === id ? null : id));
+    setPopupPosition({ top, left });
+  };
+
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        setSelectedMethodeId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedMethode = methodes.find((a) => a.id_methode === selectedMethodeId);
 
   // 👇 Pagination logic
   const totalPages = Math.ceil(filteredMethodes.length / itemsPerPage);
@@ -77,7 +112,7 @@ export default function TabMethodeContent({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
@@ -117,9 +152,7 @@ export default function TabMethodeContent({
                 </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(event: React.MouseEvent) =>
-                    openContextPopup({ id: methode.id_methode, event })
-                  }
+                  onClick={(e) => handleOpenPopup(methode.id_methode, e)}
                 >
                   <EllipsisVertical />
                 </td>
@@ -137,7 +170,7 @@ export default function TabMethodeContent({
 
       {/* PAGINATION */}
       {filteredMethodes.length > 0 && (
-        <div className="flex items-center justify-start md:justify-center gap-4 mt-4">
+        <div className="flex items-center justify-start md:justify-center gap-4 my-4">
           {/* Bouton précédent */}
           <button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -180,18 +213,21 @@ export default function TabMethodeContent({
       )}
 
       {/* CONTEXT POPUP */}
-      {DashboardPopupId && DashboardPopupPosition && (
-        <div
-          className="absolute z-50"
-          style={{
-            top: DashboardPopupPosition.top,
-            left: DashboardPopupPosition.left,
-          }}
-          ref={DashboardPopupRef}
-        >
-          <ContextPopup id={DashboardPopupId} type="method" />
-        </div>
-      )}
+      {selectedMethode && popupPosition &&
+        createPortal(
+          <div
+            ref={popupRef}
+            className="absolute z-50"
+            style={{
+              top: popupPosition.top,
+              left: popupPosition.left,
+              maxWidth: "calc(100vw - 16px)",
+            }}
+          >
+            <ContextPopup id={selectedMethode.id_methode} type="method" />
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

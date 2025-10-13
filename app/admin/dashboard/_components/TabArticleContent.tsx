@@ -58,12 +58,24 @@ export default function TabArticleContent({
   const handleOpenPopup = (id: string, event: React.MouseEvent) => {
     event.stopPropagation();
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+
+    const popupWidth = 220; // largeur estimée de la popup, ajuste selon ton design
+
+    // Position de base : coin supérieur droit du bouton cliqué
+    let top = rect.bottom + window.scrollY + 4; // petit espace (4px)
+    let left = rect.right + window.scrollX - popupWidth;
+
+    // ✅ Empêche la popup de sortir à droite
+    const maxLeft = window.innerWidth - popupWidth - 8;
+    if (left > maxLeft) left = maxLeft;
+
+    // ✅ Empêche la popup de sortir à gauche
+    if (left < 8) left = 8;
+
     setSelectedArticleId((prev) => (prev === id ? null : id));
-    setPopupPosition({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-    });
+    setPopupPosition({ top, left });
   };
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -101,7 +113,7 @@ export default function TabArticleContent({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
@@ -162,14 +174,14 @@ export default function TabArticleContent({
 
       {/* PAGINATION */}
       {filteredArticles.length > 0 && (
-        <div className="flex items-center justify-start md:justify-center gap-4 mt-4">
+        <div className="flex items-center justify-start md:justify-center gap-4 my-4">
           {/* Bouton précédent */}
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-aja-blue text-white"
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-aja-blue text-white"
               }`}
           >
             <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
@@ -177,7 +189,7 @@ export default function TabArticleContent({
 
           {/* Input de page */}
           <div className="flex items-center gap-2">
-          <span className="hidden sm:block text-sm">Page</span>
+            <span className="hidden sm:block text-sm">Page</span>
             <input
               type="number"
               min={1}
@@ -195,8 +207,8 @@ export default function TabArticleContent({
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-aja-blue text-white"
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-aja-blue text-white"
               }`}
           >
             <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
@@ -206,7 +218,15 @@ export default function TabArticleContent({
 
       {selectedArticle && popupPosition &&
         createPortal(
-          <div ref={popupRef} className="absolute z-50" style={{ top: popupPosition.top, left: popupPosition.left }}>
+          <div
+            ref={popupRef}
+            className="absolute z-50"
+            style={{
+              top: popupPosition.top,
+              left: popupPosition.left,
+              maxWidth: "calc(100vw - 16px)",
+            }}
+          >
             <ContextPopup id={selectedArticle.id_article} type="article" state={selectedArticle.state} />
           </div>,
           document.body
