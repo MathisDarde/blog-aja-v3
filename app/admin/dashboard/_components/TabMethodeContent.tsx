@@ -51,7 +51,7 @@ export default function TabMethodeContent({
     const popupWidth = 220; // largeur estimée de la popup, ajuste selon ton design
 
     // Position de base : coin supérieur droit du bouton cliqué
-    let top = rect.bottom + window.scrollY + 4; // petit espace (4px)
+    const top = rect.bottom + window.scrollY + 4; // petit espace (4px)
     let left = rect.right + window.scrollX - popupWidth;
 
     // ✅ Empêche la popup de sortir à droite
@@ -111,20 +111,38 @@ export default function TabMethodeContent({
     }
   };
 
+  function getMethodeTitle(m: Methodes): string {
+    switch (m.typemethode) {
+      case "coach":
+        return m.nomcoach ?? "Méthode coach sans nom";
+      case "joueur":
+        return m.joueurnom ?? "Méthode joueur sans nom";
+      case "match":
+        return m.titrematch ?? "Méthode match sans titre";
+      case "saison":
+        return m.saison ?? "Méthode saison sans titre";
+      default:
+        return "Méthode sans titre";
+    }
+  }
+
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-auto table-auto border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
             <th
-              className="p-3 text-center cursor-pointer w-1/2"
+              className="p-3 text-center cursor-pointer w-1/3"
               onClick={() => handleSort("typemethode")}
             >
               Type de méthode{" "}
               {sortKey === "typemethode" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
+            <th className="p-3 text-center cursor-pointer w-1/3">
+              Titre
+            </th>
             <th
-              className="p-3 text-center cursor-pointer w-1/2"
+              className="p-3 text-center cursor-pointer w-1/3"
               onClick={() => handleSort("createdAt")}
             >
               Date de publication{" "}
@@ -142,10 +160,13 @@ export default function TabMethodeContent({
                 key={methode.id_methode}
                 className="bg-white border-t border-gray-200"
               >
-                <td className="p-3 text-center w-1/2">
-                  <div className="truncate max-w-1/2">
+                <td className="p-3 text-center w-1/3">
+                  <div className="truncate max-w-1/3">
                     {methode.typemethode}
                   </div>
+                </td>
+                <td>
+                  {getMethodeTitle(methode)}
                 </td>
                 <td className="p-3 text-center w-1/2">
                   {methode.createdAt.toLocaleDateString()}

@@ -62,7 +62,7 @@ export default function TabCommentContent({
     const popupWidth = 220; // largeur estimée de la popup, ajuste selon ton design
 
     // Position de base : coin supérieur droit du bouton cliqué
-    let top = rect.bottom + window.scrollY + 4; // petit espace (4px)
+    const top = rect.bottom + window.scrollY + 4; // petit espace (4px)
     let left = rect.right + window.scrollX - popupWidth;
 
     // ✅ Empêche la popup de sortir à droite
