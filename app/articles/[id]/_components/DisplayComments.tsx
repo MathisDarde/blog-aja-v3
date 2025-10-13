@@ -6,7 +6,7 @@ import UpdateCommentForm from "./UpdateCommentForm";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useState } from "react";
 import deleteCommentAction from "@/actions/comment/delete-comment";
-import { ChevronLeft, PenSquare, Plus, Trash } from "lucide-react";
+import { ChevronLeft, LogIn, PenSquare, Plus, Trash } from "lucide-react";
 import Image from "next/image";
 import { Article, Comment, User } from "@/contexts/Interfaces";
 import Link from "next/link";
@@ -87,7 +87,7 @@ export default function DisplayArticleComments({
         />
       }
 
-      <div className="w-full bg-white rounded-xl p-8 font-Montserrat">
+      <div className="max-w-[1200px] bg-white rounded-xl p-8 font-Montserrat">
         {!isPublishingComment ? (
           <>
             {isUpdatingComment && selectedComment ? (
@@ -113,7 +113,7 @@ export default function DisplayArticleComments({
               </>
             ) : (
               <>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center gap-6">
                   <h3 className="font-Bai_Jamjuree text-2xl font-bold uppercase">
                     Commentaires ({numberOfComments})
                   </h3>
@@ -121,17 +121,17 @@ export default function DisplayArticleComments({
                     <>
                       {user ? (
                         <Button
-                          className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full m-0"
+                          className="flex flex-row items-center gap-2 text-white bg-aja-blue px-2 md:px-6 py-2 md:py-3 rounded-full m-0"
                           onClick={() => setIsPublishingComment(true)}
                         >
-                          <Plus /> Ajouter un commentaire
+                          <Plus /> <span className="hidden md:block">Ajouter un commentaire</span>
                         </Button>
                       ) : (
                         <Link href={"/login"}>
                           <Button
-                            className="flex flex-row items-center gap-2 text-white bg-aja-blue px-6 py-3 rounded-full"
+                            className="flex flex-row items-center gap-2 text-white bg-aja-blue px-2 lg:px-6 py-2 lg:py-3 rounded-full m-0"
                           >
-                            Connectez-vous pour publier un commentaire
+                            <LogIn /> <span className="hidden lg:block">Connectez-vous pour publier un commentaire</span>
                           </Button>
                         </Link>
                       )}
@@ -148,81 +148,88 @@ export default function DisplayArticleComments({
                           <div
                             key={comment.id_comment}
                             id={`comment-${comment.id_comment}`}
-                            className="border rounded-lg p-4 bg-gray-50 font-Montserrat"
+                            className="border rounded-lg p-4 bg-gray-50 font-Montserrat flex flex-col md:flex-row"
                           >
-                            <div className="flex items-center gap-4">
-                              {!comment.photodeprofil ? (
-                                <Image
-                                  src={"/_assets/img/pdpdebase.png"}
-                                  alt="Photo de profil"
-                                  width={128}
-                                  height={128}
-                                  className="w-11 h-11 rounded-full"
-                                />
-                              ) : (
-                                <Image
-                                  src={comment.photodeprofil}
-                                  alt="Photo de profil"
-                                  width={128}
-                                  height={128}
-                                  className="w-11 h-11 rounded-full object-cover"
-                                />
-                              )}
-                              <p className="font-semibold">{comment.pseudo}</p>
-                              <p className="font-light text-xs">
-                                {comment.updatedAt.toLocaleString("fr-FR")}
-                              </p>
-                              <div className="flex items-center gap-1 my-2">
-                                {Array.from({
-                                  length: Number(comment.stars),
-                                }).map((_, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="text-yellow-400 text-3xl"
-                                  >
-                                    ★
-                                  </span>
-                                ))}
-                              </div>
-                              {comment.userId === user_id && (
-                                <div className="flex items-center gap-2 ml-auto">
-                                  <button
-                                    className="rounded-full border border-gray-300 p-2"
-                                    onClick={() => {
-                                      setSelectedComment({
-                                        id_comment: comment.id_comment,
-                                        title: comment.title,
-                                        content: comment.content,
-                                        stars: comment.stars,
-                                      });
-                                      setIsUpdatingComment(true);
-                                    }}
-                                  >
-                                    <PenSquare size={20} />
-                                  </button>
-                                  <button
-                                    className="rounded-full border bg-red-500 text-white border-gray-300 p-2"
-                                    onClick={() => {
-                                      setDeletePopupOpen(true);
-                                      setSelectedComment({
-                                        id_comment: comment.id_comment,
-                                        title: comment.title,
-                                        content: comment.content,
-                                        stars: comment.stars,
-                                      });
-                                    }}
-                                  >
-                                    <Trash size={20} />
-                                  </button>
+                            <div className="flex-1"> 
+                              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4">
+                                <div className="flex items-center gap-4">
+                                  {!comment.photodeprofil ? (
+                                    <Image
+                                      src={"/_assets/img/pdpdebase.png"}
+                                      alt="Photo de profil"
+                                      width={128}
+                                      height={128}
+                                      className="w-9 md:w-11 h-9 md:h-11 rounded-full"
+                                    />
+                                  ) : (
+                                    <Image
+                                      src={comment.photodeprofil}
+                                      alt="Photo de profil"
+                                      width={128}
+                                      height={128}
+                                      className="w-9 md:w-11 h-9 md:h-11 rounded-full object-cover"
+                                    />
+                                  )}
+                                  <p className="font-semibold">{comment.pseudo}</p>
+                                  <p className="font-light text-xs">
+                                    {comment.updatedAt.toLocaleString("fr-FR")}
+                                  </p>
                                 </div>
-                              )}
+                                <div className="flex items-center gap-1 my-0 md:my-2">
+                                  {Array.from({
+                                    length: Number(comment.stars),
+                                  }).map((_, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="text-yellow-400 text-2xl md:text-3xl"
+                                    >
+                                      ★
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <p className="font-semibold uppercase my-2">
+                                {comment.title}
+                              </p>
+                              <p className="text-sm text-gray-700 mb-2">
+                                {comment.content}
+                              </p>
                             </div>
-                            <p className="font-semibold uppercase my-2">
-                              {comment.title}
-                            </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                              {comment.content}
-                            </p>
+
+
+                            {comment.userId === user_id && (
+                              <div className="flex flex-row md:flex-col items-center justify-center md:justify-start gap-2 ml-4 mt-2">
+                                <button
+                                  className="rounded-full border border-gray-300 p-2"
+                                  onClick={() => {
+                                    setSelectedComment({
+                                      id_comment: comment.id_comment,
+                                      title: comment.title,
+                                      content: comment.content,
+                                      stars: comment.stars,
+                                    });
+                                    setIsUpdatingComment(true);
+                                  }}
+                                >
+                                  <PenSquare size={20} />
+                                </button>
+                                <button
+                                  className="rounded-full border bg-red-500 text-white border-gray-300 p-2"
+                                  onClick={() => {
+                                    setDeletePopupOpen(true);
+                                    setSelectedComment({
+                                      id_comment: comment.id_comment,
+                                      title: comment.title,
+                                      content: comment.content,
+                                      stars: comment.stars,
+                                    });
+                                  }}
+                                >
+                                  <Trash size={20} />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         ))}
 

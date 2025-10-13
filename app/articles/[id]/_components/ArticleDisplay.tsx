@@ -238,9 +238,9 @@ export default function ArticleDisplay({
 
       <div
         onClick={() => setIsMethodOpen(true)}
-        className="cursor-pointer fixed bottom-10 right-10 w-24 h-24 rounded-full text-white bg-aja-blue flex items-center justify-center"
+        className="cursor-pointer fixed bottom-10 right-10 w-16 lg:w-24 h-16 lg:h-24 rounded-full text-white bg-aja-blue flex items-center justify-center"
       >
-        <Gem size={50} />
+        <Gem size={50} className="size-10 lg:size-14" />
       </div>
     </div>
   );
