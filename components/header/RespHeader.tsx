@@ -97,8 +97,10 @@ export default function RespHeader({ user }: { user?: User }) {
                       onClick={() => {
                         if (element.type === "vanilla") {
                           setOpenOthersDropdown((prev) => !prev);
+                          setOpenAdminDropdown(false);
                         } else if (element.type === "admin") {
                           setOpenAdminDropdown((prev) => !prev);
+                          setOpenOthersDropdown(false);
                         }
                       }}
                     >

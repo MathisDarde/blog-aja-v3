@@ -43,10 +43,11 @@ export default function Home() {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-10">
-      <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase mb-6 sm:mb-10">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">
+      <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase">
         Quiz AJ Auxerre
       </h1>
+      <p className="my-4 font-Montserrat px-4 py-2 rounded-md bg-yellow-400 inline-flex">Nouvelle fonctionnalité bientôt disponible !</p>
       <div className="bg-white max-w-[700px] p-6 rounded-md mx-auto">
         <div className="quiz-container">
           {showingQuestion ? (
