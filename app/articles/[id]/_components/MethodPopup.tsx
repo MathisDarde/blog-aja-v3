@@ -40,7 +40,7 @@ export default function MethodPopup({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white p-6 rounded-xl shadow-lg w-[500px] max-h-[650px] overflow-y-scroll text-center relative"
+        className="bg-white p-6 rounded-xl shadow-lg w-[500px] max-h-[650px] overflow-y-scroll text-center relative m-6"
       >
         <button
           onClick={() => {
@@ -53,11 +53,11 @@ export default function MethodPopup({
         </button>
         {activeMethode.length == 0 ? (
           <>
-            <h2 className="uppercase font-Bai_Jamjuree font-bold text-2xl">
+            <h2 className="uppercase font-Bai_Jamjuree font-bold text-xl sm:text-2xl mt-4 sm:mt-0">
               Méthodes expert
             </h2>
 
-            <p className="w-2/3 mx-auto my-3">
+            <p className="w-full sm:w-2/3 mx-auto my-3 text-sm sm:text-base">
               Plongez au coeur des méthodes expert pour revivre ou découvrir des
               matchs et des carrières qui ont marqué l&apos;AJ Auxerre !
             </p>
@@ -72,16 +72,16 @@ export default function MethodPopup({
                     >
                       <p
                         onClick={() => setActiveMethode([methode])}
-                        className="text-aja-blue cursor-pointer underline"
+                        className="text-aja-blue cursor-pointer underline text-sm sm:text-base"
                       >
                         {methode.keywords[0]}
                       </p>
-                      <p className="capitalize">({methode.typemethode})</p>
+                      <p className="capitalize text-sm sm:text-base">({methode.typemethode})</p>
                     </div>
                   ))}
                 </>
               ) : (
-                <p className="text-center font-Montserrat">
+                <p className="text-center font-Montserrat text-sm sm:text-base">
                   Aucune méthode trouvée.
                 </p>
               )}

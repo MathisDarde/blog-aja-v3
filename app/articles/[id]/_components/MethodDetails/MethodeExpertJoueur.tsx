@@ -20,22 +20,22 @@ export default function PlayerMethodeExpert({
         />
 
         {/* Nom du joueur */}
-        <p className="text-center font-Bai_Jamjuree text-2xl font-bold mt-4">
+        <p className="text-center font-Bai_Jamjuree text-xl sm:text-2xl font-bold mt-4">
           {methode.joueurnom}
         </p>
 
         {/* Profil du joueur */}
         <div className="mt-4 text-left space-y-2">
-          <p className="text-lg font-semibold font-Bai_Jamjuree">
+          <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">
             Profil du joueur
           </p>
-          <p>Poste : {methode.poste}</p>
-          <p>Taille : {methode.taille}</p>
-          <p>Pied fort : {methode.piedfort}</p>
+          <p className="text-sm sm:text-base">Poste : {methode.poste}</p>
+          <p className="text-sm sm:text-base">Taille : {methode.taille}</p>
+          <p className="text-sm sm:text-base">Pied fort : {methode.piedfort}</p>
         </div>
 
         {/* Clubs du joueur */}
-        <p className="text-lg mt-4 text-left font-semibold font-Bai_Jamjuree">
+        <p className="text-base sm:text-lg mt-4 text-left font-semibold font-Bai_Jamjuree">
           Clubs
         </p>
         <ul>
@@ -46,9 +46,9 @@ export default function PlayerMethodeExpert({
                 width={512}
                 src={club[0]}
                 alt={`Logo de ${club[1]}`}
-                className="w-6 h-6"
+                className="w-5 sm:w-6 h-5 sm:h-6"
               />
-              <span className="text-gray-700">
+              <span className="text-gray-700 text-sm sm:text-base text-left">
                 <span className="font-semibold">{club[1]}</span> ({club[2]})
               </span>
             </li>
@@ -57,12 +57,12 @@ export default function PlayerMethodeExpert({
 
         {/* Statistiques */}
         <div className="mt-4 text-left space-y-2">
-          <p className="text-lg font-semibold font-Bai_Jamjuree">
+          <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">
             Statistiques en carrière
           </p>
-          <p>{methode.matchs} matchs</p>
-          <p>{methode.buts} buts</p>
-          <p>{methode.passesd} passes décisives</p>
+          <p className="text-sm sm:text-base">{methode.matchs} matchs</p>
+          <p className="text-sm sm:text-base">{methode.buts} buts</p>
+          <p className="text-sm sm:text-base">{methode.passesd} passes décisives</p>
         </div>
       </div>
   );

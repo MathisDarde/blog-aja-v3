@@ -28,12 +28,12 @@ export default function CoachMethodeExpert({
       )}
 
       {/* Nom du coach */}
-      <p className="text-center font-Bai_Jamjuree text-2xl font-bold mt-4">
+      <p className="text-center font-Bai_Jamjuree text-xl sm:text-2xl font-bold mt-4">
         {methode.nomcoach}
       </p>
 
       {/* Clubs entraînés */}
-      <p className="text-lg mt-4 text-left font-semibold font-Bai_Jamjuree">
+      <p className="text-base sm:text-lg mt-4 text-left font-semibold font-Bai_Jamjuree">
         Clubs
       </p>
       <ul className="space-y-2">
@@ -45,9 +45,9 @@ export default function CoachMethodeExpert({
                 width={512}
                 src={club.logo}
                 alt={`Logo de ${club.name}`}
-                className="w-6 h-6"
+                className="w-5 sm:w-6 h-5 sm:h-6"
               />
-              <span className="text-gray-700">
+              <span className="text-gray-700 text-sm sm:text-base text-left">
                 <span className="font-semibold font-Montserrat">
                   {club.name}
                 </span>{" "}
@@ -55,7 +55,7 @@ export default function CoachMethodeExpert({
               </span>
             </li>
           ) : (
-            <li key={index} className="text-gray-700">
+            <li key={index} className="text-gray-700 text-sm sm:text-base">
               Club invalide
             </li>
           )
@@ -64,8 +64,8 @@ export default function CoachMethodeExpert({
 
             {/* Palmarès */}
             <div className="mt-4 text-left">
-        <p className="text-lg font-semibold font-Bai_Jamjuree">Palmarès :</p>
-        <ul className="">
+        <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">Palmarès :</p>
+        <ul className="text-sm sm:text-base">
           {methode.palmares?.map((item, index) => (
             <li key={index} className="text-gray-700">
               {item[0]} ({item[1]})
@@ -76,10 +76,10 @@ export default function CoachMethodeExpert({
 
       {/* Statistiques */}
       <div className="mt-4 text-left">
-        <p className="text-lg font-semibold font-Bai_Jamjuree">
+        <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">
           Statistiques :
         </p>
-        <p className="text-gray-700">{methode.statistiques}</p>
+        <p className="text-gray-700 text-sm sm:text-base">{methode.statistiques}</p>
       </div>
     </div>
   );
