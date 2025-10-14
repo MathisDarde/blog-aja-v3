@@ -66,7 +66,7 @@ export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
 
 
   return (
-    <div className="w-[1200px] mx-auto space-y-4">
+    <div className="max-w-[1200px] mx-auto space-y-4">
       <div className="flex items-center gap-10 justify-center font-Montserrat">
         <p onClick={() => setAllStatsWindow("galerie")} className={`cursor-pointer ${allStatsWindow === "galerie"
           ? "border-b-2 border-aja-blue font-semibold"
@@ -80,23 +80,23 @@ export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
 
       {allStatsWindow === "galerie" ? (
         <>
-          <p className="text-left font-Montserrat font-semibold text-lg">Meilleurs buteurs</p>
-          <div className="grid grid-cols-3 gap-10">
+          <p className="text-center sm:text-left font-Montserrat font-semibold text-base sm:text-lg">Meilleurs buteurs</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
             {bestScorers.map((player, index) => {
               const info = getPlayerInfo(player.nom);
 
               return (
-                <div key={index} className="bg-white p-4 rounded-md">
+                <div key={index} className="bg-white p-4 rounded-md flex flex-col items-center">
                   <Image
                     src={info?.image_url || "/img/pdpdebase.png"}
                     alt={player.nom}
                     width={240}
                     height={240}
-                    className="rounded-full mx-auto w-36 h-36 object-cover object-top border border-black"
+                    className="rounded-full w-36 h-36 object-cover object-top border border-black"
                   />
                   <p className="text-2xl font-semibold font-Bai_Jamjuree">{player.nom}</p>
                   <p className="font-Montserrat text-xs">{player?.position}, {info?.age} ans</p>
-                  <div className="text-left font-Montserrat mt-2 text-sm">
+                  <div className="text-center font-Montserrat mt-2 text-sm">
                     <p>Nombre de matchs : {player.titularisations}</p>
                     <p>Buts marqués : {player.goals || 0}</p>
                     <p>Passes décisives : {player.assists || 0}</p>
@@ -106,23 +106,23 @@ export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
               )
             })}
           </div>
-          <p className="text-left font-Montserrat font-semibold text-lg">Meilleurs passeurs</p>
-          <div className="grid grid-cols-3 gap-10">
+          <p className="text-center sm:text-left font-Montserrat font-semibold text-base sm:text-lg">Meilleurs passeurs</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
             {bestPassers.map((player, index) => {
               const info = getPlayerInfo(player.nom);
 
               return (
-                <div key={index} className="bg-white p-4 rounded-md">
+                <div key={index} className="bg-white p-4 rounded-md flex flex-col items-center">
                   <Image
                     src={info?.image_url || "/img/pdpdebase.png"}
                     alt={player.nom}
                     width={240}
                     height={240}
-                    className="rounded-full mx-auto w-36 h-36 object-cover object-top border border-black"
+                    className="rounded-full w-36 h-36 object-cover object-top border border-black"
                   />
                   <p className="text-2xl font-semibold font-Bai_Jamjuree">{player.nom}</p>
                   <p className="font-Montserrat text-xs">{player?.position}, {info?.age} ans</p>
-                  <div className="text-left font-Montserrat mt-2 text-sm">
+                  <div className="text-center font-Montserrat mt-2 text-sm">
                     <p>Nombre de matches : {player.titularisations}</p>
                     <p>Buts marqués : {player.goals || 0}</p>
                     <p>Passes décisives : {player.assists || 0}</p>
@@ -134,7 +134,8 @@ export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
           </div>
         </>
       ) : (
-        <table className="mx-auto">
+        <div className="overflow-x-auto w-full">
+        <table className="mx-auto bg-white max-w-[1200px]">
           <thead className="font-Montserrat text-sm">
             <tr>
               <th className="border border-gray-300 px-4 py-2 cursor-pointer" onClick={() => handleSort("numero")}>
@@ -199,6 +200,7 @@ export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
             })}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );

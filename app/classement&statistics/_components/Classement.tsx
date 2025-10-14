@@ -60,34 +60,34 @@ export default function Classement({ teams }: { teams: Team[] }) {
   };
 
   return (
-    <div className="px-4 mt-10 h-auto w-[800px] mx-auto">
+    <div className="px-0 sm:px-4 mt-10 h-auto max-w-[800px] mx-auto">
       {/* Header */}
-      <div className="grid grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] bg-gray-200 p-2 font-Montserrat font-semibold text-center rounded">
+      <div className="grid grid-cols-[75_minmax(150px,1fr)_70px] sm:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_50px_70px] md:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] bg-gray-200 p-2 font-Montserrat font-semibold text-center rounded">
         <div className="cursor-pointer" onClick={() => handleSort("position")}>
           Pos. {sortKey === "position" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
         <div className="text-left cursor-pointer" onClick={() => handleSort("equipe")}>
           Équipe {sortKey === "equipe" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
-        <div className="cursor-pointer" onClick={() => handleSort("matchs_joues")}>
+        <div className="cursor-pointer hidden md:block" onClick={() => handleSort("matchs_joues")}>
           J {sortKey === "matchs_joues" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
-        <div className="cursor-pointer" onClick={() => handleSort("gagnes")}>
+        <div className="cursor-pointer hidden sm:block" onClick={() => handleSort("gagnes")}>
           G {sortKey === "gagnes" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
-        <div className="cursor-pointer" onClick={() => handleSort("nuls")}>
+        <div className="cursor-pointer hidden sm:block" onClick={() => handleSort("nuls")}>
           N {sortKey === "nuls" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
-        <div className="cursor-pointer" onClick={() => handleSort("perdus")}>
+        <div className="cursor-pointer hidden sm:block" onClick={() => handleSort("perdus")}>
           P {sortKey === "perdus" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
-        <div className="cursor-pointer" onClick={() => handleSort("buts_marques")}>
+        <div className="cursor-pointer hidden md:block" onClick={() => handleSort("buts_marques")}>
           BP {sortKey === "buts_marques" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
-        <div className="cursor-pointer" onClick={() => handleSort("buts_encaisses")}>
+        <div className="cursor-pointer hidden md:block" onClick={() => handleSort("buts_encaisses")}>
           BC {sortKey === "buts_encaisses" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
-        <div className="cursor-pointer" onClick={() => handleSort("difference")}>
+        <div className="cursor-pointer hidden sm:block" onClick={() => handleSort("difference")}>
           Diff {sortKey === "difference" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
         <div className="cursor-pointer" onClick={() => handleSort("points")}>
@@ -102,7 +102,7 @@ export default function Classement({ teams }: { teams: Team[] }) {
           return (
             <div
               key={index}
-              className={`relative grid grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] items-center px-2 py-3 rounded shadow bg-white`}
+              className={`relative grid grid-cols-[75_minmax(150px,1fr)_70px] sm:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_50px_70px] md:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] items-center px-2 py-3 rounded shadow bg-white`}
             >
               {/* Bande de couleur selon position */}
               <div
@@ -136,25 +136,25 @@ export default function Classement({ teams }: { teams: Team[] }) {
                 {actualName}
               </div>
 
-              <div className="text-center font-Montserrat text-base font-medium">
+              <div className="text-center font-Montserrat text-base font-medium hidden md:block">
                 {team.matchs_joues}
               </div>
-              <div className="text-center font-Montserrat text-base font-medium">
+              <div className="text-center font-Montserrat text-base font-medium hidden sm:block">
                 {team.gagnes}
               </div>
-              <div className="text-center font-Montserrat text-base font-medium">
+              <div className="text-center font-Montserrat text-base font-medium hidden sm:block">
                 {team.nuls}
               </div>
-              <div className="text-center font-Montserrat text-base font-medium">
+              <div className="text-center font-Montserrat text-base font-medium hidden sm:block">
                 {team.perdus}
               </div>
-              <div className="text-center font-Montserrat text-base font-medium">
+              <div className="text-center font-Montserrat text-base font-medium hidden md:block">
                 {team.buts_marques}
               </div>
-              <div className="text-center font-Montserrat text-base font-medium">
+              <div className="text-center font-Montserrat text-base font-medium hidden md:block">
                 {team.buts_encaisses}
               </div>
-              <div className="text-center font-Montserrat text-base font-medium">
+              <div className="text-center font-Montserrat text-base font-medium hidden sm:block">
                 {team.difference}
               </div>
               <div className="text-center font-Montserrat font-bold">
