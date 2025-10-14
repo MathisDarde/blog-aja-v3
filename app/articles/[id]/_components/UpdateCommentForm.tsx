@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import { Heading, Folder, X, Star } from "lucide-react";
-import Button from "@/components/BlueButton";
 import { useForm } from "react-hook-form";
 import { CommentSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";

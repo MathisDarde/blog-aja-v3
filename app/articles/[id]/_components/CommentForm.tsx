@@ -7,7 +7,6 @@ import { CommentSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CommentSchema } from "@/app/schema";
 import { toast } from "sonner";
-import Button from "@/components/BlueButton";
 import submitCommentForm from "@/actions/comment/comment-form";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
