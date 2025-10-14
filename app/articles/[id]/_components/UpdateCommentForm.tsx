@@ -67,19 +67,19 @@ export default function UpdateCommentForm({
   useFormErrorToasts(errors)
 
   return (
-    <div className="w-[600px] mx-auto">
+    <div className="w-full mx-auto relative">
       <form
         id="publishform"
         encType="multipart/form-data"
-        className="w-[600px]"
+        className="max-w-[600px] text-center"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Star className="mr-4" />
             Note de l&apos;article :
           </span>
-          <div className="flex flex-row gap-2 my-4 w-[600px]">
+          <div className="flex flex-row gap-2 my-4 w-full">
             {[...Array(5)].map((_, index) => {
               const currentRating = index + 1;
 
@@ -103,35 +103,38 @@ export default function UpdateCommentForm({
             })}
           </div>
         </div>
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Heading className="mr-4" />
             Titre du commentaire :
           </span>
           <input
             type="text"
             {...register("title")}
-            className="w-[600px] my-4 py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Titre de l'article"
           />
         </div>
 
-        <div className="relative w-[600px]">
-          <span className="font-semibold font-Montserrat flex items-center text-gray-600">
+        <div className="relative w-full">
+        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
             <Folder className="mr-4" />
             Contenu du commentaire :
           </span>
           <textarea
             {...register("content")}
             rows={15}
-            className="w-[600px] h-auto my-4 pt-4 py-3 px-6 rounded-2xl border border-gray-600 font-Montserrat text-sm"
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-md border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Contenu de l'article"
           ></textarea>
         </div>
 
-        <div className="flex justify-center items-center">
-          <Button type="submit">Je modifie mon commentaire</Button>
-        </div>
+        <button
+          type="submit"
+          className="bg-aja-blue px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+        >
+          Je modifie mon commentaire
+        </button>
       </form>
     </div>
   );

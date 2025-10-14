@@ -92,14 +92,13 @@ export default function DisplayArticleComments({
           <>
             {isUpdatingComment && selectedComment ? (
               <>
-                <h2
-                  className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer"
+                <h2 className="font-bold font-Bai_Jamjuree uppercase text-xl sm:text-2xl md:text-3xl mb-4 sm:mb-10 flex items-center justify-center gap-3 cursor-pointer"
                   onClick={() => {
                     setSelectedComment(null);
                     setIsUpdatingComment(false);
                   }}
                 >
-                  <ChevronLeft /> Formulaire de modification du commentaire
+                  <ChevronLeft className="size-8" /> Formulaire de modification de commentaire
                 </h2>
 
                 <UpdateCommentForm
@@ -114,7 +113,7 @@ export default function DisplayArticleComments({
             ) : (
               <>
                 <div className="flex justify-between items-center gap-6">
-                  <h3 className="font-Bai_Jamjuree text-2xl font-bold uppercase">
+                  <h3 className="font-Bai_Jamjuree text-xl sm:text-2xl font-bold uppercase">
                     Commentaires ({numberOfComments})
                   </h3>
                   {article.state === "published" && (
@@ -150,7 +149,7 @@ export default function DisplayArticleComments({
                             id={`comment-${comment.id_comment}`}
                             className="border rounded-lg p-4 bg-gray-50 font-Montserrat flex flex-col md:flex-row"
                           >
-                            <div className="flex-1"> 
+                            <div className="flex-1">
                               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4">
                                 <div className="flex items-center gap-4">
                                   {!comment.photodeprofil ? (
@@ -244,7 +243,7 @@ export default function DisplayArticleComments({
                       )}
                     </>
                   ) : (
-                    <p>
+                    <p className="text-sm sm:text-base">
                       Aucun commentaire publié. Soyez le premier à laisser un
                       commentaire !
                     </p>
@@ -256,8 +255,8 @@ export default function DisplayArticleComments({
         ) : (
           <div>
             <div onClick={() => setIsPublishingComment(false)}>
-              <h2 className="font-bold font-Bai_Jamjuree uppercase text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
-                <ChevronLeft /> Formulaire de publication de commentaire
+              <h2 className="font-bold font-Bai_Jamjuree uppercase text-xl sm:text-2xl md:text-3xl mb-4 sm:mb-10 flex items-center justify-center gap-3 cursor-pointer">
+                <ChevronLeft className="size-8" /> Formulaire de publication de commentaire
               </h2>
             </div>
             <div>

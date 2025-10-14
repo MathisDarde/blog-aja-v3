@@ -111,7 +111,7 @@ export default function ArticleDisplay({
   };
 
   return (
-    <div className={`bg-gray-100 min-h-screen w-full m-0 box-border p-10 ${isMethodOpen && "overflow-hidden"}`}>
+    <div className={`bg-gray-100 min-h-screen w-full m-0 box-border p-6 sm:p-10 ${isMethodOpen && "overflow-hidden"}`}>
       {/* Delete article popup */}
       {deletePopupOpen && (
         <ActionPopup
@@ -138,11 +138,11 @@ export default function ArticleDisplay({
       )}
 
       <div className="flex justify-center gap-10">
-        <div className="flex flex-col gap-6 w-[1200px]">
+        <div className="flex flex-col gap-4 sm:gap-6 max-w-[1200px] w-full">
           <div>
-            <h1 className="font-Bai_Jamjuree font-extrabold text-4xl">{article.title}</h1>
-            <div className="flex items-center justify-between mt-4">
-              <p className="font-Montserrat flex items-center italic">
+            <h1 className="font-Bai_Jamjuree font-extrabold text-3xl sm:text-4xl">{article.title}</h1>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 justify-between mt-4">
+              <p className="font-Montserrat flex items-center italic text-sm sm:text-base">
                 <Calendar1 className="mr-2" />
                 {new Date(article.createdAt).toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })} par {article.author}
               </p>
@@ -157,7 +157,7 @@ export default function ArticleDisplay({
                       anchor?.scrollIntoView({ behavior: "smooth" });
                     }}
                   >
-                    <MessageCircle width={20} height={20} />
+                    <MessageCircle width={20} height={20} className="w-4 sm:w-5 h-4 sm:h-5" />
                   </div>
                 )}
 
@@ -171,9 +171,9 @@ export default function ArticleDisplay({
                       <Heart
                         width={20}
                         height={20}
-                        className={`transition-colors ${liked ? "fill-rose-600 text-rose-600" : "fill-transparent group-hover:fill-current"}`}
+                        className={`transition-colors w-4 sm:w-5 h-4 sm:h-5 ${liked ? "fill-rose-600 text-rose-600" : "fill-transparent group-hover:fill-current"}`}
                       />
-                      <p>{likesCount}</p>
+                      <p className="text-sm">{likesCount}</p>
                     </div>
 
                     {/* Popup confirmation for unlike */}
@@ -198,10 +198,10 @@ export default function ArticleDisplay({
                       className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-blue-500"
                       onClick={() => router.push(`/articles/${article.id_article}/update`)}
                     >
-                      <PenBox width={20} height={20} />
+                      <PenBox width={20} height={20} className="w-4 sm:w-5 h-4 sm:h-5" />
                     </div>
                     <div className="border border-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:bg-red-500 hover:text-white">
-                      <Trash onClick={() => setDeletePopupOpen(true)} width={20} height={20} />
+                      <Trash onClick={() => setDeletePopupOpen(true)} width={20} height={20} className="w-4 sm:w-5 h-4 sm:h-5" />
                     </div>
                   </>
                 )}
@@ -211,7 +211,7 @@ export default function ArticleDisplay({
 
           <Image src={article.imageUrl} width={1024} height={1024} alt="Image de bannière de l'article" className="aspect-video w-full object-cover object-top rounded-xl" />
 
-          <div className="font-Montserrat text-justify bg-white rounded-xl p-8 leading-7">
+          <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-6 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base">
             <KeywordHighlighter text={article.content} keywords={keywords} onKeywordClick={handleKeywordClick} />
           </div>
 

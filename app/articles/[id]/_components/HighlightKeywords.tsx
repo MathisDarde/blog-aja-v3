@@ -13,11 +13,11 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
     const lines = text.split("\n");
     const processedLines = lines.map((line) => {
       if (line.startsWith("# ")) {
-        return `<h2 class="font-Montserrat font-extrabold text-3xl text-aja-blue mt-6 mb-3">${line.substring(
+        return `<h2 class="font-Montserrat font-extrabold text-2xl sm:text-3xl text-aja-blue mt-0 sm:mt-6 mb-3">${line.substring(
           2
         )}</h2>`;
       } else if (line.startsWith("## ")) {
-        return `<h3 class="font-Montserrat font-bold text-2xl text-aja-blue mt-5 mb-2">${line.substring(
+        return `<h3 class="font-Montserrat font-bold text-xl sm:text-2xl text-aja-blue mt-0 sm:mt-5 mb-2">${line.substring(
           3
         )}</h3>`;
       } else if (line.trim() === "") {
