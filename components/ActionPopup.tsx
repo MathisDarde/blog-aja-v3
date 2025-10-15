@@ -1,6 +1,8 @@
 "use client";
 
 import { X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { useEffect, useMemo } from "react";
 
 type Action = {
   label: string;
@@ -32,9 +34,27 @@ export default function ActionPopup({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative m-4">
+  // Création du container pour le portal
+  const portalContainer = useMemo(() => {
+    const el = document.createElement("div");
+    document.body.appendChild(el);
+    return el;
+  }, []);
+
+  // Bloquer le scroll du body et restaurer au démontage
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  // JSX de la popup
+  const popupContent = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-lg max-w-[400px] p-6 relative m-4 max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer"
@@ -53,7 +73,7 @@ export default function ActionPopup({
         )}
 
         {/* Boutons dynamiques */}
-        <div className="flex justify-center font-Montserrat gap-3">
+        <div className="flex flex-wrap justify-center font-Montserrat gap-3">
           {actions.map((action, idx) => (
             <button
               key={idx}
@@ -69,4 +89,6 @@ export default function ActionPopup({
       </div>
     </div>
   );
+
+  return createPortal(popupContent, portalContainer);
 }

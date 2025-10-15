@@ -4,6 +4,8 @@ import { Article, Methodes } from "@/contexts/Interfaces";
 import MethodInfo from "./MethodInfo";
 import { ChevronLeft, X } from "lucide-react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { createPortal } from "react-dom";
+import { useEffect, useMemo } from "react";
 
 export default function MethodPopup({
   onClose,
@@ -23,14 +25,29 @@ export default function MethodPopup({
   const { getArticleKeywords } = useGlobalContext();
 
   const keywords = getArticleKeywords(id_article, articles, methodes);
-
   const keywordsList = keywords.flatMap((k) => k.keywordsList);
-
   const filteredMethodes = methodes.filter((methode) =>
     methode.keywords.some((kw) => keywordsList.includes(kw))
   );
 
-  return (
+  // Création du container pour le portal
+  const portalContainer = useMemo(() => {
+    const el = document.createElement("div");
+    document.body.appendChild(el);
+    return el;
+  }, []);
+
+  // Bloquer le scroll du body et restaurer au démontage
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  const popupContent = (
     <div
       onClick={() => {
         onClose();
@@ -40,7 +57,7 @@ export default function MethodPopup({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white p-6 rounded-xl shadow-lg w-[500px] max-h-[650px] overflow-y-scroll text-center relative m-6"
+        className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg m-4 max-h-[90vh] overflow-y-auto relative text-center"
       >
         <button
           onClick={() => {
@@ -51,7 +68,8 @@ export default function MethodPopup({
         >
           <X />
         </button>
-        {activeMethode.length == 0 ? (
+
+        {activeMethode.length === 0 ? (
           <>
             <h2 className="uppercase font-Bai_Jamjuree font-bold text-xl sm:text-2xl mt-4 sm:mt-0">
               Méthodes expert
@@ -64,22 +82,20 @@ export default function MethodPopup({
 
             <div className="text-center mt-4 space-y-2">
               {filteredMethodes.length > 0 ? (
-                <>
-                  {filteredMethodes.map((methode: Methodes) => (
-                    <div
-                      key={methode.id_methode}
-                      className="flex items-center gap-3 justify-center"
+                filteredMethodes.map((methode: Methodes) => (
+                  <div
+                    key={methode.id_methode}
+                    className="flex items-center gap-3 justify-center"
+                  >
+                    <p
+                      onClick={() => setActiveMethode([methode])}
+                      className="text-aja-blue cursor-pointer underline text-sm sm:text-base"
                     >
-                      <p
-                        onClick={() => setActiveMethode([methode])}
-                        className="text-aja-blue cursor-pointer underline text-sm sm:text-base"
-                      >
-                        {methode.keywords[0]}
-                      </p>
-                      <p className="capitalize text-sm sm:text-base">({methode.typemethode})</p>
-                    </div>
-                  ))}
-                </>
+                      {methode.keywords[0]}
+                    </p>
+                    <p className="capitalize text-sm sm:text-base">({methode.typemethode})</p>
+                  </div>
+                ))
               ) : (
                 <p className="text-center font-Montserrat text-sm sm:text-base">
                   Aucune méthode trouvée.
@@ -90,9 +106,7 @@ export default function MethodPopup({
         ) : (
           <>
             <button
-              onClick={() => {
-                setActiveMethode([]);
-              }}
+              onClick={() => setActiveMethode([])}
               className="absolute top-4 right-16 text-gray-500 hover:text-gray-800 transition-colors"
             >
               <ChevronLeft />
@@ -104,4 +118,6 @@ export default function MethodPopup({
       </div>
     </div>
   );
+
+  return createPortal(popupContent, portalContainer);
 }
