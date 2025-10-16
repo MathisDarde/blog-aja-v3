@@ -32,7 +32,7 @@ export default function Footer() {
         { label: "Mon compte", href: "/moncompte" },
         { label: "Boutique", href: "/boutique" },
         { label: "Règles générales d'utilisation", href: "/utilisation" },
-        { label: "Charte graphique", href: "#" },
+        { label: "Charte graphique", href: "/chartegraphique" },
       ],
     },
     {

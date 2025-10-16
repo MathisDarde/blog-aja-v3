@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
 import removeLike from "@/actions/article/remove-like";
 import likeArticle from "@/actions/article/like-article";
+import { toast } from "sonner";
 
 export default function ArticleDisplay({
   article,
@@ -162,33 +163,41 @@ export default function ArticleDisplay({
                 )}
 
                 {/* Like button */}
-                {user && article.state === "published" && (
-                  <>
-                    <div
-                      className="border border-gray-300 hover:bg-gray-300 rounded-full py-2 px-3 text-gray-500 flex items-center justify-center gap-2 transition-colors cursor-pointer hover:text-rose-600 group"
-                      onClick={handleLikeClick}
-                    >
-                      <Heart
-                        width={20}
-                        height={20}
-                        className={`transition-colors w-4 sm:w-5 h-4 sm:h-5 ${liked ? "fill-rose-600 text-rose-600" : "fill-transparent group-hover:fill-current"}`}
-                      />
-                      <p className="text-sm">{likesCount}</p>
-                    </div>
+                <div
+                  className={`border border-gray-300 rounded-full py-2 px-3 flex items-center justify-center gap-2 transition-colors group
+    ${user
+                      ? "hover:bg-gray-300 hover:text-rose-600 text-gray-500 cursor-pointer"
+                      : "opacity-50 cursor-not-allowed text-gray-400"
+                    }`}
+                  onClick={() => {
+                    if (!user) {
+                      // Si l’utilisateur n’est pas connecté → toast d’avertissement
+                      toast.warning("Veuillez vous connecter pour liker cet article.");
+                      return;
+                    }
+                    handleLikeClick();
+                  }}
+                >
+                  <Heart
+                    width={20}
+                    height={20}
+                    className={`transition-colors w-4 sm:w-5 h-4 sm:h-5 ${liked ? "fill-rose-600 text-rose-600" : "fill-transparent group-hover:fill-current"
+                      }`}
+                  />
+                  <p className="text-sm">{likesCount}</p>
+                </div>
 
-                    {/* Popup confirmation for unlike */}
-                    {confirmUnlike && (
-                      <ActionPopup
-                        onClose={() => setConfirmUnlike(false)}
-                        title="Retirer votre like ?"
-                        description="Êtes-vous sûr de vouloir retirer votre like sur cet article ?"
-                        actions={[
-                          { label: "Annuler", onClick: () => setConfirmUnlike(false), theme: "discard" },
-                          { label: "Retirer", onClick: handleUnlikeConfirm, theme: "delete" },
-                        ]}
-                      />
-                    )}
-                  </>
+                {/* Popup confirmation for unlike */}
+                {user && confirmUnlike && (
+                  <ActionPopup
+                    onClose={() => setConfirmUnlike(false)}
+                    title="Retirer votre like ?"
+                    description="Êtes-vous sûr de vouloir retirer votre like sur cet article ?"
+                    actions={[
+                      { label: "Annuler", onClick: () => setConfirmUnlike(false), theme: "discard" },
+                      { label: "Retirer", onClick: handleUnlikeConfirm, theme: "delete" },
+                    ]}
+                  />
                 )}
 
                 {/* Admin actions */}
