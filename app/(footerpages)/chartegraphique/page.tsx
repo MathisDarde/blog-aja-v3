@@ -22,7 +22,7 @@ export default function CharteGraphique() {
                     <p className="text-justify font-Montserrat text-sm sm:text-base">
                         Cette charte graphique définit les éléments visuels et stylistiques du site.
                         Elle garantit la cohérence de l’identité visuelle à travers l’ensemble des pages et supports.
-                        Elle reprend majoritairement les couleurs de l'AJ Auxerre ainsi que les polices d'écritures
+                        Elle reprend majoritairement les couleurs de l&apos;AJ Auxerre ainsi que les polices d&apos;écritures
                         du site officiel du club, <a href="https://aja.fr" className="text-aja-blue underline">aja.fr</a>.
                     </p>
                 </section>
@@ -46,7 +46,7 @@ export default function CharteGraphique() {
                     <ul className="space-y-2">
                         <li className="text-justify font-Montserrat ml-4 text-sm sm:text-base flex items-center gap-2"><strong>Couleur principale&nbsp;:</strong><div className="bg-aja-blue h-4 w-4 border border-black cursor-pointer" onClick={() => handleCopy("#3c77b4")}></div></li>
                         <li className="text-justify font-Montserrat ml-4 text-sm sm:text-base flex items-center gap-2"><strong>Couleurs complémentaires&nbsp;:</strong><div className="bg-white h-4 w-4 border border-black cursor-pointer" onClick={() => handleCopy("#ffffff")}></div><div className="bg-black h-4 w-4 border border-black cursor-pointer" onClick={() => handleCopy("#000000")}></div><div className="bg-gray-100 h-4 w-4 border border-black cursor-pointer" onClick={() => handleCopy("#0000ff")}></div></li>
-                        <li className="text-justify font-Montserrat ml-4 text-sm sm:text-base flex items-center gap-2"><strong>Couleur d'accent&nbsp;:</strong><div className="bg-orange-third h-4 w-4 border border-black cursor-pointer" onClick={() => handleCopy("#f76200")}></div></li>
+                        <li className="text-justify font-Montserrat ml-4 text-sm sm:text-base flex items-center gap-2"><strong>Couleur d&apos;accent&nbsp;:</strong><div className="bg-orange-third h-4 w-4 border border-black cursor-pointer" onClick={() => handleCopy("#f76200")}></div></li>
                     </ul>
                 </section>
 
@@ -99,10 +99,10 @@ export default function CharteGraphique() {
                 <section className="space-y-2">
                     <h2 className="font-Montserrat font-bold uppercase text-left text-lg sm:text-xl">8. Suggestions et améliorations</h2>
                     <p className="text-justify font-Montserrat text-sm sm:text-base">
-                        Nous sommes toujours à l'écoute et le site, votre site, est en constante évolution. Si vous remarquez des problèmes
-                        ou si vous avez des idées pertinentes d'améliorations visuelles et graphiques, nous sommes disponibles et vous pouvez dès maintenant nous 
-                        contacter à l'adresse suivante <a href="mailto:memoiredauxerrois@gmail.com" className="text-aja-blue underline">memoiredauxerrois@gmail.com</a>.
-                        Nous essaierons de vous répondre dans les plus brefs délais et c'est toujours un plaisir d'échanger avec notre chère communauté. Merci !
+                        Nous sommes toujours à l&apos;écoute et le site, votre site, est en constante évolution. Si vous remarquez des problèmes
+                        ou si vous avez des idées pertinentes d&apos;améliorations visuelles et graphiques, nous sommes disponibles et vous pouvez dès maintenant nous 
+                        contacter à l&apos;adresse suivante <a href="mailto:memoiredauxerrois@gmail.com" className="text-aja-blue underline">memoiredauxerrois@gmail.com</a>.
+                        Nous essaierons de vous répondre dans les plus brefs délais et c&apos;est toujours un plaisir d&apos;échanger avec notre chère communauté. Merci !
                     </p>
                 </section>
             </main>
