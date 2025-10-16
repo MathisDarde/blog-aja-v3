@@ -1,4 +1,3 @@
-import Button from "@/components/BlueButton";
 import Link from "next/link";
 
 export default function NotFound() {
