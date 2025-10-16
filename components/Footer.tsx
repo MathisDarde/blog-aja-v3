@@ -14,6 +14,7 @@ export default function Footer() {
     {
       title: "Menus pratiques",
       links: [
+        { label: "Accueil", href: "/"},
         { label: "Articles", href: "/articles" },
         { label: "Effectif Actuel", href: "/effectifactuel" },
         { label: "Palmarès & Records", href: "/palmares" },

@@ -72,7 +72,7 @@ export default async function RootLayout({
       >
         <Header user={user || undefined} />
         <AppProvider>{children}</AppProvider>
-        <Toaster />
+        <Toaster position="bottom-right"/>
         <Footer />
       </body>
     </html>
