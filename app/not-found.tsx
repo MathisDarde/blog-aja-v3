@@ -25,7 +25,7 @@ export default function NotFound() {
           type="button"
           className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base mt-6"
         >
-          Retour vers la page d'accueil
+          Retour vers la page d&apos;accueil
         </button>
       </Link>
     </div>
