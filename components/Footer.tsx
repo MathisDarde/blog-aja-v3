@@ -27,13 +27,12 @@ export default function Footer() {
     {
       title: "Services",
       links: [
-        { label: "A propos", href: "#" },
-        { label: "Contactez-moi", href: "#" },
+        { label: "A propos", href: "/about" },
+        { label: "Contactez-moi", href: "mailto:memoiredauxerrois@gmail.com" },
         { label: "Mon compte", href: "/moncompte" },
         { label: "Boutique", href: "/boutique" },
-        { label: "Règles générales d'utilisation", href: "#" },
+        { label: "Règles générales d'utilisation", href: "/utilisation" },
         { label: "Charte graphique", href: "#" },
-        { label: "Cookies", href: "#" },
       ],
     },
     {
