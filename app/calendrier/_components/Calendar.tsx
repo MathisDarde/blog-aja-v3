@@ -36,7 +36,6 @@ const parseFrenchDate = (dateStr: string) => {
     const dateObj = dayjs(new Date(year, month, day));
     return dateObj;
   } catch (err) {
-    console.log("Erreur parse date:", dateStr, err);
     return dayjs();
   }
 };
@@ -55,13 +54,6 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
       ...m,
       parsedDate: parseFrenchDate(m.date),
     }));
-    console.log(
-      "parsedMatches:",
-      result.map((m) => ({
-        date: m.date,
-        parsed: m.parsedDate.format("DD/MM/YYYY"),
-      }))
-    );
     return result;
   }, [matches]);
 

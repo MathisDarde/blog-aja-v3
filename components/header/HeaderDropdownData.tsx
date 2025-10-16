@@ -76,7 +76,7 @@ export const AutresDropdownData = [
   {
     title: "Calendrier",
     icon: <Calendar1 size={20} />,
-    image: "/_assets/img/imagecalendrier.jfif",
+    image: "/_assets/img/calendrier.webp",
     description:
       "Accédez maintenant au calendrier complet des matchs de l'AJ Auxerre sur la saison 2025-2026.",
     link: "/calendrier",
