@@ -85,11 +85,7 @@ export default function ArticleForm({ user }: { user: User | null }) {
       redirect("/");
     } else {
       toast.error(
-        response.message ? response.message : response.errors?.[0].message,
-        {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        }
+        response.message ? response.message : response.errors?.[0].message
       );
     }
   };
@@ -130,10 +126,7 @@ export default function ArticleForm({ user }: { user: User | null }) {
     if (response.success) {
       redirect("/admin/brouillons");
     } else {
-      toast.error(response.message || response.errors?.[0].message, {
-        icon: <X className="text-white" />,
-        className: "bg-red-500 border border-red-200 text-white text-base",
-      });
+      toast.error(response.message || response.errors?.[0].message);
     }
   };
 

@@ -72,7 +72,10 @@ export default async function RootLayout({
       >
         <Header user={user || undefined} />
         <AppProvider>{children}</AppProvider>
-        <Toaster position="bottom-right" />
+        <Toaster position="bottom-right" toastOptions={{
+          className: "font-Montserrat rounded-md shadow-md text-sm sm:text-base border-0",
+          style: { borderRadius: "8px" },
+        }} />
         <Footer />
       </body>
     </html>

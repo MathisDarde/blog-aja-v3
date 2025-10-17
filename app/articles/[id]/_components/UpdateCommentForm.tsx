@@ -45,21 +45,14 @@ export default function UpdateCommentForm({
     const response = await updateCommentAction(commentId, commentData);
 
     if (response.success) {
-      toast.success("Commentaire modifié avec succès !", {
-        icon: "✅",
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
+      toast.success("Commentaire modifié avec succès !");
 
       setTimeout(() => {
         window.location.reload();
       }, 1500);
     } else {
       toast.error(
-        response.message ? response.message : response.errors?.[0].message,
-        {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        }
+        response.message ? response.message : response.errors?.[0].message
       );
     }
   };

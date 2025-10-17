@@ -287,11 +287,7 @@ export default function MatchForm({
       router.push("/admin/dashboard");
     } else {
       toast.error(
-        response.message || response.errors?.[0]?.message || "Erreur inconnue",
-        {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        }
+        response.message || response.errors?.[0]?.message || "Erreur inconnue"
       );
     }
   };

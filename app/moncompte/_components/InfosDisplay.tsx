@@ -37,6 +37,7 @@ export default function InfosDisplay({ user }: { user: User }) {
       window.location.href = "/login";
     } catch (e) {
       toast.error(`${e}`);
+      console.error(e);
     }
   };
 

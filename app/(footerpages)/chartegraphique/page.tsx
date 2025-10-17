@@ -9,6 +9,7 @@ export default function CharteGraphique() {
             toast.success("Couleur copiée dans le presse-papiers !")
         } catch (e) {
             toast.error(`${e}`)
+            console.error(e)
         }
     }
 
@@ -23,7 +24,7 @@ export default function CharteGraphique() {
                         Cette charte graphique définit les éléments visuels et stylistiques du site.
                         Elle garantit la cohérence de l’identité visuelle à travers l’ensemble des pages et supports.
                         Elle reprend majoritairement les couleurs de l&apos;AJ Auxerre ainsi que les polices d&apos;écritures
-                        du site officiel du club, <a href="https://aja.fr" className="text-aja-blue underline">aja.fr</a>.
+                        du site officiel du club, <a href="https://aja.fr" className="text-orange-third underline">aja.fr</a>.
                     </p>
                 </section>
 
@@ -101,7 +102,7 @@ export default function CharteGraphique() {
                     <p className="text-justify font-Montserrat text-sm sm:text-base">
                         Nous sommes toujours à l&apos;écoute et le site, votre site, est en constante évolution. Si vous remarquez des problèmes
                         ou si vous avez des idées pertinentes d&apos;améliorations visuelles et graphiques, nous sommes disponibles et vous pouvez dès maintenant nous 
-                        contacter à l&apos;adresse suivante <a href="mailto:memoiredauxerrois@gmail.com" className="text-aja-blue underline">memoiredauxerrois@gmail.com</a>.
+                        contacter à l&apos;adresse suivante <a href="mailto:memoiredauxerrois@gmail.com" className="text-orange-third underline">memoiredauxerrois@gmail.com</a>.
                         Nous essaierons de vous répondre dans les plus brefs délais et c&apos;est toujours un plaisir d&apos;échanger avec notre chère communauté. Merci !
                     </p>
                 </section>

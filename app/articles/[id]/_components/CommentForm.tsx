@@ -29,10 +29,7 @@ export default function CommentForm({ id_article }: { id_article: string }) {
     const response = await submitCommentForm(data, user_id, id_article);
 
     if (response.success) {
-      toast.success("Commentaire publié !", {
-        icon: "✅",
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
+      toast.success("Commentaire publié !");
 
       reset();
 
@@ -41,11 +38,7 @@ export default function CommentForm({ id_article }: { id_article: string }) {
       }, 1500);
     } else {
       toast.error(
-        response.message ? response.message : response.errors?.[0].message,
-        {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        }
+        response.message ? response.message : response.errors?.[0].message
       );
     }
   };

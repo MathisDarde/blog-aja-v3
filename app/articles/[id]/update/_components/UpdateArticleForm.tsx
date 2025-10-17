@@ -96,18 +96,11 @@ export default function UpdateArticleForm({
     );
 
     if (response.success) {
-      toast.success(response.message, {
-        icon: <X className="text-white" />,
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
+      toast.success(response.message);
       router.push(`/articles/${id_article}`);
     } else {
       toast.error(
-        response.message ? response.message : response.errors?.[0].message,
-        {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        }
+        response.message ? response.message : response.errors?.[0].message
       );
     }
   };

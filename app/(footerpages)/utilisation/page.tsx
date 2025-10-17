@@ -50,7 +50,7 @@ export default function ReglesUtilisation() {
 
                 <section className="space-y-2">
                     <h2 className="font-Montserrat font-bold uppercase text-left text-lg sm:text-xl">9. Contact</h2>
-                    <p className="text-justify font-Montserrat text-sm sm:text-base">Pour toute question relative à ces conditions, contactez-nous à <a href="mailto:memoiredauxerrois@gmail.com" className="underline text-aja-blue">memoiredauxerrois@gmail.com</a>.</p>
+                    <p className="text-justify font-Montserrat text-sm sm:text-base">Pour toute question relative à ces conditions, contactez-nous à <a href="mailto:memoiredauxerrois@gmail.com" className="text-orange-third underline">memoiredauxerrois@gmail.com</a>.</p>
                 </section>
             </main>
 
