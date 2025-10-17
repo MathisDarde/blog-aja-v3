@@ -1,10 +1,13 @@
+"use client"
+
 import Button from "@/components/BlueButton";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function NotFound() {
-  if (typeof document !== "undefined") {
+  useEffect(() => {
     document.body.setAttribute("data-page", "404");
-  }
+  }, []);
 
   return (
     <div className="text-center bg-gray-100 h-screen flex flex-col justify-center items-center p-10">
@@ -22,7 +25,7 @@ export default function NotFound() {
       </p>
 
       <Link href={"/"}>
-      <Button
+        <Button
         >
           Retour vers la page d&apos;accueil
         </Button>

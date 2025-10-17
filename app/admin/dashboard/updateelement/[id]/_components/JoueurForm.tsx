@@ -14,7 +14,6 @@ import {
   Trash,
   Volleyball,
   WholeWord,
-  X,
 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { UpdateMethodeJoueurSchemaType } from "@/types/forms";

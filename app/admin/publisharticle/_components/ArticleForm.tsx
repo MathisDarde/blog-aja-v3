@@ -8,7 +8,6 @@ import {
   Folder,
   PenTool,
   Tag,
-  X,
   ChevronUp,
   ChevronDown,
 } from "lucide-react";

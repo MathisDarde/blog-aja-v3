@@ -15,7 +15,6 @@ import {
   Plus,
   Trash,
   WholeWord,
-  X,
 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { UpdateMethodeMatchSchemaType } from "@/types/forms";
@@ -280,10 +279,7 @@ export default function MatchForm({
     );
 
     if (response.success) {
-      toast.success(response.message, {
-        icon: <X className="text-white" />,
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
+      toast.success(response.message);
       router.push("/admin/dashboard");
     } else {
       toast.error(

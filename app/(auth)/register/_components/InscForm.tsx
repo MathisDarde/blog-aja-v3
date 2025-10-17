@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, Cake, Mail, KeyRound, Eye, EyeOff, X } from "lucide-react";
+import { User, Cake, Mail, KeyRound, Eye, EyeOff } from "lucide-react";
 import { InscSchema } from "@/app/schema";
 import { InscSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";

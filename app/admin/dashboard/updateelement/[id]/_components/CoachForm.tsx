@@ -19,7 +19,6 @@ import {
   Trash,
   Trophy,
   WholeWord,
-  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -199,10 +198,7 @@ export default function CoachForm({
     );
 
     if (response.success) {
-      toast.success(response.message, {
-        icon: <X className="text-white" />,
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
+      toast.success(response.message);
       router.push("/admin/dashboard");
     } else {
       toast.error(

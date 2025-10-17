@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Heading, Folder, X, Star } from "lucide-react";
+import { Heading, Folder, Star } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { CommentSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";

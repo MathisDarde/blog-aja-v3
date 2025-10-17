@@ -11,7 +11,6 @@ import { MethodeJoueurSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   WholeWord,
-  X,
   Plus,
   Trash,
   ImageIcon,

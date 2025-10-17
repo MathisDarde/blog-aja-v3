@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Cake, Mail, X, Trash, UserIcon } from "lucide-react";
+import { Cake, Mail, Trash, UserIcon } from "lucide-react";
 import { UpdateProfileSchemaType } from "@/types/forms";
 import { UpdateProfileSchema } from "@/app/schema";
 import { zodResolver } from "@hookform/resolvers/zod";

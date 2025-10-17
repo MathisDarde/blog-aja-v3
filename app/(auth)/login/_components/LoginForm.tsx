@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import submitLoginForm from "@/actions/user/login-form";
 import { toast } from "sonner";
-import { Eye, EyeOff, X } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Button from "@/components/BlueButton";
 
