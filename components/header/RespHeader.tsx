@@ -2,7 +2,7 @@
 
 import { User } from "@/contexts/Interfaces";
 import { Menu, X, ChevronDown, LogIn } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import SidebarData, { AutresDropdownData, AdminDropdownData } from "./HeaderDropdownData";
 import Link from "next/link";
 import Image from "next/image";
