@@ -13,49 +13,6 @@ export default function RespHeader({ user }: { user?: User }) {
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
   const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
 
-  // swipe gestion
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
-
-  useEffect(() => {
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartX.current = e.touches[0].clientX;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      touchEndX.current = e.touches[0].clientX;
-    };
-
-    const handleTouchEnd = () => {
-      if (touchStartX.current === null || touchEndX.current === null) return;
-      const diff = touchStartX.current - touchEndX.current;
-
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          // Swipe gauche => fermer
-          setIsOpen(false);
-        } else {
-          // Swipe droite => ouvrir
-          setIsOpen(true);
-        }
-      }
-      touchStartX.current = null;
-      touchEndX.current = null;
-    };
-
-    window.addEventListener("touchstart", handleTouchStart);
-    window.addEventListener("touchmove", handleTouchMove);
-    window.addEventListener("touchend", handleTouchEnd);
-
-    return () => {
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
-
-  // end of swipe gestion
-
   return (
     <>
       <div
