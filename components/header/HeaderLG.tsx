@@ -9,6 +9,7 @@ import SidebarData, {
 } from "./HeaderDropdownData";
 import Image from "next/image";
 import { User } from "@/contexts/Interfaces";
+import Button from "../BlueButton";
 
 export default function HeaderLarge({ user }: { user?: User }) {
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
@@ -130,9 +131,12 @@ export default function HeaderLarge({ user }: { user?: User }) {
       <div className={`flex-shrink-0 ${!user ? "w-[185px]" : "w-[75px]"}  xl:w-[250px] flex justify-end`}>
         {!user ? (
           <Link href="/login">
-            <button className="flex items-center gap-2 font-Montserrat text-white bg-aja-blue px-6 py-2 rounded-full text-sm xl:text-base">
-              Se connecter <LogIn className="text-white" />
-            </button>
+            <Button
+              size="slim"
+              className="flex items-center gap-2"
+            >
+              <LogIn className="text-white" /> Se connecter
+            </Button>
           </Link>
         ) : (
           <Link href="/moncompte">

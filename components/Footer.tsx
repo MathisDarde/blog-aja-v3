@@ -95,7 +95,7 @@ export default function Footer() {
                   href={link.href}
                   className={link.href ? "" : "cursor-default"}
                 >
-                  {link.label}
+                  <span className="hover:underline hover:text-orange-third">{link.label}</span>
                 </Link>
               ))}
               {section.content}
@@ -116,7 +116,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center gap-2 text-aja-blue justify-center py-2 text-sm sm;:text-base">
           <p>&copy; 2025 Mémoire d&apos;Auxerrois</p>
           <p className="hidden sm:block">•</p>
-          <p className="underline">Termes d&apos;utilisation</p>
+          <a href="/utilisation" className="underline hover:text-orange-third cursor-pointer">Termes d&apos;utilisation</a>
         </div>
       </div>
     </div>

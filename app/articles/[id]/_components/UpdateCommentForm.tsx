@@ -11,6 +11,7 @@ import { UpdateCommentFormProps } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import updateCommentAction from "@/actions/comment/update-comment";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import Button from "@/components/BlueButton";
 
 export default function UpdateCommentForm({
   commentId,
@@ -70,7 +71,7 @@ export default function UpdateCommentForm({
       <form
         id="publishform"
         encType="multipart/form-data"
-        className="max-w-[600px] text-center"
+        className="max-w-[600px] mx-auto text-center"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
         <div className="relative w-full">
@@ -128,12 +129,12 @@ export default function UpdateCommentForm({
           ></textarea>
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="bg-aja-blue px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+          size="default"
+          >
           Je modifie mon commentaire
-        </button>
+        </Button>
       </form>
     </div>
   );

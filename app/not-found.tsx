@@ -1,3 +1,4 @@
+import Button from "@/components/BlueButton";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -21,12 +22,10 @@ export default function NotFound() {
       </p>
 
       <Link href={"/"}>
-      <button
-          type="button"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base mt-6"
+      <Button
         >
           Retour vers la page d&apos;accueil
-        </button>
+        </Button>
       </Link>
     </div>
   );

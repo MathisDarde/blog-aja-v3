@@ -23,6 +23,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import Button from "@/components/BlueButton";
 
 export default function UpdateArticleForm({
   id_article,
@@ -143,7 +144,7 @@ export default function UpdateArticleForm({
           />
           <label
             htmlFor="fileInput"
-            className="underline text-aja-blue font-Montserrat cursor-pointer text-sm"
+            className="mx-auto cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
           >
             Modifier l&apos;image de bannière de l&apos;article ?
           </label>
@@ -241,7 +242,7 @@ export default function UpdateArticleForm({
                             setSelectedTags(selectedTags.filter((t) => t !== tag.value));
                           }
                         }}
-                        className="mr-2 accent-aja-blue"
+                        className="mr-2 accent-orange-third"
                       />
                       {tag.tag}
                     </label>
@@ -269,12 +270,12 @@ export default function UpdateArticleForm({
           </select>
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+          size="default"
+          >
           Je modifie l&apos;article
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import submitInscForm from "@/actions/user/insc-form";
 import { toast } from "sonner";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import Button from "@/components/BlueButton";
 
 function InscForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -134,9 +135,8 @@ function InscForm() {
           </span>
         </div>
 
-        <div className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
-          <button type="submit">Je m&apos;inscris</button>
-        </div>
+      
+          <Button type="submit" size="default">Je m&apos;inscris</Button>
       </form>
     </div>
   );

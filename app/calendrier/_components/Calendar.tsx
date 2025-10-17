@@ -36,6 +36,7 @@ const parseFrenchDate = (dateStr: string) => {
     const dateObj = dayjs(new Date(year, month, day));
     return dateObj;
   } catch (err) {
+    console.error(err);
     return dayjs();
   }
 };

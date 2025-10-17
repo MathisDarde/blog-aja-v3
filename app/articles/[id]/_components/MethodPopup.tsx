@@ -89,7 +89,7 @@ export default function MethodPopup({
                   >
                     <p
                       onClick={() => setActiveMethode([methode])}
-                      className="text-aja-blue cursor-pointer underline text-sm sm:text-base"
+                      className="text-orange-third cursor-pointer underline text-sm sm:text-base"
                     >
                       {methode.keywords[0]}
                     </p>

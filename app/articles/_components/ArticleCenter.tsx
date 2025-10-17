@@ -7,6 +7,7 @@ import SearchInput from "./SearchInput";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Article, Filter } from "@/contexts/Interfaces";
 import FilterContent from "./FilterContent";
+import Button from "@/components/BlueButton";
 
 export default function ArticleCenter({
   articles,
@@ -168,12 +169,12 @@ export default function ArticleCenter({
       </div>
 
       <div className="mt-4">
-        <button
+        <Button
           onClick={clearFilters}
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-2 rounded-full font-Montserrat text-white text-xs sm:text-sm"
+          size="slim"
         >
           Réinitialiser la recherche
-        </button>
+        </Button>
       </div>
 
       <div className="relative max-w-[1500px] mx-auto">
@@ -184,12 +185,12 @@ export default function ArticleCenter({
         {(searchQuery || yearfilter || playerfilter || leaguefilter) && (
           <div className="mb-2 flex flex-wrap gap-2 justify-center font-Montserrat">
             {searchQuery && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-third text-white">
                 Recherche : {searchQuery}
               </span>
             )}
             {yearfilter && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-third text-white">
                 Année :{" "}
                 {filters.find((f) => f.value === yearfilter)?.tag || yearfilter}
                 <button
@@ -202,7 +203,7 @@ export default function ArticleCenter({
               </span>
             )}
             {playerfilter && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-third text-white">
                 Joueur :{" "}
                 {filters.find((f) => f.value === playerfilter)?.tag ||
                   playerfilter}
@@ -216,7 +217,7 @@ export default function ArticleCenter({
               </span>
             )}
             {leaguefilter && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-aja-blue text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-third text-white">
                 Ligue :{" "}
                 {filters.find((f) => f.value === leaguefilter)?.tag ||
                   leaguefilter}

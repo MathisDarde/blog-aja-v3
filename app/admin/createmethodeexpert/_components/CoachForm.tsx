@@ -3,6 +3,7 @@
 import { getTeamLogos } from "@/actions/method/get-logos-files";
 import submitMethodeCoachForm from "@/actions/method/methode-coach-form";
 import { MethodeCoachSchema } from "@/app/schema";
+import Button from "@/components/BlueButton";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -238,7 +239,7 @@ export default function CoachForm() {
           <button
             type="button"
             onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base"
+            className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
           >
             <Plus size={18} />
             Ajouter un mot-clé
@@ -280,14 +281,14 @@ export default function CoachForm() {
           {clubsfield.map((field, index) => (
             <div
               key={field.id}
-              className="flex flex-col md:flex-row gap-2 mb-2 w-full"
+              className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
             >
               <div className="relative w-full md:w-1/3 flex">
                 <input
                   type="text"
                   {...register(`clubscoach.${index}.0`)}
                   placeholder="Logo (ex: auxerre)"
-                  className="py-2 px-4 border rounded w-full text-sm md:text-base"
+                  className="py-2 px-4 border rounded w-full text-xs md:text-sm"
                 />
                 <button
                   type="button"
@@ -301,13 +302,13 @@ export default function CoachForm() {
                 type="text"
                 {...register(`clubscoach.${index}.1`)}
                 placeholder="Nom du club (ex: AJ Auxerre)"
-                className="py-2 px-4 border rounded w-full md:w-1/3 text-sm md:text-base"
+                className="py-2 px-4 border rounded w-full md:w-1/3 text-xs md:text-sm"
               />
               <input
                 type="text"
                 {...register(`clubscoach.${index}.2`)}
                 placeholder="Années (ex: (1963-2006))"
-                className="py-2 px-4 border rounded w-full md:w-1/3 text-sm md:text-base"
+                className="py-2 px-4 border rounded w-full md:w-1/3 text-xs md:text-sm"
               />
               <button
                 type="button"
@@ -321,7 +322,7 @@ export default function CoachForm() {
           <button
             type="button"
             onClick={() => appendclubs([""])}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base"
+            className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
           >
             <Plus size={18} />
             Ajouter un club
@@ -337,19 +338,19 @@ export default function CoachForm() {
           {palmaresfield.map((field, index) => (
             <div
               key={field.id}
-              className="flex flex-col md:flex-row gap-2 mb-2 w-full"
+              className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
             >
               <input
                 type="text"
                 {...register(`palmares.${index}.0`)}
                 placeholder="Intitulé (ex: Champion de Ligue 2)"
-                className="py-2 px-4 border rounded w-full md:w-1/2 text-sm md:text-base"
+                className="py-2 px-4 border rounded w-full md:w-1/2 text-xs md:text-sm"
               />
               <input
                 type="text"
                 {...register(`palmares.${index}.1`)}
                 placeholder="Nombre associé (ex: 3)"
-                className="py-2 px-4 border rounded w-full md:w-1/2 text-sm md:text-base"
+                className="py-2 px-4 border rounded w-full md:w-1/2 text-xs md:text-sm"
               />
               <button
                 type="button"
@@ -363,7 +364,7 @@ export default function CoachForm() {
           <button
             type="button"
             onClick={() => appendpalmares([""])}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base"
+            className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
           >
             <Plus size={18} />
             Ajouter une ligne au palmarès
@@ -383,12 +384,12 @@ export default function CoachForm() {
           />
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+            size="default"
         >
           Je publie cette méthode
-        </button>
+        </Button>
       </form>
     </div>
   );

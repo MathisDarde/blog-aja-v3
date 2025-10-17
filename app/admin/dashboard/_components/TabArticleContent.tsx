@@ -181,7 +181,7 @@ export default function TabArticleContent({
             disabled={currentPage === 1}
             className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-aja-blue text-white"
+              : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
               }`}
           >
             <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
@@ -208,7 +208,7 @@ export default function TabArticleContent({
             disabled={currentPage === totalPages}
             className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-aja-blue text-white"
+              : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
               }`}
           >
             <span className="hidden md:block text-sm">Suivant</span><ChevronRight />

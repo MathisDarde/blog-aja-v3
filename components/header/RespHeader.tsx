@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import SidebarData, { AutresDropdownData, AdminDropdownData } from "./HeaderDropdownData";
 import Link from "next/link";
 import Image from "next/image";
+import Button from "../BlueButton";
 
 export default function RespHeader({ user }: { user?: User }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -156,13 +157,14 @@ export default function RespHeader({ user }: { user?: User }) {
               </div>
             </Link>
           ) : (
-            <button
+            <Button
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 text-white bg-aja-blue px-5 py-3 rounded-full font-Montserrat"
+              size="default"
+              className="flex items-center gap-2 m-0"
             >
               <LogIn />
               Se connecter
-            </button>
+            </Button>
           )}
         </div>
       </div>

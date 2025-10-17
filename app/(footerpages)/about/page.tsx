@@ -44,7 +44,7 @@ export default function APropos() {
                     <h2 className="font-Montserrat font-bold uppercase text-left text-lg sm:text-xl">Nous contacter</h2>
                     <p className="text-justify font-Montserrat text-sm sm:text-base">
                         Une question, une suggestion ou une idée à partager&nbsp;?
-                        Vous pouvez nous écrire à <a href="mailto:memoiredauxerrois@gmail.com" className="text-aja-blue underline">memoiredauxerrois@gmail.com</a>.<br />
+                        Vous pouvez nous écrire à <a href="mailto:memoiredauxerrois@gmail.com" className="text-orange-third underline">memoiredauxerrois@gmail.com</a>.<br />
                         Nous lisons tous les messages et faisons de notre mieux pour répondre rapidement.
                     </p>
                 </section>

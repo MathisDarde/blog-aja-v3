@@ -23,6 +23,7 @@ import storeDraftArticle from "@/actions/article/store-draft";
 import { User } from "@/contexts/Interfaces";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import Button from "@/components/BlueButton";
 
 export default function ArticleForm({ user }: { user: User | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -232,7 +233,7 @@ export default function ArticleForm({ user }: { user: User | null }) {
                       type="checkbox"
                       {...register("tags")}
                       value={tag.value}
-                      className="mr-2 accent-aja-blue"
+                      className="mr-2 accent-orange-third"
                     />
                     {tag.tag}
                   </label>
@@ -259,7 +260,7 @@ export default function ArticleForm({ user }: { user: User | null }) {
                       type="checkbox"
                       {...register("tags")}
                       value={tag.value}
-                      className="mr-2 accent-aja-blue"
+                      className="mr-2 accent-orange-third"
                     />
                     {tag.tag}
                   </label>
@@ -286,7 +287,7 @@ export default function ArticleForm({ user }: { user: User | null }) {
                       type="checkbox"
                       {...register("tags")}
                       value={tag.value}
-                      className="mr-2 accent-aja-blue"
+                      className="mr-2 accent-orange-third"
                     />
                     {tag.tag}
                   </label>
@@ -304,12 +305,12 @@ export default function ArticleForm({ user }: { user: User | null }) {
           >
             Je sauvgarde le brouillon
           </button>
-          <button
+          <Button
             type="submit"
-            className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+            size="default"
           >
             Je publie l&apos;article
-          </button>
+          </Button>
         </div>
       </form>
     </div>

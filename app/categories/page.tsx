@@ -13,7 +13,7 @@ export default function CategoriesPage() {
       </div>
       <div className="text-center">
         <Link href="/">
-          <Button type="button">Je retourne à l&apos;accueil</Button>
+          <Button type="button" size="default">Je retourne à l&apos;accueil</Button>
         </Link>
       </div>
     </div>

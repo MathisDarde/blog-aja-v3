@@ -14,6 +14,7 @@ import deletePhotoDeProfil from "@/actions/user/delete-pdp";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { redirect } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
+import Button from "@/components/BlueButton";
 
 export default function UpdateProfileForm({ user }: { user: User | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -130,8 +131,8 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
   };
 
   return (
-    <div className="max-w-[600px] mx-auto">
-      <form onSubmit={handleSubmit(handleSubmitForm)} className="w-full">
+    <div className="w-full mx-auto text-center">
+      <form onSubmit={handleSubmit(handleSubmitForm)} className="max-w-[600px] mx-auto">
         {/* Confirm delete PDP */}
         {deletePDPPopupOpen && (
           <ActionPopup
@@ -189,7 +190,7 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
             Photo de profil actuelle,
             <label
               htmlFor="fileInput"
-              className="font-Montserrat text-aja-blue underline cursor-pointer ml-1"
+              className="font-Montserrat text-aja-blue hover:text-orange-third underline cursor-pointer ml-1"
             >
               modifier ?
             </label>
@@ -235,14 +236,12 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
           />
         </div>
 
-        <div className="flex justify-center mt-2">
-          <button
+          <Button
             type="submit"
-            className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-          >
+            size="default"
+            >
             Je modifie mon profil
-          </button>
-        </div>
+          </Button>
       </form>
     </div>
   );

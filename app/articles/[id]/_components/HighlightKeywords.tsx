@@ -69,7 +69,7 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
       // Use a more distinctive class and add data attributes
       highlightedText = highlightedText.replace(
         regex,
-        `<span class="highlightedtext cursor-pointer text-aja-blue font-bold underline" data-id="${keyword.id_methode}" data-type="${keyword.typemethode}">$1</span>`
+        `<span class="highlightedtext cursor-pointer text-orange-third font-bold underline" data-id="${keyword.id_methode}" data-type="${keyword.typemethode}">$1</span>`
       );
     });
   });

@@ -129,6 +129,7 @@ export default function DisplayArticleComments({
                         <Link href={"/login"}>
                           <Button
                             className="flex flex-row items-center gap-2 text-white bg-aja-blue px-2 lg:px-6 py-2 lg:py-3 rounded-full m-0"
+                            size="slim"
                           >
                             <LogIn /> <span className="hidden lg:block">Connectez-vous pour publier un commentaire</span>
                           </Button>
@@ -237,6 +238,7 @@ export default function DisplayArticleComments({
                         <Button
                           onClick={handleVoirPlus}
                           className="mt-4 text-white bg-aja-blue px-6 py-3 rounded-full w-fit mx-auto"
+                          size="slim"
                         >
                           Voir plus
                         </Button>

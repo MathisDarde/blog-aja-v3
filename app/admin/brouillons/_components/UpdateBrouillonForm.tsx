@@ -24,6 +24,7 @@ import updateBrouillonForm from "@/actions/article/update-brouillon-form";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { redirect } from "next/navigation";
+import Button from "@/components/BlueButton";
 
 export default function UpdateBrouillonForm({
   articleData,
@@ -275,7 +276,7 @@ export default function UpdateBrouillonForm({
                             setSelectedTags(selectedTags.filter((t) => t !== tag.value));
                           }
                         }}
-                        className="mr-2 accent-aja-blue"
+                        className="mr-2 accent-orange-third"
                       />
                       {tag.tag}
                     </label>
@@ -312,13 +313,13 @@ export default function UpdateBrouillonForm({
             Je sauvegarde l&apos;article
           </button>
 
-          <button
+          <Button
             type="button"
-            className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+            size="default"
             onClick={handleSubmit(handlePublishForm)}
           >
-            Je publie cet article
-          </button>
+            Je publie l&apos;article
+          </Button>
         </div>
       </form>
     </div>

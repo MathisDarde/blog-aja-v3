@@ -24,6 +24,7 @@ import { getFlags } from "@/actions/method/get-flags-files";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
+import Button from "@/components/BlueButton";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -228,7 +229,7 @@ export default function SaisonForm() {
           <button
             type="button"
             onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base"
+            className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
           >
             <Plus size={18} />
             Ajouter un mot-clé
@@ -296,20 +297,20 @@ export default function SaisonForm() {
           {remplacantsfield.map((field, index) => (
             <div
               key={field.id}
-              className="flex flex-col md:flex-row gap-2 mb-2 w-full"
+              className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
             >
               <input
                 type="text"
                 {...register(`remplacants.${index}.0`)}
                 placeholder="Nom (ex: Gaëtan Perrin)"
-                className="py-2 px-4 border rounded w-full md:w-2/5 text-sm sm:text-base"
+                className="py-2 px-4 border rounded w-full md:w-2/5 text-xs sm:text-sm"
               />
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
                   {...register(`remplacants.${index}.1`)}
                   placeholder="Drapeau (ex: france)"
-                  className="py-2 px-4 border rounded w-full text-sm sm:text-base"
+                  className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
                 <button
                   type="button"
@@ -323,7 +324,7 @@ export default function SaisonForm() {
                 type="text"
                 {...register(`remplacants.${index}.2`)}
                 placeholder="Poste (ex: G ou Gardien)"
-                className="py-2 px-4 border rounded w-full md:w-1/5 text-sm sm:text-base"
+                className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
               />
               <button
                 type="button"
@@ -337,19 +338,19 @@ export default function SaisonForm() {
           <button
             type="button"
             onClick={() => appendremplacants([""])}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base"
+            className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
           >
             <Plus size={18} />
             Ajouter un remplaçant
           </button>
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+          size="default"
+          >
           Je publie cette méthode
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -86,7 +86,7 @@ export default function LastMatchResult({
       </div>
 
       <Link href="/calendrier">
-        <Button>Accéder au calendrier</Button>
+        <Button size="default">Accéder au calendrier</Button>
       </Link>
     </div>
   );

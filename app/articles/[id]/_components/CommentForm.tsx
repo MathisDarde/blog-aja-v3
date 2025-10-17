@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import submitCommentForm from "@/actions/comment/comment-form";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import Button from "@/components/BlueButton";
 
 export default function CommentForm({ id_article }: { id_article: string }) {
   const { user_id } = useGlobalContext();
@@ -53,7 +54,7 @@ export default function CommentForm({ id_article }: { id_article: string }) {
 
   return (
     <div className="w-full mx-auto relative">
-      <form action="" onSubmit={handleSubmit(handleSubmitForm)} className="max-w-[600px] text-center">
+      <form action="" onSubmit={handleSubmit(handleSubmitForm)} className="max-w-[600px] mx-auto text-center">
         <div className="flex flex-col items-start relative w-full">
           <div>
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
@@ -114,12 +115,12 @@ export default function CommentForm({ id_article }: { id_article: string }) {
           />
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="bg-aja-blue px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+          size="default"
+          >
           Je publie ce commentaire
-        </button>
+        </Button>
       </form>
     </div>
   );

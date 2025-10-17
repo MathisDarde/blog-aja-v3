@@ -39,7 +39,7 @@ export default function DisplayCategories({ randomCategories } : { randomCategor
 
       <div className="text-center">
         <Link href="/categories">
-          <Button type="button">J&apos;accède à toutes les catégories</Button>
+          <Button type="button" size="large">J&apos;accède à toutes les catégories</Button>
         </Link>
       </div>
     </div>

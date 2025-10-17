@@ -9,6 +9,7 @@ import submitLoginForm from "@/actions/user/login-form";
 import { toast } from "sonner";
 import { Eye, EyeOff, X } from "lucide-react";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import Button from "@/components/BlueButton";
 
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -77,9 +78,7 @@ function LoginForm() {
             </span>
           </div>
 
-          <div className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base">
-            <button type="submit">Je me connecte</button>
-          </div>
+            <Button type="submit">Je me connecte</Button>
         </form>
       </div>
     </>
