@@ -3,6 +3,7 @@
 import { getTeamLogos } from "@/actions/method/get-logos-files";
 import updateMethodeCoachForm from "@/actions/method/update-coach-form";
 import { UpdateMethodeCoachSchema } from "@/app/schema";
+import Button from "@/components/BlueButton";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -265,7 +266,7 @@ export default function CoachForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
             Mots-clés :
           </span>
@@ -301,7 +302,7 @@ export default function CoachForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <FolderPen className="mr-4" />
             Nom du coach :
           </span>
@@ -314,13 +315,16 @@ export default function CoachForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ShieldHalf className="mr-4" />
             Clubs :
           </span>
 
           {clubsfield.map((field, index) => (
-            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm">
+            <div
+              key={field.id}
+              className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm"
+            >
               <div className="relative w-full md:w-1/3 flex">
                 <input
                   type="text"
@@ -368,13 +372,16 @@ export default function CoachForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Trophy className="mr-4" />
             Palmarès :
           </span>
 
           {palmaresfield.map((field, index) => (
-            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm">
+            <div
+              key={field.id}
+              className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm"
+            >
               <input
                 type="text"
                 {...register(`palmares.${index}.0`)}
@@ -407,7 +414,7 @@ export default function CoachForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ChartBarIncreasing className="mr-4" />
             Statistiques :
           </span>
@@ -419,12 +426,9 @@ export default function CoachForm({
           />
         </div>
 
-        <button
-          type="submit"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+        <Button type="submit" size="default">
           Je modifie cette méthode
-        </button>
+        </Button>
       </form>
     </div>
   );

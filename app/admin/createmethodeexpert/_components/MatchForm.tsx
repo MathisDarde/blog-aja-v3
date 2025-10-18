@@ -521,13 +521,13 @@ export default function MatchForm() {
                       type="text"
                       {...register(`remplacantsequipe1.${index}.3`)}
                       placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                     <input
                       type="text"
                       {...register(`remplacantsequipe1.${index}.4`)}
                       placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                   </div>
                 )}
@@ -685,13 +685,13 @@ export default function MatchForm() {
                       type="text"
                       {...register(`remplacantsequipe2.${index}.3`)}
                       placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                     <input
                       type="text"
                       {...register(`remplacantsequipe2.${index}.4`)}
                       placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                   </div>
                 )}
@@ -716,10 +716,7 @@ export default function MatchForm() {
           </div>
         </Section>
 
-        <Button
-          type="submit"
-          size="default"
-          >
+        <Button type="submit" size="default">
           Je publie cette méthode
         </Button>
       </form>

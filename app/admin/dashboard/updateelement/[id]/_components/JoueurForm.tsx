@@ -28,6 +28,7 @@ import { UpdateMethodeJoueurFromProps } from "@/contexts/Interfaces";
 import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
+import Button from "@/components/BlueButton";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -200,6 +201,7 @@ export default function JoueurForm({
     );
 
     if (response.success) {
+      toast.success(response.message);
       router.push("/admin/dashboard");
     } else {
       toast.error(
@@ -326,7 +328,7 @@ export default function JoueurForm({
           </span>
           <input
             type="text"
-            {...register("taille")}            
+            {...register("taille")}
             className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Taille du joueur (ex: 1m84)"
           />
@@ -352,7 +354,10 @@ export default function JoueurForm({
           </span>
 
           {clubsfield.map((field, index) => (
-            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm">
+            <div
+              key={field.id}
+              className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm"
+            >
               <div className="relative w-full md:w-1/3 flex">
                 <input
                   type="text"
@@ -438,12 +443,9 @@ export default function JoueurForm({
           />
         </div>
 
-        <button
-          type="submit"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+        <Button type="submit" size="default">
           Je modifie cette méthode
-        </button>
+        </Button>
       </form>
     </div>
   );

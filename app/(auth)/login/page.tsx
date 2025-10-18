@@ -26,8 +26,11 @@ export default function Login() {
               width={25}
               height={25}
               alt="Google Logo"
+              className="w-5 h-5 sm:w-6 sm:h-6"
             />
-            <p className="font-Montserrat">Se connecter avec Google</p>
+            <p className="font-Montserrat text-sm sm:text-base">
+              Se connecter avec Google
+            </p>
           </button>
         </div>
 

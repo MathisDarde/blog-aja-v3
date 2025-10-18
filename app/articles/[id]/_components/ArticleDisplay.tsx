@@ -12,7 +12,14 @@ import {
 } from "lucide-react";
 import KeywordHighlighter from "./HighlightKeywords";
 import deleteArticleSA from "@/actions/article/delete-article";
-import { Article, ArticleLikes, Comment, Keyword, Methodes, User } from "@/contexts/Interfaces";
+import {
+  Article,
+  ArticleLikes,
+  Comment,
+  Keyword,
+  Methodes,
+  User,
+} from "@/contexts/Interfaces";
 import DisplayArticleComments from "./DisplayComments";
 import MethodPopup from "./MethodPopup";
 import { useRouter } from "next/navigation";
@@ -112,7 +119,11 @@ export default function ArticleDisplay({
   };
 
   return (
-    <div className={`bg-gray-100 min-h-screen w-full m-0 box-border p-6 sm:p-10 ${isMethodOpen && "overflow-hidden"}`}>
+    <div
+      className={`bg-gray-100 min-h-screen w-full m-0 box-border p-6 sm:p-10 ${
+        isMethodOpen && "overflow-hidden"
+      }`}
+    >
       {/* Delete article popup */}
       {deletePopupOpen && (
         <ActionPopup
@@ -120,7 +131,11 @@ export default function ArticleDisplay({
           title="Supprimer cet article ?"
           description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
           actions={[
-            { label: "Annuler", onClick: () => setDeletePopupOpen(false), theme: "discard" },
+            {
+              label: "Annuler",
+              onClick: () => setDeletePopupOpen(false),
+              theme: "discard",
+            },
             {
               label: "Supprimer",
               onClick: async () => {
@@ -141,11 +156,18 @@ export default function ArticleDisplay({
       <div className="flex justify-center gap-10">
         <div className="flex flex-col gap-4 sm:gap-6 max-w-[1200px] w-full">
           <div>
-            <h1 className="font-Bai_Jamjuree font-extrabold text-3xl sm:text-4xl">{article.title}</h1>
+            <h1 className="font-Bai_Jamjuree font-extrabold text-3xl sm:text-4xl">
+              {article.title}
+            </h1>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 justify-between mt-4">
               <p className="font-Montserrat flex items-center italic text-sm sm:text-base">
                 <Calendar1 className="mr-2" />
-                {new Date(article.createdAt).toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })} par {article.author}
+                {new Date(article.createdAt).toLocaleDateString("fr-FR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}{" "}
+                par {article.author}
               </p>
 
               <div className="flex items-center gap-2">
@@ -154,25 +176,33 @@ export default function ArticleDisplay({
                   <div
                     className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-gray-800"
                     onClick={() => {
-                      const anchor = document.getElementById("commentaire-anchor");
+                      const anchor =
+                        document.getElementById("commentaire-anchor");
                       anchor?.scrollIntoView({ behavior: "smooth" });
                     }}
                   >
-                    <MessageCircle width={20} height={20} className="w-4 sm:w-5 h-4 sm:h-5" />
+                    <MessageCircle
+                      width={20}
+                      height={20}
+                      className="w-4 sm:w-5 h-4 sm:h-5"
+                    />
                   </div>
                 )}
 
                 {/* Like button */}
                 <div
                   className={`border border-gray-300 rounded-full py-2 px-3 flex items-center justify-center gap-2 transition-colors group
-    ${user
-                      ? "hover:bg-gray-300 hover:text-rose-600 text-gray-500 cursor-pointer"
-                      : "opacity-50 cursor-not-allowed text-gray-400"
-                    }`}
+    ${
+      user
+        ? "hover:bg-gray-300 hover:text-rose-600 text-gray-500 cursor-pointer"
+        : "opacity-50 cursor-not-allowed text-gray-400"
+    }`}
                   onClick={() => {
                     if (!user) {
                       // Si l’utilisateur n’est pas connecté → toast d’avertissement
-                      toast.warning("Veuillez vous connecter pour liker cet article.");
+                      toast.warning(
+                        "Veuillez vous connecter pour liker cet article."
+                      );
                       return;
                     }
                     handleLikeClick();
@@ -181,10 +211,13 @@ export default function ArticleDisplay({
                   <Heart
                     width={20}
                     height={20}
-                    className={`transition-colors w-4 sm:w-5 h-4 sm:h-5 ${liked ? "fill-rose-600 text-rose-600" : "fill-transparent group-hover:fill-current"
-                      }`}
+                    className={`transition-colors w-4 sm:w-5 h-4 sm:h-5 ${
+                      liked
+                        ? "fill-rose-600 text-rose-600"
+                        : "fill-transparent group-hover:fill-current"
+                    }`}
                   />
-                  <p className="text-sm">{likesCount}</p>
+                  <p className="text-sm font-Montserrat">{likesCount}</p>
                 </div>
 
                 {/* Popup confirmation for unlike */}
@@ -194,8 +227,16 @@ export default function ArticleDisplay({
                     title="Retirer votre like ?"
                     description="Êtes-vous sûr de vouloir retirer votre like sur cet article ?"
                     actions={[
-                      { label: "Annuler", onClick: () => setConfirmUnlike(false), theme: "discard" },
-                      { label: "Retirer", onClick: handleUnlikeConfirm, theme: "delete" },
+                      {
+                        label: "Annuler",
+                        onClick: () => setConfirmUnlike(false),
+                        theme: "discard",
+                      },
+                      {
+                        label: "Retirer",
+                        onClick: handleUnlikeConfirm,
+                        theme: "delete",
+                      },
                     ]}
                   />
                 )}
@@ -205,12 +246,23 @@ export default function ArticleDisplay({
                   <>
                     <div
                       className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-blue-500"
-                      onClick={() => router.push(`/articles/${article.id_article}/update`)}
+                      onClick={() =>
+                        router.push(`/articles/${article.id_article}/update`)
+                      }
                     >
-                      <PenBox width={20} height={20} className="w-4 sm:w-5 h-4 sm:h-5" />
+                      <PenBox
+                        width={20}
+                        height={20}
+                        className="w-4 sm:w-5 h-4 sm:h-5"
+                      />
                     </div>
                     <div className="border border-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:bg-red-500 hover:text-white">
-                      <Trash onClick={() => setDeletePopupOpen(true)} width={20} height={20} className="w-4 sm:w-5 h-4 sm:h-5" />
+                      <Trash
+                        onClick={() => setDeletePopupOpen(true)}
+                        width={20}
+                        height={20}
+                        className="w-4 sm:w-5 h-4 sm:h-5"
+                      />
                     </div>
                   </>
                 )}
@@ -218,10 +270,20 @@ export default function ArticleDisplay({
             </div>
           </div>
 
-          <Image src={article.imageUrl} width={1024} height={1024} alt="Image de bannière de l'article" className="aspect-video w-full object-cover object-top rounded-xl" />
+          <Image
+            src={article.imageUrl}
+            width={1024}
+            height={1024}
+            alt="Image de bannière de l'article"
+            className="aspect-video w-full object-cover object-top rounded-xl"
+          />
 
-          <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-6 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base">
-            <KeywordHighlighter text={article.content} keywords={keywords} onKeywordClick={handleKeywordClick} />
+          <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-5 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base ">
+            <KeywordHighlighter
+              text={article.content}
+              keywords={keywords}
+              onKeywordClick={handleKeywordClick}
+            />
           </div>
 
           {article.state !== "pending" && (

@@ -3,6 +3,7 @@
 import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeSaisonForm from "@/actions/method/update-saison-form";
 import { UpdateMethodeSaisonSchema } from "@/app/schema";
+import Button from "@/components/BlueButton";
 import FlagSelectorModal from "@/components/FlagSelector";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -248,7 +249,7 @@ export default function SaisonForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
             Mots-clés :
           </span>
@@ -284,7 +285,7 @@ export default function SaisonForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Clock4 className="mr-4" />
             Saison :
           </span>
@@ -297,7 +298,7 @@ export default function SaisonForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <BookCheck className="mr-4" />
             Coach :
           </span>
@@ -310,7 +311,7 @@ export default function SaisonForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ChartBarBig className="mr-4" />
             Système :
           </span>
@@ -323,13 +324,16 @@ export default function SaisonForm({
         </div>
 
         <div className="relative w-full my-4">
-        <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ArrowLeftRight className="mr-4" />
             Remplaçants :
           </span>
 
           {remplacantsfield.map((field, index) => (
-            <div key={field.id} className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat">
+            <div
+              key={field.id}
+              className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
+            >
               <input
                 type="text"
                 {...register(`remplacants.${index}.0`)}
@@ -376,12 +380,9 @@ export default function SaisonForm({
           </button>
         </div>
 
-        <button
-          type="submit"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+        <Button type="submit" size="default">
           Je modifie cette méthode
-        </button>
+        </Button>
       </form>
     </div>
   );

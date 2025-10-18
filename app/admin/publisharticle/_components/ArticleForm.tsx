@@ -97,8 +97,8 @@ export default function ArticleForm({ user }: { user: User | null }) {
       tags: Array.isArray(rawData.tags)
         ? rawData.tags
         : rawData.tags
-          ? [rawData.tags]
-          : [],
+        ? [rawData.tags]
+        : [],
     };
 
     const parsed = DraftArticleSchema.safeParse(normalizedDraftData);
@@ -220,7 +220,10 @@ export default function ArticleForm({ user }: { user: User | null }) {
             {openTagsCategory === "year" && (
               <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {categories.year.map((tag) => (
-                  <label key={tag.value} className="flex items-center text-xs sm:text-sm font-Montserrat">
+                  <label
+                    key={tag.value}
+                    className="flex items-center text-xs sm:text-sm font-Montserrat"
+                  >
                     <input
                       type="checkbox"
                       {...register("tags")}
@@ -247,7 +250,10 @@ export default function ArticleForm({ user }: { user: User | null }) {
             {openTagsCategory === "player" && (
               <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {categories.player.map((tag) => (
-                  <label key={tag.value} className="flex items-center text-xs sm:text-sm font-Montserrat">
+                  <label
+                    key={tag.value}
+                    className="flex items-center text-xs sm:text-sm font-Montserrat"
+                  >
                     <input
                       type="checkbox"
                       {...register("tags")}
@@ -272,9 +278,12 @@ export default function ArticleForm({ user }: { user: User | null }) {
               {openTagsCategory === "league" ? <ChevronUp /> : <ChevronDown />}
             </button>
             {openTagsCategory === "league" && (
-                <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {categories.league.map((tag) => (
-                  <label key={tag.value} className="flex items-center text-xs sm:text-sm font-Montserrat">
+                  <label
+                    key={tag.value}
+                    className="flex items-center text-xs sm:text-sm font-Montserrat"
+                  >
                     <input
                       type="checkbox"
                       {...register("tags")}
@@ -290,17 +299,15 @@ export default function ArticleForm({ user }: { user: User | null }) {
         </div>
 
         <div className="flex flex-col gap-4 lg:flex-row justify-center items-center">
-          <button
+          <Button
             type="button"
-            className="justify-center items-center bg-gray-500 inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+            className="bg-gray-500 m-0"
+            size="default"
             onClick={storeBrouillon}
           >
             Je sauvgarde le brouillon
-          </button>
-          <Button
-            type="submit"
-            size="default"
-          >
+          </Button>
+          <Button type="submit" size="default" className="m-0">
             Je publie l&apos;article
           </Button>
         </div>

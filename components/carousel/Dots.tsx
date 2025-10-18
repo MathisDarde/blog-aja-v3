@@ -15,7 +15,7 @@ export const CarouselDots = ({
         {Array.from({ length: totalSlides }).map((_, index) => (
           <span
             key={index}
-            className={`w-2 md:w-3 h-2 md:h-3 rounded-full cursor-pointer block ${
+            className={`w-3 h-3 rounded-full cursor-pointer block ${
               activeIndex === index ? "bg-blue-500" : "bg-gray-200"
             }`}
             onClick={() => onDotClick(index)}

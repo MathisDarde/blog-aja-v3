@@ -32,7 +32,9 @@ export default function UpdateBrouillonForm({
   user,
 }: UpdateBrouillonFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedTags, setSelectedTags] = useState<string[]>(articleData?.tags || []);
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    articleData?.tags || []
+  );
   const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
 
   const toggleCategory = (category: string) => {
@@ -106,67 +108,59 @@ export default function UpdateBrouillonForm({
     const response = await updateArticleForm(id_article, data, selectedFile);
 
     if (response.success) {
-      toast.success(response.message, {
-        icon: <X className="text-white" />,
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
+      toast.success(response.message);
       window.location.reload();
     } else {
       toast.error(
-        response.message ? response.message : response.errors?.[0].message,
-        {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        }
+        response.message ? response.message : response.errors?.[0].message
       );
     }
   };
 
   const handleSaveForm = async () => {
     const data = { ...getValues(), tags: selectedTags }; // <-- sync tags
-  
+
     const formData = new FormData();
-  
+
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
-  
+
     Object.entries(data).forEach(([key, value]) => {
       formData.append(
         key,
         Array.isArray(value) ? JSON.stringify(value) : value
       );
     });
-  
+
     if (!user_id) {
-      toast.error("L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter.");
+      toast.error(
+        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
+      );
       return;
     }
-  
-    const response = await updateBrouillonForm(id_article, data, selectedFile ?? undefined);
-  
+
+    const response = await updateBrouillonForm(
+      id_article,
+      data,
+      selectedFile ?? undefined
+    );
+
     if (response.success) {
-      toast.success(response.message, {
-        icon: <X className="text-white" />,
-        className: "bg-green-500 border border-green-200 text-white text-base",
-      });
+      toast.success(response.message);
       redirect("/admin/brouillons");
     } else {
       toast.error(
-        response.message ? response.message : response.errors?.[0].message,
-        {
-          icon: <X className="text-white" />,
-          className: "bg-red-500 border border-red-200 text-white text-base",
-        }
+        response.message ? response.message : response.errors?.[0].message
       );
     }
-  };  
+  };
 
   useFormErrorToasts(errors);
 
   return (
     <div className="max-w-[800px] mx-auto">
-      <h1 className="font-bold font-Bai_Jamjuree text-center uppercase text-2xl sm:text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
+      <h1 className="font-bold font-Bai_Jamjuree text-center uppercase text-xl sm:text-3xl mb-10 flex items-center justify-center gap-3 cursor-pointer">
         Formulaire de modification de brouillon
       </h1>
       <form id="publishform" encType="multipart/form-data" className="w-full">
@@ -254,7 +248,11 @@ export default function UpdateBrouillonForm({
                 onClick={() => toggleCategory(type)}
                 className="w-full flex justify-between items-center px-4 py-3 text-left font-Montserrat text-sm sm:text-base"
               >
-                {type === "year" ? "Années" : type === "player" ? "Joueurs" : "Ligues"}
+                {type === "year"
+                  ? "Années"
+                  : type === "player"
+                  ? "Joueurs"
+                  : "Ligues"}
                 {openTagsCategory === type ? <ChevronUp /> : <ChevronDown />}
               </button>
 
@@ -273,7 +271,9 @@ export default function UpdateBrouillonForm({
                           if (e.target.checked) {
                             setSelectedTags([...selectedTags, tag.value]);
                           } else {
-                            setSelectedTags(selectedTags.filter((t) => t !== tag.value));
+                            setSelectedTags(
+                              selectedTags.filter((t) => t !== tag.value)
+                            );
                           }
                         }}
                         className="mr-2 accent-orange-third"
@@ -305,17 +305,18 @@ export default function UpdateBrouillonForm({
         </div>
 
         <div className="flex flex-col gap-4 lg:flex-row justify-center items-center">
-          <button
+          <Button
             type="button"
-            className="justify-center items-center bg-gray-500 inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
+            className="bg-gray-500 m-0"
             onClick={handleSaveForm}
           >
             Je sauvegarde l&apos;article
-          </button>
+          </Button>
 
           <Button
             type="button"
             size="default"
+            className="m-0"
             onClick={handleSubmit(handlePublishForm)}
           >
             Je publie l&apos;article

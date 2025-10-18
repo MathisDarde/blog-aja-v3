@@ -39,16 +39,16 @@ export default async function Page() {
         </div>
 
         <div className="my-10 text-center">
-          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+          <h2 className="uppercase text-2xl sm:text-3xl font-Bai_Jamjuree font-bold text-center">
             A la une sur Mémoire d&apos;Auxerrois
           </h2>
           <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 max-w-[1000px]">
-              <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
-                Dernier article publié
-              </h3>
-              <div className="w-full">
-                <LastArticle articles={articles} />
-              </div>
+            <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
+              Dernier article publié
+            </h3>
+            <div className="w-full">
+              <LastArticle articles={articles} />
+            </div>
 
             {/* Responsive bloc duplicated to move place */}
             <div className="flex items-center justify-center mt-4">

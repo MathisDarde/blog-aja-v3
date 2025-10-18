@@ -13,7 +13,7 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
     const lines = text.split("\n");
     const processedLines = lines.map((line) => {
       if (line.startsWith("# ")) {
-        return `<h2 class="font-Montserrat font-extrabold text-2xl sm:text-3xl text-aja-blue mt-0 sm:mt-6 mb-3">${line.substring(
+        return `<h2 class="font-Montserrat text-left font-extrabold text-2xl sm:text-3xl text-aja-blue mt-0 sm:mt-6 mb-3">${line.substring(
           2
         )}</h2>`;
       } else if (line.startsWith("## ")) {

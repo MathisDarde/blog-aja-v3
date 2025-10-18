@@ -30,6 +30,7 @@ import Section from "@/app/admin/createmethodeexpert/_components/DropdownContain
 import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
+import Button from "@/components/BlueButton";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -540,7 +541,7 @@ export default function MatchForm({
                       type="text"
                       {...register(`remplacantsequipe1.${index}.0`)}
                       placeholder="Nom (ex: Gaëtan Perrin)"
-                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                     />
                   </div>
                   <div className="relative w-full md:w-2/5 flex">
@@ -548,7 +549,7 @@ export default function MatchForm({
                       type="text"
                       {...register(`remplacantsequipe1.${index}.1`)}
                       placeholder="Drapeau (ex: france)"
-                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                     />
                     <button
                       type="button"
@@ -562,7 +563,7 @@ export default function MatchForm({
                     type="text"
                     {...register(`remplacantsequipe1.${index}.2`)}
                     placeholder="Poste (ex: G ou Gardien)"
-                    className="py-2 px-4 border rounded w-full md:w-1/5 text-sm sm:text-base"
+                    className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
                   />
                 </div>
 
@@ -572,13 +573,13 @@ export default function MatchForm({
                       type="text"
                       {...register(`remplacantsequipe1.${index}.3`)}
                       placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                     <input
                       type="text"
                       {...register(`remplacantsequipe1.${index}.4`)}
                       placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                   </div>
                 )}
@@ -703,7 +704,7 @@ export default function MatchForm({
                       type="text"
                       {...register(`remplacantsequipe2.${index}.0`)}
                       placeholder="Nom (ex: Gaëtan Perrin)"
-                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                     />
                   </div>
                   <div className="relative w-full md:w-2/5 flex">
@@ -711,7 +712,7 @@ export default function MatchForm({
                       type="text"
                       {...register(`remplacantsequipe2.${index}.1`)}
                       placeholder="Drapeau (ex: france)"
-                      className="py-2 px-4 border rounded w-full text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                     />
                     <button
                       type="button"
@@ -725,7 +726,7 @@ export default function MatchForm({
                     type="text"
                     {...register(`remplacantsequipe2.${index}.2`)}
                     placeholder="Poste (ex: G ou Gardien)"
-                    className="py-2 px-4 border rounded w-full md:w-1/5 text-sm sm:text-base"
+                    className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
                   />
                 </div>
 
@@ -735,13 +736,13 @@ export default function MatchForm({
                       type="text"
                       {...register(`remplacantsequipe2.${index}.3`)}
                       placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                     <input
                       type="text"
                       {...register(`remplacantsequipe2.${index}.4`)}
                       placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-sm sm:text-base"
+                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
                     />
                   </div>
                 )}
@@ -765,12 +766,9 @@ export default function MatchForm({
           </div>
         </Section>
 
-        <button
-          type="submit"
-          className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-        >
+        <Button type="submit" size="default">
           Je modifie cette méthode
-        </button>
+        </Button>
       </form>
     </div>
   );

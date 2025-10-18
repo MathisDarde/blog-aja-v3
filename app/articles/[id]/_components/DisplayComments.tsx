@@ -15,7 +15,7 @@ import ActionPopup from "@/components/ActionPopup";
 export default function DisplayArticleComments({
   article,
   articleComments,
-  user
+  user,
 }: {
   article: Article;
   articleComments: Comment[];
@@ -57,7 +57,7 @@ export default function DisplayArticleComments({
       ></div>
 
       {/* delete comment modal */}
-      {deletePopupOpen &&
+      {deletePopupOpen && (
         <ActionPopup
           onClose={() => setDeletePopupOpen(false)}
           title="Supprimer ce commentaire ?"
@@ -78,27 +78,29 @@ export default function DisplayArticleComments({
                     setDeletePopupOpen(false);
                   }
                 } catch (e) {
-                  console.error("error", e)
+                  console.error("error", e);
                 }
               },
               theme: "delete",
             },
           ]}
         />
-      }
+      )}
 
-      <div className="max-w-[1200px] bg-white rounded-xl p-8 font-Montserrat">
+      <div className="max-w-[1200px] bg-white rounded-xl p-4 sm:p-8 font-Montserrat">
         {!isPublishingComment ? (
           <>
             {isUpdatingComment && selectedComment ? (
               <>
-                <h2 className="font-bold font-Bai_Jamjuree uppercase text-xl sm:text-2xl md:text-3xl mb-4 sm:mb-10 flex items-center justify-center gap-3 cursor-pointer"
+                <h2
+                  className="font-bold font-Bai_Jamjuree uppercase text-xl sm:text-2xl md:text-3xl mb-4 sm:mb-10 flex items-center justify-center gap-3 cursor-pointer"
                   onClick={() => {
                     setSelectedComment(null);
                     setIsUpdatingComment(false);
                   }}
                 >
-                  <ChevronLeft className="size-8" /> Formulaire de modification de commentaire
+                  <ChevronLeft className="size-8" /> Formulaire de modification
+                  de commentaire
                 </h2>
 
                 <UpdateCommentForm
@@ -123,7 +125,10 @@ export default function DisplayArticleComments({
                           className="flex flex-row items-center gap-2 text-white bg-aja-blue px-2 md:px-6 py-2 md:py-3 rounded-full m-0"
                           onClick={() => setIsPublishingComment(true)}
                         >
-                          <Plus /> <span className="hidden md:block">Ajouter un commentaire</span>
+                          <Plus />{" "}
+                          <span className="hidden md:block">
+                            Ajouter un commentaire
+                          </span>
                         </Button>
                       ) : (
                         <Link href={"/login"}>
@@ -131,7 +136,10 @@ export default function DisplayArticleComments({
                             className="flex flex-row items-center gap-2 text-white bg-aja-blue px-2 lg:px-6 py-2 lg:py-3 rounded-full m-0"
                             size="slim"
                           >
-                            <LogIn /> <span className="hidden lg:block">Connectez-vous pour publier un commentaire</span>
+                            <LogIn />{" "}
+                            <span className="hidden lg:block">
+                              Connectez-vous pour publier un commentaire
+                            </span>
                           </Button>
                         </Link>
                       )}
@@ -170,7 +178,9 @@ export default function DisplayArticleComments({
                                       className="w-9 md:w-11 h-9 md:h-11 rounded-full object-cover"
                                     />
                                   )}
-                                  <p className="font-semibold">{comment.pseudo}</p>
+                                  <p className="font-semibold">
+                                    {comment.pseudo}
+                                  </p>
                                   <p className="font-light text-xs">
                                     {comment.updatedAt.toLocaleString("fr-FR")}
                                   </p>
@@ -196,7 +206,6 @@ export default function DisplayArticleComments({
                                 {comment.content}
                               </p>
                             </div>
-
 
                             {comment.userId === user_id && (
                               <div className="flex flex-row md:flex-col items-center justify-center md:justify-start gap-2 ml-4 mt-2">
@@ -258,7 +267,8 @@ export default function DisplayArticleComments({
           <div>
             <div onClick={() => setIsPublishingComment(false)}>
               <h2 className="font-bold font-Bai_Jamjuree uppercase text-xl sm:text-2xl md:text-3xl mb-4 sm:mb-10 flex items-center justify-center gap-3 cursor-pointer">
-                <ChevronLeft className="size-8" /> Formulaire de publication de commentaire
+                <ChevronLeft className="size-8" /> Formulaire de publication de
+                commentaire
               </h2>
             </div>
             <div>

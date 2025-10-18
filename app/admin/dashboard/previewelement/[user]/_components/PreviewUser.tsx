@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Comment, User } from "@/contexts/Interfaces";
 import { useScreenSize } from "@/utils/use-screen-size";
 import { redirect } from "next/navigation";
+import Button from "@/components/BlueButton";
 
 export default function UserPreview({
   userData,
@@ -170,9 +171,9 @@ export default function UserPreview({
                             <Link
                               href={`/articles/${comment.articleId}#comment-${comment.id_comment}`}
                             >
-                              <button className="justify-center items-center bg-aja-blue inline-flex px-5 py-2 rounded-full font-Montserrat text-white text-sm">
+                              <Button size="default" className="m-0">
                                 Accéder
-                              </button>
+                              </Button>
                             </Link>
                           </div>
                         )
@@ -188,12 +189,9 @@ export default function UserPreview({
 
               <div className="mt-8">
                 <Link href={"/admin/dashboard"}>
-                  <button
-                    type="button"
-                    className="justify-center items-center bg-aja-blue inline-flex px-6 py-3 rounded-full font-Montserrat text-white text-sm sm:text-base"
-                  >
+                  <Button type="button" size="default">
                     Retourner au dashboard
-                  </button>
+                  </Button>
                 </Link>
               </div>
             </>
