@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import Image from "next/image";
 import records from "@/public/data/records.json";
-import trophees from "@/public/data/palmares.json"
+import trophees from "@/public/data/palmares.json";
 
 const Palmares = () => {
   const [selectedRecordIndex, setSelectedRecordIndex] = useState<number | null>(
@@ -56,54 +56,59 @@ const Palmares = () => {
 
           <div
             className={`grid gap-12 mx-auto w-full lg:w-5/6 xl:w-3/4 mt-0 sm:mt-12 mb-6 place-items-center transition-all duration-300
-    ${selectedRecordIndex === null ? "lg:grid-cols-2 grid-cols-1" : "grid-cols-1"}`}
+    ${
+      selectedRecordIndex === null
+        ? "lg:grid-cols-2 grid-cols-1"
+        : "grid-cols-1"
+    }`}
           >
-            {
-              records.map((list, index) => {
-                const isActive = selectedRecordIndex === index;
+            {records.map((list, index) => {
+              const isActive = selectedRecordIndex === index;
 
-                return (
-                  <div
-                    key={index}
-                    className={`w-full transition-opacity duration-300 ${selectedRecordIndex !== null && !isActive
+              return (
+                <div
+                  key={index}
+                  className={`w-full transition-opacity duration-300 ${
+                    selectedRecordIndex !== null && !isActive
                       ? "opacity-0 hidden"
                       : "opacity-100"
-                      }`}
-                  >
-                    {/* Image et titre cliquable */}
-                    {!isActive && (
-                      <div
-                        className="relative group flex items-center justify-center h-72 w-full md:w-3/4 mx-auto lg:w-full rounded-3xl overflow-hidden bg-gray-200 shadow-md transition-transform cursor-pointer"
-                        onClick={() =>
-                          setSelectedRecordIndex(isActive ? null : index)
-                        }
-                      >
-                        <Image
-                          width={512}
-                          height={512}
-                          src={list.image}
-                          alt={`Image de ${list.title}`}
-                          className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100 group-hover:grayscale-0"
-                        />
-                        <h4 className="relative font-Bai_Jamjuree z-10 w-3/4 xl:w-fit text-2xl xl:text-3xl font-bold text-black bg-white bg-opacity-75 px-4 py-2 rounded-lg uppercase text-center transition-colors group-hover:text-white group-hover:bg-aja-blue">
-                          {list.title}
-                        </h4>
-                      </div>
-                    )}
+                  }`}
+                >
+                  {/* Image et titre cliquable */}
+                  {!isActive && (
+                    <div
+                      className="relative group flex items-center justify-center h-72 w-full md:w-3/4 mx-auto lg:w-full rounded-3xl overflow-hidden bg-gray-200 shadow-md transition-transform cursor-pointer"
+                      onClick={() =>
+                        setSelectedRecordIndex(isActive ? null : index)
+                      }
+                    >
+                      <Image
+                        width={512}
+                        height={512}
+                        src={list.image}
+                        alt={`Image de ${list.title}`}
+                        className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100 group-hover:grayscale-0"
+                      />
+                      <h4 className="relative font-Bai_Jamjuree z-10 w-3/4 xl:w-fit text-2xl xl:text-3xl font-bold text-black bg-white bg-opacity-75 px-4 py-2 rounded-lg uppercase text-center transition-colors group-hover:text-white group-hover:bg-aja-blue">
+                        {list.title}
+                      </h4>
+                    </div>
+                  )}
 
-                    {isActive && (
-                      <div className="w-full mx-auto">
-                        <div className="relative mt-4 bg-white py-14 px-6 md:p-14 rounded-3xl">
-                          <ArrowLeftIcon
-                            height={40}
-                            width={40}
-                            className="p-2 text-red-600 bg-gray-100 rounded-full absolute text-2xl top-3 left-3 cursor-pointer transition-colors hover:text-red-800"
-                            onClick={() => setSelectedRecordIndex(null)}
-                          />
-                          <h3 className="font-semibold font-Bai_Jamjuree uppercase text-xl sm:text-3xl text-center mb-3 sm:mb-5">
-                            {list.title}
-                          </h3>
-                          <table className="table border-collapse w-full">
+                  {isActive && (
+                    <div className="w-full mx-auto">
+                      <div className="relative mt-4 bg-white pt-14 pb-6 md:pb-14 px-6 md:p-14 rounded-3xl">
+                        <ArrowLeftIcon
+                          height={40}
+                          width={40}
+                          className="p-2 w-8 h-8 sm:w-12 sm:h-12 text-red-600 bg-gray-100 rounded-full absolute top-3 left-3 cursor-pointer transition-colors hover:text-red-800"
+                          onClick={() => setSelectedRecordIndex(null)}
+                        />
+                        <h3 className="font-semibold font-Bai_Jamjuree uppercase text-xl sm:text-3xl text-center mb-3 sm:mb-5">
+                          {list.title}
+                        </h3>
+                        <div className="w-full overflow-x-auto">
+                          <table className="min-w-[800px] border-collapse border border-gray-600 w-full">
                             <thead>
                               <tr>
                                 <th className="p-2 border-2 border-gray-600 text-left align-middle font-bold bg-aja-blue text-white font-Montserrat text-xs sm:text-sm">
@@ -129,11 +134,11 @@ const Palmares = () => {
                           </table>
                         </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })
-            }
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
