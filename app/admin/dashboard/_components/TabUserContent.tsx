@@ -76,7 +76,10 @@ export default function TabUserContent({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setSelectedUserId(null);
       }
     };
@@ -142,6 +145,13 @@ export default function TabUserContent({
               {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th
+              className="p-3 text-center cursor-pointer w-[200px]"
+              onClick={() => handleSort("updatedAt")}
+            >
+              MAJ le{" "}
+              {sortKey === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            </th>
+            <th
               className="p-3 text-center cursor-pointer  w-[125px]"
               onClick={() => handleSort("admin")}
             >
@@ -185,6 +195,13 @@ export default function TabUserContent({
                     year: "numeric",
                   })}
                 </td>
+                <td className="p-3 text-center w-[200px]">
+                  {new Date(user.updatedAt).toLocaleDateString("fr-FR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </td>
 
                 <td className="p-3 text-center w-[125px]">
                   {user.admin ? "Admin" : "Membre"}
@@ -214,17 +231,19 @@ export default function TabUserContent({
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === 1
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            }`}
           >
-            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+            <ChevronLeft />{" "}
+            <span className="hidden md:block text-sm">Précédent</span>
           </button>
 
           {/* Input de page */}
           <div className="flex items-center gap-2">
-          <span className="hidden sm:block text-sm">Page</span>
+            <span className="hidden sm:block text-sm">Page</span>
             <input
               type="number"
               min={1}
@@ -241,12 +260,14 @@ export default function TabUserContent({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === totalPages
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            }`}
           >
-            <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
+            <span className="hidden md:block text-sm">Suivant</span>
+            <ChevronRight />
           </button>
         </div>
       )}

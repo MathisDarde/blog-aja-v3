@@ -18,8 +18,13 @@ export default function TabArticleContent({
   const { sortElements } = useGlobalContext();
   const [sortKey, setSortKey] = useState<ArticleSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(
+    null
+  );
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
@@ -33,18 +38,19 @@ export default function TabArticleContent({
     sortOrder,
   });
 
-  const filteredArticles = sortedArticles.filter((article) =>
-    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.teaser.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.tags.some((tag) =>
-      tag.toLowerCase().includes(searchTerm.toLowerCase())
-    ) ||
-    new Date(article.createdAt)
-      .toLocaleDateString("fr-FR")
-      .includes(searchTerm)
+  const filteredArticles = sortedArticles.filter(
+    (article) =>
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.teaser.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      new Date(article.createdAt)
+        .toLocaleDateString("fr-FR")
+        .includes(searchTerm)
   );
 
   const handleSort = (key: ArticleSortKey) => {
@@ -76,10 +82,12 @@ export default function TabArticleContent({
     setPopupPosition({ top, left });
   };
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setSelectedArticleId(null);
       }
     };
@@ -87,7 +95,9 @@ export default function TabArticleContent({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedArticle = articles.find((a) => a.id_article === selectedArticleId);
+  const selectedArticle = articles.find(
+    (a) => a.id_article === selectedArticleId
+  );
 
   const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -118,17 +128,37 @@ export default function TabArticleContent({
         <thead className="bg-gray-200">
           <tr>
             <th className="p-3 text-center w-[75px]">Image</th>
-            <th className="p-3 text-center cursor-pointer w-[500px]" onClick={() => handleSort("title")}>
+            <th
+              className="p-3 text-center cursor-pointer w-[500px]"
+              onClick={() => handleSort("title")}
+            >
               Titre {sortKey === "title" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[350px]" onClick={() => handleSort("state")}>
+            <th
+              className="p-3 text-center cursor-pointer w-[350px]"
+              onClick={() => handleSort("state")}
+            >
               Statut {sortKey === "state" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[250px]" onClick={() => handleSort("author")}>
+            <th
+              className="p-3 text-center cursor-pointer w-[250px]"
+              onClick={() => handleSort("author")}
+            >
               Auteur {sortKey === "author" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[125px]" onClick={() => handleSort("createdAt")}>
-              Publié le {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            <th
+              className="p-3 text-center cursor-pointer w-[125px]"
+              onClick={() => handleSort("createdAt")}
+            >
+              Publié le{" "}
+              {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            </th>
+            <th
+              className="p-3 text-center cursor-pointer w-[125px]"
+              onClick={() => handleSort("updatedAt")}
+            >
+              MAJ le{" "}
+              {sortKey === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th className="p-3 text-center w-[50px]"></th>
           </tr>
@@ -136,7 +166,10 @@ export default function TabArticleContent({
         <tbody>
           {paginatedArticles.length > 0 ? (
             paginatedArticles.map((article) => (
-              <tr key={article.id_article} className="bg-white border-t border-gray-200">
+              <tr
+                key={article.id_article}
+                className="bg-white border-t border-gray-200"
+              >
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image
                     src={article.imageUrl || "/_assets/img/pdpdebase.png"}
@@ -156,8 +189,13 @@ export default function TabArticleContent({
                 <td className="p-3 text-center w-[125px]">
                   {article.createdAt.toLocaleDateString()}
                 </td>
-                <td className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                  onClick={(e) => handleOpenPopup(article.id_article, e)}>
+                <td className="p-3 text-center w-[125px]">
+                  {article.updatedAt.toLocaleDateString()}
+                </td>
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e) => handleOpenPopup(article.id_article, e)}
+                >
                   <EllipsisVertical />
                 </td>
               </tr>
@@ -179,12 +217,14 @@ export default function TabArticleContent({
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
+            }`}
           >
-            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+            <ChevronLeft />{" "}
+            <span className="hidden md:block text-sm">Précédent</span>
           </button>
 
           {/* Input de page */}
@@ -206,17 +246,20 @@ export default function TabArticleContent({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
+            }`}
           >
-            <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
+            <span className="hidden md:block text-sm">Suivant</span>
+            <ChevronRight />
           </button>
         </div>
       )}
 
-      {selectedArticle && popupPosition &&
+      {selectedArticle &&
+        popupPosition &&
         createPortal(
           <div
             ref={popupRef}
@@ -227,7 +270,11 @@ export default function TabArticleContent({
               maxWidth: "calc(100vw - 16px)",
             }}
           >
-            <ContextPopup id={selectedArticle.id_article} type="article" state={selectedArticle.state} />
+            <ContextPopup
+              id={selectedArticle.id_article}
+              type="article"
+              state={selectedArticle.state}
+            />
           </div>,
           document.body
         )}

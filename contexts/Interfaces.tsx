@@ -19,7 +19,7 @@ export interface Article {
 
 export type ArticleSortKey = keyof Pick<
   Article,
-  "title" | "author" | "createdAt" | "state"
+  "title" | "author" | "createdAt" | "updatedAt" | "state"
 >;
 
 export interface GetURLParams {
@@ -106,13 +106,17 @@ export interface Methode {
   updatedAt: Date;
 }
 
-export type MethodeSortKey = keyof Pick<Methode, "typemethode" | "createdAt">;
+export type MethodeSortKey = keyof Pick<
+  Methode,
+  "typemethode" | "createdAt" | "updatedAt"
+>;
 
 export interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
   id_methode: string;
   keywords: string[];
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface MethodeJoueur extends BaseMethodeData {
@@ -242,7 +246,7 @@ export interface Comment {
 
 export type CommentSortKey = keyof Pick<
   Comment,
-  "title" | "stars" | "pseudo" | "createdAt"
+  "title" | "stars" | "pseudo" | "createdAt" | "updatedAt"
 >;
 
 //Interfaces User
@@ -261,7 +265,7 @@ export interface User {
 
 export type UserSortKey = keyof Pick<
   User,
-  "name" | "email" | "birthday" | "createdAt" | "admin"
+  "name" | "email" | "birthday" | "createdAt" | "updatedAt" | "admin"
 >;
 
 export interface UpdateUserFromProps {
@@ -416,10 +420,29 @@ export interface PlayerStats {
 
 export type ClassementSortKey = keyof Pick<
   Team,
-  "buts_encaisses" | "buts_marques" | "difference" | "equipe" | "gagnes" | "matchs_joues" | "nuls" | "perdus" | "points" | "position"
+  | "buts_encaisses"
+  | "buts_marques"
+  | "difference"
+  | "equipe"
+  | "gagnes"
+  | "matchs_joues"
+  | "nuls"
+  | "perdus"
+  | "points"
+  | "position"
 >;
 
 export type StatsSortKey = keyof Pick<
   PlayerStats,
-  "assists" | "goals" | "matches" | "minutes" | "nom" | "numero" | "position" | "red_cards" | "substitutions_in" | "titularisations" | "yellow_cards"
->
+  | "assists"
+  | "goals"
+  | "matches"
+  | "minutes"
+  | "nom"
+  | "numero"
+  | "position"
+  | "red_cards"
+  | "substitutions_in"
+  | "titularisations"
+  | "yellow_cards"
+>;

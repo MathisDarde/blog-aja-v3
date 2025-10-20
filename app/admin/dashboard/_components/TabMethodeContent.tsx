@@ -14,14 +14,17 @@ export default function TabMethodeContent({
   searchTerm: string;
   methodes: Methodes[];
 }) {
-  const {
-    sortElements,
-  } = useGlobalContext();
+  const { sortElements } = useGlobalContext();
 
   const [sortKey, setSortKey] = useState<MethodeSortKey>("typemethode");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [selectedMethodeId, setSelectedMethodeId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
+  const [selectedMethodeId, setSelectedMethodeId] = useState<string | null>(
+    null
+  );
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   // 👇 Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,9 +33,9 @@ export default function TabMethodeContent({
 
   const popupRef = useRef<HTMLDivElement>(null);
 
-  const sortedMethodes = sortElements({
+  const sortedMethodes = sortElements<Methodes>({
     elements: methodes,
-    sortKey,
+    sortKey: sortKey as keyof Methodes,
     sortOrder,
   });
 
@@ -65,10 +68,12 @@ export default function TabMethodeContent({
     setPopupPosition({ top, left });
   };
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setSelectedMethodeId(null);
       }
     };
@@ -76,7 +81,9 @@ export default function TabMethodeContent({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedMethode = methodes.find((a) => a.id_methode === selectedMethodeId);
+  const selectedMethode = methodes.find(
+    (a) => a.id_methode === selectedMethodeId
+  );
 
   // 👇 Pagination logic
   const totalPages = Math.ceil(filteredMethodes.length / itemsPerPage);
@@ -138,15 +145,20 @@ export default function TabMethodeContent({
               Type de méthode{" "}
               {sortKey === "typemethode" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-1/3">
-              Titre
-            </th>
+            <th className="p-3 text-center cursor-pointer w-1/3">Titre</th>
             <th
               className="p-3 text-center cursor-pointer w-1/3"
               onClick={() => handleSort("createdAt")}
             >
               Date de publication{" "}
               {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            </th>
+            <th
+              className="p-3 text-center cursor-pointer w-1/3"
+              onClick={() => handleSort("updatedAt")}
+            >
+              MAJ le{" "}
+              {sortKey === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th className="p-3 text-center w-[50px]">
               <></>
@@ -165,11 +177,12 @@ export default function TabMethodeContent({
                     {methode.typemethode}
                   </div>
                 </td>
-                <td>
-                  {getMethodeTitle(methode)}
-                </td>
+                <td>{getMethodeTitle(methode)}</td>
                 <td className="p-3 text-center w-1/2">
                   {methode.createdAt.toLocaleDateString()}
+                </td>
+                <td className="p-3 text-center w-1/2">
+                  {methode.updatedAt.toLocaleDateString()}
                 </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
@@ -196,12 +209,14 @@ export default function TabMethodeContent({
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === 1
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            }`}
           >
-            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+            <ChevronLeft />{" "}
+            <span className="hidden md:block text-sm">Précédent</span>
           </button>
 
           {/* Input de page */}
@@ -223,18 +238,21 @@ export default function TabMethodeContent({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === totalPages
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            }`}
           >
-            <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
+            <span className="hidden md:block text-sm">Suivant</span>
+            <ChevronRight />
           </button>
         </div>
       )}
 
       {/* CONTEXT POPUP */}
-      {selectedMethode && popupPosition &&
+      {selectedMethode &&
+        popupPosition &&
         createPortal(
           <div
             ref={popupRef}

@@ -1,6 +1,11 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, EllipsisVertical, Star } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  EllipsisVertical,
+  Star,
+} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ContextPopup from "./ContextPopup";
 import { Comment, CommentSortKey } from "@/contexts/Interfaces";
@@ -14,14 +19,17 @@ export default function TabCommentContent({
   searchTerm: string;
   comments: Comment[];
 }) {
-  const {
-    sortElements,
-  } = useGlobalContext();
+  const { sortElements } = useGlobalContext();
 
   const [sortKey, setSortKey] = useState<CommentSortKey>("title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
+  const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
+    null
+  );
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
@@ -76,10 +84,12 @@ export default function TabCommentContent({
     setPopupPosition({ top, left });
   };
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setSelectedCommentId(null);
       }
     };
@@ -87,7 +97,9 @@ export default function TabCommentContent({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedComment = comments.find((a) => a.id_comment === selectedCommentId);
+  const selectedComment = comments.find(
+    (a) => a.id_comment === selectedCommentId
+  );
 
   const totalPages = Math.ceil(filteredComments.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -143,6 +155,13 @@ export default function TabCommentContent({
               Publié le{" "}
               {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
+            <th
+              className="p-3 text-center cursor-pointer w-[150px]"
+              onClick={() => handleSort("updatedAt")}
+            >
+              MAJ le{" "}
+              {sortKey === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            </th>
             <th className="p-3 text-center w-[50px]">
               <></>
             </th>
@@ -181,6 +200,9 @@ export default function TabCommentContent({
                 <td className="p-3 text-center w-[150px]">
                   {comment.createdAt.toLocaleDateString()}
                 </td>
+                <td className="p-3 text-center w-[150px]">
+                  {comment.updatedAt.toLocaleDateString()}
+                </td>
                 <td
                   className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
                   onClick={(e) => handleOpenPopup(comment.id_comment, e)}
@@ -206,12 +228,14 @@ export default function TabCommentContent({
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === 1
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
+            }`}
           >
-            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+            <ChevronLeft />{" "}
+            <span className="hidden md:block text-sm">Précédent</span>
           </button>
 
           {/* Input de page */}
@@ -233,17 +257,20 @@ export default function TabCommentContent({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${currentPage === totalPages
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
-              }`}
+            className={`px-2 md:px-3 py-1 rounded-md border flex items-center gap-1 ${
+              currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
+            }`}
           >
-            <span className="hidden md:block text-sm">Suivant</span><ChevronRight />
+            <span className="hidden md:block text-sm">Suivant</span>
+            <ChevronRight />
           </button>
         </div>
       )}
 
-      {selectedComment && popupPosition &&
+      {selectedComment &&
+        popupPosition &&
         createPortal(
           <div
             ref={popupRef}
