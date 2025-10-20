@@ -190,35 +190,36 @@ export default function ArticleDisplay({
                 )}
 
                 {/* Like button */}
-                <div
-                  className={`border border-gray-300 rounded-full py-2 px-3 flex items-center justify-center gap-2 transition-colors group
+                {user && article.state != "pending" && (
+                  <div
+                    className={`border border-gray-300 rounded-full py-2 px-3 flex items-center justify-center gap-2 transition-colors group
     ${
       user
         ? "hover:bg-gray-300 hover:text-rose-600 text-gray-500 cursor-pointer"
         : "opacity-50 cursor-not-allowed text-gray-400"
     }`}
-                  onClick={() => {
-                    if (!user) {
-                      // Si l’utilisateur n’est pas connecté → toast d’avertissement
-                      toast.warning(
-                        "Veuillez vous connecter pour liker cet article."
-                      );
-                      return;
-                    }
-                    handleLikeClick();
-                  }}
-                >
-                  <Heart
-                    width={20}
-                    height={20}
-                    className={`transition-colors w-4 sm:w-5 h-4 sm:h-5 ${
-                      liked
-                        ? "fill-rose-600 text-rose-600"
-                        : "fill-transparent group-hover:fill-current"
-                    }`}
-                  />
-                  <p className="text-sm font-Montserrat">{likesCount}</p>
-                </div>
+                    onClick={() => {
+                      if (!user) {
+                        toast.warning(
+                          "Veuillez vous connecter pour liker cet article."
+                        );
+                        return;
+                      }
+                      handleLikeClick();
+                    }}
+                  >
+                    <Heart
+                      width={20}
+                      height={20}
+                      className={`transition-colors w-4 sm:w-5 h-4 sm:h-5 ${
+                        liked
+                          ? "fill-rose-600 text-rose-600"
+                          : "fill-transparent group-hover:fill-current"
+                      }`}
+                    />
+                    <p className="text-sm font-Montserrat">{likesCount}</p>
+                  </div>
+                )}
 
                 {/* Popup confirmation for unlike */}
                 {user && confirmUnlike && (
