@@ -190,7 +190,7 @@ export default function ArticleDisplay({
                 )}
 
                 {/* Like button */}
-                {user && article.state != "pending" && (
+                {article.state != "pending" && (
                   <div
                     className={`border border-gray-300 rounded-full py-2 px-3 flex items-center justify-center gap-2 transition-colors group
     ${

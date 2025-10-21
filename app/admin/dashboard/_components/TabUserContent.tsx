@@ -279,6 +279,7 @@ export default function TabUserContent({
             ref={popupRef}
             className="absolute z-50"
             style={{ top: popupPosition.top, left: popupPosition.left }}
+            onClick={(e) => e.stopPropagation()}
           >
             <ContextPopup
               id={selectedUser.id}

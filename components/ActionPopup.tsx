@@ -1,8 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { createPortal } from "react-dom";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 
 type Action = {
   label: string;
@@ -21,6 +20,15 @@ export default function ActionPopup({
   description?: string;
   actions: Action[];
 }) {
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   const getButtonClass = (theme: Action["theme"]) => {
     switch (theme) {
       case "delete":
@@ -34,50 +42,55 @@ export default function ActionPopup({
     }
   };
 
-  // Création du container pour le portal
-  const portalContainer = useMemo(() => {
-    const el = document.createElement("div");
-    document.body.appendChild(el);
-    return el;
-  }, []);
+  const handleActionClick = (action: Action) => {
+    console.log("=== HANDLER APPELÉ ===", action.label);
+    action.onClick();
+  };
 
-  // Bloquer le scroll du body et restaurer au démontage
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
-
-  // JSX de la popup
-  const popupContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-hidden">
-      <div className="bg-white rounded-2xl shadow-lg max-w-[400px] p-6 relative m-4 max-h-[90vh] overflow-y-auto">
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-hidden"
+      onClick={(e) => {
+        console.log("Overlay cliqué");
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-lg max-w-[400px] p-6 relative m-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => {
+          console.log("Popup cliquée");
+          e.stopPropagation();
+        }}
+      >
         <button
-          onClick={onClose}
+          onClick={() => {
+            console.log("X cliqué");
+            onClose();
+          }}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer"
+          type="button"
         >
           <X size={20} />
         </button>
 
-        {/* Contenu */}
         <h2 className="text-xl sm:text-2xl font-semibold text-center font-Bai_Jamjuree mb-2">
           {title}
         </h2>
+
         {description && (
           <p className="text-gray-600 mb-4 font-Montserrat text-sm sm:text-base text-center">
             {description}
           </p>
         )}
 
-        {/* Boutons dynamiques */}
         <div className="flex flex-wrap justify-center font-Montserrat gap-3">
           {actions.map((action, idx) => (
             <button
               key={idx}
-              onClick={action.onClick}
+              type="button"
+              onClick={() => handleActionClick(action)}
               className={`px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition cursor-pointer ${getButtonClass(
                 action.theme
               )}`}
@@ -89,6 +102,4 @@ export default function ActionPopup({
       </div>
     </div>
   );
-
-  return createPortal(popupContent, portalContainer);
 }

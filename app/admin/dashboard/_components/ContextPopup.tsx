@@ -1,10 +1,5 @@
 "use client";
 
-import updateArticleStatus from "@/actions/article/archive-article";
-import deleteArticleSA from "@/actions/article/delete-article";
-import deleteCommentAction from "@/actions/comment/delete-comment";
-import deleteMethode from "@/actions/method/delete-method";
-import deleteAccount from "@/actions/user/delete-account";
 import {
   ArchiveRestore,
   Pencil,
@@ -15,12 +10,17 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { DashboardElementProps } from "@/contexts/Interfaces";
-import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
 import { useRouter } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
+import updateArticleStatus from "@/actions/article/archive-article";
+import deleteArticleSA from "@/actions/article/delete-article";
+import deleteCommentAction from "@/actions/comment/delete-comment";
+import deleteMethode from "@/actions/method/delete-method";
+import deleteAccount from "@/actions/user/delete-account";
 import giveUserAdmin from "@/actions/user/set-user-admin";
 import removeUserAdminRole from "@/actions/user/remove-user-admin";
+import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
+import { DashboardElementProps } from "@/contexts/Interfaces";
 
 export default function ContextPopup({
   id,
@@ -35,121 +35,66 @@ export default function ContextPopup({
   const [removeAdminPopupOpen, setRemoveAdminPopupOpen] = useState(false);
 
   const deleteElement = async (id: string, type: string) => {
-    if (!id) {
-      toast.error("Element ID is missing.");
-      return;
-    }
-
+    console.log("Suppression démarrée pour:", id, type);
+    if (!id) return toast.error("Element ID is missing.");
     try {
       let result;
-
       switch (type) {
         case "user":
           result = await deleteAccount(id);
-          if (result && result.success) {
-            toast.success("Utilisateur supprimé avec succès");
-          } else {
-            toast.error("Erreur lors de la suppression de l'utilisateur");
-          }
           break;
-
         case "article":
           result = await deleteArticleSA(id);
-          if (result && result.success) {
-            toast.success("Article supprimé avec succès");
-          } else {
-            toast.error("Erreur lors de la suppression de l'article");
-          }
           break;
-
         case "comment":
           result = await deleteCommentAction(id);
-          if (result && result.success) {
-            toast.success("Commentaire supprimé avec succès");
-          } else {
-            toast.error("Erreur lors de la suppression du commentaire");
-          }
           break;
-
         case "method":
           result = await deleteMethode(id);
-          if (result && result.success) {
-            toast.success("Méthode supprimée avec succès");
-          } else {
-            toast.error("Erreur lors de la suppression de la méthode");
-          }
           break;
-
-        default:
-          toast.error("Type d'élément inconnu");
-          return;
+      }
+      console.log("Résultat de la suppression:", result);
+      if (result?.success) {
+        toast.success(`${type} supprimé avec succès`);
+        // Attendre un peu avant de recharger
+        await new Promise((r) => setTimeout(r, 1000));
+        window.location.reload();
+      } else {
+        toast.error(`Erreur lors de la suppression du ${type}`);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Erreur de suppression:", error);
       toast.error("Erreur inattendue lors de la suppression");
     }
   };
 
-  const previewElement = async (id: string, type: string) => {
-    if (!id) {
-      toast.error("Element ID is missing.");
-      return;
-    }
-
-    switch (type) {
-      case "user":
-        return router.push(`/admin/dashboard/previewelement/${id}`);
-      case "article":
-        return router.push(`/articles/${id}`);
-      case "comment":
-        const articleId = await getArticleIdByComment(id);
-        if (articleId) {
-          return router.push(`/articles/${articleId}#comment-${id}`);
-        } else {
-          toast.error("Impossible de retrouver l'article du commentaire");
-        }
-        break;
-      case "method":
-        return;
-    }
-  };
-
-  const updateElement = (id: string, type: string) => {
-    if (!id) {
-      toast.error("Element ID is missing.");
-      return;
-    }
-
-    switch (type) {
-      case "user":
-        return;
-      case "article":
-        switch (state) {
-          case "published":
-            return router.push(`/articles/${id}/update`);
-          case "archived":
-            return toast.error(
-              "Impossible de modifier cet article étant donné qu'il est archivé."
-            );
-          case "pending":
-            return router.push(`/admin/brouillons/${id}`);
-        }
-      case "comment":
-        return;
-      case "method":
-        return router.push(`/admin/dashboard/updateelement/${id}`);
+  const handleAdminRole = async (id: string) => {
+    console.log("Modification du rôle admin pour:", id, "isAdmin:", isAdmin);
+    try {
+      const update = !isAdmin
+        ? await giveUserAdmin(id)
+        : await removeUserAdminRole(id);
+      console.log("Résultat de la mise à jour:", update);
+      if (update?.success) {
+        toast.success(
+          isAdmin
+            ? "L'utilisateur ne possède plus les droits administrateur."
+            : "L'utilisateur est désormais administrateur."
+        );
+        await new Promise((r) => setTimeout(r, 1000));
+        window.location.reload();
+      } else {
+        toast.error("Échec de la mise à jour du rôle.");
+      }
+    } catch (e) {
+      console.error("Erreur lors de la mise à jour:", e);
+      toast.error("Erreur lors de la mise à jour.");
     }
   };
 
   const archiveElement = async (id: string) => {
-    if (!id) {
-      toast.error("Element ID is missing.");
-      return;
-    }
-
     try {
       const result = await updateArticleStatus(id, "archived");
-
       if (result.success) {
         toast.success("Modification réussie");
         window.location.reload();
@@ -160,25 +105,45 @@ export default function ContextPopup({
     }
   };
 
-  const handleAdminRole = async (id: string) => {
-    try {
-      if (!isAdmin) {
-        const update = await giveUserAdmin(id);
-        if (update?.success) {
-          toast.success("L'utilisateur est désormais administrateur.");
-        }
-      } else {
-        const update = await removeUserAdminRole(id);
-        if (update?.success) {
-          toast.success("L'utilisateur ne possède plus administrateur.");
-        }
-      }
+  const previewElement = async (id: string, type: string) => {
+    switch (type) {
+      case "user":
+        router.push(`/admin/dashboard/previewelement/${id}`);
+        break;
+      case "article":
+        router.push(`/articles/${id}`);
+        break;
+      case "comment":
+        const articleId = await getArticleIdByComment(id);
+        if (articleId) router.push(`/articles/${articleId}#comment-${id}`);
+        else toast.error("Impossible de retrouver l'article du commentaire");
+        break;
+      case "method":
+        return;
+    }
+  };
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
-    } catch {
-      toast.error("Une erreur s'est produite lors de la mise à jour.");
+  const updateElement = (id: string, type: string) => {
+    if (!id) return;
+    switch (type) {
+      case "article":
+        switch (state) {
+          case "published":
+            router.push(`/articles/${id}/update`);
+            break;
+          case "archived":
+            toast.error(
+              "Impossible de modifier cet article étant donné qu'il est archivé."
+            );
+            break;
+          case "pending":
+            router.push(`/admin/brouillons/${id}`);
+            break;
+        }
+        break;
+      case "method":
+        router.push(`/admin/dashboard/updateelement/${id}`);
+        break;
     }
   };
 
@@ -190,67 +155,54 @@ export default function ContextPopup({
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
             onClick={() => previewElement(id, type)}
           >
-            <SquareArrowOutUpRight
-              size={20}
-              color="oklch(55.4% 0.046 257.417)"
-            />{" "}
-            Accéder à l&apos;élément
+            <SquareArrowOutUpRight size={20} /> Accéder à l&apos;élément
           </div>
         )}
+
         {(type == "article" || type == "method") && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
             onClick={() => updateElement(id, type)}
           >
-            <Pencil size={20} color="oklch(55.4% 0.046 257.417)" /> Modifier
+            <Pencil size={20} /> Modifier
           </div>
         )}
+
         {type == "article" && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
             onClick={() => archiveElement(id)}
           >
-            <ArchiveRestore size={20} color="oklch(55.4% 0.046 257.417)" />{" "}
-            Archiver
+            <ArchiveRestore size={20} /> Archiver
           </div>
         )}
+
         {type == "user" && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
             onClick={() => {
-              if (isAdmin) {
-                setRemoveAdminPopupOpen(true);
-              } else {
-                setGiveAdminPopupOpen(true);
-              }
+              if (isAdmin) setRemoveAdminPopupOpen(true);
+              else setGiveAdminPopupOpen(true);
             }}
           >
-            {isAdmin ? (
-              <UserMinus2 size={20} color="oklch(55.4% 0.046 257.417)" />
-            ) : (
-              <UserPlus2 size={20} color="oklch(55.4% 0.046 257.417)" />
-            )}{" "}
+            {isAdmin ? <UserMinus2 size={20} /> : <UserPlus2 size={20} />}{" "}
             {isAdmin ? "Rétrograder" : "Promouvoir"}
           </div>
         )}
+
         <div
           className="group px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-red-400 hover:text-white"
           onClick={() => setDeletePopupOpen(true)}
         >
-          <Trash
-            size={20}
-            className="text-[color:oklch(55.4%_0.046_257.417)] group-hover:text-white transition-colors"
-          />{" "}
-          Supprimer
+          <Trash size={20} /> Supprimer
         </div>
       </div>
 
-      {/* Confirm give admin popup */}
       {giveAdminPopupOpen && (
         <ActionPopup
           onClose={() => setGiveAdminPopupOpen(false)}
           title="Conférer le rôle admin ?"
-          description="Souhaitez-vous donner à cet utilisateur le rôle admin. Par conséquent, l'utilisateur aura l'intégralité des droits et pourra ainsi modifier et supprimer des données ?"
+          description="Souhaitez-vous donner à cet utilisateur le rôle admin ?"
           actions={[
             {
               label: "Annuler",
@@ -260,6 +212,7 @@ export default function ContextPopup({
             {
               label: "Confirmer",
               onClick: async () => {
+                console.log("Bouton Confirmer cliqué");
                 await handleAdminRole(id);
                 setGiveAdminPopupOpen(false);
               },
@@ -269,12 +222,11 @@ export default function ContextPopup({
         />
       )}
 
-      {/* Confirm remove admin popup */}
       {removeAdminPopupOpen && (
         <ActionPopup
           onClose={() => setRemoveAdminPopupOpen(false)}
           title="Supprimer le rôle admin ?"
-          description="Souhaitez-vous retirer à cet utilisateur le rôle admin. Par conséquent, l'utilisateur ne pourra ainsi plus modifier ou supprimer des données, à l'exception des siennes."
+          description="Souhaitez-vous retirer à cet utilisateur le rôle admin ?"
           actions={[
             {
               label: "Annuler",
@@ -284,6 +236,7 @@ export default function ContextPopup({
             {
               label: "Supprimer",
               onClick: async () => {
+                console.log("Bouton Supprimer admin cliqué");
                 await handleAdminRole(id);
                 setRemoveAdminPopupOpen(false);
               },
@@ -293,7 +246,6 @@ export default function ContextPopup({
         />
       )}
 
-      {/* Confirm delete element popup */}
       {deletePopupOpen && (
         <ActionPopup
           onClose={() => setDeletePopupOpen(false)}
@@ -308,12 +260,9 @@ export default function ContextPopup({
             {
               label: "Supprimer",
               onClick: async () => {
-                try {
-                  deleteElement(id, type);
-                  setDeletePopupOpen(false);
-                } catch (error) {
-                  console.error("Erreur suppression élément :", error);
-                }
+                console.log("Bouton Supprimer élément cliqué");
+                await deleteElement(id, type);
+                setDeletePopupOpen(false);
               },
               theme: "delete",
             },
