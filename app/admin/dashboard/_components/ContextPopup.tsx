@@ -10,6 +10,7 @@ import {
   Pencil,
   SquareArrowOutUpRight,
   Trash,
+  UserMinus2,
   UserPlus2,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -172,16 +173,14 @@ export default function ContextPopup({
           toast.success("L'utilisateur ne possède plus administrateur.");
         }
       }
-  
+
       setTimeout(() => {
         window.location.reload();
       }, 3000);
-  
     } catch {
       toast.error("Une erreur s'est produite lors de la mise à jour.");
     }
   };
-  
 
   return (
     <>
@@ -218,13 +217,19 @@ export default function ContextPopup({
         {type == "user" && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => 
-              isAdmin
-                ? setRemoveAdminPopupOpen(true)
-                : setGiveAdminPopupOpen(true)
-            }
+            onClick={() => {
+              if (isAdmin) {
+                setRemoveAdminPopupOpen(true);
+              } else {
+                setGiveAdminPopupOpen(true);
+              }
+            }}
           >
-            <UserPlus2 size={20} color="oklch(55.4% 0.046 257.417)" />{" "}
+            {isAdmin ? (
+              <UserMinus2 size={20} color="oklch(55.4% 0.046 257.417)" />
+            ) : (
+              <UserPlus2 size={20} color="oklch(55.4% 0.046 257.417)" />
+            )}{" "}
             {isAdmin ? "Rétrograder" : "Promouvoir"}
           </div>
         )}

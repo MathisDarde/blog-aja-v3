@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Button from "@/components/BlueButton";
+import Link from "next/link";
 
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -72,9 +73,14 @@ function LoginForm() {
                 <Eye className="w-5 sm:w-6" />
               )}
             </span>
+            <Link href={"/forgot-password"}>
+              <p className="text-aja-blue hover:text-orange-third hover:underline font-Montserrat cursor-pointer flex justify-end transition-colors">
+                Mot de passe oublié ?
+              </p>
+            </Link>
           </div>
 
-            <Button type="submit">Je me connecte</Button>
+          <Button type="submit">Je me connecte</Button>
         </form>
       </div>
     </>
