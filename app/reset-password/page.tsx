@@ -1,8 +1,10 @@
 "use client";
 
 import ResetPasswordForm from "@/components/ResetPasswordForm";
+import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
 
-export default function Login() {
+export default function ResetPasswordPage() {
   return (
     <>
       <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">
@@ -11,7 +13,15 @@ export default function Login() {
             Saisissez votre nouveau mot de passe
           </h1>
 
-          <ResetPasswordForm />
+          <Suspense
+            fallback={
+              <div className="animate-spin">
+                <Loader2 />
+              </div>
+            }
+          >
+            <ResetPasswordForm />
+          </Suspense>
         </div>
       </div>
     </>
