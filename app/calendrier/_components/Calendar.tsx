@@ -92,8 +92,6 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
     return match ? match[0] : "";
   };
 
-  const { width } = useScreenSize();
-
   return (
     <>
       <div className="hidden lg:block p-6 lg:w-[950px] xl:w-[1200px] 2xl:w-[1300px] bg-white mx-auto">

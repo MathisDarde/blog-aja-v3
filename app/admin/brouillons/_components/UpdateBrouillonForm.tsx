@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Heading,
-  Image as ImageIcon,
   Film,
   Folder,
   PenTool,
