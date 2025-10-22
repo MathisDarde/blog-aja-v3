@@ -7,7 +7,6 @@ import "dayjs/locale/fr";
 import { MatchAPI } from "@/contexts/Interfaces";
 import { getTeamInfo } from "@/utils/get-team-info";
 import { ChevronLeftCircle, ChevronRightCircle } from "lucide-react";
-import { useScreenSize } from "@/utils/use-screen-size";
 
 dayjs.locale("fr");
 
