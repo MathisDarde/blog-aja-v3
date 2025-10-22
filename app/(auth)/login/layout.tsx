@@ -1,21 +1,7 @@
-import { Montserrat, Bai_Jamjuree } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "sonner";
-import { AppProvider } from "@/contexts/GlobalContext";
-import type { Metadata } from "next";
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  preload: true,
-});
-
-const baijamjuree = Bai_Jamjuree({
-  variable: "--font-bai-jamjuree",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  preload: true,
-});
+import { isAuthenticated } from "@/actions/user/is-user-connected";
+import { User } from "@/contexts/Interfaces";
+import { getUserbyId } from "@/controllers/UserController";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
@@ -51,21 +37,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const auth = await isAuthenticated();
+
+  let user: User | null = null;
+
+  if (auth?.user?.id) {
+    const users = await getUserbyId(auth.user.id);
+    user = users?.[0] ?? null;
+  }
   return (
     <html lang="en">
       <body
         suppressHydrationWarning
-        className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden bg-gray-100`}
+        className={`antialiased overflow-x-hidden bg-gray-100`}
       >
-        <AppProvider>{children}</AppProvider>
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            className:
-              "font-Montserrat rounded-md shadow-md text-sm sm:text-base border-0",
-            style: { borderRadius: "8px" },
-          }}
-        />
+        <>{children}</>
       </body>
     </html>
   );

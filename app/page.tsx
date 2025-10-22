@@ -9,10 +9,22 @@ import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
 import { getArticles } from "@/controllers/ArticlesController";
 import categories from "@/public/data/articletags.json";
-import { Category } from "@/contexts/Interfaces";
+import { Category, User } from "@/contexts/Interfaces";
+import Header from "@/components/header/Header";
+import { isAuthenticated } from "@/actions/user/is-user-connected";
+import { getUserbyId } from "@/controllers/UserController";
+import Footer from "@/components/Footer";
 
 export default async function Page() {
   const articles = await getArticles();
+  const auth = await isAuthenticated();
+
+  let user: User | null = null;
+
+  if (auth?.user?.id) {
+    const users = await getUserbyId(auth.user.id);
+    user = users?.[0] ?? null;
+  }
 
   function getRandomCategories(
     categories: Category[],
@@ -29,6 +41,8 @@ export default async function Page() {
 
   return (
     <div className="bg-gray-100">
+      <Header user={user || undefined} />
+
       <div className="pb-3 max-w-[1300px] mx-auto">
         <Carousel articles={articles} />
       </div>
@@ -73,6 +87,8 @@ export default async function Page() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

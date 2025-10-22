@@ -115,7 +115,9 @@ export default function HeaderLarge({ user }: { user?: User }) {
                             <p className="text-lg font-Montserrat uppercase font-semibold text-gray-800">
                               {item.title}
                             </p>
-                            <p className="font-Montserrat text-xs">{item.description}</p>
+                            <p className="font-Montserrat text-xs">
+                              {item.description}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -128,13 +130,14 @@ export default function HeaderLarge({ user }: { user?: User }) {
         </nav>
       </div>
 
-      <div className={`flex-shrink-0 ${!user ? "w-[185px]" : "w-[75px]"}  xl:w-[250px] flex justify-end`}>
+      <div
+        className={`flex-shrink-0 ${
+          !user ? "w-[185px]" : "w-[75px]"
+        }  xl:w-[250px] flex justify-end`}
+      >
         {!user ? (
           <Link href="/login">
-            <Button
-              size="slim"
-              className="flex items-center gap-2"
-            >
+            <Button size="slim" className="flex items-center gap-2">
               <LogIn className="text-white" /> Se connecter
             </Button>
           </Link>
