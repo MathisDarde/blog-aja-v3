@@ -24,6 +24,7 @@ import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { redirect } from "next/navigation";
 import Button from "@/components/BlueButton";
+import Image from "next/image";
 
 export default function UpdateBrouillonForm({
   articleData,
@@ -31,6 +32,9 @@ export default function UpdateBrouillonForm({
   user,
 }: UpdateBrouillonFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<string>(
+    articleData?.imageUrl || "/_assets/img/defaultarticlebanner.png"
+  );
   const [selectedTags, setSelectedTags] = useState<string[]>(
     articleData?.tags || []
   );
@@ -54,6 +58,7 @@ export default function UpdateBrouillonForm({
     formState: { errors },
     setValue,
     watch,
+    reset,
     getValues,
   } = useForm<UpdateArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
@@ -70,11 +75,23 @@ export default function UpdateBrouillonForm({
     }
   }, [articleData, setValue]);
 
+  useEffect(() => {
+    if (articleData) {
+      reset(articleData);
+      setPreviewPhoto(
+        articleData.imageUrl || "/_assets/img/defaultarticlebanner.png"
+      );
+      setSelectedTags(articleData.tags || []);
+    }
+  }, [articleData, reset]);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
+      setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
     } else {
       setSelectedFile(null);
+      setPreviewPhoto("/_assets/img/defaultarticlebanner.png");
     }
   };
 
@@ -163,6 +180,34 @@ export default function UpdateBrouillonForm({
         Formulaire de modification de brouillon
       </h1>
       <form id="publishform" encType="multipart/form-data" className="w-full">
+        {/* Image */}
+        <div className="relative w-full mx-auto mb-4 text-center">
+          {previewPhoto && (
+            <div className="w-fit mb-4 relative mx-auto">
+              <Image
+                width={1024}
+                height={1024}
+                src={previewPhoto}
+                alt="Photo de l'article"
+                className="w-full aspect-video object-cover"
+              />
+            </div>
+          )}
+          <input
+            type="file"
+            id="fileInput"
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+          />
+          <label
+            htmlFor="fileInput"
+            className="mx-auto cursor-pointer underline text-center inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
+          >
+            Modifier l&apos;image de bannière de l&apos;article ?
+          </label>
+        </div>
+
         {/* Titre */}
         <div className="relative w-full">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
@@ -174,20 +219,6 @@ export default function UpdateBrouillonForm({
             {...register("title")}
             className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Titre de l'article"
-          />
-        </div>
-
-        {/* Image */}
-        <div className="relative w-full">
-          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
-            <ImageIcon className="mr-4" />
-            Image :
-          </span>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-            accept="image/*"
           />
         </div>
 

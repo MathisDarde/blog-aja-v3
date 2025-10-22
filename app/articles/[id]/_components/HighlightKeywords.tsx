@@ -8,6 +8,10 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
   keywords,
   onKeywordClick,
 }) => {
+  const displayText = text?.trim()
+    ? text
+    : "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+
   // Process text for headings and line breaks
   const processText = (text: string) => {
     const lines = text.split("\n");
@@ -47,7 +51,7 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
   );
 
   // Process the text
-  const processedText = processText(text);
+  const processedText = processText(displayText);
   let highlightedText = processedText;
 
   // Apply keyword highlighting

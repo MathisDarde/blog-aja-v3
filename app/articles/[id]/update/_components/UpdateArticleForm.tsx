@@ -32,9 +32,11 @@ export default function UpdateArticleForm({
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>(
-    articleData?.imageUrl || "/_assets/img/pdpdebase.png"
+    articleData?.imageUrl || "/_assets/img/defaultarticlebanner.png"
   );
-  const [selectedTags, setSelectedTags] = useState<string[]>(articleData?.tags || []);
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    articleData?.tags || []
+  );
   const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
 
   const toggleCategory = (category: string) => {
@@ -70,7 +72,9 @@ export default function UpdateArticleForm({
   useEffect(() => {
     if (articleData) {
       reset(articleData);
-      setPreviewPhoto(articleData.imageUrl || "/_assets/img/pdpdebase.png");
+      setPreviewPhoto(
+        articleData.imageUrl || "/_assets/img/defaultarticlebanner.png"
+      );
       setSelectedTags(articleData.tags || []);
     }
   }, [articleData, reset]);
@@ -81,7 +85,7 @@ export default function UpdateArticleForm({
       setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
     } else {
       setSelectedFile(null);
-      setPreviewPhoto("/_assets/img/pdpdebase.png");
+      setPreviewPhoto("/_assets/img/defaultarticlebanner.png");
     }
   };
 
@@ -212,7 +216,11 @@ export default function UpdateArticleForm({
                 onClick={() => toggleCategory(type)}
                 className="w-full flex justify-between items-center px-4 py-3 text-left font-Montserrat text-sm sm:text-base"
               >
-                {type === "year" ? "Années" : type === "player" ? "Joueurs" : "Ligues"}
+                {type === "year"
+                  ? "Années"
+                  : type === "player"
+                  ? "Joueurs"
+                  : "Ligues"}
                 {openTagsCategory === type ? <ChevronUp /> : <ChevronDown />}
               </button>
 
@@ -231,7 +239,9 @@ export default function UpdateArticleForm({
                           if (e.target.checked) {
                             setSelectedTags([...selectedTags, tag.value]);
                           } else {
-                            setSelectedTags(selectedTags.filter((t) => t !== tag.value));
+                            setSelectedTags(
+                              selectedTags.filter((t) => t !== tag.value)
+                            );
                           }
                         }}
                         className="mr-2 accent-orange-third"
@@ -262,10 +272,7 @@ export default function UpdateArticleForm({
           </select>
         </div>
 
-        <Button
-          type="submit"
-          size="default"
-          >
+        <Button type="submit" size="default">
           Je modifie l&apos;article
         </Button>
       </form>

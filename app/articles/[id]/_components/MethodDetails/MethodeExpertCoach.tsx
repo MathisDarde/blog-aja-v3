@@ -19,7 +19,7 @@ export default function CoachMethodeExpert({
       {/* Image du coach */}
       {methode.imagecoach && (
         <Image
-          src={methode.imagecoach}
+          src={methode.imagecoach || "/_assets/img/pdpdebase.png"}
           alt={methode.nomcoach}
           width={512}
           height={512}
@@ -43,7 +43,7 @@ export default function CoachMethodeExpert({
               <Image
                 height={512}
                 width={512}
-                src={club.logo}
+                src={club.logo || "/_assets/img/defaultlogoimage.png"}
                 alt={`Logo de ${club.name}`}
                 className="w-5 sm:w-6 h-5 sm:h-6"
               />
@@ -62,9 +62,11 @@ export default function CoachMethodeExpert({
         )}
       </ul>
 
-            {/* Palmarès */}
-            <div className="mt-4 text-left">
-        <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">Palmarès :</p>
+      {/* Palmarès */}
+      <div className="mt-4 text-left">
+        <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">
+          Palmarès :
+        </p>
         <ul className="text-sm sm:text-base">
           {methode.palmares?.map((item, index) => (
             <li key={index} className="text-gray-700">
@@ -79,7 +81,9 @@ export default function CoachMethodeExpert({
         <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">
           Statistiques :
         </p>
-        <p className="text-gray-700 text-sm sm:text-base">{methode.statistiques}</p>
+        <p className="text-gray-700 text-sm sm:text-base">
+          {methode.statistiques}
+        </p>
       </div>
     </div>
   );

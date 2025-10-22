@@ -40,7 +40,10 @@ export default function BrouillonComponent({
                   className="inline-block w-full h-auto mx-auto rounded-sm object-contain aspect-video object-top"
                   width={512}
                   height={512}
-                  src={brouillon.imageUrl || "/_assets/img/pdpdebase.png"}
+                  src={
+                    brouillon.imageUrl ||
+                    "/_assets/img/defaultarticlebanner.png"
+                  }
                   alt={brouillon.title}
                 />
                 <h2 className="text-justify text-black font-semibold font-Montserrat text-lg pt-4 py-2 pr-2 mx-auto">

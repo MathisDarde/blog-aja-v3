@@ -10,7 +10,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
   return (
     <div className="flex flex-col pt-4">
       {/* Titre du match */}
-      <p className="text-center font-Bai_Jamjuree text-xl text-2xl font-bold mt-4">
+      <p className="text-center font-Bai_Jamjuree text-xl sm:text-2xl font-bold mt-4">
         {methode.titrematch}
       </p>
 
@@ -27,8 +27,10 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
           ></div>
         </div>
         <div className="flex gap-2 items-center text-left">
-        <h3 className="font-semibold font-Bai_Jamjuree text-lg">{methode.nomequipe1}</h3>
-        <h3 className="text-sm">{methode.systemeequipe1}</h3>
+          <h3 className="font-semibold font-Bai_Jamjuree text-lg">
+            {methode.nomequipe1}
+          </h3>
+          <h3 className="text-sm">{methode.systemeequipe1}</h3>
         </div>
       </div>
 
@@ -56,17 +58,24 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
           ></div>
         </div>
         <div className="flex gap-2 items-center text-left">
-        <h3 className="font-semibold font-Bai_Jamjuree text-lg">{methode.nomequipe2}</h3>
-        <h3 className="text-sm">{methode.systemeequipe2}</h3>
+          <h3 className="font-semibold font-Bai_Jamjuree text-lg">
+            {methode.nomequipe2}
+          </h3>
+          <h3 className="text-sm">{methode.systemeequipe2}</h3>
         </div>
       </div>
 
       {/* Remplaçants équipe 1 */}
       <div className="mt-4">
-        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left">Banc {methode.nomequipe1} :</p>
+        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left">
+          Banc {methode.nomequipe1} :
+        </p>
         <ul className="mt-2 space-y-1">
           {methode.remplacantsequipe1.map((remp, index) => (
-            <li key={index} className="flex items-center gap-2 text-sm sm:text-base text-left">
+            <li
+              key={index}
+              className="flex items-center gap-2 text-sm sm:text-base text-left"
+            >
               <p>
                 {remp[2].slice(0, 3).toUpperCase()} - {remp[0]}
               </p>
@@ -100,10 +109,15 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
       {/* Remplaçants équipe 2 */}
       <div className="mt-4">
-        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left">Banc {methode.nomequipe2} :</p>
+        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left">
+          Banc {methode.nomequipe2} :
+        </p>
         <ul className="mt-2 space-y-1">
           {methode.remplacantsequipe2.map((remp, index) => (
-            <li key={index} className="flex items-center gap-2 text-sm sm:text-base text-left">
+            <li
+              key={index}
+              className="flex items-center gap-2 text-sm sm:text-base text-left"
+            >
               <p>
                 {remp[2].slice(0, 3).toUpperCase()} - {remp[0]}
               </p>
@@ -137,7 +151,9 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
       {/* Lieu et date */}
       <div className="mt-4 text-center">
-        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg">{methode.stade}</p>
+        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg">
+          {methode.stade}
+        </p>
         <p className="text-sm sm:text-base text-black">{methode.date}</p>
       </div>
     </div>

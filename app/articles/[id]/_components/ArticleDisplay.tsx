@@ -157,7 +157,7 @@ export default function ArticleDisplay({
         <div className="flex flex-col gap-4 sm:gap-6 max-w-[1200px] w-full">
           <div>
             <h1 className="font-Bai_Jamjuree font-extrabold text-3xl sm:text-4xl">
-              {article.title}
+              {article.title || "Titre de l'article"}
             </h1>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 justify-between mt-4">
               <p className="font-Montserrat flex items-center italic text-sm sm:text-base">
@@ -167,7 +167,7 @@ export default function ArticleDisplay({
                   month: "long",
                   day: "numeric",
                 })}{" "}
-                par {article.author}
+                par {article.author || "Auteur"}
               </p>
 
               <div className="flex items-center gap-2">
@@ -272,7 +272,7 @@ export default function ArticleDisplay({
           </div>
 
           <Image
-            src={article.imageUrl}
+            src={article.imageUrl || "/_assets/img/defaultarticlebanner.png"}
             width={1024}
             height={1024}
             alt="Image de bannière de l'article"
