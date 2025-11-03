@@ -161,7 +161,7 @@ export default function DisplayArticleComments({
                             <div className="flex-1">
                               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4">
                                 <div className="flex items-center gap-4">
-                                  {!comment.photodeprofil ? (
+                                  {!comment.image ? (
                                     <Image
                                       src={"/_assets/img/pdpdebase.png"}
                                       alt="Photo de profil"
@@ -171,7 +171,7 @@ export default function DisplayArticleComments({
                                     />
                                   ) : (
                                     <Image
-                                      src={comment.photodeprofil}
+                                      src={comment.image}
                                       alt="Photo de profil"
                                       width={128}
                                       height={128}

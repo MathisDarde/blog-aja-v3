@@ -27,17 +27,11 @@ export const auth = betterAuth({
       birthday: {
         type: "date",
         required: true,
-        defaultValue: "",
       },
       admin: {
         type: "boolean",
         required: true,
-        defaultValue: "false",
-      },
-      photodeprofil: {
-        type: "string",
-        required: false,
-        defaultValue: null,
+        defaultValue: false,
       },
     },
   },

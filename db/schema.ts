@@ -15,11 +15,11 @@ export const statesEnum = pgEnum("states", [
   "archived",
 ]);
 
-export const user = pgTable("users_table", {
+export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),
   image: text("image"),
-  birthday: timestamp("birthday").notNull(),
+  birthday: timestamp("birthday"),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
