@@ -145,7 +145,7 @@ export default function HeaderLarge({ user }: { user?: User }) {
           <Link href="/moncompte">
             <div className="flex items-center gap-4 font-Montserrat text-gray-800">
               <Image
-                src={user.photodeprofil || "/_assets/img/pdpdebase.png"}
+                src={user.image || "/_assets/img/pdpdebase.png"}
                 alt="User Avatar"
                 width={128}
                 height={128}

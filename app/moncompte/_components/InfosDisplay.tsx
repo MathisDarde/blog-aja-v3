@@ -100,7 +100,7 @@ export default function InfosDisplay({ user }: { user: User }) {
             <>
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2 font-Montserrat w-[1000px] p-10 bg-white rounded-xl shadow-xl mx-auto">
-                  {!user.photodeprofil ? (
+                  {!user.image ? (
                     <Image
                       src="/_assets/img/pdpdebase.png"
                       alt="Photo de profil"
@@ -110,7 +110,7 @@ export default function InfosDisplay({ user }: { user: User }) {
                     />
                   ) : (
                     <Image
-                      src={user.photodeprofil}
+                      src={user.image}
                       alt="Photo de profil"
                       width={512}
                       height={512}

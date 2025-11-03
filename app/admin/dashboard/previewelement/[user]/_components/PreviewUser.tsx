@@ -31,7 +31,7 @@ export default function UserPreview({
                 {/* Infos utilisateur */}
                 <div className="flex flex-col gap-2 font-Montserrat w-full max-w-[600px] p-6 sm:p-10 bg-white rounded-xl mx-auto">
                   <Image
-                    src={user.photodeprofil || "/_assets/img/pdpdebase.png"}
+                    src={user.image || "/_assets/img/pdpdebase.png"}
                     alt="Photo de profil"
                     width={512}
                     height={512}
@@ -90,8 +90,7 @@ export default function UserPreview({
                             <div className="flex items-center gap-4">
                               <Image
                                 src={
-                                  comment.photodeprofil ||
-                                  "/_assets/img/pdpdebase.png"
+                                  comment.image || "/_assets/img/pdpdebase.png"
                                 }
                                 alt="Photo de profil"
                                 width={248}
@@ -133,7 +132,7 @@ export default function UserPreview({
                               <div className="flex items-center gap-3">
                                 <Image
                                   src={
-                                    comment.photodeprofil ||
+                                    comment.image ||
                                     "/_assets/img/pdpdebase.png"
                                   }
                                   alt="Photo de profil"

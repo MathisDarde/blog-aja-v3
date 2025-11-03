@@ -19,7 +19,7 @@ import Button from "@/components/BlueButton";
 export default function UpdateProfileForm({ user }: { user: User | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(
-    user?.photodeprofil || "/_assets/img/pdpdebase.png"
+    user?.image || "/_assets/img/pdpdebase.png"
   );
   const [deletePDPPopupOpen, setDeletePDPPopupOpen] = useState(false);
 
@@ -38,7 +38,7 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
       name: user?.name,
       birthday: formattedBirthday,
       email: user?.email,
-      photodeprofil: user?.photodeprofil || "",
+      image: user?.image || "",
     },
   });
 
@@ -122,7 +122,10 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
 
   return (
     <div className="w-full mx-auto text-center">
-      <form onSubmit={handleSubmit(handleSubmitForm)} className="max-w-[600px] mx-auto">
+      <form
+        onSubmit={handleSubmit(handleSubmitForm)}
+        className="max-w-[600px] mx-auto"
+      >
         {/* Confirm delete PDP */}
         {deletePDPPopupOpen && (
           <ActionPopup
@@ -226,12 +229,9 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
           />
         </div>
 
-          <Button
-            type="submit"
-            size="default"
-            >
-            Je modifie mon profil
-          </Button>
+        <Button type="submit" size="default">
+          Je modifie mon profil
+        </Button>
       </form>
     </div>
   );

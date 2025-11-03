@@ -75,7 +75,7 @@ export async function updateUser(
 
     const updatedData: Partial<Omit<SelectUser, "id">> = {
       ...data,
-      photodeprofil: file ? imageUrl : undefined,
+      image: file ? imageUrl : undefined,
     };
 
     // Effectuer la mise à jour
@@ -98,7 +98,7 @@ export async function deleteUser(id: SelectUser["id"]) {
 export async function getUserPicName(id: SelectUser["id"]) {
   const users = await db
     .select({
-      pdp: user.photodeprofil,
+      pdp: user.image,
       username: user.name,
     })
     .from(user)
@@ -118,7 +118,7 @@ export async function deleteUserPic(id: SelectUser["id"]) {
       return;
     }
 
-    await db.update(user).set({ photodeprofil: null }).where(eq(user.id, id));
+    await db.update(user).set({ image: null }).where(eq(user.id, id));
     return true;
   } else {
     return false;
@@ -126,7 +126,8 @@ export async function deleteUserPic(id: SelectUser["id"]) {
 }
 
 export async function setUserAdmin(id: SelectUser["id"]) {
-  const result = await db.update(user)
+  const result = await db
+    .update(user)
     .set({ admin: true })
     .where(eq(user.id, id));
 
@@ -134,7 +135,8 @@ export async function setUserAdmin(id: SelectUser["id"]) {
 }
 
 export async function removeUserAdmin(id: SelectUser["id"]) {
-  const result = await db.update(user)
+  const result = await db
+    .update(user)
     .set({ admin: false })
     .where(eq(user.id, id));
 

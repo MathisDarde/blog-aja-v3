@@ -168,7 +168,7 @@ export default function TabUserContent({
               <tr key={user.id} className="bg-white border-t border-gray-200">
                 <td className="p-3 flex justify-center items-center w-[75px]">
                   <Image
-                    src={user.photodeprofil || "/_assets/img/pdpdebase.png"}
+                    src={user.image || "/_assets/img/pdpdebase.png"}
                     alt="Photo de profil"
                     width={128}
                     height={128}

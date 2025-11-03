@@ -124,7 +124,7 @@ export default function RespHeader({ user }: { user?: User }) {
                 onClick={() => setIsOpen(false)}
               >
                 <Image
-                  src={user.photodeprofil || "/img/pdpdebase.png"}
+                  src={user.image || "/img/pdpdebase.png"}
                   width={128}
                   height={128}
                   className="rounded-full size-9 object-cover"

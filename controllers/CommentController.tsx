@@ -15,7 +15,7 @@ export async function getComments(): Promise<
     content: string;
     userId: string;
     pseudo: string;
-    photodeprofil: string | null;
+    image: string | null;
     createdAt: Date;
     updatedAt: Date;
   }>
@@ -29,7 +29,7 @@ export async function getComments(): Promise<
       content: commentsTable.content,
       userId: commentsTable.userId,
       pseudo: user.name,
-      photodeprofil: user.photodeprofil,
+      image: user.image,
       createdAt: commentsTable.createdAt,
       updatedAt: commentsTable.updatedAt,
     })
@@ -67,7 +67,7 @@ export async function getCommentbyId(
     content: string;
     userId: string;
     pseudo: string;
-    photodeprofil: string | null;
+    image: string | null;
     createdAt: Date;
     updatedAt: Date;
   }>
@@ -81,7 +81,7 @@ export async function getCommentbyId(
       content: commentsTable.content,
       userId: commentsTable.userId,
       pseudo: user.name,
-      photodeprofil: user.photodeprofil,
+      image: user.image,
       createdAt: commentsTable.createdAt,
       updatedAt: commentsTable.updatedAt,
     })
@@ -120,7 +120,7 @@ export async function getCommentsbyArticle(
     content: string;
     userId: string;
     pseudo: string;
-    photodeprofil: string | null;
+    image: string | null;
     createdAt: Date;
     updatedAt: Date;
   }>
@@ -134,7 +134,7 @@ export async function getCommentsbyArticle(
       content: commentsTable.content,
       userId: commentsTable.userId,
       pseudo: user.name,
-      photodeprofil: user.photodeprofil,
+      image: user.image,
       createdAt: commentsTable.createdAt,
       updatedAt: commentsTable.updatedAt,
     })
@@ -154,7 +154,7 @@ export async function getCommentsByUser(
     content: string;
     userId: string;
     pseudo: string;
-    photodeprofil: string | null;
+    image: string | null;
     createdAt: Date;
     updatedAt: Date;
   }>
@@ -168,7 +168,7 @@ export async function getCommentsByUser(
       content: commentsTable.content,
       userId: commentsTable.userId,
       pseudo: user.name,
-      photodeprofil: user.photodeprofil,
+      image: user.image,
       createdAt: commentsTable.createdAt,
       updatedAt: commentsTable.updatedAt,
     })

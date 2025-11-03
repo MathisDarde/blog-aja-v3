@@ -18,7 +18,7 @@ export const statesEnum = pgEnum("states", [
 export const user = pgTable("users_table", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),
-  photodeprofil: text("photodeprofil"),
+  image: text("image"),
   birthday: timestamp("birthday").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
@@ -192,13 +192,13 @@ export const methodeExpertCoachTable = pgTable("methode_expert_coach_table", {
 export const likedArticles = pgTable("likedArticles", {
   id: text("id").primaryKey(),
   userId: text("userId")
-  .notNull()
-  .references(() => user.id),
+    .notNull()
+    .references(() => user.id),
   articleId: text("articleId")
-  .notNull()
-  .references(() => articlesTable.id_article),
-  likedAt: timestamp("likedAt").notNull().defaultNow()
-})
+    .notNull()
+    .references(() => articlesTable.id_article),
+  likedAt: timestamp("likedAt").notNull().defaultNow(),
+});
 
 export const schema = {
   user,

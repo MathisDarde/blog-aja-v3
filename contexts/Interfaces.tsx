@@ -238,7 +238,7 @@ export interface Comment {
   title: string;
   content: string;
   pseudo: string;
-  photodeprofil: string | null;
+  image: string | null;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -258,7 +258,7 @@ export interface User {
   emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
-  photodeprofil?: string | null;
+  image?: string | null;
   birthday: Date;
   admin: boolean | null;
 }
@@ -273,7 +273,7 @@ export interface UpdateUserFromProps {
     name: string;
     email: string;
     birthday: Date;
-    photodeprofil: string | null;
+    image: string | null;
   };
 }
 
