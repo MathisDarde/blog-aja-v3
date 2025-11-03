@@ -45,9 +45,9 @@ export default function LastMatchResult({
               alt={`Logo de ${teamHomeInfo.actualName}`}
               width={100}
               height={100}
-              className="w-10 sm:w-20 xl:w-28 h-10 sm:h-20 xl:h-28"
+              className="w-10 sm:w-20 xl:w-28 h-10 sm:h-20 xl:h-28 object-contain"
             />
-            <p className="w-[150px] sm:w-24 truncate font-Bai_Jamjuree font-semibold text-lg text-left" >
+            <p className="w-[150px] sm:w-24 truncate font-Bai_Jamjuree font-semibold text-lg sm:text-center text-left" >
               {teamHomeInfo.actualName}
             </p>
           </div>
@@ -64,15 +64,15 @@ export default function LastMatchResult({
           <p className="font-Bai_Jamjuree text-3xl sm:text-5xl xl:text-6xl font-bold">
             <span className="w-24">{scoreAway}</span>{" "}
           </p>
-          <div className="flex flex-row sm:flex-col items-center gap-2">
+          <div className="flex flex-row sm:flex-col items-center justify-center gap-2">
             <Image
               src={`/_assets/teamlogos/${teamAwayInfo.logo}`}
               alt={`Logo de ${teamAwayInfo.actualName}`}
               width={100}
               height={100}
-              className="w-10 sm:w-20 xl:w-28 h-10 sm:h-20 xl:h-28"
+              className="w-10 sm:w-20 xl:w-28 h-10 sm:h-20 xl:h-28 object-contain"
             />
-            <p className="w-[150px] sm:w-24 truncate font-Bai_Jamjuree font-semibold text-lg text-left">
+            <p className="w-[150px] sm:w-24 truncate font-Bai_Jamjuree font-semibold text-lg sm:text-center text-left">
               {teamAwayInfo.actualName}
             </p>
           </div>

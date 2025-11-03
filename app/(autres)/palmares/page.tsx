@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeftIcon } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import records from "@/public/data/records.json";
 import trophees from "@/public/data/palmares.json";
@@ -98,10 +98,10 @@ const Palmares = () => {
                   {isActive && (
                     <div className="w-full mx-auto">
                       <div className="relative mt-4 bg-white pt-14 pb-6 md:pb-14 px-6 md:p-14 rounded-3xl">
-                        <ArrowLeftIcon
-                          height={40}
-                          width={40}
-                          className="p-2 w-8 h-8 sm:w-12 sm:h-12 text-red-600 bg-gray-100 rounded-full absolute top-3 left-3 cursor-pointer transition-colors hover:text-red-800"
+                        <ChevronLeft
+                          height={30}
+                          width={30}
+                          className="w-6 sm:w-8 h-6 sm:h-8 absolute top-3 left-3 cursor-pointer transition-colors"
                           onClick={() => setSelectedRecordIndex(null)}
                         />
                         <h3 className="font-semibold font-Bai_Jamjuree uppercase text-xl sm:text-3xl text-center mb-3 sm:mb-5">

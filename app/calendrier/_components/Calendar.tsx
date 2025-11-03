@@ -259,7 +259,7 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
                 match
               )}`}
             >
-              <p className="underline text-xs mb-2">Journée {match.journee} </p>
+              <p className="underline font-Montserrat text-xs mb-2">Journée {match.journee} </p>
               {/* Statut + date */}
               <div className="flex justify-between items-center mb-2">
                 <p className="text-xs uppercase italic font-bold">
@@ -281,9 +281,9 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
                   height={28}
                   className="object-contain"
                 />
-                <p className="font-medium font-Montserrat text-lg ml-2">
+                <p className="font-semibold font-Bai_Jamjuree text-xl ml-2">
                   {teamHome.actualName}
-                  <span className="ml-2 text-xs font-medium">
+                  <span className="ml-2 text-xs font-Montserrat font-light">
                     {match.dom_ext === "D"
                       ? match.classement
                       : getOpponentRanking(match.contre)}
@@ -305,9 +305,9 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
                   height={28}
                   className="object-contain"
                 />
-                <p className="font-medium text-lg ml-2">
+                <p className="font-semibold font-Bai_Jamjuree text-xl ml-2">
                   {teamAway.actualName}
-                  <span className="ml-2 text-xs font-medium">
+                  <span className="ml-2 text-xs font-Montserrat font-light">
                     {match.dom_ext === "E"
                       ? match.classement
                       : getOpponentRanking(match.contre)}
