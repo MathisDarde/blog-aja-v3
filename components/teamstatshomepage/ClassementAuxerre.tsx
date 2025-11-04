@@ -10,10 +10,33 @@ export default function ClassementAuxerre({ teams }: { teams: Team[] }) {
 
     if (index === -1) return [];
 
-    const start = Math.max(0, index - 2);
-    const end = Math.min(teams.length, index + 3);
+    const lastIndex = teams.length - 1;
+    let start = 0;
+    let end = 0;
 
-    return teams.slice(start, end);
+    if (index === 0) {
+      // Auxerre est premier
+      start = 0;
+      end = Math.min(lastIndex, 4);
+    } else if (index === 1) {
+      // Auxerre est 2e
+      start = 0;
+      end = Math.min(lastIndex, 4);
+    } else if (index === lastIndex - 1) {
+      // Avant-dernier
+      start = Math.max(0, index - 3);
+      end = Math.min(lastIndex, index + 1);
+    } else if (index === lastIndex) {
+      // Dernier
+      start = Math.max(0, index - 4);
+      end = index;
+    } else {
+      // Cas général
+      start = Math.max(0, index - 2);
+      end = Math.min(lastIndex, index + 2);
+    }
+
+    return teams.slice(start, end + 1);
   }
 
   const classement = getReducedClassement();
@@ -32,8 +55,10 @@ export default function ClassementAuxerre({ teams }: { teams: Team[] }) {
             <div
               key={index}
               className={`flex items-center gap-2 sm:gap-3 mx-auto p-2 sm:p-4 rounded-md border border-gray-400 ${
-                isAuxerre ? "w-[300px] sm:w-[400px] xl:w-[450px] h-[55px] xl:h-[65px]" : "w-[250px] sm:w-[350px] h-[40px] sm:h-[50px]"
-              } `}
+                isAuxerre
+                  ? "w-[300px] sm:w-[400px] xl:w-[450px] h-[55px] xl:h-[65px]"
+                  : "w-[250px] sm:w-[350px] h-[40px] sm:h-[50px]"
+              }`}
             >
               <p
                 className={`font-Bai_Jamjuree ${
@@ -47,7 +72,11 @@ export default function ClassementAuxerre({ teams }: { teams: Team[] }) {
                 width={120}
                 height={120}
                 alt={`${teamInfo.actualName} logo`}
-                className={`${isAuxerre ? "w-10 xl:w-12 h-10 xl:h-12" : "w-7 sm:w-8 h-7 sm:h-8"}`}
+                className={`${
+                  isAuxerre
+                    ? "w-10 xl:w-12 h-10 xl:h-12"
+                    : "w-7 sm:w-8 h-7 sm:h-8"
+                }`}
               />
               <p
                 className={`font-Bai_Jamjuree font-semibold ${
