@@ -293,6 +293,7 @@ export interface TabContentContainerProps {
   articles: Article[];
   methodes: Methodes[];
   comments: Comment[];
+  isLoading: boolean;
 }
 
 export interface MatchAPI {

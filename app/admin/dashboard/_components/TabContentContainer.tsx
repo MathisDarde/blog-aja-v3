@@ -21,6 +21,7 @@ export default function TabContentContainer({
   articles,
   methodes,
   comments,
+  isLoading,
 }: TabContentContainerProps) {
   const [activeMenu, setActiveMenu] = useState("users");
   const [isOpen, setIsOpen] = useState(false);
@@ -117,24 +118,27 @@ export default function TabContentContainer({
           </form>
         </div>
       {activeMenu === "users" && (
-        <TabUserContent searchTerm={searchTerm} users={users as User[]} />
+        <TabUserContent searchTerm={searchTerm} users={users as User[]} isLoading={isLoading} />
       )}
       {activeMenu === "articles" && (
         <TabArticleContent
           searchTerm={searchTerm}
           articles={articles as Article[]}
+          isLoading={isLoading}
         />
       )}
       {activeMenu === "methodes" && (
         <TabMethodeContent
           searchTerm={searchTerm}
           methodes={methodes as Methodes[]}
+          isLoading={isLoading}
         />
       )}
       {activeMenu === "comments" && (
         <TabCommentContent
           searchTerm={searchTerm}
           comments={comments as Comment[]}
+          isLoading={isLoading}
         />
       )}
     </div>
