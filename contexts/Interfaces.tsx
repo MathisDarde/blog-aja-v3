@@ -259,7 +259,7 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   image?: string | null;
-  birthday: Date;
+  birthday: Date | null;
   admin: boolean | null;
 }
 

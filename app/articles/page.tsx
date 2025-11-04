@@ -7,8 +7,6 @@ export default async function Page() {
   const articles = await getArticles();
 
   return (
-    <Suspense fallback={<div>Chargement des articles...</div>}>
       <ArticleCenter articles={articles} filters={filtersData} />
-    </Suspense>
   );
 }
