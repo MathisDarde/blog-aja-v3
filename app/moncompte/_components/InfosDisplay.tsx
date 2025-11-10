@@ -130,7 +130,11 @@ export default function InfosDisplay({ user }: { user: User }) {
                   <div className="flex items-center gap-2">
                     <Cake width={20} height={20} />
                     <label className="font-medium">Date de naissance :</label>
-                    <p>{new Date(user.birthday).toLocaleDateString("fr-FR")}</p>
+                    <p>
+                      {user.birthday
+                        ? new Date(user.birthday).toLocaleDateString("fr-FR")
+                        : "Non renseignée"}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar1 width={20} height={20} />
