@@ -54,7 +54,11 @@ export default function UserPreview({
                     <span className="font-medium hidden sm:block">
                       Date de naissance :
                     </span>
-                    <p>{new Date(user.birthday).toLocaleDateString("fr-FR")}</p>
+                    <p>
+                      {user.birthday
+                        ? new Date(user.birthday).toLocaleDateString("fr-FR")
+                        : "Date de naissance inconnue"}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2 text-sm sm:text-base">
                     <Calendar1 width={20} height={20} />
