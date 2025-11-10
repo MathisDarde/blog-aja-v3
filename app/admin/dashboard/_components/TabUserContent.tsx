@@ -23,7 +23,10 @@ export default function TabUserContent({
   const [sortKey, setSortKey] = useState<UserSortKey>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
@@ -38,8 +41,16 @@ export default function TabUserContent({
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       String(user.admin).toLowerCase().includes(searchTerm.toLowerCase()) ||
-      new Date(user.birthday).toLocaleDateString("fr-FR").includes(searchTerm) ||
-      new Date(user.createdAt).toLocaleDateString("fr-FR").includes(searchTerm)
+      (user.birthday
+        ? new Date(user.birthday)
+            .toLocaleDateString("fr-FR")
+            .includes(searchTerm)
+        : false) ||
+      (user.createdAt
+        ? new Date(user.createdAt)
+            .toLocaleDateString("fr-FR")
+            .includes(searchTerm)
+        : false)
   );
 
   const handleSort = (key: UserSortKey) => {
@@ -67,7 +78,10 @@ export default function TabUserContent({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setSelectedUserId(null);
       }
     };
@@ -89,7 +103,8 @@ export default function TabUserContent({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPageInput(e.target.value);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPageInput(e.target.value);
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const newPage = parseInt(pageInput, 10);
@@ -103,100 +118,134 @@ export default function TabUserContent({
         <thead className="bg-gray-200">
           <tr>
             <th className="p-3 text-center w-[75px]">Photo</th>
-            <th className="p-3 text-center cursor-pointer w-[250px]" onClick={() => handleSort("name")}>
+            <th
+              className="p-3 text-center cursor-pointer w-[250px]"
+              onClick={() => handleSort("name")}
+            >
               Nom {sortKey === "name" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[250px]" onClick={() => handleSort("email")}>
+            <th
+              className="p-3 text-center cursor-pointer w-[250px]"
+              onClick={() => handleSort("email")}
+            >
               Email {sortKey === "email" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[200px]" onClick={() => handleSort("birthday")}>
-              Anniversaire {sortKey === "birthday" && (sortOrder === "asc" ? "↑" : "↓")}
+            <th
+              className="p-3 text-center cursor-pointer w-[200px]"
+              onClick={() => handleSort("birthday")}
+            >
+              Anniversaire{" "}
+              {sortKey === "birthday" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[200px]" onClick={() => handleSort("createdAt")}>
-              Créé le {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            <th
+              className="p-3 text-center cursor-pointer w-[200px]"
+              onClick={() => handleSort("createdAt")}
+            >
+              Créé le{" "}
+              {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[200px]" onClick={() => handleSort("updatedAt")}>
-              MAJ le {sortKey === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            <th
+              className="p-3 text-center cursor-pointer w-[200px]"
+              onClick={() => handleSort("updatedAt")}
+            >
+              MAJ le{" "}
+              {sortKey === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
-            <th className="p-3 text-center cursor-pointer w-[125px]" onClick={() => handleSort("admin")}>
+            <th
+              className="p-3 text-center cursor-pointer w-[125px]"
+              onClick={() => handleSort("admin")}
+            >
               Admin {sortKey === "admin" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th className="p-3 text-center w-[50px]"></th>
           </tr>
         </thead>
         <tbody>
-          {isLoading
-            ? Array.from({ length: 10 }).map((_, index) => (
-                <tr key={index} className="bg-white border-t border-gray-200">
-                  <td className="p-3 flex justify-center items-center w-[75px]">
-                    <Skeleton height="40px" width="40px" className="rounded-full" animated />
-                  </td>
-                  <td className="p-3 text-center w-[250px]">
-                    <Skeleton height="20px" width="150px" animated />
-                  </td>
-                  <td className="p-3 text-center w-[250px]">
-                    <Skeleton height="20px" width="180px" animated />
-                  </td>
-                  <td className="p-3 text-center w-[200px]">
-                    <Skeleton height="20px" width="100px" animated />
-                  </td>
-                  <td className="p-3 text-center w-[200px]">
-                    <Skeleton height="20px" width="100px" animated />
-                  </td>
-                  <td className="p-3 text-center w-[200px]">
-                    <Skeleton height="20px" width="100px" animated />
-                  </td>
-                  <td className="p-3 text-center w-[125px]">
-                    <Skeleton height="20px" width="60px" animated />
-                  </td>
-                  <td className="p-3 text-center w-[50px]">
-                    <Skeleton height="20px" width="20px" animated />
-                  </td>
-                </tr>
-              ))
-            : filteredUsers.length > 0
-            ? paginatedUsers.map((user) => (
-                <tr key={user.id} className="bg-white border-t border-gray-200">
-                  <td className="p-3 flex justify-center items-center w-[75px]">
-                    <Image
-                      src={user.image || "/_assets/img/pdpdebase.png"}
-                      alt="Photo de profil"
-                      width={128}
-                      height={128}
-                      className="rounded-full object-cover size-10"
-                    />
-                  </td>
-                  <td className="p-3 text-center w-[250px]">
-                    <div className="truncate max-w-[250px]">{user.name}</div>
-                  </td>
-                  <td className="p-3 text-center w-[250px]">
-                    <div className="truncate max-w-[250px]">{user.email}</div>
-                  </td>
-                  <td className="p-3 text-center w-[200px]">
-                    {new Date(user.birthday).toLocaleDateString("fr-FR")}
-                  </td>
-                  <td className="p-3 text-center w-[200px]">
-                    {new Date(user.createdAt).toLocaleDateString("fr-FR")}
-                  </td>
-                  <td className="p-3 text-center w-[200px]">
-                    {new Date(user.updatedAt).toLocaleDateString("fr-FR")}
-                  </td>
-                  <td className="p-3 text-center w-[125px]">{user.admin ? "Admin" : "Membre"}</td>
-                  <td
-                    className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
-                    onClick={(e) => handleOpenPopup(user.id, e)}
-                  >
-                    <EllipsisVertical />
-                  </td>
-                </tr>
-              ))
-            : (
-                <tr>
-                  <td colSpan={8} className="p-3 text-center text-gray-500">
-                    Aucun utilisateur ne correspond.
-                  </td>
-                </tr>
-              )}
+          {isLoading ? (
+            Array.from({ length: 10 }).map((_, index) => (
+              <tr key={index} className="bg-white border-t border-gray-200">
+                <td className="p-3 flex justify-center items-center w-[75px]">
+                  <Skeleton
+                    height="40px"
+                    width="40px"
+                    className="rounded-full"
+                    animated
+                  />
+                </td>
+                <td className="p-3 text-center w-[250px]">
+                  <Skeleton height="20px" width="150px" animated />
+                </td>
+                <td className="p-3 text-center w-[250px]">
+                  <Skeleton height="20px" width="180px" animated />
+                </td>
+                <td className="p-3 text-center w-[200px]">
+                  <Skeleton height="20px" width="100px" animated />
+                </td>
+                <td className="p-3 text-center w-[200px]">
+                  <Skeleton height="20px" width="100px" animated />
+                </td>
+                <td className="p-3 text-center w-[200px]">
+                  <Skeleton height="20px" width="100px" animated />
+                </td>
+                <td className="p-3 text-center w-[125px]">
+                  <Skeleton height="20px" width="60px" animated />
+                </td>
+                <td className="p-3 text-center w-[50px]">
+                  <Skeleton height="20px" width="20px" animated />
+                </td>
+              </tr>
+            ))
+          ) : filteredUsers.length > 0 ? (
+            paginatedUsers.map((user) => (
+              <tr key={user.id} className="bg-white border-t border-gray-200">
+                <td className="p-3 flex justify-center items-center w-[75px]">
+                  <Image
+                    src={user.image || "/_assets/img/pdpdebase.png"}
+                    alt="Photo de profil"
+                    width={128}
+                    height={128}
+                    className="rounded-full object-cover size-10"
+                  />
+                </td>
+                <td className="p-3 text-center w-[250px]">
+                  <div className="truncate max-w-[250px]">{user.name}</div>
+                </td>
+                <td className="p-3 text-center w-[250px]">
+                  <div className="truncate max-w-[250px]">{user.email}</div>
+                </td>
+                <td className="p-3 text-center w-[200px]">
+                  {user.birthday
+                    ? new Date(user.birthday).toLocaleDateString("fr-FR")
+                    : "-"}
+                </td>
+                <td className="p-3 text-center w-[200px]">
+                  {user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString("fr-FR")
+                    : "-"}
+                </td>
+                <td className="p-3 text-center w-[200px]">
+                  {user.updatedAt
+                    ? new Date(user.updatedAt).toLocaleDateString("fr-FR")
+                    : "-"}
+                </td>
+                <td className="p-3 text-center w-[125px]">
+                  {user.admin ? "Admin" : "Membre"}
+                </td>
+                <td
+                  className="p-3 text-center w-[50px] cursor-pointer text-gray-600"
+                  onClick={(e) => handleOpenPopup(user.id, e)}
+                >
+                  <EllipsisVertical />
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={8} className="p-3 text-center text-gray-500">
+                Aucun utilisateur ne correspond.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
@@ -212,7 +261,8 @@ export default function TabUserContent({
                 : "bg-aja-blue text-white hover:bg-orange-third transition-colors"
             }`}
           >
-            <ChevronLeft /> <span className="hidden md:block text-sm">Précédent</span>
+            <ChevronLeft />{" "}
+            <span className="hidden md:block text-sm">Précédent</span>
           </button>
 
           <div className="flex items-center gap-2">
@@ -244,7 +294,8 @@ export default function TabUserContent({
         </div>
       )}
 
-      {selectedUser && popupPosition &&
+      {selectedUser &&
+        popupPosition &&
         createPortal(
           <div
             ref={popupRef}
@@ -252,7 +303,11 @@ export default function TabUserContent({
             style={{ top: popupPosition.top, left: popupPosition.left }}
             onClick={(e) => e.stopPropagation()}
           >
-            <ContextPopup id={selectedUser.id} type="user" isAdmin={selectedUser.admin} />
+            <ContextPopup
+              id={selectedUser.id}
+              type="user"
+              isAdmin={selectedUser.admin}
+            />
           </div>,
           document.body
         )}
