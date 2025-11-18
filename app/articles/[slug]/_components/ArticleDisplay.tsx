@@ -248,7 +248,7 @@ export default function ArticleDisplay({
                     <div
                       className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-blue-500"
                       onClick={() =>
-                        router.push(`/articles/${article.id_article}/update`)
+                        router.push(`/articles/${article.slug}/update`)
                       }
                     >
                       <PenBox

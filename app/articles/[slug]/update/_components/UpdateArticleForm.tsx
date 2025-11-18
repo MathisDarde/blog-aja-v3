@@ -10,6 +10,7 @@ import {
   Cctv,
   ChevronUp,
   ChevronDown,
+  LinkIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { UpdateArticleSchemaType } from "@/types/forms";
@@ -59,6 +60,7 @@ export default function UpdateArticleForm({
     resolver: zodResolver(UpdateArticleSchema),
     defaultValues: {
       title: "",
+      slug: "",
       teaser: "",
       content: "",
       author: "",
@@ -100,7 +102,7 @@ export default function UpdateArticleForm({
 
     if (response.success) {
       toast.success(response.message);
-      router.push(`/articles/${id_article}`);
+      router.push(`/articles/${finalData.slug}`);
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message
@@ -157,6 +159,20 @@ export default function UpdateArticleForm({
             {...register("title")}
             className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Titre de l'article"
+          />
+        </div>
+
+        {/* Teaser */}
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
+            <LinkIcon className="mr-4" />
+            Slug de l&apos;URL :
+          </span>
+          <input
+            type="text"
+            {...register("slug")}
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
+            placeholder="Slug de l'article"
           />
         </div>
 

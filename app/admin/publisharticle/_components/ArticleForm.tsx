@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Heading,
   Image as ImageIcon,
@@ -10,6 +10,7 @@ import {
   Tag,
   ChevronUp,
   ChevronDown,
+  LinkIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
@@ -23,10 +24,12 @@ import { User } from "@/contexts/Interfaces";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Button from "@/components/BlueButton";
+import Image from "next/image";
 
 export default function ArticleForm({ user }: { user: User | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
   const toggleCategory = (category: string) => {
     setOpenTagsCategory(openTagsCategory === category ? null : category);
@@ -45,15 +48,32 @@ export default function ArticleForm({ user }: { user: User | null }) {
     handleSubmit,
     formState: { errors },
     getValues,
+    watch,
+    setValue,
   } = useForm<ArticleSchemaType>({
+    shouldUnregister: false,
     resolver: zodResolver(ArticleSchema),
   });
 
+  const selectedTags = watch("tags") || [];
+
+  const toggleTag = (value: string) => {
+    const exists = selectedTags.includes(value);
+    const newTags = exists
+      ? selectedTags.filter((t) => t !== value)
+      : [...selectedTags, value];
+
+    setValue("tags", newTags);
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+      const file = event.target.files[0];
+      setSelectedFile(file);
+      setPreviewPhoto(URL.createObjectURL(file));
     } else {
       setSelectedFile(null);
+      setPreviewPhoto(null);
     }
   };
 
@@ -151,16 +171,64 @@ export default function ArticleForm({ user }: { user: User | null }) {
           />
         </div>
 
+        <div className="relative w-full mx-auto mb-4">
+          {/* SI PAS DE PHOTO → afficher l'input */}
+          {!previewPhoto ? (
+            <div>
+              <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
+                <ImageIcon className="mr-4" />
+                Image :
+              </span>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
+                accept="image/*"
+              />
+            </div>
+          ) : (
+            <>
+              {/* SI PHOTO → l'afficher */}
+              <div className="w-fit mb-4 relative mx-auto">
+                <Image
+                  width={1024}
+                  height={1024}
+                  src={previewPhoto}
+                  alt="Photo de l'article"
+                  className="w-full aspect-video object-cover rounded-xl"
+                />
+              </div>
+
+              {/* input hidden permanent */}
+              <input
+                type="file"
+                id="fileInput"
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*"
+              />
+
+              {/* Bouton pour changer l'image */}
+              <label
+                htmlFor="fileInput"
+                className="cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto"
+              >
+                Modifier l'image de bannière
+              </label>
+            </>
+          )}
+        </div>
+
         <div className="relative w-full mx-auto">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
-            <ImageIcon className="mr-4" />
-            Image :
+            <LinkIcon className="mr-4" />
+            Slug de l&apos;URL :
           </span>
           <input
-            type="file"
-            onChange={handleFileChange}
+            type="text"
+            {...register("slug")}
             className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-            accept="image/*"
+            placeholder="Slug de l'article"
           />
         </div>
 
@@ -226,8 +294,9 @@ export default function ArticleForm({ user }: { user: User | null }) {
                   >
                     <input
                       type="checkbox"
-                      {...register("tags")}
                       value={tag.value}
+                      onChange={() => toggleTag(tag.value)}
+                      checked={selectedTags.includes(tag.value)}
                       className="mr-2 accent-orange-third"
                     />
                     {tag.tag}
@@ -256,8 +325,9 @@ export default function ArticleForm({ user }: { user: User | null }) {
                   >
                     <input
                       type="checkbox"
-                      {...register("tags")}
                       value={tag.value}
+                      onChange={() => toggleTag(tag.value)}
+                      checked={selectedTags.includes(tag.value)}
                       className="mr-2 accent-orange-third"
                     />
                     {tag.tag}
@@ -286,8 +356,9 @@ export default function ArticleForm({ user }: { user: User | null }) {
                   >
                     <input
                       type="checkbox"
-                      {...register("tags")}
                       value={tag.value}
+                      onChange={() => toggleTag(tag.value)}
+                      checked={selectedTags.includes(tag.value)}
                       className="mr-2 accent-orange-third"
                     />
                     {tag.tag}

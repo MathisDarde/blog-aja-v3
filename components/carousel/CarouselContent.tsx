@@ -48,7 +48,7 @@ export const CarouselContent = ({
   return (
     <div
       className="carousel-item relative cursor-pointer"
-      onClick={() => router.push(`/articles/${article.id_article}`)}
+      onClick={() => router.push(`/articles/${article.slug}`)}
     >
       <Image
         width={2048}

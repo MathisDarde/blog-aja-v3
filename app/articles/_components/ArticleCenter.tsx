@@ -169,10 +169,7 @@ export default function ArticleCenter({
       </div>
 
       <div className="mt-4">
-        <Button
-          onClick={clearFilters}
-          size="slim"
-        >
+        <Button onClick={clearFilters} size="slim">
           Réinitialiser la recherche
         </Button>
       </div>
@@ -244,7 +241,7 @@ export default function ArticleCenter({
           ) : (
             filteredArticles.map((article, index) => (
               <Link
-                href={`/articles/${article.id_article}`}
+                href={`/articles/${article.slug}`}
                 key={index}
                 className="w-full h-full"
               >

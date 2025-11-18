@@ -55,10 +55,12 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="max-w-[600px] w-full mx-auto">
       <form
+        method="POST"
+        id="loginform"
+        className="w-full"
         onSubmit={handleSubmit(onSubmit, handleFormErrors)}
-        className="w-full text-center"
       >
         {/* Champ email */}
         <div className="relative w-full mb-6">

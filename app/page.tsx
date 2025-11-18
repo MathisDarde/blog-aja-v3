@@ -17,6 +17,7 @@ import Footer from "@/components/Footer";
 
 export default async function Page() {
   const articles = await getArticles();
+  if (!articles) return;
   const auth = await isAuthenticated();
 
   let user: User | null = null;

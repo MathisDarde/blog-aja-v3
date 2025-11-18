@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 
 export interface Article {
   id_article: string;
+  slug: string;
   title: string;
   teaser: string;
   imageUrl: string;
@@ -53,6 +54,7 @@ export interface UpdateArticleFormProps {
   articleData: {
     title: string;
     imageUrl: string;
+    slug: string;
     teaser: string;
     content: string;
     author: string;

@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { db } from "@/db/db";
 import { articlesTable, SelectArticle, SelectPost } from "@/db/schema";
@@ -9,9 +9,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { Article, GetURLParams } from "@/contexts/Interfaces";
 
-export async function getAllArticles(): Promise<
-SelectArticle[]
-> {
+export async function getAllArticles(): Promise<SelectArticle[]> {
   return db
     .select()
     .from(articlesTable)
@@ -26,9 +24,7 @@ SelectArticle[]
     );
 }
 
-export async function getArticles(): Promise<
-SelectArticle[]
-> {
+export async function getArticles(): Promise<SelectArticle[]> {
   return db
     .select()
     .from(articlesTable)
@@ -44,9 +40,7 @@ SelectArticle[]
     );
 }
 
-export async function getBrouillons(): Promise<
-SelectArticle[]
-> {
+export async function getBrouillons(): Promise<SelectArticle[]> {
   return db
     .select()
     .from(articlesTable)
@@ -101,12 +95,13 @@ export async function createArticle(
     imageUrl = `/uploads/${fileName}`;
 
     // Récupérer les données de l'article
-    const { title, teaser, content, author, tags } = data;
+    const { slug, title, teaser, content, author, tags } = data;
     const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
 
     // Créer l'article dans la base de données avec Drizzle
     const result = await db.insert(articlesTable).values({
       id_article: uuidv4(), // Generate a unique id for the article
+      slug,
       imageUrl,
       title,
       teaser,
@@ -170,11 +165,12 @@ export async function storeBrouillon(
       imageUrl = `/uploads/${fileName}`;
     }
 
-    const { title, teaser, content, author, tags } = data || {};
+    const { slug, title, teaser, content, author, tags } = data || {};
     const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
 
     const result = await db.insert(articlesTable).values({
       id_article: uuidv4(),
+      slug: slug ?? "",
       imageUrl,
       title: title ?? "",
       teaser: teaser ?? "",
@@ -237,12 +233,13 @@ export async function updateBrouillon(
       imageUrl = `/uploads/${fileName}`;
     }
 
-    const { title, teaser, content, author, tags } = data || {};
+    const { slug, title, teaser, content, author, tags } = data || {};
     const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
 
     // Mise à jour de la base
     const updateData = {
       ...(title !== undefined && { title }),
+      ...(slug !== undefined && { slug }),
       ...(teaser !== undefined && { teaser }),
       ...(content !== undefined && { content }),
       ...(author !== undefined && { author }),
@@ -281,6 +278,23 @@ export async function getArticlebyId(
   };
 }
 
+export async function getArticleBySlug(
+  slug: SelectPost["slug"]
+): Promise<SelectArticle | null> {
+  const articles = await db
+    .select()
+    .from(articlesTable)
+    .where(eq(articlesTable.slug, slug));
+
+  if (articles.length === 0) return null;
+
+  const article = articles[0];
+
+  return {
+    ...article,
+    state: (article.state ?? "pending") as "pending" | "published" | "archived",
+  };
+}
 
 export async function updateArticle(
   articleId: SelectPost["id_article"],
@@ -376,10 +390,11 @@ export async function getArticlesbyKeywords({
   league,
 }: GetURLParams = {}): Promise<SelectArticle[]> {
   try {
-    const searchTerms = q
-    ?.trim()
-    .split(/\s+/)
-    .filter((s) => s.length > 0) || [];
+    const searchTerms =
+      q
+        ?.trim()
+        .split(/\s+/)
+        .filter((s) => s.length > 0) || [];
 
     const conditions = [];
 

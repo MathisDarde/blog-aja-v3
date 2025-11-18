@@ -3,9 +3,9 @@ import ArticleClient from "./_components/ArticleClient";
 export default async function ArticlePage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
-  
-  return <ArticleClient id_article={id} />;
+  const { slug } = await params;
+
+  return <ArticleClient slug={slug} />;
 }

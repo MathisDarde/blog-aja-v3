@@ -67,6 +67,7 @@ export default function UpdateBrouillonForm({
   useEffect(() => {
     if (articleData) {
       setValue("title", articleData.title);
+      setValue("slug", articleData.slug);
       setValue("teaser", articleData.teaser);
       setValue("content", articleData.content);
       setValue("author", articleData.author);
@@ -218,6 +219,20 @@ export default function UpdateBrouillonForm({
             {...register("title")}
             className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder="Titre de l'article"
+          />
+        </div>
+
+        {/* Slug */}
+        <div className="relative w-full">
+          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
+            <Film className="mr-4" />
+            Slug de l&apos;URL :
+          </span>
+          <input
+            type="text"
+            {...register("slug")}
+            className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
+            placeholder="Slug de l'article"
           />
         </div>
 

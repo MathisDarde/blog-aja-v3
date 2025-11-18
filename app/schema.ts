@@ -61,6 +61,9 @@ export const ArticleSchema = z.object({
   title: z
     .string()
     .nonempty({ message: "Le titre de l'article doit être renseigné." }),
+  slug: z
+    .string()
+    .nonempty({ message: "Le slug de l'article doit être renseigné." }),
   teaser: z
     .string()
     .nonempty({ message: "Le teaser de l'article doit être renseigné." }),
@@ -79,6 +82,9 @@ export const UpdateArticleSchema = z.object({
   title: z
     .string()
     .nonempty({ message: "Le titre de l'article doit être renseigné." }),
+  slug: z
+    .string()
+    .nonempty({ message: "Le slug de l'article doit être renseigné." }),
   teaser: z
     .string()
     .nonempty({ message: "Le teaser de l'article doit être renseigné." }),
@@ -96,6 +102,7 @@ export const UpdateArticleSchema = z.object({
 });
 
 export const DraftArticleSchema = z.object({
+  slug: z.string().optional(),
   title: z.string().optional(),
   teaser: z.string().optional(),
   content: z.string().optional(),

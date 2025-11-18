@@ -71,6 +71,7 @@ export const verification = pgTable("verification", {
 
 export const articlesTable = pgTable("articles_table", {
   id_article: text("id_article").primaryKey(),
+  slug: text("slug").notNull().unique(),
   imageUrl: text("imageUrl").notNull(),
   title: text("title").notNull(),
   teaser: text("teaser").notNull(),

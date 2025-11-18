@@ -23,6 +23,7 @@ export default async function UpdateContent({
         id_article={id_article}
         articleData={{
           title: article?.title ?? "",
+          slug: article?.slug ?? "",
           teaser: article?.teaser ?? "",
           content: article?.content ?? "",
           author: article?.author ?? "",
