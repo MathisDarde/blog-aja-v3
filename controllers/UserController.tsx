@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import path from "path";
 import fs from "fs";
-import { v4 as uuidv4 } from "uuid";
+import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 
 export async function getUserbyId(id: SelectUser["id"]): Promise<SelectUser[]> {
   return db.select().from(user).where(eq(user.id, id));
@@ -33,55 +33,20 @@ export const signUp = async (data: InscSchemaType) => {
 
 export async function updateUser(
   userId: SelectUser["id"],
-  data: Partial<Omit<SelectUser, "id">>,
-  file?: File
+  data: Partial<Omit<SelectUser, "id">>
 ) {
   try {
-    const MAX_SIZE = 5 * 2048 * 2048; // 5 Mo
-    const ALLOWED_TYPES = [
-      "image/jpeg",
-      "image/png",
-      "image/jpg",
-      "image/webp",
-    ];
+    const imageUrl = ensureCloudinaryUrl(data.image);
 
-    if (file && file.size > MAX_SIZE) {
-      throw new Error(
-        "Le fichier est trop grand. La taille maximale est de 5 Mo."
-      );
-    }
-
-    if (file && !ALLOWED_TYPES.includes(file.type)) {
-      throw new Error(
-        "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
-      );
-    }
-
-    const uploadDir = path.join(process.cwd(), "/public/uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const fileExtension = file ? path.extname(file.name) : "";
-    const fileName = `${uuidv4()}${fileExtension}`;
-    const filePath = path.join(uploadDir, fileName);
-
-    if (file) {
-      const buffer = await file.arrayBuffer();
-      fs.writeFileSync(filePath, Buffer.from(buffer));
-    }
-
-    const imageUrl = `/uploads/${fileName}`;
-
-    const updatedData: Partial<Omit<SelectUser, "id">> = {
+    const updateData = {
       ...data,
-      image: file ? imageUrl : undefined,
+      imageUrl,
     };
 
     // Effectuer la mise à jour
     const result = await db
       .update(user)
-      .set(updatedData)
+      .set(updateData)
       .where(eq(user.id, userId));
 
     return result;

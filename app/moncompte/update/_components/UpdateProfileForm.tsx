@@ -12,16 +12,20 @@ import { User } from "@/contexts/Interfaces";
 import Image from "next/image";
 import deletePhotoDeProfil from "@/actions/user/delete-pdp";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
-import { redirect } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
 import Button from "@/components/BlueButton";
+import { useRouter } from "next/navigation";
 
 export default function UpdateProfileForm({ user }: { user: User | null }) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(
-    user?.image || "/_assets/img/pdpdebase.png"
+    user?.image || null
   );
+  const [uploadedUrl, setUploadedUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
+
   const [deletePDPPopupOpen, setDeletePDPPopupOpen] = useState(false);
+
+  const router = useRouter();
 
   // Formatage date YYYY-MM-DD pour affichage dans input date
   const formattedBirthday = user?.birthday
@@ -32,6 +36,7 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<UpdateProfileSchemaType>({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
@@ -41,6 +46,28 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
       image: user?.image || "",
     },
   });
+
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
 
   useFormErrorToasts(errors);
 
@@ -52,15 +79,35 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
     );
   }
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
-      setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
+      const file = event.target.files[0];
+      setPreviewPhoto(URL.createObjectURL(file));
+
+      // Upload immédiatement vers Cloudinary
+      setIsUploading(true);
+      try {
+        const url = await uploadToCloudinary(file);
+        setUploadedUrl(url);
+
+        setValue("image", url, { shouldValidate: true });
+        toast.success("Image uploadée avec succès !");
+      } catch (error) {
+        console.error(error);
+        toast.error("Erreur lors de l'upload de l'image");
+        setPreviewPhoto(null);
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      setPreviewPhoto(null);
+      setUploadedUrl("");
     }
   };
 
   const handleDeletePDP = async () => {
-    setSelectedFile(null);
     setPreviewPhoto("/_assets/img/pdpdebase.png");
     if (user?.id) {
       await deletePhotoDeProfil(user.id);
@@ -76,47 +123,27 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
       return;
     }
 
-    const formData = new FormData();
+    const imageToSave = uploadedUrl || user.image || "";
 
-    const birthdayDate = new Date(data.birthday);
+    const finalData: UpdateProfileSchemaType & { image: string } = {
+      ...data,
+      image: imageToSave,
+    };
 
-    if (selectedFile) {
-      formData.append("image", selectedFile);
-    }
+    try {
+      const response = await updateProfileForm(user.id, finalData);
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "birthday") {
-        formData.append(key, birthdayDate.toISOString());
+      if (response.success) {
+        toast.success(response.message);
+        router.push("/moncompte");
       } else {
-        if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
-        } else if (isDate(value)) {
-          formData.append(key, value.toISOString());
-        } else if (typeof value === "string") {
-          formData.append(key, value);
-        } else if (value !== undefined && value !== null) {
-          formData.append(key, String(value));
-        }
+        toast.error(
+          response.message ?? response.errors?.[0]?.message ?? "Erreur inconnue"
+        );
       }
-    });
-
-    function isDate(value: unknown): value is Date {
-      return value instanceof Date && !isNaN(value.getTime());
-    }
-
-    const response = await updateProfileForm(
-      user.id,
-      data,
-      selectedFile ?? undefined
-    );
-
-    if (response.success) {
-      toast.success(response.message);
-      redirect("/moncompte");
-    } else {
-      toast.error(
-        response.message ? response.message : response.errors?.[0]?.message
-      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors de la modification du profil");
     }
   };
 
@@ -172,22 +199,30 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
           )}
 
           {/* input file caché */}
-          <input
-            type="file"
-            id="fileInput"
-            onChange={handleFileChange}
-            className="hidden"
-            accept="image/*"
-          />
-          <p className="font-Montserrat text-sm sm:text-base text-center mb-4">
-            Photo de profil actuelle,
-            <label
-              htmlFor="fileInput"
-              className="font-Montserrat text-aja-blue hover:text-orange-third underline cursor-pointer ml-1"
-            >
-              modifier ?
-            </label>
-          </p>
+          {!isUploading ? (
+            <>
+              <input
+                type="file"
+                id="fileInput"
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*"
+              />
+              <p className="font-Montserrat text-sm sm:text-base text-center mb-4">
+                Photo de profil actuelle,
+                <label
+                  htmlFor="fileInput"
+                  className="font-Montserrat text-aja-blue hover:text-orange-third underline cursor-pointer ml-1"
+                >
+                  modifier ?
+                </label>
+              </p>
+            </>
+          ) : (
+            <p className="font-Montserrat text-aja-blue opacity-50 text-sm sm:text-base text-center mb-4">
+              En cours de modification de la photo de profil...
+            </p>
+          )}
         </div>
 
         <div className="relative w-full">

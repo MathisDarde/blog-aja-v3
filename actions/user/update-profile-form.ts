@@ -7,8 +7,7 @@ import { FormResponse, UpdateProfileSchemaType } from "@/types/forms";
 // Cette fonction met à jour le profil de l'utilisateur avec les données et le fichier
 const updateProfileForm = async (
   userId: string,
-  data: UpdateProfileSchemaType,
-  file?: File
+  data: UpdateProfileSchemaType
 ): Promise<FormResponse> => {
   try {
     const parsedData = UpdateProfileSchema.safeParse(data);
@@ -25,9 +24,13 @@ const updateProfileForm = async (
     const updateUserData = {
       ...parsedData.data,
       birthday: birthdayDate,
+      image:
+        typeof parsedData.data.image === "string"
+          ? parsedData.data.image
+          : null,
     };
 
-    const updateProfile = await updateUser(userId, updateUserData, file);
+    const updateProfile = await updateUser(userId, updateUserData);
 
     if (!updateProfile) {
       return {
