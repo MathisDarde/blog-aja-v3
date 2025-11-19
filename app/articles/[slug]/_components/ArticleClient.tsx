@@ -4,7 +4,6 @@ import getAllMethodes from "@/actions/method/get-all-methodes";
 import ArticleDisplay from "./ArticleDisplay";
 import {
   getAllArticles,
-  getArticlebyId,
   getArticleBySlug,
 } from "@/controllers/ArticlesController";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
