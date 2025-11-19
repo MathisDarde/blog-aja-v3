@@ -1,0 +1,1 @@
+ALTER TABLE "draft_table" RENAME COLUMN "id_article" TO "id_draft";

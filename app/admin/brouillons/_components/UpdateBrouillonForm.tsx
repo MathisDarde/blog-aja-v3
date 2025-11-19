@@ -10,11 +10,13 @@ import {
   Cctv,
   ChevronUp,
   ChevronDown,
+  ImageIcon,
+  Loader2,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { UpdateArticleSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArticleSchema } from "@/app/schema";
+import { UpdateArticleSchema } from "@/app/schema";
 import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { UpdateBrouillonFormProps } from "@/contexts/Interfaces";
@@ -30,12 +32,11 @@ export default function UpdateBrouillonForm({
   id_article,
   user,
 }: UpdateBrouillonFormProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewPhoto, setPreviewPhoto] = useState<string>(
-    articleData?.imageUrl || "/_assets/img/defaultarticlebanner.png"
-  );
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>(
-    articleData?.tags || []
+    (articleData?.tags ?? []).filter((t): t is string => typeof t === "string")
   );
   const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
 
@@ -60,54 +61,113 @@ export default function UpdateBrouillonForm({
     reset,
     getValues,
   } = useForm<UpdateArticleSchemaType>({
-    resolver: zodResolver(ArticleSchema),
+    resolver: zodResolver(UpdateArticleSchema),
     defaultValues: articleData,
   });
 
   useEffect(() => {
     if (articleData) {
-      setValue("title", articleData.title);
-      setValue("slug", articleData.slug);
-      setValue("teaser", articleData.teaser);
-      setValue("content", articleData.content);
-      setValue("author", articleData.author);
-      setValue("tags", articleData.tags);
+      setValue("title", articleData.title || "");
+      setValue("slug", articleData.slug || "");
+      setValue("teaser", articleData.teaser || "");
+      setValue("content", articleData.content || "");
+      setValue("author", articleData.author || "");
+      setValue(
+        "tags",
+        (articleData.tags ?? []).filter(
+          (t): t is string => typeof t === "string"
+        )
+      );
     }
   }, [articleData, setValue]);
 
   useEffect(() => {
     if (articleData) {
       reset(articleData);
-      setPreviewPhoto(
-        articleData.imageUrl || "/_assets/img/defaultarticlebanner.png"
+
+      const img = articleData.imageUrl;
+      let createdUrl: string | null = null;
+
+      if (typeof img === "string") {
+        setPreviewPhoto(img);
+      } else if (img instanceof File) {
+        createdUrl = URL.createObjectURL(img);
+        setPreviewPhoto(createdUrl);
+      }
+
+      setSelectedTags(
+        (articleData.tags ?? []).filter(
+          (t): t is string => typeof t === "string"
+        )
       );
-      setSelectedTags(articleData.tags || []);
+
+      return () => {
+        if (createdUrl) {
+          URL.revokeObjectURL(createdUrl);
+        }
+      };
     }
   }, [articleData, reset]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
-      setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
+      const file = event.target.files[0];
+      setPreviewPhoto(URL.createObjectURL(file));
+
+      // Upload immédiatement vers Cloudinary
+      setIsUploading(true);
+      try {
+        const url = await uploadToCloudinary(file);
+        setUploadedUrl(url);
+
+        setValue("imageUrl", url, { shouldValidate: true });
+        toast.success("Image uploadée avec succès !");
+      } catch (error) {
+        console.error(error);
+        toast.error("Erreur lors de l'upload de l'image");
+        setPreviewPhoto(null);
+      } finally {
+        setIsUploading(false);
+      }
     } else {
-      setSelectedFile(null);
-      setPreviewPhoto("/_assets/img/defaultarticlebanner.png");
+      setPreviewPhoto(null);
+      setUploadedUrl("");
     }
   };
 
   const handlePublishForm = async (data: UpdateArticleSchemaType) => {
-    const formData = new FormData();
-
-    if (selectedFile) {
-      formData.append("image", selectedFile);
+    if (!uploadedUrl) {
+      toast.error(
+        "Veuillez sélectionner une image et attendre qu'elle soit uploadée !"
+      );
+      return;
     }
 
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(
-        key,
-        Array.isArray(value) ? JSON.stringify(value) : value
-      );
-    });
+    const finalData = { ...data, image: uploadedUrl };
 
     if (!user_id) {
       toast.error(
@@ -116,16 +176,11 @@ export default function UpdateBrouillonForm({
       return;
     }
 
-    if (!selectedFile) {
-      toast.error("Veuillez sélectionner un fichier avant de soumettre.");
-      return;
-    }
-
-    const response = await updateArticleForm(id_article, data, selectedFile);
+    // On envoie directement l'URL Cloudinary au lieu du fichier
+    const response = await updateArticleForm(user_id, finalData);
 
     if (response.success) {
-      toast.success(response.message);
-      window.location.reload();
+      redirect("/");
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message
@@ -134,20 +189,11 @@ export default function UpdateBrouillonForm({
   };
 
   const handleSaveForm = async () => {
-    const data = { ...getValues(), tags: selectedTags }; // <-- sync tags
+    const data = { ...getValues(), tags: selectedTags };
 
-    const formData = new FormData();
-
-    if (selectedFile) {
-      formData.append("image", selectedFile);
+    if (uploadedUrl) {
+      data.imageUrl = uploadedUrl; // override seulement si nouvelle image
     }
-
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(
-        key,
-        Array.isArray(value) ? JSON.stringify(value) : value
-      );
-    });
 
     if (!user_id) {
       toast.error(
@@ -156,11 +202,7 @@ export default function UpdateBrouillonForm({
       return;
     }
 
-    const response = await updateBrouillonForm(
-      id_article,
-      data,
-      selectedFile ?? undefined
-    );
+    const response = await updateBrouillonForm(id_article, data);
 
     if (response.success) {
       toast.success(response.message);
@@ -180,32 +222,63 @@ export default function UpdateBrouillonForm({
         Formulaire de modification de brouillon
       </h1>
       <form id="publishform" encType="multipart/form-data" className="w-full">
-        {/* Image */}
-        <div className="relative w-full mx-auto mb-4 text-center">
-          {previewPhoto && (
-            <div className="w-fit mb-4 relative mx-auto">
-              <Image
-                width={1024}
-                height={1024}
-                src={previewPhoto}
-                alt="Photo de l'article"
-                className="w-full aspect-video object-cover"
+        <div className="relative w-full mx-auto mb-4">
+          {/* SI PAS DE PHOTO → afficher l'input */}
+          {!previewPhoto ? (
+            <div>
+              <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
+                <ImageIcon className="mr-4" />
+                Image :
+              </span>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
+                accept="image/*"
+                disabled={isUploading}
               />
             </div>
+          ) : (
+            <>
+              {/* SI PHOTO → l'afficher */}
+              <div className="w-fit mb-4 relative mx-auto">
+                <Image
+                  width={1024}
+                  height={1024}
+                  src={previewPhoto}
+                  alt="Photo de l'article"
+                  className="w-full aspect-video object-cover rounded-xl"
+                />
+                {isUploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-xl">
+                    <Loader2 className="w-12 h-12 text-white animate-spin" />
+                  </div>
+                )}
+              </div>
+
+              {/* input hidden permanent */}
+              <input
+                type="file"
+                id="fileInput"
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*"
+                disabled={isUploading}
+              />
+
+              {/* Bouton pour changer l'image */}
+              <label
+                htmlFor="fileInput"
+                className={`cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto ${
+                  isUploading ? "opacity-50 pointer-events-none" : ""
+                }`}
+              >
+                {isUploading
+                  ? "Upload en cours..."
+                  : "Modifier l'image de bannière"}
+              </label>
+            </>
           )}
-          <input
-            type="file"
-            id="fileInput"
-            onChange={handleFileChange}
-            className="hidden"
-            accept="image/*"
-          />
-          <label
-            htmlFor="fileInput"
-            className="mx-auto cursor-pointer underline text-center inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
-          >
-            Modifier l&apos;image de bannière de l&apos;article ?
-          </label>
         </div>
 
         {/* Titre */}
@@ -295,8 +368,8 @@ export default function UpdateBrouillonForm({
                 {type === "year"
                   ? "Années"
                   : type === "player"
-                  ? "Joueurs"
-                  : "Ligues"}
+                    ? "Joueurs"
+                    : "Ligues"}
                 {openTagsCategory === type ? <ChevronUp /> : <ChevronDown />}
               </button>
 

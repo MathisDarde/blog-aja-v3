@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Heading,
   Image as ImageIcon,
@@ -11,6 +11,7 @@ import {
   ChevronUp,
   ChevronDown,
   LinkIcon,
+  Loader2,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
@@ -19,17 +20,18 @@ import { ArticleSchema, DraftArticleSchema } from "@/app/schema";
 import submitArticleForm from "@/actions/article/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
-import storeDraftArticle from "@/actions/article/store-draft";
 import { User } from "@/contexts/Interfaces";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Button from "@/components/BlueButton";
 import Image from "next/image";
+import storeDraftArticle from "@/actions/article/store-draft";
 
 export default function ArticleForm({ user }: { user: User | null }) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const toggleCategory = (category: string) => {
     setOpenTagsCategory(openTagsCategory === category ? null : category);
@@ -66,39 +68,75 @@ export default function ArticleForm({ user }: { user: User | null }) {
     setValue("tags", newTags);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setSelectedFile(file);
       setPreviewPhoto(URL.createObjectURL(file));
+
+      // Upload immédiatement vers Cloudinary
+      setIsUploading(true);
+      try {
+        const url = await uploadToCloudinary(file);
+        setUploadedUrl(url);
+
+        setValue("imageUrl", url, { shouldValidate: true });
+        toast.success("Image uploadée avec succès !");
+      } catch (error) {
+        console.error(error);
+        toast.error("Erreur lors de l'upload de l'image");
+        setPreviewPhoto(null);
+      } finally {
+        setIsUploading(false);
+      }
     } else {
-      setSelectedFile(null);
       setPreviewPhoto(null);
+      setUploadedUrl("");
     }
   };
 
   const handleSubmitForm = async (data: ArticleSchemaType) => {
-    if (!selectedFile) {
-      toast.error("Veuillez sélectionner une image !");
+    if (!uploadedUrl) {
+      toast.error(
+        "Veuillez sélectionner une image et attendre qu'elle soit uploadée !"
+      );
       return;
     }
 
-    const formData = new FormData();
-    formData.append("image", selectedFile);
+    const finalData = { ...data, image: uploadedUrl };
 
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(
-        key,
-        Array.isArray(value) ? JSON.stringify(value) : value
-      );
-    });
     if (!user_id) {
       toast.error(
         "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
       );
       return;
     }
-    const response = await submitArticleForm(data, selectedFile, user_id);
+
+    // On envoie directement l'URL Cloudinary au lieu du fichier
+    const response = await submitArticleForm(finalData, user_id);
 
     if (response.success) {
       redirect("/");
@@ -117,8 +155,9 @@ export default function ArticleForm({ user }: { user: User | null }) {
       tags: Array.isArray(rawData.tags)
         ? rawData.tags
         : rawData.tags
-        ? [rawData.tags]
-        : [],
+          ? [rawData.tags]
+          : [],
+      ...(uploadedUrl ? { image: uploadedUrl } : {}),
     };
 
     const parsed = DraftArticleSchema.safeParse(normalizedDraftData);
@@ -136,11 +175,7 @@ export default function ArticleForm({ user }: { user: User | null }) {
       return;
     }
 
-    const response = await storeDraftArticle(
-      parsed.data,
-      user_id,
-      selectedFile || undefined
-    );
+    const response = await storeDraftArticle(parsed.data, user_id);
 
     if (response.success) {
       redirect("/admin/brouillons");
@@ -184,6 +219,7 @@ export default function ArticleForm({ user }: { user: User | null }) {
                 onChange={handleFileChange}
                 className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
                 accept="image/*"
+                disabled={isUploading}
               />
             </div>
           ) : (
@@ -197,6 +233,11 @@ export default function ArticleForm({ user }: { user: User | null }) {
                   alt="Photo de l'article"
                   className="w-full aspect-video object-cover rounded-xl"
                 />
+                {isUploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-xl">
+                    <Loader2 className="w-12 h-12 text-white animate-spin" />
+                  </div>
+                )}
               </div>
 
               {/* input hidden permanent */}
@@ -206,14 +247,19 @@ export default function ArticleForm({ user }: { user: User | null }) {
                 onChange={handleFileChange}
                 className="hidden"
                 accept="image/*"
+                disabled={isUploading}
               />
 
               {/* Bouton pour changer l'image */}
               <label
                 htmlFor="fileInput"
-                className="cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto"
+                className={`cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto ${
+                  isUploading ? "opacity-50 pointer-events-none" : ""
+                }`}
               >
-                Modifier l'image de bannière
+                {isUploading
+                  ? "Upload en cours..."
+                  : "Modifier l'image de bannière"}
               </label>
             </>
           )}
@@ -375,10 +421,16 @@ export default function ArticleForm({ user }: { user: User | null }) {
             className="bg-gray-500 m-0"
             size="default"
             onClick={storeBrouillon}
+            disabled={isUploading}
           >
             Je sauvgarde le brouillon
           </Button>
-          <Button type="submit" size="default" className="m-0">
+          <Button
+            type="submit"
+            size="default"
+            className="m-0"
+            disabled={isUploading}
+          >
             Je publie l&apos;article
           </Button>
         </div>

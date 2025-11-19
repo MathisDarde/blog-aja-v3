@@ -1,6 +1,6 @@
 "use server";
 
-import { getBrouillons } from "@/controllers/ArticlesController";
+import { getBrouillons } from "@/controllers/DraftController";
 
 const displayBrouillons = async () => {
   try {

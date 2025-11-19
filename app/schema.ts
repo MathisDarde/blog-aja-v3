@@ -76,6 +76,7 @@ export const ArticleSchema = z.object({
   tags: z.array(
     z.string().nonempty({ message: "Au moins un tag doit être checké." })
   ),
+  imageUrl: z.union([z.string().url(), z.instanceof(File)]),
 });
 
 export const UpdateArticleSchema = z.object({
@@ -98,7 +99,7 @@ export const UpdateArticleSchema = z.object({
     z.string().nonempty({ message: "Au moins un tag doit être checké." })
   ),
   state: z.string().nonempty(),
-  imageUrl: z.string().optional(),
+  imageUrl: z.union([z.string().url(), z.instanceof(File)]),
 });
 
 export const DraftArticleSchema = z.object({
@@ -108,6 +109,12 @@ export const DraftArticleSchema = z.object({
   content: z.string().optional(),
   author: z.string().optional(),
   tags: z.array(z.string().optional()),
+  imageUrl: z
+    .string()
+    .url()
+    .or(z.instanceof(File))
+    .or(z.literal(""))
+    .optional(),
 });
 
 export const CommentSchema = z.object({

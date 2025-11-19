@@ -1,13 +1,13 @@
 "use server";
 
 import { UpdateArticleSchema } from "@/app/schema";
+import { Article } from "@/contexts/Interfaces";
 import { updateArticle, updateStatus } from "@/controllers/ArticlesController";
 import { FormResponse, UpdateArticleSchemaType } from "@/types/forms";
 
 const updateArticleForm = async (
   articleId: string,
-  data: UpdateArticleSchemaType,
-  file?: File
+  data: UpdateArticleSchemaType
 ): Promise<FormResponse> => {
   try {
     const parsedData = UpdateArticleSchema.safeParse(data);
@@ -17,18 +17,16 @@ const updateArticleForm = async (
     }
 
     const validStates = ["pending", "published", "archived"] as const;
-    const state = validStates.includes(data.state as any)
+    const state = validStates.includes(
+      data.state as "pending" | "published" | "archived"
+    )
       ? (data.state as (typeof validStates)[number])
       : "pending";
 
-    const registerArticle = await updateArticle(
-      articleId,
-      {
-        ...data,
-        state,
-      },
-      file
-    );
+    const registerArticle = await updateArticle(articleId, {
+      ...(data as Article),
+      state,
+    });
 
     await updateStatus(articleId, "published");
 

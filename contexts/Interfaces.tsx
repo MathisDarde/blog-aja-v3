@@ -1,6 +1,6 @@
 // Interfaces Article
 
-import { CommentSchemaType, UpdateArticleSchemaType } from "@/types/forms";
+import { CommentSchemaType, DraftArticleSchemaType } from "@/types/forms";
 import { ReactNode } from "react";
 
 export interface Article {
@@ -16,6 +16,21 @@ export interface Article {
   createdAt: Date;
   updatedAt: Date;
   tags: string[];
+}
+
+export interface Draft {
+  id_draft: string;
+  slug: string | null | undefined;
+  title: string | null | undefined;
+  teaser: string | null | undefined;
+  imageUrl: string | null | undefined;
+  content: string | null | undefined;
+  author: string | null | undefined;
+  userId: string;
+  state: "pending" | "published" | "archived";
+  createdAt: Date;
+  updatedAt: Date;
+  tags: string[] | null | undefined;
 }
 
 export type ArticleSortKey = keyof Pick<
@@ -64,7 +79,7 @@ export interface UpdateArticleFormProps {
 }
 
 export interface UpdateBrouillonFormProps {
-  articleData: UpdateArticleSchemaType;
+  articleData: DraftArticleSchemaType;
   id_article: string;
   user: User | null;
 }

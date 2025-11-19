@@ -23,7 +23,7 @@ export default async function BrouillonEditPage({
 
   const brouillons = await displayBrouillons();
   const brouillon = brouillons.find(
-    (b) => b.id_article.toString() === brouillonId
+    (b) => b.id_draft.toString() === brouillonId
   );
 
   if (!brouillon) {
@@ -35,8 +35,17 @@ export default async function BrouillonEditPage({
       <UpdateBrouillonGuard />
 
       <UpdateBrouillonForm
-        articleData={brouillon}
-        id_article={brouillon.id_article}
+        articleData={{
+          ...brouillon,
+          tags: brouillon.tags ?? [],
+          slug: brouillon.slug ?? undefined,
+          imageUrl: brouillon.imageUrl ?? undefined,
+          title: brouillon.title ?? undefined,
+          teaser: brouillon.teaser ?? undefined,
+          content: brouillon.content ?? undefined,
+          author: brouillon.author ?? undefined,
+        }}
+        id_article={brouillon.id_draft}
         user={user}
       />
     </div>

@@ -64,6 +64,27 @@
       "when": 1763393829741,
       "tag": "0008_eminent_fat_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1763543830330,
+      "tag": "0009_left_master_chief",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1763545027139,
+      "tag": "0010_familiar_strong_guy",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1763546136779,
+      "tag": "0011_pink_joystick",
+      "breakpoints": true
     }
   ]
 }

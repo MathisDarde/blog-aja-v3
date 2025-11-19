@@ -1,18 +1,18 @@
 "use client";
 
-import { Article } from "@/contexts/Interfaces";
+import { Draft } from "@/contexts/Interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function BrouillonComponent({
   brouillons,
 }: {
-  brouillons: Article[];
+  brouillons: Draft[];
 }) {
   const router = useRouter();
 
-  const handleEditClick = (brouillon: Article) => {
-    router.push(`/admin/brouillons/${brouillon.id_article}`);
+  const handleEditClick = (brouillon: Draft) => {
+    router.push(`/admin/brouillons/${brouillon.id_draft}`);
   };
 
   return (
@@ -44,7 +44,7 @@ export default function BrouillonComponent({
                     brouillon.imageUrl ||
                     "/_assets/img/defaultarticlebanner.png"
                   }
-                  alt={brouillon.title}
+                  alt={brouillon.title || "Image de l'article"}
                 />
                 <h2 className="text-justify text-black font-semibold font-Montserrat text-lg pt-4 py-2 pr-2 mx-auto">
                   {brouillon.title}

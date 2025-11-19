@@ -6,7 +6,6 @@ import { ArticleSchemaType, FormResponse } from "@/types/forms";
 
 const submitArticleForm = async (
   data: ArticleSchemaType,
-  file: File,
   userId: string
 ): Promise<FormResponse> => {
   try {
@@ -16,7 +15,7 @@ const submitArticleForm = async (
       return { success: false, errors: parsedData.error.errors };
     }
 
-    const registerArticle = await createArticle(data, file, userId);
+    const registerArticle = await createArticle(data, userId);
 
     if (!registerArticle) {
       return {

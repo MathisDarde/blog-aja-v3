@@ -1,0 +1,1 @@
+ALTER TABLE "draft_table" ALTER COLUMN "state" SET NOT NULL;

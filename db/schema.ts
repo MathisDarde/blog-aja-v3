@@ -88,6 +88,25 @@ export const articlesTable = pgTable("articles_table", {
     .$onUpdate(() => new Date()),
 });
 
+export const draftTable = pgTable("draft_table", {
+  id_draft: text("id_draft").primaryKey(),
+  slug: text("slug").unique(),
+  imageUrl: text("imageUrl"),
+  title: text("title"),
+  teaser: text("teaser"),
+  content: text("content"),
+  author: text("author"),
+  tags: varchar("tags", { length: 255 }).array(),
+  state: statesEnum().default("pending").notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
 export const commentsTable = pgTable("comments_table", {
   id_comment: text("id_comment").primaryKey(),
   stars: integer("stars").notNull(),
@@ -207,6 +226,7 @@ export const schema = {
   account,
   verification,
   articlesTable,
+  draftTable,
   commentsTable,
   methodeExpertSaisonTable,
   methodeExpertMatchTable,
@@ -221,6 +241,8 @@ export type SelectPost = typeof articlesTable.$inferSelect;
 export type SelectComment = typeof commentsTable.$inferSelect;
 
 export type SelectArticle = typeof articlesTable.$inferSelect;
+
+export type SelectDraft = typeof draftTable.$inferSelect;
 
 export type SelectCoachMethode = typeof methodeExpertCoachTable.$inferSelect;
 

@@ -1,13 +1,12 @@
 "use server";
 
 import { DraftArticleSchema } from "@/app/schema";
-import { updateBrouillon } from "@/controllers/ArticlesController";
+import { updateBrouillon } from "@/controllers/DraftController";
 import { DraftArticleSchemaType, FormResponse } from "@/types/forms";
 
 const updateBrouillonForm = async (
   articleId: string,
-  data: DraftArticleSchemaType,
-  file?: File
+  data: DraftArticleSchemaType
 ): Promise<FormResponse> => {
   try {
     const parsedData = DraftArticleSchema.safeParse(data);
@@ -16,7 +15,7 @@ const updateBrouillonForm = async (
       return { success: false, errors: parsedData.error.errors };
     }
 
-    const registerArticle = await updateBrouillon(articleId, data, file);
+    const registerArticle = await updateBrouillon(articleId, data);
 
     if (!registerArticle) {
       return {

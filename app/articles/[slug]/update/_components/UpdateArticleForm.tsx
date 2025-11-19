@@ -11,6 +11,7 @@ import {
   ChevronUp,
   ChevronDown,
   LinkIcon,
+  Loader2,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { UpdateArticleSchemaType } from "@/types/forms";
@@ -20,7 +21,7 @@ import { toast } from "sonner";
 import updateArticleForm from "@/actions/article/update-article-form";
 import { UpdateArticleFormProps } from "@/contexts/Interfaces";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Button from "@/components/BlueButton";
@@ -29,12 +30,9 @@ export default function UpdateArticleForm({
   id_article,
   articleData,
 }: UpdateArticleFormProps) {
-  const router = useRouter();
-
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewPhoto, setPreviewPhoto] = useState<string>(
-    articleData?.imageUrl || "/_assets/img/defaultarticlebanner.png"
-  );
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>(
     articleData?.tags || []
   );
@@ -56,6 +54,7 @@ export default function UpdateArticleForm({
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm<UpdateArticleSchemaType>({
     resolver: zodResolver(UpdateArticleSchema),
     defaultValues: {
@@ -81,28 +80,68 @@ export default function UpdateArticleForm({
     }
   }, [articleData, reset]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
-      setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
+      const file = event.target.files[0];
+      setPreviewPhoto(URL.createObjectURL(file));
+
+      // Upload immédiatement vers Cloudinary
+      setIsUploading(true);
+      try {
+        const url = await uploadToCloudinary(file);
+        setUploadedUrl(url);
+
+        setValue("imageUrl", url, { shouldValidate: true });
+        toast.success("Image uploadée avec succès !");
+      } catch (error) {
+        console.error(error);
+        toast.error("Erreur lors de l'upload de l'image");
+        setPreviewPhoto(null);
+      } finally {
+        setIsUploading(false);
+      }
     } else {
-      setSelectedFile(null);
-      setPreviewPhoto("/_assets/img/defaultarticlebanner.png");
+      setPreviewPhoto(null);
+      setUploadedUrl("");
     }
   };
 
   const handleSubmitForm = async (data: UpdateArticleSchemaType) => {
-    const finalData = { ...data, tags: selectedTags }; // <-- on envoie les tags du state
+    const finalData = {
+      ...data,
+      imageUrl: uploadedUrl || previewPhoto || "",
+      tags: selectedTags,
+    };
 
-    const response = await updateArticleForm(
-      id_article,
-      finalData,
-      selectedFile ?? undefined
-    );
+    // On envoie directement l'URL Cloudinary au lieu du fichier
+    const response = await updateArticleForm(id_article, finalData);
 
     if (response.success) {
-      toast.success(response.message);
-      router.push(`/articles/${finalData.slug}`);
+      redirect("/");
     } else {
       toast.error(
         response.message ? response.message : response.errors?.[0].message
@@ -122,29 +161,42 @@ export default function UpdateArticleForm({
       >
         {/* Image */}
         <div className="relative w-full mx-auto mb-4">
-          {previewPhoto && (
-            <div className="w-fit mb-4 relative mx-auto">
-              <Image
-                width={1024}
-                height={1024}
-                src={previewPhoto}
-                alt="Photo de l'article"
-                className="w-full aspect-video object-cover"
-              />
-            </div>
-          )}
+          {/* SI PHOTO → l'afficher */}
+          <div className="w-fit mb-4 relative mx-auto">
+            <Image
+              width={1024}
+              height={1024}
+              src={previewPhoto || "/_assets/img/defaultarticlebanner.png"}
+              alt="Photo de l'article"
+              className="w-full aspect-video object-cover rounded-xl"
+            />
+            {isUploading && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-xl">
+                <Loader2 className="w-12 h-12 text-white animate-spin" />
+              </div>
+            )}
+          </div>
+
+          {/* input hidden permanent */}
           <input
             type="file"
             id="fileInput"
             onChange={handleFileChange}
             className="hidden"
             accept="image/*"
+            disabled={isUploading}
           />
+
+          {/* Bouton pour changer l'image */}
           <label
             htmlFor="fileInput"
-            className="mx-auto cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
+            className={`cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto ${
+              isUploading ? "opacity-50 pointer-events-none" : ""
+            }`}
           >
-            Modifier l&apos;image de bannière de l&apos;article ?
+            {isUploading
+              ? "Upload en cours..."
+              : "Modifier l'image de bannière"}
           </label>
         </div>
 
@@ -235,8 +287,8 @@ export default function UpdateArticleForm({
                 {type === "year"
                   ? "Années"
                   : type === "player"
-                  ? "Joueurs"
-                  : "Ligues"}
+                    ? "Joueurs"
+                    : "Ligues"}
                 {openTagsCategory === type ? <ChevronUp /> : <ChevronDown />}
               </button>
 
