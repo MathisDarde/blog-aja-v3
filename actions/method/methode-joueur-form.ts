@@ -6,7 +6,6 @@ import { FormResponse, MethodeJoueurSchemaType } from "@/types/forms";
 
 const submitMethodeJoueurForm = async (
   data: MethodeJoueurSchemaType,
-  file: File,
   userId: string
 ): Promise<FormResponse> => {
   try {
@@ -17,7 +16,7 @@ const submitMethodeJoueurForm = async (
     }
 
     try {
-      await createMethodeJoueur(parsedData.data, file, userId);
+      await createMethodeJoueur(parsedData.data, userId);
       return { success: true, message: "Méthode enregistrée avec succès !" };
     } catch (error) {
       console.error(error);

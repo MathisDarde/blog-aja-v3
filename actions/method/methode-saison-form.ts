@@ -6,7 +6,6 @@ import { FormResponse, MethodeSaisonSchemaType } from "@/types/forms";
 
 const submitMethodeSaisonForm = async (
   data: MethodeSaisonSchemaType,
-  file: File,
   userId: string
 ): Promise<FormResponse> => {
   try {
@@ -17,7 +16,7 @@ const submitMethodeSaisonForm = async (
     }
 
     try {
-      await createMethodeSaison(parsedData.data, file, userId);
+      await createMethodeSaison(parsedData.data, userId);
       return { success: true, message: "Méthode enregistrée avec succès !" };
     } catch (error) {
       console.error(error);

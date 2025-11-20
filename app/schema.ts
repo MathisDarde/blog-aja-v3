@@ -149,6 +149,7 @@ export const MethodeSaisonSchema = z.object({
       })
     )
   ),
+  imgterrain: z.union([z.string().url(), z.instanceof(File)]),
 });
 export const UpdateMethodeSaisonSchema = z.object({
   keywords: z
@@ -172,7 +173,7 @@ export const UpdateMethodeSaisonSchema = z.object({
       })
     )
   ),
-  imgterrain: z.string().optional(),
+  imgterrain: z.union([z.string().url(), z.instanceof(File)]),
 });
 
 export const MethodeMatchSchema = z.object({
@@ -242,6 +243,7 @@ export const MethodeMatchSchema = z.object({
   date: z.string().nonempty({
     message: "La date du match doit être renseignée.",
   }),
+  imgterrain: z.union([z.string().url(), z.instanceof(File)]),
 });
 export const UpdateMethodeMatchSchema = z.object({
   keywords: z
@@ -310,7 +312,7 @@ export const UpdateMethodeMatchSchema = z.object({
   date: z.string().nonempty({
     message: "La date du match doit être renseignée.",
   }),
-  imgterrain: z.string().optional(),
+  imgterrain: z.union([z.string().url(), z.instanceof(File)]),
 });
 
 export const MethodeJoueurSchema = z.object({
@@ -349,7 +351,9 @@ export const MethodeJoueurSchema = z.object({
   passesd: z.string().nonempty({
     message: "Le nombre de passes décisives du joueur doit être renseigné.",
   }),
+  imagejoueur: z.union([z.string().url(), z.instanceof(File)]),
 });
+
 export const UpdateMethodeJoueurSchema = z.object({
   keywords: z
     .array(
@@ -386,7 +390,7 @@ export const UpdateMethodeJoueurSchema = z.object({
   passesd: z.string().nonempty({
     message: "Le nombre de passes décisives du joueur doit être renseigné.",
   }),
-  imagejoueur: z.string().optional(),
+  imagejoueur: z.union([z.string().url(), z.instanceof(File)]),
 });
 
 export const MethodeCoachSchema = z.object({
@@ -417,6 +421,7 @@ export const MethodeCoachSchema = z.object({
   statistiques: z.string().nonempty({
     message: "Les statistiques du coach doivent être renseignées.",
   }),
+  imagecoach: z.union([z.string().url(), z.instanceof(File)]),
 });
 export const UpdateMethodeCoachSchema = z.object({
   keywords: z
@@ -446,5 +451,5 @@ export const UpdateMethodeCoachSchema = z.object({
   statistiques: z.string().nonempty({
     message: "Les statistiques du coach doivent être renseignées.",
   }),
-  imagecoach: z.string().optional(),
+  imagecoach: z.union([z.string().url(), z.instanceof(File)]),
 });

@@ -7,8 +7,7 @@ import { FormResponse, UpdateMethodeMatchSchemaType } from "@/types/forms";
 const updateMethodeMatchForm = async (
   id_methode: string,
   data: UpdateMethodeMatchSchemaType,
-  userId: string,
-  file?: File
+  userId: string
 ): Promise<FormResponse> => {
   try {
     const parsedData = UpdateMethodeMatchSchema.safeParse(data);
@@ -18,7 +17,7 @@ const updateMethodeMatchForm = async (
     }
 
     try {
-      await updateMethodeMatch(id_methode, parsedData.data, userId, file);
+      await updateMethodeMatch(id_methode, parsedData.data, userId);
       return { success: true, message: "Méthode modifiée avec succès !" };
     } catch (error) {
       console.error(error);

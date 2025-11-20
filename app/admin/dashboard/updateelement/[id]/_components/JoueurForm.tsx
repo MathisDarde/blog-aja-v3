@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drama,
   FileQuestion,
   FolderPen,
   Footprints,
   Handshake,
+  ImageIcon,
+  Loader2,
   Plus,
   Ruler,
   ShieldHalf,
@@ -83,10 +85,9 @@ export default function JoueurForm({
     },
   });
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewPhoto, setPreviewPhoto] = useState<string>(
-    selectedMethode.imagejoueur || "/_assets/img/pdpdebase.png"
-  );
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const [modal, setModal] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
   const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
@@ -108,6 +109,14 @@ export default function JoueurForm({
     control,
     name: "clubs",
   });
+
+  useEffect(() => {
+    if (selectedMethode?.imagejoueur) {
+      setPreviewPhoto(selectedMethode.imagejoueur);
+      setUploadedUrl(selectedMethode.imagejoueur);
+      setValue("imagejoueur", selectedMethode.imagejoueur);
+    }
+  }, [selectedMethode, setValue]);
 
   const fetchFiles = async () => {
     setLoading(true);
@@ -141,13 +150,53 @@ export default function JoueurForm({
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
-      setPreviewPhoto(URL.createObjectURL(event.target.files[0]));
+      const file = event.target.files[0];
+      setPreviewPhoto(URL.createObjectURL(file));
+
+      // Upload immédiatement vers Cloudinary
+      setIsUploading(true);
+      try {
+        const url = await uploadToCloudinary(file);
+        setUploadedUrl(url);
+
+        setValue("imagejoueur", url, { shouldValidate: true });
+        toast.success("Image uploadée avec succès !");
+      } catch (error) {
+        console.error(error);
+        toast.error("Erreur lors de l'upload de l'image");
+        setPreviewPhoto(null);
+      } finally {
+        setIsUploading(false);
+      }
     } else {
-      setSelectedFile(null);
-      setPreviewPhoto("/_assets/img/pdpdebase.png");
+      setPreviewPhoto(null);
+      setUploadedUrl("");
     }
   };
 
@@ -178,31 +227,29 @@ export default function JoueurForm({
   };
 
   const handleSubmitForm = async (data: UpdateMethodeJoueurSchemaType) => {
-    const processedData = processImagePaths(data);
-
-    const formData = new FormData();
-
-    if (selectedFile) {
-      formData.append("image", selectedFile);
+    if (!user_id) {
+      toast.error(
+        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
+      );
+      return;
     }
 
-    Object.entries(processedData).forEach(([key, value]) => {
-      formData.append(
-        key,
-        Array.isArray(value) ? JSON.stringify(value) : value
-      );
-    });
+    // Compléter automatiquement les chemins d'images (logos, flags, etc.)
+    const processedData = processImagePaths(data);
+
+    const finalData = {
+      ...processedData,
+      imagecoach: uploadedUrl, // URL cloudinary déjà traitée avant
+    };
 
     const response = await updateMethodeJoueurForm(
       selectedMethode.id_methode,
-      processedData,
-      user_id || "",
-      selectedFile ?? undefined
+      finalData,
+      user_id
     );
 
     if (response.success) {
-      toast.success(response.message);
-      router.push("/admin/dashboard");
+      router.push("/");
     } else {
       toast.error(
         response.message || response.errors?.[0]?.message || "Erreur inconnue"
@@ -234,30 +281,62 @@ export default function JoueurForm({
       >
         {/* Image coach */}
         <div className="relative w-full mx-auto">
-          {previewPhoto && (
-            <div className="w-fit mb-4 relative mx-auto">
-              <Image
-                width={1024}
-                height={1024}
-                src={previewPhoto || "/_assets/img/pdpdebase.png"}
-                alt="Photo du joueur"
-                className="w-full aspect-video object-cover"
+          {/* SI PAS DE PHOTO → afficher l'input */}
+          {!previewPhoto ? (
+            <div>
+              <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
+                <ImageIcon className="mr-4" />
+                Image :
+              </span>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
+                accept="image/*"
+                disabled={isUploading}
               />
             </div>
+          ) : (
+            <>
+              {/* SI PHOTO → l'afficher */}
+              <div className="w-fit mb-4 relative mx-auto">
+                <Image
+                  width={1024}
+                  height={1024}
+                  src={previewPhoto}
+                  alt="Photo de l'article"
+                  className="w-full aspect-video object-cover rounded-xl"
+                />
+                {isUploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-xl">
+                    <Loader2 className="w-12 h-12 text-white animate-spin" />
+                  </div>
+                )}
+              </div>
+
+              {/* input hidden permanent */}
+              <input
+                type="file"
+                id="fileInput"
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*"
+                disabled={isUploading}
+              />
+
+              {/* Bouton pour changer l'image */}
+              <label
+                htmlFor="fileInput"
+                className={`cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto ${
+                  isUploading ? "opacity-50 pointer-events-none" : ""
+                }`}
+              >
+                {isUploading
+                  ? "Upload en cours..."
+                  : "Modifier l'image de bannière"}
+              </label>
+            </>
           )}
-          <input
-            type="file"
-            id="fileInput"
-            onChange={handleFileChange}
-            className="hidden"
-            accept="image/*"
-          />
-          <label
-            htmlFor="fileInput"
-            className="underline text-aja-blue font-Montserrat text-sm sm:text-base cursor-pointer"
-          >
-            Modifier la photo du joueur ?
-          </label>
         </div>
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">

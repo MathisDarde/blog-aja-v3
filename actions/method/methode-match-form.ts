@@ -6,7 +6,6 @@ import { FormResponse, MethodeMatchSchemaType } from "@/types/forms";
 
 const submitMethodeMatchForm = async (
   data: MethodeMatchSchemaType,
-  file: File,
   userId: string
 ): Promise<FormResponse> => {
   try {
@@ -17,7 +16,7 @@ const submitMethodeMatchForm = async (
     }
 
     try {
-      await createMethodeMatch(parsedData.data, file, userId);
+      await createMethodeMatch(parsedData.data, userId);
       return { success: true, message: "Méthode enregistrée avec succès !" };
     } catch (error) {
       console.error(error);

@@ -6,7 +6,6 @@ import { FormResponse, MethodeCoachSchemaType } from "@/types/forms";
 
 const submitMethodeCoachForm = async (
   data: MethodeCoachSchemaType,
-  file: File,
   userId: string
 ): Promise<FormResponse> => {
   try {
@@ -17,7 +16,7 @@ const submitMethodeCoachForm = async (
     }
 
     try {
-      await createMethodeCoach(parsedData.data, file, userId);
+      await createMethodeCoach(parsedData.data, userId);
       return { success: true, message: "Méthode enregistrée avec succès !" };
     } catch (error) {
       console.error(error);

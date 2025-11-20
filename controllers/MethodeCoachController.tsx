@@ -1,65 +1,22 @@
-"use server"
+"use server";
 
 import { db } from "@/db/db";
 import { SelectCoachMethode, methodeExpertCoachTable } from "@/db/schema";
 import { MethodeCoachSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
-import path from "path";
-import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 
-export async function getCoachMethodes(): Promise<
-SelectCoachMethode[]
-> {
+export async function getCoachMethodes(): Promise<SelectCoachMethode[]> {
   return await db.select().from(methodeExpertCoachTable);
 }
 
 export async function createMethodeCoach(
   data: MethodeCoachSchemaType,
-  file: File,
   userId: string
 ) {
-  let imageUrl = "";
-
   try {
-    // Vérification du type et de la taille du fichier
-    const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
-    const ALLOWED_TYPES = [
-      "image/jpeg",
-      "image/png",
-      "image/jpg",
-      "image/webp",
-    ];
-
-    if (file.size > MAX_SIZE) {
-      throw new Error(
-        "Le fichier est trop grand. La taille maximale est de 5 Mo."
-      );
-    }
-
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      throw new Error(
-        "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
-      );
-    }
-
-    // Créer le répertoire si nécessaire
-    const uploadDir = path.join(process.cwd(), "/public/uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    // Générer un nom de fichier unique pour éviter les conflits
-    const fileExtension = path.extname(file.name);
-    const fileName = `${uuidv4()}${fileExtension}`;
-    const filePath = path.join(uploadDir, fileName);
-
-    // Écrire le fichier sur le serveur
-    const buffer = await file.arrayBuffer();
-    fs.writeFileSync(filePath, Buffer.from(buffer));
-
-    // URL du fichier téléchargé
-    imageUrl = `/uploads/${fileName}`;
+    const imageUrl = ensureCloudinaryUrl(data.imagecoach);
 
     // Créer la méthode dans la base de données avec Drizzle
     const { nomcoach, palmares, statistiques, keywords, clubscoach } = data;
@@ -87,9 +44,9 @@ export async function createMethodeCoach(
   }
 }
 
-export async function getMethodeById(methodeId: string): Promise<
-SelectCoachMethode[]
-> {
+export async function getMethodeById(
+  methodeId: string
+): Promise<SelectCoachMethode[]> {
   const results = await db
     .select()
     .from(methodeExpertCoachTable)
@@ -105,48 +62,10 @@ SelectCoachMethode[]
 export async function updateMethodeCoach(
   id_methode: string,
   data: MethodeCoachSchemaType,
-  userId: string,
-  file?: File
+  userId: string
 ) {
   try {
-    let imageUrl: string | undefined = undefined;
-
-    // Si un fichier est fourni, le traiter
-    if (file) {
-      const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
-      const ALLOWED_TYPES = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "image/webp",
-      ];
-
-      if (file.size > MAX_SIZE) {
-        throw new Error(
-          "Le fichier est trop grand. La taille maximale est de 5 Mo."
-        );
-      }
-
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        throw new Error(
-          "Type de fichier non autorisé. Veuillez télécharger une image JPEG, PNG, JPG ou WEBP."
-        );
-      }
-
-      const uploadDir = path.join(process.cwd(), "/public/uploads");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const fileExtension = path.extname(file.name);
-      const fileName = `${uuidv4()}${fileExtension}`;
-      const filePath = path.join(uploadDir, fileName);
-
-      const buffer = await file.arrayBuffer();
-      fs.writeFileSync(filePath, Buffer.from(buffer));
-
-      imageUrl = `/uploads/${fileName}`;
-    }
+    const imageUrl = ensureCloudinaryUrl(data.imagecoach);
 
     const { nomcoach, palmares, statistiques, keywords, clubscoach } = data;
 
