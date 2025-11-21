@@ -19,7 +19,7 @@ const baijamjuree = Bai_Jamjuree({
 
 export const metadata: Metadata = {
   title: {
-    default: "Mémoire d'Auxerrois",
+    default: "Accueil | Mémoire d'Auxerrois",
     template: "%s | Mémoire d'Auxerrois",
   },
   description:
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     icon: "/favicon.svg",
   },
   openGraph: {
-    title: "Mémoire d'Auxerrois",
+    title: "Accueil | Mémoire d'Auxerrois",
     description:
       "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
     url: "memoiredauxerrois.vercel.app",
