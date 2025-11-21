@@ -5,8 +5,6 @@ import { SelectUser, user } from "@/db/schema";
 import { InscSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import path from "path";
-import fs from "fs";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 
 export async function getUserbyId(id: SelectUser["id"]): Promise<SelectUser[]> {
@@ -63,7 +61,7 @@ export async function deleteUser(id: SelectUser["id"]) {
 export async function getUserPicName(id: SelectUser["id"]) {
   const users = await db
     .select({
-      pdp: user.image,
+      image: user.image,
       username: user.name,
     })
     .from(user)
@@ -75,14 +73,7 @@ export async function getUserPicName(id: SelectUser["id"]) {
 
 export async function deleteUserPic(id: SelectUser["id"]) {
   const userPic = await getUserPicName(id);
-  if (userPic && userPic.pdp) {
-    const filePath = path.join(process.cwd(), "public", userPic.pdp);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    } else {
-      return;
-    }
-
+  if (userPic && userPic.image) {
     await db.update(user).set({ image: null }).where(eq(user.id, id));
     return true;
   } else {

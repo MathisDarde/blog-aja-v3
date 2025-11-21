@@ -54,7 +54,13 @@ export const UpdateProfileSchema = z.object({
     .string()
     .email({ message: "Le mail que vous avez entré n'est pas valide." })
     .nonempty({ message: "Veuillez renseigner un email." }),
-  image: z.string().url().or(z.instanceof(File)).or(z.literal("")).optional(),
+  image: z
+    .string()
+    .url()
+    .or(z.instanceof(File))
+    .or(z.literal(""))
+    .optional()
+    .nullable(),
 });
 
 export const ArticleSchema = z.object({

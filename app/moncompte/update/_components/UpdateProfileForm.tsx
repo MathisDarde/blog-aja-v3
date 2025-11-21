@@ -17,17 +17,17 @@ import Button from "@/components/BlueButton";
 import { useRouter } from "next/navigation";
 
 export default function UpdateProfileForm({ user }: { user: User | null }) {
+  // Initialisation de l'aperçu
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(
     user?.image || null
   );
-  const [uploadedUrl, setUploadedUrl] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
 
+  const [isUploading, setIsUploading] = useState(false);
   const [deletePDPPopupOpen, setDeletePDPPopupOpen] = useState(false);
 
   const router = useRouter();
 
-  // Formatage date YYYY-MM-DD pour affichage dans input date
+  // Formatage date YYYY-MM-DD
   const formattedBirthday = user?.birthday
     ? new Date(user.birthday).toISOString().substring(0, 10)
     : "";
@@ -39,11 +39,12 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
     setValue,
   } = useForm<UpdateProfileSchemaType>({
     resolver: zodResolver(UpdateProfileSchema),
+    // CORRECTION 1 : On initialise image à null si user.image n'existe pas (jamais "")
     defaultValues: {
       name: user?.name,
       birthday: formattedBirthday,
       email: user?.email,
-      image: user?.image || "",
+      image: user?.image || null,
     },
   });
 
@@ -86,48 +87,57 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
       const file = event.target.files[0];
       setPreviewPhoto(URL.createObjectURL(file));
 
-      // Upload immédiatement vers Cloudinary
       setIsUploading(true);
       try {
         const url = await uploadToCloudinary(file);
-        setUploadedUrl(url);
 
+        // Mise à jour de la valeur du formulaire avec la nouvelle URL
         setValue("image", url, { shouldValidate: true });
+
         toast.success("Image uploadée avec succès !");
       } catch (error) {
         console.error(error);
         toast.error("Erreur lors de l'upload de l'image");
-        setPreviewPhoto(null);
+        // En cas d'erreur, on remet l'image précédente (ou null)
+        setPreviewPhoto(user.image || null);
+        setValue("image", user.image || null);
       } finally {
         setIsUploading(false);
       }
-    } else {
-      setPreviewPhoto(null);
-      setUploadedUrl("");
     }
   };
 
   const handleDeletePDP = async () => {
+    // Mise à jour visuelle
     setPreviewPhoto("/_assets/img/pdpdebase.png");
+
+    // Appel serveur pour supprimer l'image immédiatement
     if (user?.id) {
       await deletePhotoDeProfil(user.id);
     }
+
+    // CORRECTION 2 : On force la valeur du formulaire à null
+    // Cela garantit que si on soumet le formulaire après, on envoie bien null
+    setValue("image", null, { shouldValidate: true });
+
     toast.success("Photo de profil supprimée avec succès.");
   };
 
   const handleSubmitForm = async (data: UpdateProfileSchemaType) => {
     if (!user.id) {
-      toast.error(
-        "L'ID de l'utilisateur n'est pas défini. Veuillez vous connecter."
-      );
+      toast.error("L'ID de l'utilisateur n'est pas défini.");
       return;
     }
 
-    const imageToSave = uploadedUrl || user.image || "";
+    // CORRECTION 3 : Logique stricte pour l'image.
+    // On utilise data.image (l'état actuel du form).
+    // Si c'est une chaine vide (peu probable maintenant mais par sécurité) ou falsey, on force null.
+    const finalImageValue = data.image ? data.image : null;
 
-    const finalData: UpdateProfileSchemaType & { image: string } = {
+    // On construit l'objet final en écrasant l'image par notre valeur calculée
+    const finalData = {
       ...data,
-      image: imageToSave,
+      image: finalImageValue,
     };
 
     try {
@@ -178,15 +188,17 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
         )}
 
         <div className="relative w-full mx-auto">
-          {previewPhoto && (
-            <div className="w-fit mb-4 relative mx-auto">
-              <Image
-                width={256}
-                height={256}
-                src={previewPhoto || "/_assets/img/pdpdebase.png"}
-                alt="Photo de profil"
-                className="w-40 h-40 rounded-full object-cover mr-4"
-              />
+          <div className="w-fit mb-4 relative mx-auto">
+            <Image
+              width={256}
+              height={256}
+              // Si previewPhoto est null (pas d'image), on affiche l'asset par défaut
+              src={previewPhoto || "/_assets/img/pdpdebase.png"}
+              alt="Photo de profil"
+              className="w-40 h-40 rounded-full object-cover mr-4"
+            />
+            {/* On n'affiche le bouton supprimer que si une vraie photo existe (différente de null) */}
+            {previewPhoto && (
               <button
                 type="button"
                 onClick={() => setDeletePDPPopupOpen(true)}
@@ -195,10 +207,9 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
               >
                 <Trash size={20} />
               </button>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* input file caché */}
           {!isUploading ? (
             <>
               <input
