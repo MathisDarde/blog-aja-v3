@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Article, Filter } from "@/contexts/Interfaces";
 import FilterContent from "./FilterContent";
 import Button from "@/components/BlueButton";
+import ArticleShowcase from "@/components/ArticleComponent";
 
 export default function ArticleCenter({
   articles,
@@ -240,27 +241,17 @@ export default function ArticleCenter({
             </p>
           ) : (
             filteredArticles.map((article, index) => (
-              <Link
-                href={`/articles/${article.slug}`}
-                key={index}
-                className="w-full h-full"
-              >
-                <div className="flex flex-col bg-white rounded text-center p-4 lg:p-6 h-full">
-                  <Image
-                    className="inline-block w-full h-auto mx-auto rounded-sm object-cover aspect-video object-top"
-                    width={512}
-                    height={512}
-                    src={article.imageUrl}
-                    alt={article.title}
-                  />
-                  <h2 className="text-justify text-black font-semibold font-Montserrat text-base sm:text-lg md:text-base lg:text-lg pt-4 py-2 pr-2 mx-auto">
-                    {article.title}
-                  </h2>
-                  <p className="text-black text-justify font-Montserrat mx-auto text-xs sm:text-sm md:text-xs lg:text-sm leading-5">
-                    {article.teaser}
-                  </p>
-                </div>
-              </Link>
+              <div key={index} className="bg-white p-4">
+                <ArticleShowcase
+                  article={article}
+                  displayPosition="vertical"
+                  size="small"
+                  showAuthor={false}
+                  showDate={false}
+                  showTags={true}
+                  showTeaser={true}
+                />
+              </div>
             ))
           )}
         </div>

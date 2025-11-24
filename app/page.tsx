@@ -57,23 +57,22 @@ export default async function Page() {
           <h2 className="uppercase text-2xl sm:text-3xl font-Bai_Jamjuree font-bold text-center">
             A la une sur Mémoire d&apos;Auxerrois
           </h2>
-          <div className="inline-block bg-white rounded-xl shadow-xl p-6 my-10 max-w-[1000px]">
-            <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
-              Dernier article publié
-            </h3>
-            <div className="w-full">
-              <LastArticle articles={articles} />
-            </div>
+          <div className="inline-block bg-white p-6 my-10 max-w-[1300px]">
+            <div className="flex items-start gap-6">
+              <div className="flex-[3]">
+                <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-left w-full">
+                  Dernier article publié
+                </h3>
+                <div className="h-full">
+                  <LastArticle articles={articles} />
+                </div>
+              </div>
 
-            {/* Responsive bloc duplicated to move place */}
-            <div className="flex items-center justify-center mt-4">
-              <h3 className="block lg:hidden text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
-                Articles que vous pourriez aimer
-              </h3>
-            </div>
-            <div className="flex gap-6 w-full">
-              <div className="flex lg:hidden items-center justify-center">
-                <DisplayRandom articles={articles} />
+              <div className="flex-[2]">
+                <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">Articles que vous pourriez aimer</h3>
+                <div className="flex items-center justify-center">
+                  <DisplayRandom articles={articles} />
+                </div>
               </div>
             </div>
           </div>

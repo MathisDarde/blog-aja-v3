@@ -1,40 +1,28 @@
 "use client"
 
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { Article } from "@/contexts/Interfaces";
+import ArticleShowcase from "./ArticleComponent";
 
-export default function DisplayRandom({ articles } : { articles: Article[] }) {
+export default function DisplayRandom({ articles }: { articles: Article[] }) {
   const { getRandomArticles } = useGlobalContext();
 
-  const randomArticles = getRandomArticles(articles, 3);
+  const randomArticles = getRandomArticles(articles, 4);
 
   return (
     <div>
-        <div className="flex flex-col gap-3">
-          {randomArticles.length === 0 ? (
-            <p>Aucun article disponible.</p>
-          ) : (
-            randomArticles.map((article, index) => (
-              <Link href={`/articles/${article.id_article}`} key={index}>
-                <div className="bg-white border border-stone-200 shadow-xl rounded-xl p-4">
-                  <Image
-                    className="w-full object-cover rounded-md aspect-video"
-                    width={512}
-                    height={512}
-                    src={article.imageUrl}
-                    alt={article.title}
-                  />
-                  <h2 className="text-xs font-Montserrat font-medium mt-2">
-                    {article.title}
-                  </h2>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
+      <div className="flex flex-col gap-6">
+        {randomArticles.length === 0 ? (
+          <p className="font-Montserrat text-italic text-gray-500">Aucun article disponible.</p>
+        ) : (
+          randomArticles.map((article, index) => (
+            <div key={index}>
+              <ArticleShowcase article={article} displayPosition="horizontal" size="small" showAuthor={true} showDate={true} showTags={true} />
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
