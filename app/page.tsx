@@ -60,7 +60,7 @@ export default async function Page() {
           <div className="inline-block bg-white p-6 my-10 max-w-[1300px]">
             <div className="flex items-start gap-6">
               <div className="flex-[3]">
-                <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-left w-full">
+                <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
                   Dernier article publié
                 </h3>
                 <div className="h-full">
