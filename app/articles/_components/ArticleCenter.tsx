@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useMemo } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import SearchInput from "./SearchInput";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Article, Filter } from "@/contexts/Interfaces";

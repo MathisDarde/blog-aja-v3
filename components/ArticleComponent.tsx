@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Article } from "@/contexts/Interfaces";
 import Image from "next/image";
@@ -8,16 +8,33 @@ import { useEffect, useState } from "react";
 interface ArticleProps {
     article: Article;
     displayPosition: "horizontal" | "vertical";
-    size: "small" | "large"
+    size: "small" | "large";
     showTags?: boolean;
     showAuthor?: boolean;
     showDate?: boolean;
     showTeaser?: boolean;
 }
 
-export default function ArticleShowcase({ article, displayPosition, size, showAuthor, showDate, showTags, showTeaser }: ArticleProps) {
-    const getRandomTags = (tags: string[] = [], max = 3) => {
-        if (!tags || tags.length === 0) return [] as string[];
+// Types propres pour les tags du JSON
+type TagRecord = Record<string, string>;
+
+interface TagItemObject {
+    [key: string]: string;
+}
+
+type TagData = TagRecord | TagItemObject[];
+
+export default function ArticleShowcase({
+    article,
+    displayPosition,
+    size,
+    showAuthor,
+    showDate,
+    showTags,
+    showTeaser,
+}: ArticleProps) {
+    const getRandomTags = (tags: string[] = [], max = 3): string[] => {
+        if (tags.length === 0) return [];
         const copy = [...tags];
         for (let i = copy.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -26,8 +43,9 @@ export default function ArticleShowcase({ article, displayPosition, size, showAu
         return copy.slice(0, max);
     };
 
-    const [tagData, setTagData] = useState<Record<string, any> | any[] | null>(null);
+    const [tagData, setTagData] = useState<TagData | null>(null);
 
+    // Chargement du JSON des tags
     useEffect(() => {
         let mounted = true;
         const load = async () => {
@@ -35,11 +53,12 @@ export default function ArticleShowcase({ article, displayPosition, size, showAu
             try {
                 const res = await fetch("/data/articletags.json");
                 if (!res.ok) return;
-                const json = await res.json();
+
+                const json: TagData = await res.json();
                 if (!mounted) return;
                 setTagData(json);
-            } catch (e) {
-                // ignore - we'll fallback to the raw tag
+            } catch {
+                // silencieux
             }
         };
         load();
@@ -48,49 +67,38 @@ export default function ArticleShowcase({ article, displayPosition, size, showAu
         };
     }, []);
 
-    const humanizeTag = (slug: string) =>
+    const humanizeTag = (slug: string): string =>
         slug
             .replace(/[-_]+/g, " ")
             .replace(/\b\w/g, (ch) => ch.toUpperCase());
 
-    const getTagDisplay = (slug: string) => {
+    const getTagDisplay = (slug: string): string => {
         if (!tagData) return humanizeTag(slug);
 
-        // If tagData is an object map: { "ligue-1": "Ligue 1" }
-        if (!Array.isArray(tagData) && typeof tagData === "object") {
-            if (Object.prototype.hasOwnProperty.call(tagData, slug)) return tagData[slug];
-            // otherwise try to find a key whose value equals slug
-            for (const [k, v] of Object.entries(tagData)) {
-                if (v === slug) return k;
+        // === Cas 1 : objet simple { "ligue-1": "Ligue 1" }
+        if (!Array.isArray(tagData)) {
+            if (slug in tagData) return tagData[slug];
+            for (const [key, val] of Object.entries(tagData)) {
+                if (val === slug) return key;
             }
         }
 
-        // If tagData is an array, try to find an object where any value equals the slug
+        // === Cas 2 : tableau d'objets [{ "ligue-1": "Ligue 1" }, ...]
         if (Array.isArray(tagData)) {
-            const found = tagData.find((item: any) => {
-                if (!item || typeof item !== "object") return false;
-                return Object.values(item).some((val) => val === slug);
-            });
-            if (found) {
-                return (
-                    found.tag || found.name || found.label || found.display || found.title || found.nom || found.fr || humanizeTag(slug)
-                );
-            }
-            // also support array of simple pairs like [{ "ligue-1": "Ligue 1" }, ...]
-            const pair = tagData.find((item: any) => {
-                if (!item || typeof item !== "object") return false;
-                return Object.keys(item).some((k) => item[k] === slug || k === slug);
-            });
-            if (pair) {
-                const key = Object.keys(pair).find((k) => pair[k] === slug || k === slug) as string | undefined;
-                if (key) return pair[key] ?? key;
+            for (const item of tagData) {
+                if (typeof item === "object") {
+                    if (item[slug]) return item[slug];
+                    for (const [key, val] of Object.entries(item)) {
+                        if (val === slug) return key;
+                    }
+                }
             }
         }
 
         return humanizeTag(slug);
     };
 
-    const formatFrenchDate = (dateInput: string | Date | undefined) => {
+    const formatFrenchDate = (dateInput: string | Date | undefined): string => {
         if (!dateInput) return "";
         const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
         const formatted = date.toLocaleDateString("fr-FR", {
@@ -116,25 +124,38 @@ export default function ArticleShowcase({ article, displayPosition, size, showAu
                                 src={article.imageUrl}
                                 alt={article.title}
                             />
+
                             <div className="p-2 space-y-2">
                                 {(showAuthor || showDate) && (
                                     <div className="flex items-center gap-1">
-                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>{article.author}</p>
-                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>{formatFrenchDate(article.createdAt as string | Date)}</p>
+                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>
+                                            {article.author}
+                                        </p>
+                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>
+                                            {formatFrenchDate(article.createdAt)}
+                                        </p>
                                     </div>
                                 )}
+
                                 <h2 className="text-base text-left font-Montserrat font-semibold">
                                     {article.title}
                                 </h2>
+
                                 {showTeaser && (
-                                    <p className={`font-Montserrat ${smallTextSize} text-left italic`}>{article.teaser}</p>
+                                    <p className={`font-Montserrat ${smallTextSize} text-left italic`}>
+                                        {article.teaser}
+                                    </p>
                                 )}
+
                                 {showTags && (
                                     <div className="flex flex-wrap gap-2">
-                                        {getRandomTags(article.tags, 3).map((tag, idx) => (
+                                        {getRandomTags(article.tags, 3).map((tag) => (
                                             <span
-                                                key={idx}
-                                                className={`font-Montserrat bg-gray-200 rounded-md px-3 py-1  ${size === "small" ? "text-[11px]" : "text-xs"}`}                                            >
+                                                key={tag}
+                                                className={`font-Montserrat bg-gray-200 rounded-md px-3 py-1 ${
+                                                    size === "small" ? "text-[11px]" : "text-xs"
+                                                }`}
+                                            >
                                                 {getTagDisplay(tag)}
                                             </span>
                                         ))}
@@ -151,25 +172,41 @@ export default function ArticleShowcase({ article, displayPosition, size, showAu
                                 src={article.imageUrl}
                                 alt={article.title}
                             />
+
                             <div className="py-2 space-y-1">
                                 {(showAuthor || showDate) && (
                                     <div className="flex items-center gap-1">
-                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>{article.author}</p>
-                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>{formatFrenchDate(article.createdAt as string | Date)}</p>
+                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>
+                                            {article.author}
+                                        </p>
+                                        <p className={`font-Montserrat ${smallTextSize} font-light`}>
+                                            {formatFrenchDate(article.createdAt)}
+                                        </p>
                                     </div>
                                 )}
-                                <h2 className={`${size === "small" ? "text-base" : "text-lg"} text-left font-Montserrat font-semibold`}>
+
+                                <h2
+                                    className={`${
+                                        size === "small" ? "text-base" : "text-lg"
+                                    } text-left font-Montserrat font-semibold`}
+                                >
                                     {article.title}
                                 </h2>
+
                                 {showTeaser && (
-                                    <p className={`font-Montserrat ${smallTextSize} text-left italic`}>{article.teaser}</p>
+                                    <p className={`font-Montserrat ${smallTextSize} text-left italic`}>
+                                        {article.teaser}
+                                    </p>
                                 )}
+
                                 {showTags && (
                                     <div className="flex flex-wrap gap-2">
-                                        {getRandomTags(article.tags, 3).map((tag, idx) => (
+                                        {getRandomTags(article.tags, 3).map((tag) => (
                                             <span
-                                                key={idx}
-                                                className={`font-Montserrat bg-gray-200 rounded-md px-3 py-1  ${size === "small" ? "text-[11px]" : "text-xs"}`} 
+                                                key={tag}
+                                                className={`font-Montserrat bg-gray-200 rounded-md px-3 py-1 ${
+                                                    size === "small" ? "text-[11px]" : "text-xs"
+                                                }`}
                                             >
                                                 {getTagDisplay(tag)}
                                             </span>
@@ -182,5 +219,5 @@ export default function ArticleShowcase({ article, displayPosition, size, showAu
                 </Link>
             </div>
         </div>
-    )
+    );
 }
