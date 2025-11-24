@@ -14,6 +14,8 @@ import Header from "@/components/header/Header";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { getUserbyId } from "@/controllers/UserController";
 import Footer from "@/components/Footer";
+import Timeline from "@/components/timeline/Timeline";
+import { TimelineItems } from "@/components/timeline/TimelineItems";
 
 export default async function Page() {
   const articles = await getArticles();
@@ -69,13 +71,19 @@ export default async function Page() {
               </div>
 
               <div className="flex-[2]">
-                <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">Articles que vous pourriez aimer</h3>
+                <h3 className="text-2xl font-semibold mb-3 font-Bai_Jamjuree uppercase text-center w-full">
+                  Articles que vous pourriez aimer
+                </h3>
                 <div className="flex items-center justify-center">
                   <DisplayRandom articles={articles} />
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="my-10 text-center">
+          <Timeline items={TimelineItems} />
         </div>
 
         <div className="my-10">
