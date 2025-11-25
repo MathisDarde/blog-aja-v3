@@ -42,7 +42,7 @@ export default async function Page() {
     return shuffled.slice(0, amount);
   }
 
-  const randomCategories = getRandomCategories(categories, 4);
+  const randomCategories = getRandomCategories(categories, 7);
 
   return (
     <div className="bg-gray-100">

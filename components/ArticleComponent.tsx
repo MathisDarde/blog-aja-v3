@@ -153,7 +153,7 @@ export default function ArticleShowcase({
                     ) : (
                         <div className="flex flex-col bg-white w-full overflow-hidden">
                             <Image
-                                className="object-cover w-full h-auto"
+                                className="object-cover w-full h-auto aspect-video"
                                 width={512}
                                 height={512}
                                 src={article.imageUrl}
