@@ -16,6 +16,7 @@ import { getUserbyId } from "@/controllers/UserController";
 import Footer from "@/components/Footer";
 import Timeline from "@/components/timeline/Timeline";
 import { TimelineItems } from "@/components/timeline/TimelineItems";
+import CitationSlider from "@/components/slidercitations/CitationSlider";
 
 export default async function Page() {
   const articles = await getArticles();
@@ -84,6 +85,13 @@ export default async function Page() {
 
         <div className="my-10 text-center">
           <Timeline items={TimelineItems} />
+        </div>
+
+        <div className="my-10 text-center">
+          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+            Ce qu&apos;ils disent de nous
+          </h2>
+          <CitationSlider />
         </div>
 
         <div className="my-10">

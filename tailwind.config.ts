@@ -22,6 +22,7 @@ export default {
       },
       animation: {
         spin: "spin 1s linear infinite",
+        'infinite-scroll': 'infinite-scroll 120s linear infinite',
       },
       keyframes: {
         spin: {
@@ -32,6 +33,10 @@ export default {
             transform: "rotate(360deg)",
           },
         },
+        'infinite-scroll': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-100%)' },
+        }
       },
     },
   },
