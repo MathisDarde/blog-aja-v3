@@ -24,15 +24,14 @@ export default async function RootLayout({
     user = users?.[0] ?? null;
   }
   return (
-    <html lang="fr">
-      <body
-        suppressHydrationWarning
-        className={`antialiased overflow-x-hidden bg-gray-100`}
-      >
-        <Header user={user || undefined} />
-        <>{children}</>
-        <Footer />
-      </body>
-    </html>
+    <div className="antialiased overflow-x-hidden bg-gray-100 min-h-screen flex flex-col">
+      <Header user={user || undefined} />
+
+      <main className="flex-1">
+        {children}
+      </main>
+      
+      <Footer />
+    </div>
   );
 }

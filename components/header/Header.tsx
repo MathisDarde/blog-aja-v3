@@ -1,3 +1,5 @@
+"use client"
+
 import HeaderLarge from "./HeaderLG";
 import RespHeader from "./RespHeader";
 import { User } from "@/contexts/Interfaces";

@@ -123,7 +123,7 @@ export default function ArticleShowcase({
                                     "line-clamp-3 sm:line-clamp-2" -> 3 lignes sur mobile (puisqu'il n'y a pas de date), 
                                     2 lignes sur desktop (pour garder l'alignement).
                                 */}
-                                <h2 className="text-sm sm:text-base text-left font-Montserrat font-semibold leading-tight group-hover:text-blue-800 transition-colors line-clamp-3 sm:line-clamp-2">
+                                <h2 className="text-sm sm:text-base text-left font-Montserrat font-semibold leading-tight group-hover:text-aja-blue transition-colors line-clamp-3 sm:line-clamp-2">
                                     {article.title}
                                 </h2>
 
@@ -181,7 +181,7 @@ export default function ArticleShowcase({
                                 <h2
                                     className={`${
                                         size === "small" ? "text-lg" : "text-xl sm:text-2xl"
-                                    } text-left font-Montserrat font-semibold group-hover:text-blue-800 transition-colors`}
+                                    } text-left font-Montserrat font-semibold group-hover:text-aja-blue transition-colors`}
                                 >
                                     {article.title}
                                 </h2>
