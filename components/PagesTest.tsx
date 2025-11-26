@@ -9,7 +9,7 @@ const pillars = [
         title: "EFFECTIF",
         subtitle: "Nos Guerriers",
         image: "/_assets/img/danois.webp",
-        link: "/effectifactuel",
+        link: "/effectif-actuel",
         color: "bg-aja-blue"
     },
     {
@@ -25,7 +25,7 @@ const pillars = [
         title: "CLASSEMENT",
         subtitle: "Ligue 1",
         image: "/_assets/img/ligue2.jpg",
-        link: "/classement&statistics",
+        link: "/classement-statistiques",
         color: "bg-aja-blue"
     },
     {

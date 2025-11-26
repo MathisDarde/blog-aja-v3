@@ -24,7 +24,7 @@ export default async function RootLayout({
     user = users?.[0] ?? null;
   }
   return (
-    <html lang="en">
+    <html lang="fr">
       <body
         suppressHydrationWarning
         className={`antialiased overflow-x-hidden bg-gray-100`}

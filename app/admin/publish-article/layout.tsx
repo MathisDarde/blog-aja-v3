@@ -6,9 +6,9 @@ import { getUserbyId } from "@/controllers/UserController";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Charte graphique",
+  title: "Publier un article",
   description:
-    "Découvrez la charte graphique officielle de Mémoire d'Auxerrois, reflétant en majeure partie l'identité visuelle de l'AJ Auxerre.",
+    "Publiez un nouvel article sur Mémoire d'Auxerrois et partagez vos connaissances sur l'histoire de l'AJ Auxerre avec notre communauté passionnée.",
 };
 
 export default async function RootLayout({
@@ -25,7 +25,7 @@ export default async function RootLayout({
     user = users?.[0] ?? null;
   }
   return (
-    <html lang="en">
+    <html lang="fr">
       <body
         suppressHydrationWarning
         className={`antialiased overflow-x-hidden bg-gray-100`}

@@ -28,7 +28,7 @@ import Image from "next/image";
 import { UpdateMethodeMatchFromProps } from "@/contexts/Interfaces";
 import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeMatchForm from "@/actions/method/update-match-form";
-import Section from "@/app/admin/createmethodeexpert/_components/DropdownContainerDomExt";
+import Section from "@/app/admin/create-methode-expert/_components/DropdownContainerDomExt";
 import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";

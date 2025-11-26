@@ -70,7 +70,7 @@ export const AutresDropdownData = [
     image: "/_assets/img/danois.webp",
     description:
       "Vous avez accès à l'ensemble des membres de l'effectif de l'AJA et leurs informations personnelles, ainsi que les membres du staff.",
-    link: "/effectifactuel",
+    link: "/effectif-actuel",
     dropdown: false,
   },
   {
@@ -88,7 +88,7 @@ export const AutresDropdownData = [
     image: "/_assets/img/ligue2.jpg",
     description:
       "Visualisez le classement actuel de la Ligue 1 et consultez les statistiques de vos joueurs préférés.",
-    link: "/classement&statistics",
+    link: "/classement-statistiques",
     dropdown: false,
   },
   {
@@ -117,7 +117,7 @@ export const AdminDropdownData = [
     icon: <Newspaper size={20} />,
     image: "/_assets/img/writingpaper.jpg",
     description: "Je souhaite rédiger un article",
-    link: "/admin/publisharticle",
+    link: "/admin/publish-article",
     dropdown: false,
   },
   {
@@ -133,7 +133,7 @@ export const AdminDropdownData = [
     icon: <GlassesIcon size={20} />,
     image: "/_assets/img/methodeexpertpic.jpg",
     description: "Accéder au formulaire de création d'une méthode expert",
-    link: "/admin/createmethodeexpert",
+    link: "/admin/create-methode-expert",
     dropdown: false,
   },
   {

@@ -6,9 +6,9 @@ import { getUserbyId } from "@/controllers/UserController";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Effectif actuel",
+  title: "Charte graphique",
   description:
-    "Découvrez l'effectif actuel de l'AJ Auxerre, avec les profils détaillés des joueurs et membres du staff.",
+    "Découvrez la charte graphique officielle de Mémoire d'Auxerrois, reflétant en majeure partie l'identité visuelle de l'AJ Auxerre.",
 };
 
 export default async function RootLayout({
@@ -25,7 +25,7 @@ export default async function RootLayout({
     user = users?.[0] ?? null;
   }
   return (
-    <html lang="en">
+    <html lang="fr">
       <body
         suppressHydrationWarning
         className={`antialiased overflow-x-hidden bg-gray-100`}

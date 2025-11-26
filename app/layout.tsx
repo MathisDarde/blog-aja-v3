@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.svg",
-    apple: "" //logo app mobile
+    //logo app mobile -> apple: ""
   },
 
   robots: {

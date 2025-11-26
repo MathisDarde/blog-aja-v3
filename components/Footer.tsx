@@ -16,12 +16,12 @@ export default function Footer() {
       links: [
         { label: "Accueil", href: "/"},
         { label: "Articles", href: "/articles" },
-        { label: "Effectif Actuel", href: "/effectifactuel" },
+        { label: "Effectif Actuel", href: "/effectif-actuel" },
         { label: "Palmarès & Records", href: "/palmares" },
         { label: "Quiz", href: "/quiz" },
         { label: "Chants", href: "/chants" },
         { label: "Calendrier", href: "/calendrier" },
-        { label: "Classement", href: "/classement" },
+        { label: "Classement", href: "/classement-statistiques" },
         { label: "Categories", href: "/categories" },
       ],
     },
@@ -33,7 +33,7 @@ export default function Footer() {
         { label: "Mon compte", href: "/moncompte" },
         { label: "Boutique", href: "/boutique" },
         { label: "Règles générales d'utilisation", href: "/utilisation" },
-        { label: "Charte graphique", href: "/chartegraphique" },
+        { label: "Charte graphique", href: "/charte-graphique" },
       ],
     },
     {
