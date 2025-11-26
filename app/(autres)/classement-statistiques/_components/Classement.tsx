@@ -62,7 +62,7 @@ export default function Classement({ teams }: { teams: Team[] }) {
   return (
     <div className="px-0 sm:px-4 mt-10 h-auto max-w-[800px] mx-auto">
       {/* Header */}
-      <div className="grid grid-cols-[75_minmax(100px,1fr)_70px] sm:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_50px_70px] md:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] bg-gray-200 p-2 font-Montserrat font-semibold text-center rounded">
+      <div className="grid grid-cols-[75px_minmax(100px,1fr)_70px] sm:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_50px_70px] md:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] bg-gray-200 p-2 font-Montserrat font-semibold text-center rounded">
         <div className="cursor-pointer" onClick={() => handleSort("position")}>
           Pos. {sortKey === "position" && (sortOrder === "asc" ? "↑" : "↓")}
         </div>
@@ -126,7 +126,7 @@ export default function Classement({ teams }: { teams: Team[] }) {
           return (
             <div
               key={index}
-              className={`relative grid grid-cols-[75_minmax(100px,1fr)_70px] sm:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_50px_70px] md:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] items-center px-2 py-3 rounded shadow bg-white`}
+              className={`relative grid grid-cols-[75px_minmax(100px,1fr)_70px] sm:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_50px_70px] md:grid-cols-[75px_minmax(150px,1fr)_40px_40px_40px_40px_50px_50px_50px_70px] items-center px-2 py-3 rounded shadow bg-white`}
             >
               {/* Bande de couleur selon position */}
               <div
