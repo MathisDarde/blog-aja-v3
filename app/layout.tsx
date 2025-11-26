@@ -2,7 +2,7 @@ import { Montserrat, Bai_Jamjuree } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { AppProvider } from "@/contexts/GlobalContext";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -17,42 +17,73 @@ const baijamjuree = Bai_Jamjuree({
   preload: true,
 });
 
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.vercel.app";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ffffff",
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+
   title: {
     default: "Accueil | Mémoire d'Auxerrois",
     template: "%s | Mémoire d'Auxerrois",
   },
   description:
-    "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
+    "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre. Découvrez des histoires uniques, les légendes du club et revivez les grands moments de l'AJA à travers des articles qui remontent le temps.",
+  
+  keywords: ["AJ Auxerre", "AJA", "Football", "Histoire", "Yonne", "Ligue 1", "Guy Roux", "Mémoire", "Articles", "Article", "Auxerrois", "Auxerre", "Foot", "memoire d'auxerrois", "histoire auxerre", "histoires auxerre", "histoires aja", "blog aja", "blog", "blog auxerre", "legende aja", "legendes aja"],
+
   icons: {
     icon: "/favicon.svg",
+    apple: "" //logo app mobile
   },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+
   openGraph: {
     title: "Accueil | Mémoire d'Auxerrois",
-    description:
-      "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
-    url: "memoiredauxerrois.vercel.app",
+    description: "L'histoire complète et immersive de l'AJ Auxerre.",
+    url: SITE_URL,
     siteName: "Mémoire d'Auxerrois",
     images: [
       {
-        url: "https://upload.wikimedia.org/wikipedia/fr/thumb/f/f6/Logo_AJ_Auxerre_2024.svg/1200px-Logo_AJ_Auxerre_2024.svg.png",
+        url: "/_assets/img/imageopengraph.webp",
         width: 1200,
         height: 630,
-        alt: "Logo AJ Auxerre",
+        alt: "Image bannière - Mémoire d'Auxerrois",
       },
     ],
     locale: "fr_FR",
     type: "website",
   },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Mémoire d'Auxerrois",
+    description: "Retracez l'histoire de l'AJ Auxerre.",
+    images: ["/_assets/img/imageopengraph.webp"]
+  },
+
+  alternates: {
+    canonical: "./",
+  },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body
         suppressHydrationWarning
         className={`${montserrat.variable} ${baijamjuree.variable} antialiased overflow-x-hidden bg-gray-100`}

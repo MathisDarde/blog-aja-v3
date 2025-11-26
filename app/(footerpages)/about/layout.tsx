@@ -6,32 +6,8 @@ import { getUserbyId } from "@/controllers/UserController";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: {
-    default: "A propos | Mémoire d'Auxerrois",
-    template: "%s | Mémoire d'Auxerrois",
-  },
-  description:
-    "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
-  icons: {
-    icon: "/favicon.svg",
-  },
-  openGraph: {
-    title: "A propos | Mémoire d'Auxerrois",
-    description:
-      "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
-    url: "memoiredauxerrois.vercel.app",
-    siteName: "Mémoire d'Auxerrois",
-    images: [
-      {
-        url: "https://upload.wikimedia.org/wikipedia/fr/thumb/f/f6/Logo_AJ_Auxerre_2024.svg/1200px-Logo_AJ_Auxerre_2024.svg.png",
-        width: 1200,
-        height: 630,
-        alt: "Logo AJ Auxerre",
-      },
-    ],
-    locale: "fr_FR",
-    type: "website",
-  },
+  title: "À propos",
+  description: "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
 };
 
 export default async function RootLayout({
