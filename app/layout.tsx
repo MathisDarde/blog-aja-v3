@@ -17,8 +17,8 @@ const baijamjuree = Bai_Jamjuree({
   preload: true,
 });
 
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.vercel.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.vercel.app";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -35,8 +35,31 @@ export const metadata: Metadata = {
   },
   description:
     "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre. Découvrez des histoires uniques, les légendes du club et revivez les grands moments de l'AJA à travers des articles qui remontent le temps.",
-  
-  keywords: ["AJ Auxerre", "AJA", "Football", "Histoire", "Yonne", "Ligue 1", "Guy Roux", "Mémoire", "Articles", "Article", "Auxerrois", "Auxerre", "Foot", "memoire d'auxerrois", "histoire auxerre", "histoires auxerre", "histoires aja", "blog aja", "blog", "blog auxerre", "legende aja", "legendes aja"],
+
+  keywords: [
+    "AJ Auxerre",
+    "AJA",
+    "Football",
+    "Histoire",
+    "Yonne",
+    "Ligue 1",
+    "Guy Roux",
+    "Mémoire",
+    "Articles",
+    "Article",
+    "Auxerrois",
+    "Auxerre",
+    "Foot",
+    "memoire d'auxerrois",
+    "histoire auxerre",
+    "histoires auxerre",
+    "histoires aja",
+    "blog aja",
+    "blog",
+    "blog auxerre",
+    "legende aja",
+    "legendes aja",
+  ],
 
   icons: {
     icon: "/favicon.svg",
@@ -55,7 +78,7 @@ export const metadata: Metadata = {
     siteName: "Mémoire d'Auxerrois",
     images: [
       {
-        url: "/_assets/img/imageopengraph.webp",
+        url: "/_assets/img/opengraphimage.avif",
         width: 1200,
         height: 630,
         alt: "Image bannière - Mémoire d'Auxerrois",
@@ -69,7 +92,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mémoire d'Auxerrois",
     description: "Retracez l'histoire de l'AJ Auxerre.",
-    images: ["/_assets/img/imageopengraph.webp"]
+    images: ["/_assets/img/opengraphimage.avif"],
   },
 
   alternates: {
