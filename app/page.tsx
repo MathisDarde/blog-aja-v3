@@ -46,7 +46,7 @@ export default async function Page() {
 
   return (
     <div className="bg-gray-100">
-      <Header user={user || undefined} />
+      <Header />
 
       <div className="pb-3 max-w-[1300px] mx-auto">
         <Carousel articles={articles} />

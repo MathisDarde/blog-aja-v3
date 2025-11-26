@@ -2,16 +2,15 @@
 
 import HeaderLarge from "./HeaderLG";
 import RespHeader from "./RespHeader";
-import { User } from "@/contexts/Interfaces";
 
-export default function Header({ user }: { user?: User }) {
+export default function Header() {
   return (
     <>
       <div className="block lg:hidden">
-        <RespHeader user={user} />
+        <RespHeader />
       </div>
       <div className="hidden lg:block">
-        <HeaderLarge user={user} />
+        <HeaderLarge />
       </div>
     </>
   );

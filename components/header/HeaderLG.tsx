@@ -8,20 +8,24 @@ import SidebarData, {
   AutresDropdownData,
 } from "./HeaderDropdownData";
 import Image from "next/image";
-import { User } from "@/contexts/Interfaces";
 import Button from "../BlueButton";
+import { authClient } from "@/lib/auth-client";
+import Skeleton from "../CustomSkeleton";
 
-export default function HeaderLarge({ user }: { user?: User }) {
+export default function HeaderLarge() {
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
   const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  // On récupère isPending
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
 
-      // Si le clic ne vient ni d’un toggle ni d’un menu => on ferme
       if (
         !target.closest(".dropdown-toggle") &&
         !target.closest(".dropdown-menu")
@@ -38,7 +42,6 @@ export default function HeaderLarge({ user }: { user?: User }) {
   }, []);
 
   return (
-    // ``relative`` ici : permet d'aligner le dropdown en full-width par rapport à l'entête
     <div className="relative h-[68px] w-full bg-white px-12 py-4 flex items-center">
       <div className="flex-shrink-0 w-[185px] xl:w-[250px]">
         <Link href="/">
@@ -50,7 +53,6 @@ export default function HeaderLarge({ user }: { user?: User }) {
 
       <div className="flex flex-grow justify-center">
         <nav className="w-full">
-          {/* on retire le `relative` du ul pour éviter que le dropdown soit positionné par rapport à ce conteneur centré */}
           <ul className="flex flex-row justify-center gap-10 mx-3">
             {SidebarData.filter((val) =>
               val.type === "admin" ? user?.admin : true
@@ -75,19 +77,17 @@ export default function HeaderLarge({ user }: { user?: User }) {
                   <span>{val.title}</span>
                   {val.dropdown && (
                     <ChevronDown
-                      className={`ml-2 transition-transform ${
-                        (val.type === "vanilla" && openOthersDropdown) ||
-                        (val.type === "admin" && openAdminDropdown)
+                      className={`ml-2 transition-transform ${(val.type === "vanilla" && openOthersDropdown) ||
+                          (val.type === "admin" && openAdminDropdown)
                           ? "rotate-180"
                           : ""
-                      }`}
+                        }`}
                     />
                   )}
                 </li>
 
-                {/* Dropdown full-width (aligné sur l'entête). Le contenu est centré via mx-auto + max-w */}
                 {(val.type === "vanilla" && openOthersDropdown) ||
-                (val.type === "admin" && openAdminDropdown) ? (
+                  (val.type === "admin" && openAdminDropdown) ? (
                   <div
                     ref={dropdownRef}
                     className="dropdown-menu absolute top-full left-0 w-full z-50 bg-white shadow-lg py-6"
@@ -130,12 +130,26 @@ export default function HeaderLarge({ user }: { user?: User }) {
         </nav>
       </div>
 
+      {/* 
+        Gestion de la largeur du conteneur de droite :
+        Si loading, on prend la largeur max (xl:w-[250px]) pour éviter que le layout ne saute 
+        quand le texte apparait.
+      */}
       <div
-        className={`flex-shrink-0 ${
-          !user ? "w-[185px]" : "w-[75px]"
-        }  xl:w-[250px] flex justify-end`}
+        className={`flex-shrink-0 ${!user && !isPending ? "w-[185px]" : "w-[75px]"
+          } xl:w-[250px] flex justify-end`}
       >
-        {!user ? (
+        {isPending ? (
+          // ✅ SKELETON ICI
+          <div className="flex items-center gap-4">
+            <Skeleton width={36} height={36} borderRadius="rounded-full" />
+            <Skeleton
+              width={100}
+              height={15}
+              className="hidden xl:block" // On cache le texte skeleton sur petits écrans desktop comme le vrai texte
+            />
+          </div>
+        ) : !user ? (
           <Link href="/login">
             <Button size="slim" className="flex items-center gap-2">
               <LogIn className="text-white" /> Se connecter

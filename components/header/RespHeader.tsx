@@ -1,6 +1,5 @@
 "use client";
 
-import { User } from "@/contexts/Interfaces";
 import { Menu, X, ChevronDown, LogIn } from "lucide-react";
 import { useState } from "react";
 import SidebarData, {
@@ -10,11 +9,17 @@ import SidebarData, {
 import Link from "next/link";
 import Image from "next/image";
 import Button from "../BlueButton";
+import { authClient } from "@/lib/auth-client";
+import Skeleton from "../CustomSkeleton";
 
-export default function RespHeader({ user }: { user?: User }) {
+export default function RespHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
   const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
+
+  // On récupère isPending
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
 
   return (
     <>
@@ -27,10 +32,9 @@ export default function RespHeader({ user }: { user?: User }) {
 
       <div
         className={`fixed inset-0 bg-black/50 z-20 transition-opacity duration-300 
-          ${
-            isOpen
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+          ${isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
           }`}
         onClick={() => setIsOpen(false)}
       />
@@ -38,9 +42,8 @@ export default function RespHeader({ user }: { user?: User }) {
       {/* Sidebar */}
       <div
         className={`fixed left-0 p-6 top-0 h-screen overflow-y-auto w-[300px] bg-white z-30 transform transition-transform duration-300
-    ${
-      isOpen ? "translate-x-0" : "-translate-x-full"
-    } flex flex-col justify-between`}
+    ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } flex flex-col justify-between`}
       >
         <div>
           <div className="flex justify-end items-center">
@@ -48,6 +51,7 @@ export default function RespHeader({ user }: { user?: User }) {
           </div>
 
           <div className="mt-4 flex flex-col gap-2">
+            {/* Note: Les liens admin n'apparaîtront qu'après chargement si user.admin est true */}
             {SidebarData.filter((val) =>
               val.type === "admin" ? user?.admin : true
             ).map((element, idx) => (
@@ -83,20 +87,19 @@ export default function RespHeader({ user }: { user?: User }) {
                         </p>
                       </div>
                       <ChevronDown
-                        className={`transition-transform text-gray-600 ${
-                          (element.type === "vanilla" && openOthersDropdown) ||
+                        className={`transition-transform text-gray-600 ${(element.type === "vanilla" && openOthersDropdown) ||
                           (element.type === "admin" && openAdminDropdown)
-                            ? "rotate-180"
-                            : ""
-                        }`}
+                          ? "rotate-180"
+                          : ""
+                          }`}
                       />
                     </div>
 
                     {(element.type === "vanilla" && openOthersDropdown
                       ? AutresDropdownData
                       : element.type === "admin" && openAdminDropdown
-                      ? AdminDropdownData
-                      : []
+                        ? AdminDropdownData
+                        : []
                     ).map((sub, subIdx) => (
                       <Link
                         href={sub.link}
@@ -115,9 +118,16 @@ export default function RespHeader({ user }: { user?: User }) {
           </div>
         </div>
 
-        {/* ✅ Bloc bas collé */}
+        {/* ✅ Bloc bas collé avec SKELETON */}
         <div>
-          {user ? (
+          {isPending ? (
+            // Etat de chargement
+            <div className="flex items-center gap-3">
+              <Skeleton width={36} height={36} borderRadius="rounded-full" />
+              <Skeleton width={120} height={20} />
+            </div>
+          ) : user ? (
+            // Utilisateur connecté
             <Link href="/moncompte">
               <div
                 className="flex items-center gap-3"
@@ -134,6 +144,7 @@ export default function RespHeader({ user }: { user?: User }) {
               </div>
             </Link>
           ) : (
+            // Visiteur
             <Link href={"/login"}>
               <Button
                 onClick={() => setIsOpen(false)}

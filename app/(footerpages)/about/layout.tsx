@@ -15,17 +15,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const auth = await isAuthenticated();
-
-  let user: User | null = null;
-
-  if (auth?.user?.id) {
-    const users = await getUserbyId(auth.user.id);
-    user = users?.[0] ?? null;
-  }
+   
   return (
     <div className="antialiased overflow-x-hidden bg-gray-100 min-h-screen flex flex-col">
-      <Header user={user || undefined} />
+      <Header />
 
       <main className="flex-1">
         {children}
