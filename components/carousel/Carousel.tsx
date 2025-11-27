@@ -13,7 +13,7 @@ export default function Carousel({ articles } : { articles : Article[]}) {
   const randomArticles = getRandomArticles(articles, 3);
 
   return (
-    <div className="relative mx-auto max-w-[2000px]">
+    <div className="relative mx-auto max-w-[1300px]">
       <CarouselContent
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
