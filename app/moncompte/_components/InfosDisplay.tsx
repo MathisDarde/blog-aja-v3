@@ -24,6 +24,22 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ArticleShowcase from "@/components/ArticleComponent";
 
+export interface LikedArticle {
+  id_article: string;
+  title: string;
+  slug: string;
+  imageUrl: string;
+  teaser: string;
+  content: string;
+  userId: string;
+  state: "published" | "pending" | "archived";
+  updatedAt: Date;
+  createdAt: Date;
+  tags: string[];
+  author: string;
+  likedAt: Date;
+}
+
 export default function InfosDisplay({ user }: { user: User }) {
   const router = useRouter();
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
@@ -31,7 +47,7 @@ export default function InfosDisplay({ user }: { user: User }) {
 
   const [activeTab, setActiveTab] = useState<"favoris" | "comments" | "settings">("favoris");
 
-  const [likedArticles, setLikedArticles] = useState<Article[]>([]);
+  const [likedArticles, setLikedArticles] = useState<LikedArticle[]>([]);
   const [loadingLikes, setLoadingLikes] = useState(true);
 
   useEffect(() => {
@@ -41,7 +57,6 @@ export default function InfosDisplay({ user }: { user: User }) {
         const articles = await getUserLikes(user.id);
 
         if (Array.isArray(articles)) {
-          //@ts-ignore
           setLikedArticles(articles);
         }
       } catch (error) {
