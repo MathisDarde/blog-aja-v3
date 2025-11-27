@@ -65,7 +65,7 @@ export default function ArticleShowcase({
                 const res = await fetch("/data/articletags.json");
                 if (!res.ok) return;
                 const json: TagItem[] = await res.json();
-                
+
                 if (mounted) {
                     setTagData(json);
                     if (win) win.__TAGS_CACHE__ = json;
@@ -75,7 +75,7 @@ export default function ArticleShowcase({
         load();
 
         return () => { mounted = false; };
-    }, [article.tags, displayPosition]); 
+    }, [article.tags, displayPosition]);
 
     const humanizeTag = (slug: string): string =>
         slug.replace(/[-_]+/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
@@ -102,12 +102,14 @@ export default function ArticleShowcase({
         <div className="w-full">
             <div className="flex flex-col gap-6">
                 <Link href={`/articles/${article.slug}`} key={article.id_article} className="group w-full block">
-                    
+
                     {displayPosition === "horizontal" ? (
                         <div className="flex bg-white w-full h-[110px] sm:h-[130px] overflow-hidden rounded-md border border-transparent hover:border-gray-100 transition-colors">
+
+                            {/* Image - Taille fixe */}
                             <div className="relative w-[110px] sm:w-[150px] flex-shrink-0 h-full">
                                 <Image
-                                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                                    className="object-cover w-full h-full"
                                     width={512}
                                     height={512}
                                     src={article.imageUrl}
@@ -115,9 +117,12 @@ export default function ArticleShowcase({
                                 />
                             </div>
 
-                            <div className="p-2 sm:p-3 flex flex-col justify-between flex-1 min-w-0">
+                            {/* Contenu Texte */}
+                            <div className="p-2 sm:p-3 flex flex-col h-full min-w-0">
+
+                                {/* 1. Métadonnées (Auteur/Date) - Ne rétrécit pas */}
                                 {(showAuthor || showDate) && (
-                                    <div className="hidden sm:flex flex-wrap items-center gap-1 text-gray-500 mb-1">
+                                    <div className="hidden sm:flex flex-wrap items-center gap-1 text-gray-500 mb-1 flex-shrink-0">
                                         {showAuthor && (
                                             <p className={`font-Montserrat ${smallTextSize} font-light truncate`}>
                                                 {article.author}
@@ -131,24 +136,31 @@ export default function ArticleShowcase({
                                     </div>
                                 )}
 
-                                <h2 className="text-sm sm:text-base text-left font-Montserrat font-semibold leading-tight group-hover:text-aja-blue transition-colors line-clamp-3 sm:line-clamp-2">
+                                {/* 2. Titre - Priorité absolue */}
+                                {/* line-clamp-3 autorise jusqu'à 3 lignes. 
+                flex-shrink-0 empêche le titre d'être écrasé par le reste. */}
+                                <h2 className="text-sm sm:text-base text-left font-Montserrat font-semibold leading-tight group-hover:text-aja-blue transition-colors line-clamp-3 flex-shrink-0 mb-1">
                                     {article.title}
                                 </h2>
 
+                                {/* 3. Teaser - Secondaire */}
+                                {/* truncate limite à 1 ligne. Si le titre prend toute la place,
+                le layout flex peut masquer ou couper proprement ceci. */}
                                 {showTeaser && (
-                                    <p className={`font-Montserrat ${smallTextSize} text-left italic text-gray-600 line-clamp-1 hidden sm:block`}>
+                                    <p className={`font-Montserrat ${smallTextSize} text-left italic text-gray-600 truncate hidden sm:block text-gray-500 mb-1`}>
                                         {article.teaser}
                                     </p>
                                 )}
 
+                                {/* 4. Tags - Poussés vers le bas */}
+                                {/* mt-auto force ce bloc à aller tout en bas de la carte */}
                                 {showTags && (
-                                    <div className="flex flex-wrap gap-1 mt-auto pt-1">
+                                    <div className="flex flex-wrap gap-1 mt-auto pt-0.5 overflow-hidden">
                                         {displayTags.map((tag) => (
                                             <span
                                                 key={tag}
-                                                className={`font-Montserrat bg-gray-100 text-gray-600 rounded px-2 py-0.5 ${
-                                                    size === "small" ? "text-[10px] sm:text-[11px]" : "text-[10px] sm:text-xs"
-                                                } truncate max-w-[80px]`}
+                                                className={`font-Montserrat bg-gray-100 text-gray-600 rounded px-2 py-0.5 ${size === "small" ? "text-[10px] sm:text-[11px]" : "text-[10px] sm:text-xs"
+                                                    } truncate max-w-[80px]`}
                                             >
                                                 {getTagDisplay(tag)}
                                             </span>
@@ -186,9 +198,8 @@ export default function ArticleShowcase({
                                 )}
 
                                 <h2
-                                    className={`${
-                                        size === "small" ? "text-lg" : "text-lg sm:text-xl"
-                                    } text-left font-Montserrat font-semibold group-hover:text-aja-blue transition-colors`}
+                                    className={`${size === "small" ? "text-lg" : "text-lg sm:text-xl"
+                                        } text-left font-Montserrat font-semibold group-hover:text-aja-blue transition-colors`}
                                 >
                                     {article.title}
                                 </h2>
@@ -205,9 +216,8 @@ export default function ArticleShowcase({
                                         {displayTags.map((tag) => (
                                             <span
                                                 key={tag}
-                                                className={`font-Montserrat bg-gray-100 text-gray-700 rounded-md px-3 py-1 ${
-                                                    size === "small" ? "text-[10px]" : "text-[10px] sm:text-xs"
-                                                }`}
+                                                className={`font-Montserrat bg-gray-100 text-gray-700 rounded-md px-3 py-1 ${size === "small" ? "text-[10px]" : "text-[10px] sm:text-xs"
+                                                    }`}
                                             >
                                                 {getTagDisplay(tag)}
                                             </span>

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/db";
-import { articlesTable, SelectArticle, SelectPost } from "@/db/schema";
+import { articlesTable, likedArticles, SelectArticle, SelectPost } from "@/db/schema";
 import { ArticleSchemaType } from "@/types/forms";
 import { and, desc, eq, ilike, like, or, sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
@@ -199,6 +199,32 @@ export async function getArticlesbyKeywords({
     return results as Article[];
   } catch (error) {
     console.error("❌ Erreur Drizzle:", error);
+    return [];
+  }
+}
+
+export async function getUserLikedArticles(userId: string) {
+  try {
+    const result = await db
+      .select({
+        id_article: articlesTable.id_article,
+        title: articlesTable.title,
+        slug: articlesTable.slug,
+        imageUrl: articlesTable.imageUrl,
+        teaser: articlesTable.teaser,
+        createdAt: articlesTable.createdAt,
+        tags: articlesTable.tags,
+        author: articlesTable.author,
+        likedAt: likedArticles.likedAt, 
+      })
+      .from(articlesTable)
+      .innerJoin(likedArticles, eq(articlesTable.id_article, likedArticles.articleId))
+      .where(eq(likedArticles.userId, userId))
+      .orderBy(desc(likedArticles.likedAt));
+
+    return result;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des articles likés:", error);
     return [];
   }
 }
