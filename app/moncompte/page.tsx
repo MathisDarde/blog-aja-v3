@@ -3,6 +3,8 @@ import InfosDisplay from "./_components/InfosDisplay";
 import { getUserbyId } from "@/controllers/UserController";
 import { User } from "@/contexts/Interfaces";
 
+export const dynamic = "force-dynamic";
+
 export default async function PageAccount() {
   const auth = await isAuthenticated();
 

@@ -5,7 +5,7 @@ import { logOut } from "@/actions/user/log-out";
 import Button from "@/components/BlueButton";
 import ActionPopup from "@/components/ActionPopup";
 import getUserLikes from "@/actions/article/get-user-liked-articles"; // Ton action serveur
-import { User } from "@/contexts/Interfaces";
+import { Comment, User } from "@/contexts/Interfaces";
 import {
   Cake,
   Calendar1,
@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ArticleShowcase from "@/components/ArticleComponent";
+import getUserComments from "@/actions/comment/get-comments-by-user";
 
 export interface LikedArticle {
   id_article: string;
@@ -50,6 +51,9 @@ export default function InfosDisplay({ user }: { user: User }) {
   const [likedArticles, setLikedArticles] = useState<LikedArticle[]>([]);
   const [loadingLikes, setLoadingLikes] = useState(true);
 
+  const [userComments, setUserComments] = useState<Comment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(true);
+
   useEffect(() => {
     const getUserFavoriteArticles = async () => {
       try {
@@ -71,6 +75,28 @@ export default function InfosDisplay({ user }: { user: User }) {
       getUserFavoriteArticles();
     }
   }, [user.id]);
+
+  useEffect(() => {
+    const getCommentsUser = async () => {
+      try {
+        setLoadingComments(true);
+        const comments = await getUserComments(user.id);
+
+        if (Array.isArray(comments)) {
+          setUserComments(comments);
+        }
+      } catch (error) {
+        console.error("Erreur chargement commentaires:", error);
+        toast.error("Impossible de charger vos commentaires")
+      } finally {
+        setLoadingComments(false);
+      }
+    }
+
+        if (user.id) {
+      getCommentsUser();
+    }
+  }, [user.id])
 
   const handleDeleteAccount = async () => {
     const userId = user?.id;
@@ -172,7 +198,7 @@ export default function InfosDisplay({ user }: { user: User }) {
               </div>
             </div>
             <div className="mt-8 w-full">
-              <Button type="button" size="slim" onClick={() => router.push("/moncompte/update")}>
+              <Button type="button" size="default" onClick={() => router.push("/moncompte/update")}>
                 Modifier mon profil
               </Button>
             </div>
@@ -236,6 +262,63 @@ export default function InfosDisplay({ user }: { user: User }) {
               )}
 
               {activeTab === "comments" && (
+                <div className="h-full">
+                  {loadingComments ? (
+                    <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                      <Loader2 className="animate-spin mb-2" size={32} />
+                      <p className="text-sm">Chargement de vos commentaires...</p>
+                    </div>
+                  ) : userComments.length > 0 ? (
+                    <>
+                      {userComments.map((comment, index) => (
+                        <div
+                          key={index}
+                          className="border rounded-lg p-4 bg-gray-50 font-Montserrat cursor-pointer"
+                          onClick={() =>
+                            router.push(
+                              `/articles/${comment.articleId}#comment-${comment.id_comment}`
+                            )
+                          }
+                        >
+                          <div className="flex items-center gap-4">
+                            <Image
+                              src={
+                                comment.image || "/_assets/img/pdpdebase.png"
+                              }
+                              alt="Photo de profil"
+                              width={248}
+                              height={248}
+                              className="rounded-full w-10 h-10 object-cover"
+                            />
+                            <p className="font-semibold">{comment.pseudo}</p>
+                            <p className="font-light text-xs">
+                              {new Date(comment.updatedAt).toLocaleDateString(
+                                "fr-FR"
+                              )}
+                            </p>
+                            <div className="flex items-center gap-1 my-2 ml-auto">
+                              {Array.from({
+                                length: Number(comment.stars),
+                              }).map((_, idx) => (
+                                <span
+                                  key={idx}
+                                  className="text-yellow-400 text-2xl"
+                                >
+                                  ★
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <p className="font-semibold text-left uppercase my-2">
+                            {comment.title}
+                          </p>
+                          <p className="text-sm text-left text-gray-700 mb-2">
+                            {comment.content}
+                          </p>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
                     <div className="h-full flex flex-col items-center justify-center text-center py-10">
                       <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-aja-blue">
                         <MessageCircle size={32} />
@@ -248,21 +331,23 @@ export default function InfosDisplay({ user }: { user: User }) {
                         Explorer les articles
                       </Button>
                     </div>
+                  )}
+                </div>
               )}
 
               {activeTab === "settings" && (
-                    <div className="h-full flex flex-col items-center justify-center text-center py-10">
-                      <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-aja-blue">
-                        <Settings size={32} />
-                      </div>
-                      <h3 className="font-Bai_Jamjuree text-xl font-bold text-gray-900 mb-2">Aucun paramètre disponible pour le moment</h3>
-                      <p className="text-gray-500 max-w-sm mb-6">
-                        Les paramètres ne sont pas disponibles pour le moment. Veuillez réessayer ultérieurement.
-                      </p>
-                      <Button type="button" onClick={() => router.push("/")}>
-                        Retourner à l&apos;accueil
-                      </Button>
-                    </div>
+                <div className="h-full flex flex-col items-center justify-center text-center py-10">
+                  <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-aja-blue">
+                    <Settings size={32} />
+                  </div>
+                  <h3 className="font-Bai_Jamjuree text-xl font-bold text-gray-900 mb-2">Aucun paramètre disponible pour le moment</h3>
+                  <p className="text-gray-500 max-w-sm mb-6">
+                    Les paramètres ne sont pas disponibles pour le moment. Veuillez réessayer ultérieurement.
+                  </p>
+                  <Button type="button" onClick={() => router.push("/")}>
+                    Retourner à l&apos;accueil
+                  </Button>
+                </div>
               )}
             </div>
           </div>
