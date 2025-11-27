@@ -5,7 +5,7 @@ import { logOut } from "@/actions/user/log-out";
 import Button from "@/components/BlueButton";
 import ActionPopup from "@/components/ActionPopup";
 import getUserLikes from "@/actions/article/get-user-liked-articles"; // Ton action serveur
-import { Article, User } from "@/contexts/Interfaces";
+import { User } from "@/contexts/Interfaces";
 import {
   Cake,
   Calendar1,
