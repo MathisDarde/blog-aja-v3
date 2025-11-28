@@ -8,8 +8,6 @@ type Session = typeof auth.$Infer.Session;
 const publicPages = [
   "/login",
   "/register",
-  "/forgot-password",
-  "/reset-password",
 ];
 
 // Pages privées pour tout utilisateur connecté

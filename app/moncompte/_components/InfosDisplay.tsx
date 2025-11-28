@@ -4,7 +4,9 @@ import deleteAccount from "@/actions/user/delete-account";
 import { logOut } from "@/actions/user/log-out";
 import Button from "@/components/BlueButton";
 import ActionPopup from "@/components/ActionPopup";
-import getUserLikes from "@/actions/article/get-user-liked-articles"; // Ton action serveur
+import getUserLikes from "@/actions/article/get-user-liked-articles";
+import getUserComments from "@/actions/comment/get-comments-by-user";
+
 import { Comment, User } from "@/contexts/Interfaces";
 import {
   Cake,
@@ -16,14 +18,18 @@ import {
   Settings,
   UserPen,
   Loader2,
-  MessageCircle
+  MessageCircle,
+  Bell,
+  Lock,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import ArticleShowcase from "@/components/ArticleComponent";
-import getUserComments from "@/actions/comment/get-comments-by-user";
 
 export interface LikedArticle {
   id_article: string;
@@ -54,12 +60,33 @@ export default function InfosDisplay({ user }: { user: User }) {
   const [userComments, setUserComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
 
+  const [newsletterEnabled, setNewsletterEnabled] = useState(false);
+  const [loadingNewsletter, setLoadingNewsletter] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   useEffect(() => {
     const getUserFavoriteArticles = async () => {
       try {
         setLoadingLikes(true);
         const articles = await getUserLikes(user.id);
-
         if (Array.isArray(articles)) {
           setLikedArticles(articles);
         }
@@ -81,7 +108,6 @@ export default function InfosDisplay({ user }: { user: User }) {
       try {
         setLoadingComments(true);
         const comments = await getUserComments(user.id);
-
         if (Array.isArray(comments)) {
           setUserComments(comments);
         }
@@ -93,10 +119,28 @@ export default function InfosDisplay({ user }: { user: User }) {
       }
     }
 
-        if (user.id) {
+    if (user.id) {
       getCommentsUser();
     }
   }, [user.id])
+
+  const handleNewsletterToggle = async () => {
+    setLoadingNewsletter(true);
+    try {
+      // Simulation d'appel API / Server Action
+      // await toggleNewsletterSubscription(user.id, !newsletterEnabled);
+
+      // On simule le succès après 500ms
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      setNewsletterEnabled(!newsletterEnabled);
+      toast.success(`Notifications par email ${!newsletterEnabled ? "activées" : "désactivées"}`);
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour des préférences");
+    } finally {
+      setLoadingNewsletter(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     const userId = user?.id;
@@ -165,9 +209,8 @@ export default function InfosDisplay({ user }: { user: User }) {
       </div>
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center max-h-[550px]">
             <div className="relative mb-4 group cursor-pointer" onClick={() => router.push("/moncompte/update")}>
               <div className="absolute inset-0 bg-aja-blue rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
               {user?.image ? (
@@ -179,7 +222,7 @@ export default function InfosDisplay({ user }: { user: User }) {
                 <UserPen size={16} className="text-aja-blue" />
               </div>
             </div>
-            <h2 className="font-Bai_Jamjuree text-xl font-bold uppercase mb-1">{user?.name}</h2>
+            <h2 className="font-Bai_Jamjuree text-2xl font-bold uppercase mb-1">{user?.name}</h2>
             <span className="bg-blue-50 text-aja-blue font-Montserrat text-xs font-bold px-3 py-1 rounded-full mb-6">
               {user.admin ? "Admin" : "Supporter"}
             </span>
@@ -203,20 +246,53 @@ export default function InfosDisplay({ user }: { user: User }) {
               </Button>
             </div>
           </div>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-2">
-            <button onClick={() => setLogoutPopupOpen(true)} className="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-sm font-medium">
-              <LogOut size={18} /> Se déconnecter
-            </button>
-            <button onClick={() => setDeletePopupOpen(true)} className="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium">
-              <Trash size={18} /> Supprimer mon compte
-            </button>
-          </div>
         </div>
 
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 min-h-[500px] flex flex-col">
+          <div className="bg-white rounded-2xl flex flex-col shadow-sm border border-gray-100 overflow-y-auto max-h-[700px]">
 
-            <div className="flex border-b border-gray-100 overflow-x-auto">
+            <div ref={dropdownRef} className="lg:hidden relative w-full">
+              <button
+                className="w-full flex justify-between items-center rounded-t-2xl px-6 py-5 bg-white text-gray-700 font-medium hover:bg-aja-blue/10"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                <span className="mr-2">
+                  {activeTab === "favoris" && "Mes favoris"}
+                  {activeTab === "comments" && "Mes Commentaires"}
+                  {activeTab === "settings" && "Paramètres"}
+                </span>
+                <ChevronDown
+                  className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
+
+              {isOpen && (
+                <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-20 overflow-hidden">
+                  {[
+                    { key: "favoris", label: "Mes favoris" },
+                    { key: "comments", label: "Mes Commentaires" },
+                    { key: "settings", label: "Paramètres" },
+                  ].map((item) => (
+                    <div
+                      key={item.key}
+                      onClick={() => {
+                        setActiveTab(item.key as "favoris" | "comments" | "settings");
+                        setIsOpen(false);
+                      }}
+                      className={`px-4 py-3 cursor-pointer text-sm sm:text-base hover:bg-gray-50 transition-colors ${activeTab === item.key
+                        ? "font-bold text-aja-blue bg-blue-50/50"
+                        : "text-gray-600"
+                        }`}
+                    >
+                      {item.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="hidden lg:flex border-b border-gray-100">
               <button onClick={() => setActiveTab("favoris")} className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "favoris" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
                 <Heart size={18} /> Mes Favoris
               </button>
@@ -224,11 +300,11 @@ export default function InfosDisplay({ user }: { user: User }) {
                 <MessageCircle size={18} /> Mes Commentaires
               </button>
               <button onClick={() => setActiveTab("settings")} className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "settings" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
-                <Settings size={18} /> Préférences
+                <Settings size={18} /> Paramètres
               </button>
             </div>
 
-            <div className="p-4 md:p-8 flex-1">
+            <div className="p-4 md:p-8 flex-1 overflow-y-auto custom-scrollbar">
               {activeTab === "favoris" && (
                 <div className="h-full">
                   {loadingLikes ? (
@@ -272,49 +348,58 @@ export default function InfosDisplay({ user }: { user: User }) {
                     <>
                       {userComments.map((comment, index) => (
                         <div
-                          key={index}
-                          className="border rounded-lg p-4 bg-gray-50 font-Montserrat cursor-pointer"
-                          onClick={() =>
-                            router.push(
-                              `/articles/${comment.articleId}#comment-${comment.id_comment}`
-                            )
-                          }
+                          key={comment.id_comment}
+                          id={`comment-${comment.id_comment}`}
+                          className="border rounded-lg p-4 bg-gray-50 font-Montserrat flex flex-col md:flex-row"
                         >
-                          <div className="flex items-center gap-4">
-                            <Image
-                              src={
-                                comment.image || "/_assets/img/pdpdebase.png"
-                              }
-                              alt="Photo de profil"
-                              width={248}
-                              height={248}
-                              className="rounded-full w-10 h-10 object-cover"
-                            />
-                            <p className="font-semibold">{comment.pseudo}</p>
-                            <p className="font-light text-xs">
-                              {new Date(comment.updatedAt).toLocaleDateString(
-                                "fr-FR"
-                              )}
-                            </p>
-                            <div className="flex items-center gap-1 my-2 ml-auto">
-                              {Array.from({
-                                length: Number(comment.stars),
-                              }).map((_, idx) => (
-                                <span
-                                  key={idx}
-                                  className="text-yellow-400 text-2xl"
-                                >
-                                  ★
-                                </span>
-                              ))}
+                          <div className="flex-1">
+                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4">
+                              <div className="flex items-center gap-4">
+                                {!comment.image ? (
+                                  <Image
+                                    src={"/_assets/img/pdpdebase.png"}
+                                    alt="Photo de profil"
+                                    width={128}
+                                    height={128}
+                                    className="w-9 md:w-11 h-9 md:h-11 rounded-full"
+                                  />
+                                ) : (
+                                  <Image
+                                    src={comment.image}
+                                    alt="Photo de profil"
+                                    width={128}
+                                    height={128}
+                                    className="w-9 md:w-11 h-9 md:h-11 rounded-full object-cover"
+                                  />
+                                )}
+                                <p className="font-semibold">
+                                  {comment.pseudo}
+                                </p>
+                                <p className="font-light text-xs">
+                                  {comment.updatedAt.toLocaleString("fr-FR")}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1 my-0 md:my-2">
+                                {Array.from({
+                                  length: Number(comment.stars),
+                                }).map((_, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="text-yellow-400 text-2xl md:text-3xl"
+                                  >
+                                    ★
+                                  </span>
+                                ))}
+                              </div>
                             </div>
+
+                            <p className="font-semibold uppercase my-2">
+                              {comment.title}
+                            </p>
+                            <p className="text-sm text-gray-700 mb-2">
+                              {comment.content}
+                            </p>
                           </div>
-                          <p className="font-semibold text-left uppercase my-2">
-                            {comment.title}
-                          </p>
-                          <p className="text-sm text-left text-gray-700 mb-2">
-                            {comment.content}
-                          </p>
                         </div>
                       ))}
                     </>
@@ -336,17 +421,75 @@ export default function InfosDisplay({ user }: { user: User }) {
               )}
 
               {activeTab === "settings" && (
-                <div className="h-full flex flex-col items-center justify-center text-center py-10">
-                  <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-aja-blue">
-                    <Settings size={32} />
-                  </div>
-                  <h3 className="font-Bai_Jamjuree text-xl font-bold text-gray-900 mb-2">Aucun paramètre disponible pour le moment</h3>
-                  <p className="text-gray-500 max-w-sm mb-6">
-                    Les paramètres ne sont pas disponibles pour le moment. Veuillez réessayer ultérieurement.
-                  </p>
-                  <Button type="button" onClick={() => router.push("/")}>
-                    Retourner à l&apos;accueil
-                  </Button>
+                <div className="h-full text-left max-w-2xl mx-auto space-y-8">
+                  <section>
+                    <div className="flex items-center gap-2 mb-4 text-aja-blue">
+                      <Bell size={20} />
+                      <h3 className="font-Bai_Jamjuree font-bold text-lg text-gray-900">Notifications</h3>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100 cursor-pointer" onClick={handleNewsletterToggle}>
+                      <div>
+                        <p className="font-semibold text-gray-800">Nouveaux articles</p>
+                        <p className="text-xs md:text-sm text-gray-500 mt-1">
+                          Recevoir un email lorsqu&apos;un nouvel article est publié.
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={handleNewsletterToggle}
+                        disabled={loadingNewsletter}
+                        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out focus:outline-none flex-shrink-0 ${newsletterEnabled ? 'bg-aja-blue' : 'bg-gray-300'}`}
+                      >
+                        <span
+                          className={`block w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ml-1 ${newsletterEnabled ? 'translate-x-6' : 'translate-x-0'}`}
+                        />
+                      </button>
+                    </div>
+                  </section>
+
+                  <hr className="border-gray-100" />
+
+                  <section>
+                    <div className="flex items-center gap-2 mb-4 text-aja-blue">
+                      <Lock size={20} />
+                      <h3 className="font-Bai_Jamjuree font-bold text-lg text-gray-900">Sécurité</h3>
+                    </div>
+                    <Link href="/forgot-password" className="block group">
+                      <div className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-all">
+                        <div>
+                          <p className="font-semibold text-gray-800">Mot de passe</p>
+                          <p className="text-xs md:text-sm text-gray-500 mt-1">
+                            Modifier ou réinitialiser votre mot de passe.
+                          </p>
+                        </div>
+                        <ChevronRight className="text-gray-400 group-hover:text-aja-blue transition-colors" size={20} />
+                      </div>
+                    </Link>
+                  </section>
+
+                  <hr className="border-gray-100" />
+
+                  <section>
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => setLogoutPopupOpen(true)}
+                        className="w-full bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <span className="font-medium text-sm flex items-center gap-3">
+                          <LogOut size={18} /> Se déconnecter
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => setDeletePopupOpen(true)}
+                        className="w-full bg-white border border-red-100 rounded-xl p-4 flex items-center justify-between text-red-500 hover:bg-red-50 transition-colors"
+                      >
+                        <span className="font-medium text-sm flex items-center gap-3">
+                          <Trash size={18} /> Supprimer mon compte
+                        </span>
+                      </button>
+                    </div>
+                  </section>
                 </div>
               )}
             </div>
