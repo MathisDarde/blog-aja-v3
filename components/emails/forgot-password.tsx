@@ -162,13 +162,13 @@ export default function ResetPasswordEmail({
                     >
                       Besoin d&apos;aide ? Écrivez-nous :{" "}
                       <a
-                        href={`mailto:memoiredauxerrois@gmail.com`}
+                        href={`mailto:contact@memoiredauxerrois.fr`}
                         style={{
                           color: "#3c77b4",
                           textDecoration: "underline",
                         }}
                       >
-                        memoiredauxerrois@gmail.com
+                        contact@memoiredauxerrois.fr
                       </a>
                     </p>
 
