@@ -2,7 +2,8 @@ import { MetadataRoute } from "next";
 import { getArticles } from "@/controllers/ArticlesController";
 
 // 1. Définition de l'URL de base propre
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.vercel.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.fr";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. Récupération des articles depuis ton contrôleur
@@ -35,43 +36,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
-      url: `${SITE_URL}/classement-statistiques`, 
+      url: `${SITE_URL}/classement-statistiques`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
-      url: `${SITE_URL}/quiz`, 
+      url: `${SITE_URL}/quiz`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
-      url: `${SITE_URL}/chants`, 
+      url: `${SITE_URL}/chants`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
-      url: `${SITE_URL}/effectif-actuel`, 
+      url: `${SITE_URL}/effectif-actuel`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
-      url: `${SITE_URL}/about`, 
+      url: `${SITE_URL}/about`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${SITE_URL}/charte-graphique`, 
+      url: `${SITE_URL}/charte-graphique`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${SITE_URL}/utilisation`, 
+      url: `${SITE_URL}/utilisation`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
@@ -80,8 +81,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 4. Mapping des articles (Pages dynamiques)
   const articleRoutes: MetadataRoute.Sitemap = articles.map((article) => {
-    const dateToUse = article.updatedAt 
-      ? new Date(article.updatedAt) 
+    const dateToUse = article.updatedAt
+      ? new Date(article.updatedAt)
       : new Date(article.createdAt);
 
     return {

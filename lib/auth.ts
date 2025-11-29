@@ -14,7 +14,7 @@ export const auth = betterAuth({
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
       await resend.emails.send({
-        from: "onboarding@resend.dev", // remplacer par mon adresse mail avec mon domaine perso sinon marche pas
+        from: "contact@memoiredauxerrois.fr",
         to: user.email,
         subject: "Réinitialisation de votre mot de passe",
         react: ResetPasswordEmail({ user, resetUrl: url }),

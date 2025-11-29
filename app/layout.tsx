@@ -18,7 +18,7 @@ const baijamjuree = Bai_Jamjuree({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.fr";
 
 export const viewport: Viewport = {
   width: "device-width",

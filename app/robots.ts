@@ -1,7 +1,8 @@
 import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.vercel.app";
+  const SITE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.fr";
 
   return {
     rules: {
