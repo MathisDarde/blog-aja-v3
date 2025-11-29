@@ -10,6 +10,7 @@ import ResetPasswordEmail from "@/components/emails/forgot-password";
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 export const auth = betterAuth({
+  trustedOrigins: [process.env.NEXT_PUBLIC_SITE_URL!],
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
