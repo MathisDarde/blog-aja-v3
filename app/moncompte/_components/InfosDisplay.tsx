@@ -52,7 +52,9 @@ export default function InfosDisplay({ user }: { user: User }) {
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
   const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<"favoris" | "comments" | "settings">("favoris");
+  const [activeTab, setActiveTab] = useState<
+    "favoris" | "comments" | "settings"
+  >("favoris");
 
   const [likedArticles, setLikedArticles] = useState<LikedArticle[]>([]);
   const [loadingLikes, setLoadingLikes] = useState(true);
@@ -113,16 +115,16 @@ export default function InfosDisplay({ user }: { user: User }) {
         }
       } catch (error) {
         console.error("Erreur chargement commentaires:", error);
-        toast.error("Impossible de charger vos commentaires")
+        toast.error("Impossible de charger vos commentaires");
       } finally {
         setLoadingComments(false);
       }
-    }
+    };
 
     if (user.id) {
       getCommentsUser();
     }
-  }, [user.id])
+  }, [user.id]);
 
   const handleNewsletterToggle = async () => {
     setLoadingNewsletter(true);
@@ -131,11 +133,14 @@ export default function InfosDisplay({ user }: { user: User }) {
       // await toggleNewsletterSubscription(user.id, !newsletterEnabled);
 
       // On simule le succès après 500ms
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       setNewsletterEnabled(!newsletterEnabled);
-      toast.success(`Notifications par email ${!newsletterEnabled ? "activées" : "désactivées"}`);
+      toast.success(
+        `Notifications par email ${!newsletterEnabled ? "activées" : "désactivées"}`
+      );
     } catch (error) {
+      console.error(error);
       toast.error("Erreur lors de la mise à jour des préférences");
     } finally {
       setLoadingNewsletter(false);
@@ -171,21 +176,31 @@ export default function InfosDisplay({ user }: { user: User }) {
     return new Date(date).toLocaleDateString("fr-FR", {
       day: "numeric",
       month: "long",
-      year: "numeric"
+      year: "numeric",
     });
   };
 
   return (
     <div className="bg-gray-100 min-h-screen w-full p-4 md:p-10 font-Montserrat text-gray-800">
-
       {deletePopupOpen && (
         <ActionPopup
           onClose={() => setDeletePopupOpen(false)}
           title="Supprimer ce compte ?"
           description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
           actions={[
-            { label: "Annuler", onClick: () => setDeletePopupOpen(false), theme: "discard" },
-            { label: "Supprimer", onClick: () => { handleDeleteAccount(); setDeletePopupOpen(false); }, theme: "delete" },
+            {
+              label: "Annuler",
+              onClick: () => setDeletePopupOpen(false),
+              theme: "discard",
+            },
+            {
+              label: "Supprimer",
+              onClick: () => {
+                handleDeleteAccount();
+                setDeletePopupOpen(false);
+              },
+              theme: "delete",
+            },
           ]}
         />
       )}
@@ -196,8 +211,19 @@ export default function InfosDisplay({ user }: { user: User }) {
           title="Se déconnecter ?"
           description="Êtes-vous sûr de vouloir vous déconnecter ?"
           actions={[
-            { label: "Annuler", onClick: () => setLogoutPopupOpen(false), theme: "discard" },
-            { label: "Se déconnecter", onClick: () => { handleLogOut(); setLogoutPopupOpen(false); }, theme: "delete" },
+            {
+              label: "Annuler",
+              onClick: () => setLogoutPopupOpen(false),
+              theme: "discard",
+            },
+            {
+              label: "Se déconnecter",
+              onClick: () => {
+                handleLogOut();
+                setLogoutPopupOpen(false);
+              },
+              theme: "delete",
+            },
           ]}
         />
       )}
@@ -211,25 +237,44 @@ export default function InfosDisplay({ user }: { user: User }) {
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center max-h-[550px]">
-            <div className="relative mb-4 group cursor-pointer" onClick={() => router.push("/moncompte/update")}>
+            <div
+              className="relative mb-4 group cursor-pointer"
+              onClick={() => router.push("/moncompte/update")}
+            >
               <div className="absolute inset-0 bg-aja-blue rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
               {user?.image ? (
-                <Image src={user.image} alt="Profil" width={400} height={400} className="w-32 h-32 rounded-full object-cover border-4 border-gray-50 shadow-sm" />
+                <Image
+                  src={user.image}
+                  alt="Profil"
+                  width={400}
+                  height={400}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-50 shadow-sm"
+                />
               ) : (
-                <Image src="/_assets/img/pdpdebase.png" alt="Profil" width={400} height={400} className="w-32 h-32 rounded-full object-cover border-4 border-gray-50 shadow-sm" />
+                <Image
+                  src="/_assets/img/pdpdebase.png"
+                  alt="Profil"
+                  width={400}
+                  height={400}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-50 shadow-sm"
+                />
               )}
               <div className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow border border-gray-100">
                 <UserPen size={16} className="text-aja-blue" />
               </div>
             </div>
-            <h2 className="font-Bai_Jamjuree text-2xl font-bold uppercase mb-1">{user?.name}</h2>
+            <h2 className="font-Bai_Jamjuree text-2xl font-bold uppercase mb-1">
+              {user?.name}
+            </h2>
             <span className="bg-blue-50 text-aja-blue font-Montserrat text-xs font-bold px-3 py-1 rounded-full mb-6">
               {user.admin ? "Admin" : "Supporter"}
             </span>
             <div className="w-full space-y-4 text-sm text-left border-t border-gray-100 pt-6">
               <div className="flex items-center gap-3 text-gray-600">
                 <Mail size={18} className="text-gray-400 shrink-0" />
-                <span className="truncate" title={user?.email}>{user?.email}</span>
+                <span className="truncate" title={user?.email}>
+                  {user?.email}
+                </span>
               </div>
               <div className="flex items-center gap-3 text-gray-600">
                 <Cake size={18} className="text-gray-400 shrink-0" />
@@ -237,11 +282,17 @@ export default function InfosDisplay({ user }: { user: User }) {
               </div>
               <div className="flex items-center gap-3 text-gray-600">
                 <Calendar1 size={18} className="text-gray-400 shrink-0" />
-                <span>Membre depuis {new Date(user?.createdAt).getFullYear()}</span>
+                <span>
+                  Membre depuis {new Date(user?.createdAt).getFullYear()}
+                </span>
               </div>
             </div>
             <div className="mt-8 w-full">
-              <Button type="button" size="default" onClick={() => router.push("/moncompte/update")}>
+              <Button
+                type="button"
+                size="default"
+                onClick={() => router.push("/moncompte/update")}
+              >
                 Modifier mon profil
               </Button>
             </div>
@@ -250,7 +301,6 @@ export default function InfosDisplay({ user }: { user: User }) {
 
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl flex flex-col shadow-sm border border-gray-100 overflow-y-auto max-h-[700px]">
-
             <div ref={dropdownRef} className="lg:hidden relative w-full">
               <button
                 className="w-full flex justify-between items-center rounded-t-2xl px-6 py-5 bg-white text-gray-700 font-medium hover:bg-aja-blue/10"
@@ -262,8 +312,9 @@ export default function InfosDisplay({ user }: { user: User }) {
                   {activeTab === "settings" && "Paramètres"}
                 </span>
                 <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
-                    }`}
+                  className={`w-5 h-5 transition-transform duration-200 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
                 />
               </button>
 
@@ -277,13 +328,16 @@ export default function InfosDisplay({ user }: { user: User }) {
                     <div
                       key={item.key}
                       onClick={() => {
-                        setActiveTab(item.key as "favoris" | "comments" | "settings");
+                        setActiveTab(
+                          item.key as "favoris" | "comments" | "settings"
+                        );
                         setIsOpen(false);
                       }}
-                      className={`px-4 py-3 cursor-pointer text-sm sm:text-base hover:bg-gray-50 transition-colors ${activeTab === item.key
-                        ? "font-bold text-aja-blue bg-blue-50/50"
-                        : "text-gray-600"
-                        }`}
+                      className={`px-4 py-3 cursor-pointer text-sm sm:text-base hover:bg-gray-50 transition-colors ${
+                        activeTab === item.key
+                          ? "font-bold text-aja-blue bg-blue-50/50"
+                          : "text-gray-600"
+                      }`}
                     >
                       {item.label}
                     </div>
@@ -293,13 +347,22 @@ export default function InfosDisplay({ user }: { user: User }) {
             </div>
 
             <div className="hidden lg:flex border-b border-gray-100">
-              <button onClick={() => setActiveTab("favoris")} className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "favoris" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+              <button
+                onClick={() => setActiveTab("favoris")}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "favoris" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+              >
                 <Heart size={18} /> Mes Favoris
               </button>
-              <button onClick={() => setActiveTab("comments")} className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "comments" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+              <button
+                onClick={() => setActiveTab("comments")}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "comments" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+              >
                 <MessageCircle size={18} /> Mes Commentaires
               </button>
-              <button onClick={() => setActiveTab("settings")} className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "settings" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+              <button
+                onClick={() => setActiveTab("settings")}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === "settings" ? "border-aja-blue text-aja-blue" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+              >
                 <Settings size={18} /> Paramètres
               </button>
             </div>
@@ -316,7 +379,15 @@ export default function InfosDisplay({ user }: { user: User }) {
                     <>
                       {likedArticles.map((article, index) => (
                         <div key={index}>
-                          <ArticleShowcase article={article} displayPosition="horizontal" size="small" showAuthor={true} showDate={true} showTags={true} showTeaser={true} />
+                          <ArticleShowcase
+                            article={article}
+                            displayPosition="horizontal"
+                            size="small"
+                            showAuthor={true}
+                            showDate={true}
+                            showTags={true}
+                            showTeaser={true}
+                          />
                         </div>
                       ))}
                     </>
@@ -325,11 +396,18 @@ export default function InfosDisplay({ user }: { user: User }) {
                       <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-aja-blue">
                         <Heart size={32} />
                       </div>
-                      <h3 className="font-Bai_Jamjuree text-xl font-bold text-gray-900 mb-2">Aucun favori pour le moment</h3>
+                      <h3 className="font-Bai_Jamjuree text-xl font-bold text-gray-900 mb-2">
+                        Aucun favori pour le moment
+                      </h3>
                       <p className="text-gray-500 max-w-sm mb-6">
-                        Vous n&apos;avez pas encore sauvegardé d&apos;articles. Cliquez sur le cœur lors de votre lecture pour les retrouver ici !
+                        Vous n&apos;avez pas encore sauvegardé d&apos;articles.
+                        Cliquez sur le cœur lors de votre lecture pour les
+                        retrouver ici !
                       </p>
-                      <Button type="button" onClick={() => router.push("/articles")}>
+                      <Button
+                        type="button"
+                        onClick={() => router.push("/articles")}
+                      >
                         Explorer les articles
                       </Button>
                     </div>
@@ -342,11 +420,13 @@ export default function InfosDisplay({ user }: { user: User }) {
                   {loadingComments ? (
                     <div className="h-full flex flex-col items-center justify-center text-gray-400">
                       <Loader2 className="animate-spin mb-2" size={32} />
-                      <p className="text-sm">Chargement de vos commentaires...</p>
+                      <p className="text-sm">
+                        Chargement de vos commentaires...
+                      </p>
                     </div>
                   ) : userComments.length > 0 ? (
                     <>
-                      {userComments.map((comment, index) => (
+                      {userComments.map((comment) => (
                         <div
                           key={comment.id_comment}
                           id={`comment-${comment.id_comment}`}
@@ -408,11 +488,17 @@ export default function InfosDisplay({ user }: { user: User }) {
                       <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-aja-blue">
                         <MessageCircle size={32} />
                       </div>
-                      <h3 className="font-Bai_Jamjuree text-xl font-bold text-gray-900 mb-2">Aucun commentaire pour le moment</h3>
+                      <h3 className="font-Bai_Jamjuree text-xl font-bold text-gray-900 mb-2">
+                        Aucun commentaire pour le moment
+                      </h3>
                       <p className="text-gray-500 max-w-sm mb-6">
-                        Vous n&apos;avez pas encore commenté d&apos;articles. Ajoutez un commentaire sur un article !
+                        Vous n&apos;avez pas encore commenté d&apos;articles.
+                        Ajoutez un commentaire sur un article !
                       </p>
-                      <Button type="button" onClick={() => router.push("/articles")}>
+                      <Button
+                        type="button"
+                        onClick={() => router.push("/articles")}
+                      >
                         Explorer les articles
                       </Button>
                     </div>
@@ -425,23 +511,31 @@ export default function InfosDisplay({ user }: { user: User }) {
                   <section>
                     <div className="flex items-center gap-2 mb-4 text-aja-blue">
                       <Bell size={20} />
-                      <h3 className="font-Bai_Jamjuree font-bold text-lg text-gray-900">Notifications</h3>
+                      <h3 className="font-Bai_Jamjuree font-bold text-lg text-gray-900">
+                        Notifications
+                      </h3>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100 cursor-pointer" onClick={handleNewsletterToggle}>
+                    <div
+                      className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100 cursor-pointer"
+                      onClick={handleNewsletterToggle}
+                    >
                       <div>
-                        <p className="font-semibold text-gray-800">Nouveaux articles</p>
+                        <p className="font-semibold text-gray-800">
+                          Nouveaux articles
+                        </p>
                         <p className="text-xs md:text-sm text-gray-500 mt-1">
-                          Recevoir un email lorsqu&apos;un nouvel article est publié.
+                          Recevoir un email lorsqu&apos;un nouvel article est
+                          publié.
                         </p>
                       </div>
 
                       <button
                         onClick={handleNewsletterToggle}
                         disabled={loadingNewsletter}
-                        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out focus:outline-none flex-shrink-0 ${newsletterEnabled ? 'bg-aja-blue' : 'bg-gray-300'}`}
+                        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out focus:outline-none flex-shrink-0 ${newsletterEnabled ? "bg-aja-blue" : "bg-gray-300"}`}
                       >
                         <span
-                          className={`block w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ml-1 ${newsletterEnabled ? 'translate-x-6' : 'translate-x-0'}`}
+                          className={`block w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ml-1 ${newsletterEnabled ? "translate-x-6" : "translate-x-0"}`}
                         />
                       </button>
                     </div>
@@ -452,17 +546,24 @@ export default function InfosDisplay({ user }: { user: User }) {
                   <section>
                     <div className="flex items-center gap-2 mb-4 text-aja-blue">
                       <Lock size={20} />
-                      <h3 className="font-Bai_Jamjuree font-bold text-lg text-gray-900">Sécurité</h3>
+                      <h3 className="font-Bai_Jamjuree font-bold text-lg text-gray-900">
+                        Sécurité
+                      </h3>
                     </div>
                     <Link href="/forgot-password" className="block group">
                       <div className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-all">
                         <div>
-                          <p className="font-semibold text-gray-800">Mot de passe</p>
+                          <p className="font-semibold text-gray-800">
+                            Mot de passe
+                          </p>
                           <p className="text-xs md:text-sm text-gray-500 mt-1">
                             Modifier ou réinitialiser votre mot de passe.
                           </p>
                         </div>
-                        <ChevronRight className="text-gray-400 group-hover:text-aja-blue transition-colors" size={20} />
+                        <ChevronRight
+                          className="text-gray-400 group-hover:text-aja-blue transition-colors"
+                          size={20}
+                        />
                       </div>
                     </Link>
                   </section>
