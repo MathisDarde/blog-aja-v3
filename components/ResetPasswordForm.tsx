@@ -80,7 +80,7 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="max-w-[600px] w-full mx-auto">
       <form
         onSubmit={handleSubmit(onSubmit, handleFormErrors)}
         className="w-full text-center"
@@ -94,11 +94,11 @@ export default function ResetPasswordForm() {
             type={showPassword ? "text" : "password"}
             {...register("password")}
             className="w-full py-3 sm:py-4 px-5 sm:px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-            placeholder="Entrez votre nouveau mot de passe"
+            placeholder="Nouveau mot de passe"
           />
           <span
             onClick={() => setShowPassword((prev) => !prev)}
-            className="cursor-pointer absolute top-11 sm:top-12 right-4 sm:right-5 text-gray-600"
+            className="cursor-pointer absolute top-[37px] sm:top-11 right-4 sm:right-5 text-gray-600"
           >
             {showPassword ? (
               <EyeOff className="w-5 sm:w-6" />
@@ -121,7 +121,7 @@ export default function ResetPasswordForm() {
           />
           <span
             onClick={() => setShowConfirmPassword((prev) => !prev)}
-            className="cursor-pointer absolute top-11 sm:top-12 right-4 sm:right-5 text-gray-600"
+            className="cursor-pointer absolute top-[37px] sm:top-11 right-4 sm:right-5 text-gray-600"
           >
             {showConfirmPassword ? (
               <EyeOff className="w-5 sm:w-6" />
@@ -131,10 +131,10 @@ export default function ResetPasswordForm() {
           </span>
         </div>
 
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" size="default" disabled={loading}>
           {loading
             ? "Réinitialisation..."
-            : "Confirmer le nouveau mot de passe"}
+            : "Confirmer le mot de passe"}
         </Button>
       </form>
     </div>
