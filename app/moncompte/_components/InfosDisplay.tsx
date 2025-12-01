@@ -27,9 +27,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import ArticleShowcase from "@/components/ArticleComponent";
+import CommentComponent from "@/components/CommentComponent";
 
 export interface LikedArticle {
   id_article: string;
@@ -312,9 +313,8 @@ export default function InfosDisplay({ user }: { user: User }) {
                   {activeTab === "settings" && "Paramètres"}
                 </span>
                 <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-200 ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
+                  className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -333,11 +333,10 @@ export default function InfosDisplay({ user }: { user: User }) {
                         );
                         setIsOpen(false);
                       }}
-                      className={`px-4 py-3 cursor-pointer text-sm sm:text-base hover:bg-gray-50 transition-colors ${
-                        activeTab === item.key
+                      className={`px-4 py-3 cursor-pointer text-sm sm:text-base hover:bg-gray-50 transition-colors ${activeTab === item.key
                           ? "font-bold text-aja-blue bg-blue-50/50"
                           : "text-gray-600"
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </div>
@@ -427,60 +426,9 @@ export default function InfosDisplay({ user }: { user: User }) {
                   ) : userComments.length > 0 ? (
                     <>
                       {userComments.map((comment) => (
-                        <div
-                          key={comment.id_comment}
-                          id={`comment-${comment.id_comment}`}
-                          className="border rounded-lg p-4 bg-gray-50 font-Montserrat flex flex-col md:flex-row"
-                        >
-                          <div className="flex-1">
-                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4">
-                              <div className="flex items-center gap-4">
-                                {!comment.image ? (
-                                  <Image
-                                    src={"/_assets/img/pdpdebase.png"}
-                                    alt="Photo de profil"
-                                    width={128}
-                                    height={128}
-                                    className="w-9 md:w-11 h-9 md:h-11 rounded-full"
-                                  />
-                                ) : (
-                                  <Image
-                                    src={comment.image}
-                                    alt="Photo de profil"
-                                    width={128}
-                                    height={128}
-                                    className="w-9 md:w-11 h-9 md:h-11 rounded-full object-cover"
-                                  />
-                                )}
-                                <p className="font-semibold">
-                                  {comment.pseudo}
-                                </p>
-                                <p className="font-light text-xs">
-                                  {comment.updatedAt.toLocaleString("fr-FR")}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-1 my-0 md:my-2">
-                                {Array.from({
-                                  length: Number(comment.stars),
-                                }).map((_, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="text-yellow-400 text-2xl md:text-3xl"
-                                  >
-                                    ★
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            <p className="font-semibold uppercase my-2">
-                              {comment.title}
-                            </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                              {comment.content}
-                            </p>
-                          </div>
-                        </div>
+                        <React.Fragment key={comment.id_comment} >
+                          <CommentComponent comment={comment} />
+                        </React.Fragment>
                       ))}
                     </>
                   ) : (

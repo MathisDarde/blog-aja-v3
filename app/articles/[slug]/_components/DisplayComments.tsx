@@ -4,13 +4,11 @@ import CommentForm from "./CommentForm";
 import Button from "@/components/BlueButton";
 import UpdateCommentForm from "./UpdateCommentForm";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { useState } from "react";
-import deleteCommentAction from "@/actions/comment/delete-comment";
-import { ChevronLeft, LogIn, PenSquare, Plus, Trash } from "lucide-react";
-import Image from "next/image";
+import React, { useState } from "react";
+import { ChevronLeft, LogIn, Plus } from "lucide-react";
 import { Article, Comment, User } from "@/contexts/Interfaces";
 import Link from "next/link";
-import ActionPopup from "@/components/ActionPopup";
+import CommentComponent from "@/components/CommentComponent";
 
 export default function DisplayArticleComments({
   article,
@@ -24,16 +22,10 @@ export default function DisplayArticleComments({
   const { user_id } = useGlobalContext();
   const article_id = article.id_article;
 
+  const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
+  const [isUpdatingComment, setIsUpdatingComment] = useState(false);
   const [isPublishingComment, setIsPublishingComment] = useState(false);
   const [visibleComments, setVisibleComments] = useState(3);
-  const [isUpdatingComment, setIsUpdatingComment] = useState(false);
-  const [selectedComment, setSelectedComment] = useState<{
-    id_comment: string;
-    title: string;
-    content: string;
-    stars: number;
-  } | null>(null);
-  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 
   const numberOfComments = articleComments.length;
 
@@ -41,13 +33,10 @@ export default function DisplayArticleComments({
     setVisibleComments((prev) => prev + 3);
   };
 
-  async function deleteComment(id: string) {
-    try {
-      return await deleteCommentAction(id);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  const handleEditComment = (comment: Comment) => {
+    setSelectedComment(comment);
+    setIsUpdatingComment(true);
+  };
 
   return (
     <>
@@ -55,37 +44,6 @@ export default function DisplayArticleComments({
         id="commentaire-anchor"
         className="relative -top-24 opacity-0 transition-opacity duration-500"
       ></div>
-
-      {/* delete comment modal */}
-      {deletePopupOpen && (
-        <ActionPopup
-          onClose={() => setDeletePopupOpen(false)}
-          title="Supprimer ce commentaire ?"
-          description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
-          actions={[
-            {
-              label: "Annuler",
-              onClick: () => setDeletePopupOpen(false),
-              theme: "discard",
-            },
-            {
-              label: "Supprimer",
-              onClick: async () => {
-                try {
-                  if (selectedComment) {
-                    await deleteComment(selectedComment?.id_comment);
-                    window.location.reload();
-                    setDeletePopupOpen(false);
-                  }
-                } catch (e) {
-                  console.error("error", e);
-                }
-              },
-              theme: "delete",
-            },
-          ]}
-        />
-      )}
 
       <div className="max-w-[1200px] bg-white rounded-xl p-4 sm:p-8 font-Montserrat">
         {!isPublishingComment ? (
@@ -153,96 +111,15 @@ export default function DisplayArticleComments({
                       {articleComments
                         .slice(0, visibleComments)
                         .map((comment) => (
-                          <div
-                            key={comment.id_comment}
-                            id={`comment-${comment.id_comment}`}
-                            className="border rounded-lg p-4 bg-gray-50 font-Montserrat flex flex-col md:flex-row"
-                          >
-                            <div className="flex-1">
-                              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4">
-                                <div className="flex items-center gap-4">
-                                  {!comment.image ? (
-                                    <Image
-                                      src={"/_assets/img/pdpdebase.png"}
-                                      alt="Photo de profil"
-                                      width={128}
-                                      height={128}
-                                      className="w-9 md:w-11 h-9 md:h-11 rounded-full"
-                                    />
-                                  ) : (
-                                    <Image
-                                      src={comment.image}
-                                      alt="Photo de profil"
-                                      width={128}
-                                      height={128}
-                                      className="w-9 md:w-11 h-9 md:h-11 rounded-full object-cover"
-                                    />
-                                  )}
-                                  <p className="font-semibold">
-                                    {comment.pseudo}
-                                  </p>
-                                  <p className="font-light text-xs">
-                                    {comment.updatedAt.toLocaleString("fr-FR")}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-1 my-0 md:my-2">
-                                  {Array.from({
-                                    length: Number(comment.stars),
-                                  }).map((_, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="text-yellow-400 text-2xl md:text-3xl"
-                                    >
-                                      ★
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <p className="font-semibold uppercase my-2">
-                                {comment.title}
-                              </p>
-                              <p className="text-sm text-gray-700 mb-2">
-                                {comment.content}
-                              </p>
-                            </div>
-
-                            {comment.userId === user_id && (
-                              <div className="flex flex-row md:flex-col items-center justify-center md:justify-start gap-2 ml-4 mt-2">
-                                <button
-                                  className="rounded-full border border-gray-300 p-2"
-                                  onClick={() => {
-                                    setSelectedComment({
-                                      id_comment: comment.id_comment,
-                                      title: comment.title,
-                                      content: comment.content,
-                                      stars: comment.stars,
-                                    });
-                                    setIsUpdatingComment(true);
-                                  }}
-                                >
-                                  <PenSquare size={20} />
-                                </button>
-                                <button
-                                  className="rounded-full border bg-red-500 text-white border-gray-300 p-2"
-                                  onClick={() => {
-                                    setDeletePopupOpen(true);
-                                    setSelectedComment({
-                                      id_comment: comment.id_comment,
-                                      title: comment.title,
-                                      content: comment.content,
-                                      stars: comment.stars,
-                                    });
-                                  }}
-                                >
-                                  <Trash size={20} />
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                          <React.Fragment key={comment.id_comment}>
+                            <CommentComponent 
+                                comment={comment} 
+                                userId={user_id} 
+                                onEdit={handleEditComment}
+                            />
+                          </React.Fragment>
                         ))}
 
-                      {/* Bouton Voir plus */}
                       {visibleComments < articleComments.length && (
                         <Button
                           onClick={handleVoirPlus}
