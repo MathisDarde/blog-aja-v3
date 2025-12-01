@@ -6,28 +6,59 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    
-    const { from, subject, html, text } = payload;
 
+    // 1. Vérifier si c'est bien un événement de réception
+    if (payload.type !== 'email.received') {
+        return NextResponse.json({ status: "ignored" });
+    }
+
+    // 2. Récupérer l'ID du mail depuis la notification
+    const emailId = payload.data.email_id;
+    
+    if (!emailId) {
+        console.error("Pas d'ID d'email trouvé dans le payload");
+        return NextResponse.json({ status: "error", message: "No email ID" }, { status: 400 });
+    }
+
+    // 3. 🔍 ALLER CHERCHER LE CONTENU DU MAIL (C'est l'étape qui manquait)
+    const { data: emailContent, error } = await resend.emails.get(emailId);
+
+    if (error || !emailContent) {
+        console.error("Impossible de récupérer le contenu du mail:", error);
+        return NextResponse.json({ status: "error" }, { status: 500 });
+    }
+
+    // 4. Préparer les variables pour le transfert
+    const originalSender = emailContent.from; // ex: mathis.darde@...
+    const subject = emailContent.subject;
+    const htmlBody = emailContent.html;
+    const textBody = emailContent.text;
+
+    console.log(`📨 Transfert du mail ${emailId} de ${originalSender}`);
+
+    // 5. Transférer le mail
     await resend.emails.send({
-      from: "contact@memoiredauxerrois.fr", // Doit être votre domaine vérifié
-      to: "dardemathis@gmail.com",    // 👈 Mettez votre adresse perso ici
-      subject: `[FWD] ${subject}`,          // On ajoute un préfixe pour repérer le transfert
-      // On construit un petit corps de mail pour vous donner le contexte
+      from: "contact@memoiredauxerrois.fr", 
+      to: "dardemathis@gmail.com", // 👈 Votre adresse perso
+      subject: `[FWD] ${subject}`,
+      replyTo: originalSender, // Pour répondre directement à l'envoyeur
       html: `
-        <div style="border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
-          <h2>Vous avez reçu un message sur contact@memoiredauxerrois.fr</h2>
-          <p><strong>De :</strong> ${from}</p>
-          <p><strong>Sujet :</strong> ${subject}</p>
-          <hr />
-          <div>${html || text}</div>
+        <div style="background-color: #f3f4f6; padding: 20px;">
+          <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <h2 style="color: #111827; margin-top: 0;">Nouveau message reçu</h2>
+            <p style="color: #4b5563;"><strong>De :</strong> ${originalSender}</p>
+            <p style="color: #4b5563;"><strong>Sujet :</strong> ${subject}</p>
+            <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+            
+            <div>${htmlBody || textBody || "Contenu vide"}</div>
+          </div>
         </div>
-      `,
+      `
     });
 
     return NextResponse.json({ status: "success" });
-  } catch (error) {
-    console.error("Erreur lors du traitement de l'email entrant:", error);
+  } catch (err) {
+    console.error("Erreur critique:", err);
     return NextResponse.json({ status: "error" }, { status: 500 });
   }
 }
