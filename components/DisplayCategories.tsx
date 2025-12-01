@@ -31,7 +31,7 @@ export default function BentoCategories({ randomCategories }: { randomCategories
   };
 
   return (
-    <div className="max-w-[1300px] mx-auto px-4 pt-12">
+    <div className="max-w-[1300px] mx-auto px-4 pt-8">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[200px] md:auto-rows-[240px]">
         {itemsToDisplay.length > 0 ? (
           itemsToDisplay.map((category, index) => (

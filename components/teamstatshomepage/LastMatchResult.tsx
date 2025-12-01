@@ -32,7 +32,7 @@ export default function LastMatchResult({
   return (
     <div className="flex flex-col items-center">
       <p className="mb-4 text-center font-Montserrat uppercase text-base sm:text-lg lg:text-base xl:text-lg font-semibold">
-        Dernier match joué:
+        Dernier match joué
       </p>
 
       <div className="flex flex-col justify-center items-center gap-1">

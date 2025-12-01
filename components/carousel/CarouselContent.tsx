@@ -134,7 +134,7 @@ export const CarouselContent = ({
             <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-0" />
             
             <div className="absolute bottom-6 left-0 m-4 md:m-8 z-10 pointer-events-none">
-                <h2 className="font-Bai_Jamjuree text-white uppercase text-xl md:text-3xl font-bold w-full sm:w-2/3 leading-tight mb-2 drop-shadow-lg">
+                <h2 className="font-Bai_Jamjuree text-white uppercase text-xl sm:text-2xl md:text-3xl font-bold w-full sm:w-2/3 leading-tight mb-2 drop-shadow-lg">
                   {article.title}
                 </h2>
                 <p className="font-Montserrat text-gray-200 text-xs md:text-sm w-full sm:w-2/3 line-clamp-2 md:line-clamp-none drop-shadow-md">

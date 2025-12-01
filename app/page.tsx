@@ -48,9 +48,9 @@ export default async function Page() {
         </div>
 
         <div className="my-6 sm:my-10 text-center px-4 sm:px-0">
-          <h2 className="uppercase text-xl sm:text-2xl md:text-3xl font-Bai_Jamjuree font-bold text-center mb-6">
+          <h1 className="uppercase text-2xl sm:text-3xl lg:text-4xl font-Bai_Jamjuree font-bold text-center mb-6">
             A la une sur Mémoire d&apos;Auxerrois
-          </h2>
+          </h1>
 
           {/* Conteneur principal : Empilé sur mobile, Ligne sur Desktop (lg) */}
           <div className="inline-block bg-white p-4 sm:p-6 w-full max-w-[1300px] shadow-sm">
@@ -83,21 +83,21 @@ export default async function Page() {
         </div>
 
         <div className="my-10 text-center">
-          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+          <h2 className="uppercase text-2xl sm:text-3xl font-Bai_Jamjuree font-bold text-center">
             Dictons et anecdotes
           </h2>
           <CitationSlider />
         </div>
 
         <div className="text-center">
-          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+          <h2 className="uppercase text-2xl sm:text-3xl font-Bai_Jamjuree font-bold text-center">
             Découvrez l&apos;AJA
           </h2>
           <PagesTilt />
         </div>
 
         <div className="my-10">
-          <h2 className="uppercase text-3xl font-Bai_Jamjuree font-bold text-center">
+          <h2 className="uppercase text-2xl sm:text-3xl font-Bai_Jamjuree font-bold text-center">
             Catégories
           </h2>
           <div>
