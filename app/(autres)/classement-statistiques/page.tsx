@@ -21,9 +21,9 @@ export default async function ClassementStatsPage() {
       <div className="mb-10">
         <Classement teams={classement} />
       </div>
-      <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase mb-4 sm:mb-10">
+      <h2 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase mb-4 sm:mb-10">
         Statistiques
-      </h1>
+      </h2>
       <div>
         <PlayerStatistics stats={stats} />
       </div>
