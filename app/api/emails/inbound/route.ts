@@ -7,58 +7,60 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
 
-    // 1. Vérifier si c'est bien un événement de réception
+    // Vérification de sécurité
     if (payload.type !== 'email.received') {
         return NextResponse.json({ status: "ignored" });
     }
 
-    // 2. Récupérer l'ID du mail depuis la notification
-    const emailId = payload.data.email_id;
+    // 1. On récupère tout depuis payload.data
+    // Note : On utilise 'any' ici temporairement pour éviter les erreurs TS si les types manquent
+    const data = payload.data as any;
     
-    if (!emailId) {
-        console.error("Pas d'ID d'email trouvé dans le payload");
-        return NextResponse.json({ status: "error", message: "No email ID" }, { status: 400 });
+    const { from, subject, html, text } = data;
+
+    console.log("📨 E-mail entrant reçu de :", from);
+    console.log("📝 Sujet :", subject);
+    
+    // Debug pour voir si le texte est vraiment vide
+    if (!text && !html) {
+        console.warn("⚠️ ATTENTION : Le contenu (text/html) semble vide dans le payload !");
+        console.log("Payload complet reçu :", JSON.stringify(payload, null, 2));
     }
 
-    // 3. 🔍 ALLER CHERCHER LE CONTENU DU MAIL (C'est l'étape qui manquait)
-    const { data: emailContent, error } = await resend.emails.get(emailId);
+    // 2. On prépare le contenu du transfert
+    // Si html/text sont vides, on met un message par défaut pour ne pas envoyer un mail vide
+    const finalHtml = html || `<p>${text}</p>` || "<p><em>Contenu de l'e-mail vide ou non récupéré.</em></p>";
+    const finalText = text || "Contenu vide";
 
-    if (error || !emailContent) {
-        console.error("Impossible de récupérer le contenu du mail:", error);
-        return NextResponse.json({ status: "error" }, { status: 500 });
-    }
-
-    // 4. Préparer les variables pour le transfert
-    const originalSender = emailContent.from; // ex: mathis.darde@...
-    const subject = emailContent.subject;
-    const htmlBody = emailContent.html;
-    const textBody = emailContent.text;
-
-    console.log(`📨 Transfert du mail ${emailId} de ${originalSender}`);
-
-    // 5. Transférer le mail
+    // 3. Transfert immédiat
     await resend.emails.send({
       from: "contact@memoiredauxerrois.fr", 
-      to: "dardemathis@gmail.com", // 👈 Votre adresse perso
+      to: "dardemathis@gmail.com", // ⚠️ Vérifiez que c'est bien votre mail perso ici
+      replyTo: from, 
       subject: `[FWD] ${subject}`,
-      replyTo: originalSender, // Pour répondre directement à l'envoyeur
+      text: finalText, // Important pour éviter les filtres anti-spam
       html: `
-        <div style="background-color: #f3f4f6; padding: 20px;">
+        <div style="background-color: #f3f4f6; padding: 20px; font-family: sans-serif;">
           <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
-            <h2 style="color: #111827; margin-top: 0;">Nouveau message reçu</h2>
-            <p style="color: #4b5563;"><strong>De :</strong> ${originalSender}</p>
-            <p style="color: #4b5563;"><strong>Sujet :</strong> ${subject}</p>
-            <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+            <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin:0; color:#333;">Nouveau message reçu</h3>
+                <p style="margin: 5px 0 0; color: #666; font-size: 14px;"><strong>De :</strong> ${from}</p>
+                <p style="margin: 0; color: #666; font-size: 14px;"><strong>Sujet Original :</strong> ${subject}</p>
+            </div>
             
-            <div>${htmlBody || textBody || "Contenu vide"}</div>
+            <div style="color: #111;">
+              ${finalHtml}
+            </div>
           </div>
         </div>
       `
     });
 
     return NextResponse.json({ status: "success" });
-  } catch (err) {
-    console.error("Erreur critique:", err);
-    return NextResponse.json({ status: "error" }, { status: 500 });
+
+  } catch (err: any) {
+    console.error("❌ Erreur lors du transfert :", err.message);
+    // On retourne quand même un succès à Resend pour qu'il ne réessaie pas en boucle
+    return NextResponse.json({ status: "error", error: err.message }, { status: 200 });
   }
 }
