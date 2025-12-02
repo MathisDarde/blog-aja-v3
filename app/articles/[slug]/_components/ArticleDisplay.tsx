@@ -8,6 +8,7 @@ import {
   Heart,
   MessageCircle,
   PenBox,
+  Share2Icon,
   Trash,
 } from "lucide-react";
 import KeywordHighlighter from "./HighlightKeywords";
@@ -116,6 +117,32 @@ export default function ArticleDisplay({
     );
     setActiveMethode(selectedMethodes);
     setIsMethodOpen(true);
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    const shareData = {
+      title: article.title,
+      text: article.teaser,
+      url: url,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Partage annulé ou erreur :', err);
+        toast.error('Partage annulé.')
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success("Lien copié dans le presse papiers !");
+      } catch (err) {
+        toast.error("Impossible de partager automatiquement. Copiez l'URL manuellement.");
+      }
+    }
   };
 
   return (
@@ -240,6 +267,19 @@ export default function ArticleDisplay({
                       },
                     ]}
                   />
+                )}
+
+                {article.state === "published" && (
+                  <div
+                    className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-gray-800"
+                    onClick={handleShare}
+                  >
+                    <Share2Icon
+                      width={20}
+                      height={20}
+                      className="w-4 sm:w-5 h-4 sm:h-5"
+                    />
+                  </div>
                 )}
 
                 {/* Admin actions */}
