@@ -1,0 +1,2 @@
+ALTER TABLE "methode_expert_match_table" ALTER COLUMN "systemeequipe1" SET DEFAULT '4-2-3-1';--> statement-breakpoint
+ALTER TABLE "methode_expert_match_table" ALTER COLUMN "systemeequipe2" SET DEFAULT '4-2-3-1';

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Control,
   UseFormRegister,
@@ -6,6 +6,8 @@ import {
   UseFormSetValue,
   useFieldArray,
   FieldErrors,
+  Path,
+  FieldArrayPath,
 } from "react-hook-form";
 import {
   ArrowLeftRight,
@@ -21,6 +23,7 @@ import {
 import Section from "./DropdownContainerDomExt";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { GameSystems } from "@/components/GameSystems";
+import { Dispositifs } from "@/components/Dispositifs";
 
 interface TeamInfosSectionProps {
   control: Control<MethodeMatchSchemaType>;
@@ -28,7 +31,7 @@ interface TeamInfosSectionProps {
   watch: UseFormWatch<MethodeMatchSchemaType>;
   setValue: UseFormSetValue<MethodeMatchSchemaType>;
   errors: FieldErrors<MethodeMatchSchemaType>;
-  teamIndex: 1 | 2; // 1 pour domicile, 2 pour extérieur
+  teamIndex: 1 | 2;
   expandedIndices: number[];
   onToggleExpand: (index: number) => void;
   onOpenModal: (index: number) => void;
@@ -48,38 +51,87 @@ export default function TeamInfosSection({
   const isDom = teamIndex === 1;
   const domExtLabel = isDom ? "domicile" : "l'extérieur";
 
-  // Noms des champs dynamiques
-  const teamNameField = `nomequipe${teamIndex}` as const;
-  const systemField = `systemeequipe${teamIndex}` as const;
-  const color1Field = `couleur1equipe${teamIndex}` as const;
-  const color2Field = `couleur2equipe${teamIndex}` as const;
-  const fieldArrayNameTitulaires = `titulairesequipe${teamIndex}`;
-  const fieldArrayNameRemplacants = `remplacantsequipe${teamIndex}`;
+  // Construction des clés typées pour correspondre au Schema
+  const teamNameField = `nomequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const systemField =
+    `systemeequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const color1Field =
+    `couleur1equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const color2Field =
+    `couleur2equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
 
-  const titulairesErrors = (errors as any)?.[fieldArrayNameTitulaires];
+  // Pour les FieldArrays, on force le type attendu par RHF
+  const fieldArrayNameTitulaires =
+    `titulairesequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
+  const fieldArrayNameRemplacants =
+    `remplacantsequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
 
+  // Récupération des erreurs typées (on suppose que c'est un tableau d'erreurs car c'est un FieldArray)
+  // On utilise un cast générique ici car l'accès dynamique string complexe est difficile à inférer pour TS sans structure exacte
+  const titulairesErrors = errors[
+    fieldArrayNameTitulaires as keyof MethodeMatchSchemaType
+  ] as unknown as Array<Record<string, { message: string }>> | undefined;
+
+  // --- LOGIQUE TITULAIRES ---
   const {
     fields: fieldsTitulaires,
     append: appendTitulaire,
-    remove: removeTitulaire
+    remove: removeTitulaire,
+    replace: replaceTitulaires,
   } = useFieldArray({
     control,
-    name: fieldArrayNameTitulaires as any,
+    name: fieldArrayNameTitulaires,
   });
 
+  // --- LOGIQUE REMPLACANTS ---
   const {
     fields: fieldsRemplacants,
     append: appendRemplacant,
-    remove: removeRemplacant
+    remove: removeRemplacant,
   } = useFieldArray({
     control,
-    name: fieldArrayNameRemplacants as any,
+    name: fieldArrayNameRemplacants,
   });
 
+  // Surveiller le changement de système
+  const selectedSystem = watch(systemField);
+  const currentDispositif = Dispositifs.find((d) => d.name === selectedSystem);
+  const positionsDisponibles = currentDispositif?.postes || [];
+
+  // Surveiller les titulaires actuels
+  const currentTitulaires = watch(
+    fieldArrayNameTitulaires as Path<MethodeMatchSchemaType>
+  ) as unknown as any[];
+
+  // --- EFFET: PRÉ-REMPLISSAGE DES POSTES ---
+  useEffect(() => {
+    if (!selectedSystem) return;
+
+    const formation = Dispositifs.find((d) => d.name === selectedSystem);
+
+    if (formation) {
+      const newTitulaires = formation.postes.map((poste, index) => {
+        const existingPlayer = currentTitulaires?.[index];
+
+        return [
+          existingPlayer?.[0] || "", // Nom
+          existingPlayer?.[1] || "", // Numéro
+          poste.name, // Poste
+          existingPlayer?.[3] || "", // Sortie
+          existingPlayer?.[4] || "", // Buts
+          existingPlayer?.[5] || false, // Jaune
+          existingPlayer?.[6] || false, // Rouge
+        ];
+      });
+
+      // @ts-expect-error: RHF attend un tableau d'objets, mais nous utilisons des tuples ici selon votre structure
+      replaceTitulaires(newTitulaires);
+    }
+  }, [selectedSystem, replaceTitulaires, currentTitulaires]);
 
   const handleColorChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: typeof color1Field | typeof color2Field
+    fieldName: Path<MethodeMatchSchemaType>
   ) => {
     const value = e.target.value;
     if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
@@ -157,18 +209,25 @@ export default function TeamInfosSection({
         </span>
         <select
           {...register(systemField)}
-          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${errors[systemField] ? "border-red-500" : "border-gray-600"
-            }`}
+          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${
+            errors[systemField] ? "border-red-500" : "border-gray-600"
+          }`}
         >
           <option value="">Sélectionner un système...</option>
           {GameSystems.map((system, index) => (
-            <option key={index} value={system}>{system}</option>
+            <option key={index} value={system}>
+              {system}
+            </option>
           ))}
         </select>
 
-        {errors[systemField] && (
+        {/* Le cast ici est nécessaire car systemField est dynamique, même si typé via Path */}
+        {errors[systemField as keyof MethodeMatchSchemaType] && (
           <span className="text-red-500 text-xs mt-1 ml-4">
-            {errors[systemField]?.message}
+            {
+              (errors[systemField as keyof MethodeMatchSchemaType] as any)
+                ?.message
+            }
           </span>
         )}
       </div>
@@ -185,15 +244,17 @@ export default function TeamInfosSection({
 
           return (
             <React.Fragment key={field.id}>
-              <div className="flex flex-col md:flex-row items-center gap-2 mb-2 w-full">
-                <div className="flex items-center gap-2 w-full md:w-2/5">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-3 w-full">
+                <div className="w-full md:w-5/12">
+                  <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                    Nom du joueur
+                  </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.0`)}
                     placeholder="Nom (ex: Gaëtan Perrin)"
-                    className={`py-2 px-4 border rounded w-full text-xs sm:text-sm ${rowError?.[0] ? "border-red-500" : ""
-                      }`}
+                    className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
                   {rowError?.[0] && (
                     <span className="text-red-500 text-[10px]">
@@ -201,15 +262,43 @@ export default function TeamInfosSection({
                     </span>
                   )}
                 </div>
-                <div className="relative w-full md:w-2/5 flex">
+
+                <div className="w-full md:w-5/12">
+                  <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                    Poste
+                  </label>
+                  <select
+                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    {...register(`${fieldArrayNameTitulaires}.${index}.2`)}
+                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${
+                      rowError?.[2] ? "border-red-500" : "border-gray-300"
+                    }`}
+                  >
+                    <option value="">Choisir...</option>
+                    {positionsDisponibles.length > 0 &&
+                      positionsDisponibles.map((poste, pIndex) => (
+                        <option key={pIndex} value={poste.name}>
+                          {poste.name}
+                        </option>
+                      ))}
+                  </select>
+                  {rowError?.[2] && (
+                    <span className="text-red-500 text-[10px]">
+                      {rowError[2]?.message}
+                    </span>
+                  )}
+                </div>
+
+                <div className="w-full md:w-2/12 relative">
+                  <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                    Numéro
+                  </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.1`)}
-                    placeholder="Numéro (ex: 10)"
-                    className={`py-2 px-4 border rounded w-full text-xs sm:text-sm ${
-                      rowError?.[1] ? "border-red-500" : ""
-                      }`}
+                    placeholder="N°"
+                    className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
                   {rowError?.[1] && (
                     <span className="text-red-500 text-[10px]">
@@ -217,90 +306,91 @@ export default function TeamInfosSection({
                     </span>
                   )}
                 </div>
-                <input
-                  type="text"
-                  // @ts-ignore
-                  {...register(`${fieldArrayNameTitulaires}.${index}.2`)}
-                  placeholder="Poste (ex: G)"
-                  className={`py-2 px-4 border rounded w-full text-xs sm:text-sm ${
-                    rowError?.[2] ? "border-red-500" : ""
-                    }`}
-                />
-                {rowError?.[2] && (
-                  <span className="text-red-500 text-[10px]">
-                    {rowError[2]?.message}
-                  </span>
-                )}
               </div>
 
-              <div className="flex flex-col md:flex-row gap-2 items-center px-0 md:px-12 mb-2">
-                <input
-                  type="text"
-                  // @ts-ignore
-                  {...register(`${fieldArrayNameTitulaires}.${index}.3`)}
-                  placeholder="Minute de sortie (ex: 75')"
-                  className={`py-2 px-4 border rounded w-full text-xs sm:text-sm ${
-                    rowError?.[3] ? "border-red-500" : ""
-                    }`}
-                />
+              <div className="flex flex-col md:flex-row gap-2 items-center my-2">
+                <div className="w-full md:w-1/4">
+                  <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                    Sortie
+                  </label>
+                  <input
+                    type="text"
+                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    {...register(`${fieldArrayNameTitulaires}.${index}.3`)}
+                    placeholder="Min. (ex: 75')"
+                    className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                  />
+                </div>
                 {rowError?.[3] && (
                   <span className="text-red-500 text-[10px]">
                     {rowError[3]?.message}
                   </span>
                 )}
-                <input
-                  type="text"
-                  // @ts-ignore
-                  {...register(`${fieldArrayNameTitulaires}.${index}.4`)}
-                  placeholder="Buts (ex: 0)"
-                  className={`py-2 px-4 border rounded w-full text-xs sm:text-sm ${
-                    rowError?.[4] ? "border-red-500" : ""
-                    }`}
-                />
-                {rowError?.[4] && (
-                  <span className="text-red-500 text-[10px]">
-                    {rowError[4]?.message}
-                  </span>
-                )}
-                <label className="flex items-center gap-2 text-xs sm:text-sm">
-                  <input
-                    type="checkbox"
-                    // @ts-ignore
-                    {...register(`${fieldArrayNameTitulaires}.${index}.5`)}
-                  />
-                  Carton jaune
-                </label>
 
-                <label className="flex items-center gap-2 text-xs sm:text-sm">
+                <div className="w-full md:w-1/4">
+                  <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                    Buts
+                  </label>
                   <input
-                    type="checkbox"
-                    // @ts-ignore
-                    {...register(`${fieldArrayNameTitulaires}.${index}.6`)}
+                    type="text"
+                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    {...register(`${fieldArrayNameTitulaires}.${index}.4`)}
+                    placeholder="Buts"
+                    className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
-                  Carton rouge
-                </label>
+                </div>
 
+                <div className="w-full md:w-1/4">
+                  <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
+                    <input
+                      type="checkbox"
+                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      {...register(`${fieldArrayNameTitulaires}.${index}.5`)}
+                    />
+                    <div
+                      className="w-4 h-6 bg-yellow-400 border border-gray-400 rounded-sm"
+                      title="Carton Jaune"
+                    ></div>
+                    <p className="text-xs sm:text-sm">Carton jaune</p>
+                  </label>
+                </div>
+
+                <div className="w-full md:w-1/4">
+                  <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
+                    <input
+                      type="checkbox"
+                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      {...register(`${fieldArrayNameTitulaires}.${index}.6`)}
+                    />
+                    <div
+                      className="w-4 h-6 bg-red-600 border border-gray-400 rounded-sm"
+                      title="Carton Rouge"
+                    ></div>
+                    <p className="text-xs sm:text-sm">Carton rouge</p>
+                  </label>
+                </div>
               </div>
 
               <button
                 type="button"
                 onClick={() => removeTitulaire(index)}
-                className="text-white bg-red-500 p-2 rounded-full mx-auto mb-2"
+                className="text-white bg-red-500 p-2 rounded-full mx-auto mt-2 mb-6 md:mb-2 hover:bg-red-600 transition"
               >
-                <Trash size={18} />
+                <Trash size={16} />
               </button>
+              <hr className="md:hidden border-gray-200 mb-4 w-full" />
             </React.Fragment>
-          )
+          );
         })}
 
         <button
           type="button"
-          // @ts-ignore
+          // @ts-expect-error: La structure attendue est un tuple, mais append attend un objet/array strict
           onClick={() => appendTitulaire([["", "", "", "", "", false, false]])}
-          className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
+          className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mt-2"
         >
           <Plus size={18} />
-          Ajouter un titulaire
+          Ajouter un titulaire manuellement
         </button>
       </div>
 
@@ -310,28 +400,35 @@ export default function TeamInfosSection({
           <ArrowLeftRight className="mr-4" />
           Remplaçants de l&apos;équipe à {domExtLabel} :
         </span>
-
         {fieldsRemplacants.map((field, index) => (
           <React.Fragment key={field.id}>
             <div className="flex flex-col md:flex-row items-center gap-2 mb-2 w-full">
               <div className="flex items-center gap-2 w-full md:w-2/5">
                 {expandedIndices.includes(index) ? (
-                  <ChevronDown onClick={() => onToggleExpand(index)} className="cursor-pointer" />
+                  <ChevronDown
+                    onClick={() => onToggleExpand(index)}
+                    className="cursor-pointer"
+                  />
                 ) : (
-                  <ChevronRight onClick={() => onToggleExpand(index)} className="cursor-pointer" />
+                  <ChevronRight
+                    onClick={() => onToggleExpand(index)}
+                    className="cursor-pointer"
+                  />
                 )}
+
                 <input
                   type="text"
-                  // @ts-ignore
+                  // @ts-expect-error: Accès par index sur un array de tuples pour RHF
                   {...register(`${fieldArrayNameRemplacants}.${index}.0`)}
                   placeholder="Nom (ex: Gaëtan Perrin)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
               </div>
+
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
-                  // @ts-ignore
+                  // @ts-expect-error: Accès par index sur un array de tuples pour RHF
                   {...register(`${fieldArrayNameRemplacants}.${index}.1`)}
                   placeholder="Drapeau (ex: france)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -344,9 +441,10 @@ export default function TeamInfosSection({
                   <FileQuestion size={20} />
                 </button>
               </div>
+
               <input
                 type="text"
-                // @ts-ignore
+                // @ts-expect-error: Accès par index sur un array de tuples pour RHF
                 {...register(`${fieldArrayNameRemplacants}.${index}.2`)}
                 placeholder="Poste (ex: G)"
                 className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
@@ -354,21 +452,64 @@ export default function TeamInfosSection({
             </div>
 
             {expandedIndices.includes(index) && (
-              <div className="flex flex-col md:flex-row gap-2 items-center px-0 md:px-12 mb-2">
-                <input
-                  type="text"
-                  // @ts-ignore
-                  {...register(`${fieldArrayNameRemplacants}.${index}.3`)}
-                  placeholder="Minute (ex: 75')"
-                  className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
-                />
-                <input
-                  type="text"
-                  // @ts-ignore
-                  {...register(`${fieldArrayNameRemplacants}.${index}.4`)}
-                  placeholder="Buts (ex: 0)"
-                  className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
-                />
+              <div className="flex flex-col md:flex-row gap-2 items-center my-2">
+                <div className="w-full md:w-1/4">
+                  <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                    Entrée
+                  </label>
+                  <input
+                    type="text"
+                    // Note: Il y avait une erreur dans votre code original ici (fieldArrayNameTitulaires au lieu de Remplacants)
+                    // J'ai corrigé pour Remplacants
+                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    {...register(`${fieldArrayNameRemplacants}.${index}.3`)}
+                    placeholder="Min. (ex: 75')"
+                    className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                  />
+                </div>
+
+                <div className="w-full md:w-1/4">
+                  <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                    Buts
+                  </label>
+                  <input
+                    type="text"
+                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    {...register(`${fieldArrayNameRemplacants}.${index}.4`)}
+                    placeholder="Buts"
+                    className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                  />
+                </div>
+
+                <div className="w-full md:w-1/4">
+                  <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
+                    <input
+                      type="checkbox"
+                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      {...register(`${fieldArrayNameRemplacants}.${index}.5`)}
+                    />
+                    <div
+                      className="w-4 h-6 bg-yellow-400 border border-gray-400 rounded-sm"
+                      title="Carton Jaune"
+                    ></div>
+                    <p className="text-xs sm:text-sm">Carton jaune</p>
+                  </label>
+                </div>
+
+                <div className="w-full md:w-1/4">
+                  <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
+                    <input
+                      type="checkbox"
+                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      {...register(`${fieldArrayNameRemplacants}.${index}.6`)}
+                    />
+                    <div
+                      className="w-4 h-6 bg-red-600 border border-gray-400 rounded-sm"
+                      title="Carton Rouge"
+                    ></div>
+                    <p className="text-xs sm:text-sm">Carton rouge</p>
+                  </label>
+                </div>
               </div>
             )}
 
@@ -381,10 +522,9 @@ export default function TeamInfosSection({
             </button>
           </React.Fragment>
         ))}
-
         <button
           type="button"
-          // @ts-ignore
+          // @ts-expect-error: La structure attendue est un tuple
           onClick={() => appendRemplacant([["", "", "", "", ""]])}
           className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
         >

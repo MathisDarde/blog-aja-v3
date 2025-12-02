@@ -19,21 +19,23 @@ export async function sendNewsletter(article: ArticleData) {
     const subscribers = await db
       .select({ email: user.email })
       .from(user)
-      .where(eq(user.emailVerified, true));
+      .where(eq(user.mailArticle, true));
 
     if (subscribers.length === 0) {
-        return { success: false, message: "Aucun abonné trouvé" };
+      return { success: false, message: "Aucun abonné trouvé" };
     }
 
-    console.log(`🚀 Préparation de l'envoi pour ${subscribers.length} abonnés...`);
+    console.log(
+      `🚀 Préparation de l'envoi pour ${subscribers.length} abonnés...`
+    );
 
     const articleLink = `https://memoiredauxerrois.fr/articles/${article.slug}`;
-    
+
     const emailHtml = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h1 style="color: #333;">Nouvel article publié ! 📢</h1>
         
-        ${article.imageUrl ? `<img src="${article.imageUrl}" alt="${article.title}" style="width: 100%; border-radius: 8px; margin: 20px 0;" />` : ''}
+        ${article.imageUrl ? `<img src="${article.imageUrl}" alt="${article.title}" style="width: 100%; border-radius: 8px; margin: 20px 0;" />` : ""}
         
         <h2 style="color: #111;">${article.title}</h2>
         
@@ -59,14 +61,13 @@ export async function sendNewsletter(article: ArticleData) {
       to: sub.email,
       subject: `Nouveau : ${article.title}`,
       html: emailHtml,
-      text: `Nouvel article : ${article.title}\n\n${article.teaser}\n\nLire la suite : ${articleLink}`
+      text: `Nouvel article : ${article.title}\n\n${article.teaser}\n\nLire la suite : ${articleLink}`,
     }));
 
     const data = await resend.batch.send(emailBatch);
 
     console.log("✅ Newsletter envoyée avec succès !", data);
     return { success: true, data };
-
   } catch (error: unknown) {
     let errorMessage = "Une erreur inconnue est survenue";
     if (error instanceof Error) errorMessage = error.message;

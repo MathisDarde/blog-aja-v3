@@ -22,7 +22,9 @@ export const composEnum = pgEnum("compos", [
   "4-4-2",
   "5-4-1",
   "3-5-2",
-])
+  "4-1-4-1",
+  "4-5-1",
+]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -36,6 +38,7 @@ export const user = pgTable("user", {
     .notNull()
     .$onUpdate(() => new Date()),
   admin: boolean("admin").default(false),
+  mailArticle: boolean("mailArticle").default(false),
 });
 
 export const session = pgTable("session", {
@@ -159,11 +162,11 @@ export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
   couleur1equipe1: text("couleur1equipe1").notNull(),
   couleur2equipe1: text("couleur2equipe1").notNull(),
   nomequipe1: text("nomequipe1").notNull(),
-  systemeequipe1: composEnum().notNull().default("4-3-3 Offensif"),
+  systemeequipe1: composEnum().notNull().default("4-2-3-1"),
   couleur1equipe2: text("couleur1equipe2").notNull(),
   couleur2equipe2: text("couleur2equipe2").notNull(),
   nomequipe2: text("nomequipe2").notNull(),
-  systemeequipe2: composEnum().notNull().default("4-3-3 Offensif"),
+  systemeequipe2: composEnum().notNull().default("4-2-3-1"),
   titulairesequipe1: json("titulairesequipe1").notNull(),
   titulairesequipe2: json("titulairesequipe2").notNull(),
   remplacantsequipe1: json("remplacantsequipe1").notNull(),
