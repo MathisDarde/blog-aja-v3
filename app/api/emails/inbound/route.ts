@@ -28,11 +28,23 @@ export async function POST(request: Request) {
 
     const { from, subject, html, text } = payload.data;
 
-    console.log("📨 E-mail entrant reçu de :", from);
-    console.log("📝 Sujet :", subject);
-    
-    const finalHtml = html || (text ? `<p>${text}</p>` : "<p><em>Contenu de l'e-mail vide ou non récupéré.</em></p>");
-    const finalText = text || "Contenu vide";
+    // --- ZONE DE DEBUG ---
+    console.log("🔍 INSPECTION DU CONTENU REÇU :");
+    console.log("1. From:", from);
+    console.log("2. Subject:", subject);
+    console.log("3. Type of HTML:", typeof html, "| Value:", html ? html.substring(0, 50) + "..." : "VIDE/NULL");
+    console.log("4. Type of Text:", typeof text, "| Value:", text ? text.substring(0, 50) + "..." : "VIDE/NULL");
+    // ---------------------
+
+    // Logique de récupération plus robuste (gère null et undefined)
+    let bodyContent = "<p><em>Contenu vide.</em></p>";
+
+    if (html && html.trim().length > 0) {
+        bodyContent = html;
+    } else if (text && text.trim().length > 0) {
+        // Convertit les sauts de ligne texte en <br> HTML
+        bodyContent = `<p>${text.replace(/\n/g, "<br>")}</p>`;
+    }
 
     // 3. Transfert
     const dataRes = await resend.emails.send({
@@ -40,7 +52,6 @@ export async function POST(request: Request) {
       to: "dardemathis@gmail.com",
       replyTo: from, 
       subject: `[FWD] ${subject}`,
-      text: finalText,
       html: `
         <div style="background-color: #f3f4f6; padding: 20px; font-family: sans-serif;">
           <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
@@ -51,7 +62,7 @@ export async function POST(request: Request) {
             </div>
             
             <div style="color: #111;">
-              ${finalHtml}
+              ${bodyContent}
             </div>
           </div>
         </div>
