@@ -8,30 +8,20 @@ import {
   WholeWord,
   Plus,
   Trash,
-  ImageIcon,
-  ChartBarBig,
-  ArrowLeftRight,
   AArrowUp,
-  PaintbrushVertical,
   Dumbbell,
   Clock,
-  FolderPen,
-  FileQuestion,
-  ChevronRight,
-  ChevronDown,
-  Loader2,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import Section from "./DropdownContainerDomExt";
 import { getFlags } from "@/actions/method/get-flags-files";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
 import Button from "@/components/BlueButton";
-import Image from "next/image";
+import TeamInfosSection from "./TeamInfosSection";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -53,16 +43,16 @@ export default function MatchForm() {
   } = useForm<MethodeMatchSchemaType>({
     resolver: zodResolver(MethodeMatchSchema),
     defaultValues: {
-      keywords: [{ value: "" }], // Changé de [{value: ""}] à [""]
+      keywords: [{ value: "" }],
       titrematch: "",
       couleur1equipe1: "#000000",
       couleur2equipe1: "#000000",
       nomequipe1: "",
-      systemeequipe1: "",
+      systemeequipe1: "4-3-3 Offensif",
       couleur1equipe2: "#000000",
       couleur2equipe2: "#000000",
       nomequipe2: "",
-      systemeequipe2: "",
+      systemeequipe2: "4-3-3 Offensif",
       stade: "",
       date: "",
       remplacantsequipe1: [[""]],
@@ -70,9 +60,6 @@ export default function MatchForm() {
     },
   });
 
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
-  const [uploadedUrl, setUploadedUrl] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
   const [modal, setModal] = useState<
     false | { team: "equipe1" | "equipe2"; index: number }
   >(false);
@@ -93,24 +80,6 @@ export default function MatchForm() {
   } = useFieldArray<MethodeMatchSchemaType, "keywords">({
     control,
     name: "keywords", // Assurez-vous que c'est juste "keywords"
-  });
-
-  const {
-    fields: remplacantseq1field,
-    append: appendremplacantseq1,
-    remove: removeremplacantseq1,
-  } = useFieldArray({
-    control,
-    name: "remplacantsequipe1",
-  });
-
-  const {
-    fields: remplacantseq2field,
-    append: appendremplacantseq2,
-    remove: removeremplacantseq2,
-  } = useFieldArray({
-    control,
-    name: "remplacantsequipe2",
   });
 
   const fetchFiles = async () => {
@@ -150,56 +119,6 @@ export default function MatchForm() {
         setValue(`remplacantsequipe2.${modal.index}.1`, filename);
       }
       setModal(false);
-    }
-  };
-
-  const uploadToCloudinary = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-      return data.secure_url;
-    } catch (error) {
-      console.error("Cloudinary upload error:", error);
-      throw error;
-    }
-  };
-
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setPreviewPhoto(URL.createObjectURL(file));
-
-      // Upload immédiatement vers Cloudinary
-      setIsUploading(true);
-      try {
-        const url = await uploadToCloudinary(file);
-        setUploadedUrl(url);
-
-        setValue("imgterrain", url, { shouldValidate: true });
-        toast.success("Image uploadée avec succès !");
-      } catch (error) {
-        console.error(error);
-        toast.error("Erreur lors de l'upload de l'image");
-        setPreviewPhoto(null);
-      } finally {
-        setIsUploading(false);
-      }
-    } else {
-      setPreviewPhoto(null);
-      setUploadedUrl("");
     }
   };
 
@@ -278,7 +197,6 @@ export default function MatchForm() {
 
     const finalData = {
       ...processedData,
-      image: uploadedUrl, // URL cloudinary déjà traitée avant
     };
 
     const response = await submitMethodeMatchForm(finalData, user_id);
@@ -289,35 +207,6 @@ export default function MatchForm() {
       toast.error(
         response.message || response.errors?.[0]?.message || "Erreur inconnue"
       );
-    }
-  };
-
-  const handleColorChangeDom1 = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Validation du code hex
-    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-      setValue("couleur1equipe1", value);
-    }
-  };
-  const handleColorChangeDom2 = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Validation du code hex
-    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-      setValue("couleur2equipe1", value);
-    }
-  };
-  const handleColorChangeAway1 = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Validation du code hex
-    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-      setValue("couleur1equipe2", value);
-    }
-  };
-  const handleColorChangeAway2 = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Validation du code hex
-    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-      setValue("couleur2equipe2", value);
     }
   };
 
@@ -393,65 +282,6 @@ export default function MatchForm() {
         </div>
 
         <div className="relative w-full my-4">
-          {/* SI PAS DE PHOTO → afficher l'input */}
-          {!previewPhoto ? (
-            <div>
-              <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
-                <ImageIcon className="mr-4" />
-                Image :
-              </span>
-              <input
-                type="file"
-                onChange={handleFileChange}
-                className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-                accept="image/*"
-                disabled={isUploading}
-              />
-            </div>
-          ) : (
-            <>
-              {/* SI PHOTO → l'afficher */}
-              <div className="w-fit mb-4 relative mx-auto">
-                <Image
-                  width={1024}
-                  height={1024}
-                  src={previewPhoto}
-                  alt="Photo de l'article"
-                  className="w-full aspect-video object-cover rounded-xl"
-                />
-                {isUploading && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-xl">
-                    <Loader2 className="w-12 h-12 text-white animate-spin" />
-                  </div>
-                )}
-              </div>
-
-              {/* input hidden permanent */}
-              <input
-                type="file"
-                id="fileInput"
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*"
-                disabled={isUploading}
-              />
-
-              {/* Bouton pour changer l'image */}
-              <label
-                htmlFor="fileInput"
-                className={`cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto ${
-                  isUploading ? "opacity-50 pointer-events-none" : ""
-                }`}
-              >
-                {isUploading
-                  ? "Upload en cours..."
-                  : "Modifier l'image de bannière"}
-              </label>
-            </>
-          )}
-        </div>
-
-        <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <Dumbbell className="mr-4" />
             Stade :
@@ -477,330 +307,29 @@ export default function MatchForm() {
           />
         </div>
 
-        <Section title="Infos sur équipe à domicile">
-          <div className="relative w-full my-4">
-            <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <PaintbrushVertical className="mr-4" />
-              Couleur principale de l&apos;équipe à domicile (Code héx.) :
-            </span>
-            <div className="flex items-center gap-6">
-              <input
-                type="color"
-                id="inputcolor"
-                {...register("couleur1equipe1")}
-                onChange={handleColorChangeDom1}
-                className="aspect-square border-none cursor-pointer appearance-none"
-              />
-              <input
-                type="text"
-                id="inputhex"
-                {...register("couleur1equipe1")}
-                value={watch("couleur1equipe1")}
-                onChange={handleColorChangeDom1}
-                className="bg-white w-full md:w-1/3 px-6 py-2 md:py-3 rounded-md border-gray-600 border text-sm sm:text-base"
-              />
-            </div>
-          </div>
+        <TeamInfosSection
+          control={control}
+          register={register}
+          watch={watch}
+          setValue={setValue}
+          errors={errors}
+          teamIndex={1}
+          expandedIndices={expandedIndices.equipe1}
+          onToggleExpand={(idx) => toggleExpand("equipe1", idx)}
+          onOpenModal={openModalTeam1}
+        />
 
-          <div className="relative w-auto my-4">
-            <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <PaintbrushVertical className="mr-4" />
-              Couleur secondaire de l&apos;équipe à domicile (Code héx.) :
-            </span>
-            <div className="flex items-center gap-6">
-              <input
-                type="color"
-                id="inputcolor"
-                {...register("couleur2equipe1")}
-                onChange={handleColorChangeDom2}
-                className="aspect-square border-none cursor-pointer appearance-none"
-              />
-              <input
-                type="text"
-                id="inputhex"
-                {...register("couleur2equipe1")}
-                value={watch("couleur2equipe1")}
-                onChange={handleColorChangeDom2}
-                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
-              />
-            </div>
-          </div>
-
-          <div className="relative w-auto my-4">
-            <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <FolderPen className="mr-4" />
-              Nom de l&apos;équipe à domicile :
-            </span>
-            <input
-              type="text"
-              {...register("nomequipe1")}
-              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-              placeholder="Nom de l'équipe (ex: AJ Auxerre)"
-            />
-          </div>
-
-          <div className="relative w-auto my-4">
-            <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <ChartBarBig className="mr-4" />
-              Système de jeu de l&apos;équipe à domicile :
-            </span>
-            <input
-              type="text"
-              {...register("systemeequipe1")}
-              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-              placeholder="Système de jeu (ex: 4-3-3)"
-            />
-          </div>
-
-          <div className="relative w-auto my-4">
-            <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <ArrowLeftRight className="mr-4" />
-              Remplaçants de l&apos;équipe à domicile :
-            </span>
-
-            {remplacantseq1field.map((field, index) => (
-              <React.Fragment key={field.id}>
-                <div className="flex flex-col md:flex-row items-center gap-2 mb-2 w-full">
-                  <div className="flex items-center gap-2 w-full md:w-2/5">
-                    {expandedIndices.equipe1.includes(index) ? (
-                      <ChevronDown
-                        onClick={() => toggleExpand("equipe1", index)}
-                      />
-                    ) : (
-                      <ChevronRight
-                        onClick={() => toggleExpand("equipe1", index)}
-                      />
-                    )}
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe1.${index}.0`)}
-                      placeholder="Nom (ex: Gaëtan Perrin)"
-                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
-                    />
-                  </div>
-                  <div className="relative w-full md:w-2/5 flex">
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe1.${index}.1`)}
-                      placeholder="Drapeau (ex: france)"
-                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => openModalTeam1(index)}
-                      className="ml-1 text-aja-blue"
-                    >
-                      <FileQuestion size={20} />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    {...register(`remplacantsequipe1.${index}.2`)}
-                    placeholder="Poste (ex: G ou Gardien)"
-                    className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
-                  />
-                </div>
-
-                {expandedIndices.equipe1.includes(index) && (
-                  <div className="flex flex-col md:flex-row gap-2 items-center px-0 md:px-12 mb-2">
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe1.${index}.3`)}
-                      placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
-                    />
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe1.${index}.4`)}
-                      placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => removeremplacantseq1(index)}
-                  className="text-white  bg-red-500 p-2 rounded-full mx-auto mb-2"
-                >
-                  <Trash size={18} />
-                </button>
-              </React.Fragment>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => appendremplacantseq1([""])}
-              className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
-            >
-              <Plus size={18} />
-              Ajouter un remplaçant
-            </button>
-          </div>
-        </Section>
-
-        <Section title="Infos sur équipe à l'extérieur">
-          <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <PaintbrushVertical className="mr-4" />
-              Couleur principale de l&apos;équipe à l&apos;extérieur (Code héx.)
-              :
-            </span>
-            <div className="flex items-center gap-6">
-              <input
-                type="color"
-                id="inputcolor"
-                {...register("couleur1equipe2")}
-                onChange={handleColorChangeAway1}
-                className="aspect-square border-none cursor-pointer appearance-none"
-              />
-              <input
-                type="text"
-                id="inputhex"
-                {...register("couleur1equipe2")}
-                value={watch("couleur1equipe2")}
-                onChange={handleColorChangeAway1}
-                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
-              />
-            </div>
-          </div>
-
-          <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <PaintbrushVertical className="mr-4" />
-              Couleur secondaire de l&apos;équipe à l&apos;extérieur (Code héx.)
-              :
-            </span>
-            <div className="flex items-center gap-6">
-              <input
-                type="color"
-                id="inputcolor"
-                {...register("couleur2equipe2")}
-                onChange={handleColorChangeAway2}
-                className="aspect-square border-none cursor-pointer appearance-none"
-              />
-              <input
-                type="text"
-                id="inputhex"
-                {...register("couleur2equipe2")}
-                value={watch("couleur2equipe2")}
-                onChange={handleColorChangeAway2}
-                className="bg-white w-full md:w-1/3 px-6 py-3 rounded-md border-gray-600 border text-sm sm:text-base"
-              />
-            </div>
-          </div>
-
-          <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <FolderPen className="mr-4" />
-              Nom de l&apos;équipe à l&apos;extérieur :
-            </span>
-            <input
-              type="text"
-              {...register("nomequipe2")} // Modifié de nomequipe1 à nomequipe2
-              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-              placeholder="Nom de l'équipe (ex: RC Lens)"
-            />
-          </div>
-
-          <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <ChartBarBig className="mr-4" />
-              Système de jeu de l&apos;équipe à l&apos;extérieur :
-            </span>
-            <input
-              type="text"
-              {...register("systemeequipe2")} // Modifié de systemeequipe1 à systemeequipe2
-              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-              placeholder="Système de jeu (ex: 3-4-3)"
-            />
-          </div>
-
-          <div className="relative w-auto my-4">
-            <span className="font-semibold font-Montserrat text-left text-sm sm:text-base flex items-center text-gray-600 mb-2">
-              <ArrowLeftRight className="mr-4" />
-              Remplaçants de l&apos;équipe à l&apos;extérieur :
-            </span>
-
-            {remplacantseq2field.map((field, index) => (
-              <React.Fragment key={field.id}>
-                <div className="flex flex-col md:flex-row items-center gap-2 mb-2 w-full">
-                  <div className="flex items-center gap-2 w-full md:w-2/5">
-                    {expandedIndices.equipe2.includes(index) ? (
-                      <ChevronDown
-                        onClick={() => toggleExpand("equipe2", index)}
-                      />
-                    ) : (
-                      <ChevronRight
-                        onClick={() => toggleExpand("equipe2", index)}
-                      />
-                    )}
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe2.${index}.0`)}
-                      placeholder="Nom (ex: Gaëtan Perrin)"
-                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
-                    />
-                  </div>
-                  <div className="relative w-full md:w-2/5 flex">
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe2.${index}.1`)}
-                      placeholder="Drapeau (ex: france)"
-                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => openModalTeam2(index)}
-                      className="ml-1 text-aja-blue"
-                    >
-                      <FileQuestion size={20} />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    {...register(`remplacantsequipe2.${index}.2`)}
-                    placeholder="Poste (ex: G ou Gardien)"
-                    className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
-                  />
-                </div>
-
-                {expandedIndices.equipe2.includes(index) && (
-                  <div className="flex flex-col md:flex-row gap-2 items-center px-0 md:px-12 mb-2">
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe2.${index}.3`)}
-                      placeholder="Minute du changement (ex: 75')"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
-                    />
-                    <input
-                      type="text"
-                      {...register(`remplacantsequipe2.${index}.4`)}
-                      placeholder="Nombre de buts marqués (ex: 0)"
-                      className="py-2 px-4 border rounded w-full md:w-2/4 text-xs sm:text-sm"
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => removeremplacantseq2(index)}
-                  className="text-white  bg-red-500 p-2 rounded-full mx-auto mb-2"
-                >
-                  <Trash size={18} />
-                </button>
-              </React.Fragment>
-            ))}
-            <button
-              type="button"
-              onClick={() => appendremplacantseq2([""])}
-              className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
-            >
-              <Plus size={18} />
-              Ajouter un remplaçant
-            </button>
-          </div>
-        </Section>
+        <TeamInfosSection
+          control={control}
+          register={register}
+          watch={watch}
+          setValue={setValue}
+          errors={errors}
+          teamIndex={2}
+          expandedIndices={expandedIndices.equipe2}
+          onToggleExpand={(idx) => toggleExpand("equipe2", idx)}
+          onOpenModal={openModalTeam2}
+        />
 
         <Button type="submit" size="default">
           Je publie cette méthode

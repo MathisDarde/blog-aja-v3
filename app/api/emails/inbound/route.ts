@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     console.log("✅ Contenu récupéré. Transfert en cours...");
 
     const { error: sendError } = await resend.emails.send({
-      from: "contact@memoiredauxerrois.fr", 
+      from: "Contact Mémoire d'Auxerrois <contact@memoiredauxerrois.fr>", 
       to: "dardemathis@gmail.com",
       replyTo: from, 
       subject: `[FWD] ${subject}`,

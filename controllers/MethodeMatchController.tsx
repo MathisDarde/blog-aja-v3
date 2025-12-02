@@ -5,7 +5,6 @@ import { SelectMatchMethode, methodeExpertMatchTable } from "@/db/schema";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 
 export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
   return await db.select().from(methodeExpertMatchTable);
@@ -16,9 +15,7 @@ export async function createMethodeMatch(
   userId: string
 ) {
   try {
-    const imageUrl = ensureCloudinaryUrl(data.imgterrain);
-
-    // Créer la méthode dans la base de données avec Drizzle
+        // Créer la méthode dans la base de données avec Drizzle
     const {
       titrematch,
       couleur1equipe1,
@@ -32,6 +29,8 @@ export async function createMethodeMatch(
       stade,
       date,
       keywords,
+      titulairesequipe1,
+      titulairesequipe2,
       remplacantsequipe1,
       remplacantsequipe2,
     } = data;
@@ -47,11 +46,12 @@ export async function createMethodeMatch(
       couleur2equipe2,
       nomequipe2,
       systemeequipe2,
+      titulairesequipe1,
+      titulairesequipe2,
       remplacantsequipe1,
       remplacantsequipe2,
       stade,
       date,
-      imgterrain: imageUrl,
       typemethode: "match",
       keywords: keywords.map((keyword) => keyword.value),
       userId,
@@ -63,7 +63,7 @@ export async function createMethodeMatch(
     return {
       success: false,
       message:
-        "Erreur lors de l'upload du fichier ou de la création de la méthode.",
+        "Erreur lors de la création de la méthode.",
     };
   }
 }
@@ -89,8 +89,6 @@ export async function updateMethodeMatch(
   userId: string
 ) {
   try {
-    const imageUrl = ensureCloudinaryUrl(data.imgterrain);
-
     const {
       titrematch,
       couleur1equipe1,
@@ -125,10 +123,6 @@ export async function updateMethodeMatch(
       keywords: keywords.map((keyword) => keyword.value),
       userId,
     };
-
-    if (imageUrl) {
-      updateData.imgterrain = imageUrl;
-    }
 
     const result = await db
       .update(methodeExpertMatchTable)

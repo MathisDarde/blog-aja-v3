@@ -19,7 +19,7 @@ export async function sendNewsletter(article: ArticleData) {
     const subscribers = await db
       .select({ email: user.email })
       .from(user)
-      .where(eq(user.mailArticle, true));
+      .where(eq(user.emailVerified, true));
 
     if (subscribers.length === 0) {
         return { success: false, message: "Aucun abonné trouvé" };
