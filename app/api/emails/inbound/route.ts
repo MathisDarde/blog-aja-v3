@@ -1,44 +1,46 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
+interface ResendPayload {
+  type: string;
+  created_at: string;
+  data: {
+    created_at: string;
+    email_id: string;
+    from: string;
+    to: string[];
+    subject: string;
+    html: string;
+    text: string;
+  };
+}
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const payload = await request.json();
+    const payload = (await request.json()) as ResendPayload;
 
     // Vérification de sécurité
     if (payload.type !== 'email.received') {
         return NextResponse.json({ status: "ignored" });
     }
 
-    // 1. On récupère tout depuis payload.data
-    // Note : On utilise 'any' ici temporairement pour éviter les erreurs TS si les types manquent
-    const data = payload.data as any;
-    
-    const { from, subject, html, text } = data;
+    const { from, subject, html, text } = payload.data;
 
     console.log("📨 E-mail entrant reçu de :", from);
     console.log("📝 Sujet :", subject);
     
-    // Debug pour voir si le texte est vraiment vide
-    if (!text && !html) {
-        console.warn("⚠️ ATTENTION : Le contenu (text/html) semble vide dans le payload !");
-        console.log("Payload complet reçu :", JSON.stringify(payload, null, 2));
-    }
-
-    // 2. On prépare le contenu du transfert
-    // Si html/text sont vides, on met un message par défaut pour ne pas envoyer un mail vide
-    const finalHtml = html || `<p>${text}</p>` || "<p><em>Contenu de l'e-mail vide ou non récupéré.</em></p>";
+    const finalHtml = html || (text ? `<p>${text}</p>` : "<p><em>Contenu de l'e-mail vide ou non récupéré.</em></p>");
     const finalText = text || "Contenu vide";
 
-    // 3. Transfert immédiat
-    await resend.emails.send({
+    // 3. Transfert
+    const dataRes = await resend.emails.send({
       from: "contact@memoiredauxerrois.fr", 
-      to: "dardemathis@gmail.com", // ⚠️ Vérifiez que c'est bien votre mail perso ici
+      to: "dardemathis@gmail.com",
       replyTo: from, 
       subject: `[FWD] ${subject}`,
-      text: finalText, // Important pour éviter les filtres anti-spam
+      text: finalText,
       html: `
         <div style="background-color: #f3f4f6; padding: 20px; font-family: sans-serif;">
           <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
@@ -56,11 +58,25 @@ export async function POST(request: Request) {
       `
     });
 
-    return NextResponse.json({ status: "success" });
+    if (dataRes.error) {
+      console.error("❌ Erreur Resend API:", dataRes.error);
+      return NextResponse.json({ status: "error", error: dataRes.error }, { status: 500 });
+    }
 
-  } catch (err: any) {
-    console.error("❌ Erreur lors du transfert :", err.message);
-    // On retourne quand même un succès à Resend pour qu'il ne réessaie pas en boucle
-    return NextResponse.json({ status: "error", error: err.message }, { status: 200 });
+    return NextResponse.json({ status: "success", data: dataRes.data });
+
+  } catch (error: unknown) {
+    let errorMessage = "Une erreur inconnue est survenue";
+    
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    } else if (typeof error === "string") {
+        errorMessage = error;
+    }
+
+    console.error("❌ Erreur lors du transfert :", errorMessage);
+    
+    // On retourne un succès (200) pour que Resend arrête de réessayer
+    return NextResponse.json({ status: "error", error: errorMessage }, { status: 200 });
   }
 }
