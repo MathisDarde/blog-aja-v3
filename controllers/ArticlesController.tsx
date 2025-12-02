@@ -7,6 +7,7 @@ import { and, desc, eq, ilike, like, or, sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { Article, GetURLParams } from "@/contexts/Interfaces";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
+import { sendNewsletter } from "@/actions/article/send-new-article-mail";
 
 export async function getAllArticles(): Promise<SelectArticle[]> {
   return db
@@ -46,7 +47,7 @@ export async function createArticle(data: ArticleSchemaType, userId: string) {
     const { slug, title, teaser, content, author, tags } = data;
     const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
 
-    return await db.insert(articlesTable).values({
+    const result = await db.insert(articlesTable).values({
       id_article: uuidv4(),
       slug,
       imageUrl,
@@ -58,6 +59,20 @@ export async function createArticle(data: ArticleSchemaType, userId: string) {
       state: "published",
       userId,
     });
+    
+    console.log("📨 Déclenchement de la newsletter en arrière-plan...");
+    
+    sendNewsletter({
+        title: title,
+        teaser: teaser,
+        slug: slug,
+        imageUrl: imageUrl
+    }).catch(err => {
+        console.error("❌ Erreur lors de l'envoi de la newsletter (Background):", err);
+    });
+
+    return result;
+
   } catch (err) {
     console.error(err);
     throw new Error(
