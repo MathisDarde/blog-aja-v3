@@ -140,6 +140,7 @@ export default function ArticleDisplay({
         await navigator.clipboard.writeText(url);
         toast.success("Lien copié dans le presse papiers !");
       } catch (err) {
+        console.error("Impossible de partager automatiquement", err)
         toast.error("Impossible de partager automatiquement. Copiez l'URL manuellement.");
       }
     }

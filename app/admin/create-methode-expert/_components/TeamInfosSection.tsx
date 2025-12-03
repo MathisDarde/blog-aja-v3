@@ -37,6 +37,9 @@ interface TeamInfosSectionProps {
   onOpenModal: (index: number) => void;
 }
 
+// Type définissant la structure d'un joueur (Tuple) pour remplacer le 'any'
+type PlayerTuple = [string, string, string, string, string, boolean, boolean];
+
 export default function TeamInfosSection({
   control,
   register,
@@ -72,7 +75,6 @@ export default function TeamInfosSection({
   ] as unknown as Array<Record<string, { message: string }>> | undefined;
 
   // Récupération de l'erreur spécifique pour le système de jeu
-  // On utilise keyof typeof errors pour rassurer TS sur l'accès dynamique
   const systemError = errors[systemField as keyof typeof errors];
 
   // --- LOGIQUE TITULAIRES ---
@@ -102,7 +104,7 @@ export default function TeamInfosSection({
   // Surveiller les titulaires actuels
   const currentTitulaires = watch(
     fieldArrayNameTitulaires as Path<MethodeMatchSchemaType>
-  ) as unknown as any[];
+  ) as unknown as PlayerTuple[]; // Correction du any ici
 
   // --- EFFET: PRÉ-REMPLISSAGE DES POSTES ---
   useEffect(() => {
@@ -125,8 +127,10 @@ export default function TeamInfosSection({
         ];
       });
 
+      // @ts-expect-error: RHF attend un tableau d'objets, mais nous utilisons des tuples ici selon votre structure
       replaceTitulaires(newTitulaires);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSystem]);
 
   const handleColorChange = (
@@ -209,8 +213,9 @@ export default function TeamInfosSection({
         </span>
         <select
           {...register(systemField)}
-          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${systemError ? "border-red-500" : "border-gray-600"
-            }`}
+          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${
+            systemError ? "border-red-500" : "border-gray-600"
+          }`}
         >
           <option value="">Sélectionner un système...</option>
           {GameSystems.map((system, index) => (
@@ -220,7 +225,6 @@ export default function TeamInfosSection({
           ))}
         </select>
 
-        {/* Affichage de l'erreur corrigé */}
         {systemError && (
           <span className="text-red-500 text-xs mt-1 ml-4">
             {systemError.message as string}
@@ -247,7 +251,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.0`)}
                     placeholder="Nom (ex: Gaëtan Perrin)"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -264,10 +268,11 @@ export default function TeamInfosSection({
                     Poste
                   </label>
                   <select
-                    // @ts-ignore
+                    // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.2`)}
-                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${rowError?.[2] ? "border-red-500" : "border-gray-300"
-                      }`}
+                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${
+                      rowError?.[2] ? "border-red-500" : "border-gray-300"
+                    }`}
                   >
                     <option value="">Choisir...</option>
                     {positionsDisponibles.length > 0 &&
@@ -290,7 +295,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.1`)}
                     placeholder="N°"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -310,7 +315,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.3`)}
                     placeholder="Min. (ex: 75')"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -328,7 +333,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.4`)}
                     placeholder="Buts"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -339,7 +344,7 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start md:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-ignore
+                      // @ts-expect-error: Accès dynamique complexe pour RHF
                       {...register(`${fieldArrayNameTitulaires}.${index}.5`)}
                     />
                     <div
@@ -354,7 +359,7 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start md:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-ignore
+                      // @ts-expect-error: Accès dynamique complexe pour RHF
                       {...register(`${fieldArrayNameTitulaires}.${index}.6`)}
                     />
                     <div
@@ -395,7 +400,7 @@ export default function TeamInfosSection({
 
                 <input
                   type="text"
-                  // @ts-ignore
+                  // @ts-expect-error: Accès dynamique complexe pour RHF
                   {...register(`${fieldArrayNameRemplacants}.${index}.0`)}
                   placeholder="Nom (ex: Gaëtan Perrin)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -405,7 +410,7 @@ export default function TeamInfosSection({
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
-                  // @ts-ignore
+                  // @ts-expect-error: Accès dynamique complexe pour RHF
                   {...register(`${fieldArrayNameRemplacants}.${index}.1`)}
                   placeholder="Drapeau (ex: france)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -421,7 +426,7 @@ export default function TeamInfosSection({
 
               <input
                 type="text"
-                // @ts-ignore
+                // @ts-expect-error: Accès dynamique complexe pour RHF
                 {...register(`${fieldArrayNameRemplacants}.${index}.2`)}
                 placeholder="Poste (ex: G)"
                 className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
@@ -436,7 +441,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameRemplacants}.${index}.3`)}
                     placeholder="Min. (ex: 75')"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -449,7 +454,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-ignore
+                    // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameRemplacants}.${index}.4`)}
                     placeholder="Buts"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -460,7 +465,7 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-ignore
+                      // @ts-expect-error: Accès dynamique complexe pour RHF
                       {...register(`${fieldArrayNameRemplacants}.${index}.5`)}
                     />
                     <div
@@ -475,7 +480,7 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-ignore
+                      // @ts-expect-error: Accès dynamique complexe pour RHF
                       {...register(`${fieldArrayNameRemplacants}.${index}.6`)}
                     />
                     <div
@@ -499,7 +504,6 @@ export default function TeamInfosSection({
         ))}
         <button
           type="button"
-          // @ts-ignore
           onClick={() => appendRemplacant([["", "", "", "", ""]])}
           className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
         >

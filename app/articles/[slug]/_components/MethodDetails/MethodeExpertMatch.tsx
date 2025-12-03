@@ -35,7 +35,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
     const [left, top] = positionString.split(",");
 
     // Extraction des données du tuple
-    const [nom, numero, position, subOutMinute, nbButs, jauneStr, rougeStr] = playerData;
+    const [nom, numero, , subOutMinute, nbButs, jauneStr, rougeStr] = playerData;
     const hasYellow = String(jauneStr) === "true";
     const hasRed = String(rougeStr) === "true";
 
