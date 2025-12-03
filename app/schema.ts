@@ -205,7 +205,7 @@ export const MethodeMatchSchema = z.object({
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
   systemeequipe1: z
     .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu."})
+      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
     }),
   couleur1equipe2: z
     .string()
@@ -218,7 +218,7 @@ export const MethodeMatchSchema = z.object({
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
   systemeequipe2: z
     .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu."})
+      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
     }),
   titulairesequipe1: z.array(
     z
@@ -250,7 +250,7 @@ export const MethodeMatchSchema = z.object({
         path: [2],
       })
   ),
-    titulairesequipe2: z.array(
+  titulairesequipe2: z.array(
     z
       .array(z.coerce.string())
       .min(3, "Chaque titulaire doit avoir au moins nom, numéro et poste")
@@ -308,8 +308,9 @@ export const UpdateMethodeMatchSchema = z.object({
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
   systemeequipe1: z
-    .string()
-    .nonempty({ message: "Le système de l'équipe doit être renseigné." }),
+    .enum(GameSystems, {
+      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
+    }),
   couleur1equipe2: z
     .string()
     .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
@@ -320,8 +321,26 @@ export const UpdateMethodeMatchSchema = z.object({
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
   systemeequipe2: z
-    .string()
-    .nonempty({ message: "Le système de l'équipe doit être renseigné." }),
+    .enum(GameSystems, {
+      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
+    }),
+  titulairesequipe1: z.array(
+    z
+      .array(z.coerce.string())
+      .min(3, "Chaque titulaire doit avoir au moins nom, numéro et poste")
+      .refine((arr) => arr[0] && arr[0].length > 0, {
+        message: "Le nom du titulaire doit être renseigné",
+        path: [0],
+      })
+      .refine((arr) => arr[1] && arr[1].length > 0, {
+        message: "Le numéro du titulaire doit être renseigné",
+        path: [1],
+      })
+      .refine((arr) => arr[2] && arr[2].length > 0, {
+        message: "Le poste du titulaire doit être renseigné",
+        path: [2],
+      })
+  ),
   remplacantsequipe1: z.array(
     z
       .array(z.string())
@@ -332,6 +351,23 @@ export const UpdateMethodeMatchSchema = z.object({
       })
       .refine((arr) => arr[2] && arr[2].length > 0, {
         message: "Le poste du remplaçant doit être renseigné",
+        path: [2],
+      })
+  ),
+  titulairesequipe2: z.array(
+    z
+      .array(z.coerce.string())
+      .min(3, "Chaque titulaire doit avoir au moins nom, numéro et poste")
+      .refine((arr) => arr[0] && arr[0].length > 0, {
+        message: "Le nom du titulaire doit être renseigné",
+        path: [0],
+      })
+      .refine((arr) => arr[1] && arr[1].length > 0, {
+        message: "Le numéro du titulaire doit être renseigné",
+        path: [1],
+      })
+      .refine((arr) => arr[2] && arr[2].length > 0, {
+        message: "Le poste du titulaire doit être renseigné",
         path: [2],
       })
   ),
@@ -354,7 +390,6 @@ export const UpdateMethodeMatchSchema = z.object({
   date: z.string().nonempty({
     message: "La date du match doit être renseignée.",
   }),
-  imgterrain: z.union([z.string().url(), z.instanceof(File)]),
 });
 
 export const MethodeJoueurSchema = z.object({
