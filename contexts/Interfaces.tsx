@@ -278,6 +278,7 @@ export interface User {
   image?: string | null;
   birthday: Date | null;
   admin: boolean | null;
+  mailArticle: boolean;
 }
 
 export type UserSortKey = keyof Pick<

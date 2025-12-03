@@ -98,3 +98,19 @@ export async function removeUserAdmin(id: SelectUser["id"]) {
 
   return result;
 }
+
+export async function toggleNewsletterSubscription(userId: string, shouldEnable: boolean) {
+  try {
+    if (!userId) {
+      return { success: false, error: "Utilisateur non identifié." };
+    }
+
+    await db.update(user).set({ mailArticle: shouldEnable }).where(eq(user.id, userId));
+
+    return { success: true };
+
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de la newsletter:", error);
+    return { success: false, error: "Une erreur est survenue lors de la mise à jour." };
+  }
+}

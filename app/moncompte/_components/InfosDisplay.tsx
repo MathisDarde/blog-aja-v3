@@ -31,6 +31,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import ArticleShowcase from "@/components/ArticleComponent";
 import CommentComponent from "@/components/CommentComponent";
+import toggleNewsletter from "@/actions/user/toggle-newsletter-participation";
 
 export interface LikedArticle {
   id_article: string;
@@ -63,7 +64,7 @@ export default function InfosDisplay({ user }: { user: User }) {
   const [userComments, setUserComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
 
-  const [newsletterEnabled, setNewsletterEnabled] = useState(false);
+const [newsletterEnabled, setNewsletterEnabled] = useState(user.mailArticle || false);
   const [loadingNewsletter, setLoadingNewsletter] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -130,10 +131,8 @@ export default function InfosDisplay({ user }: { user: User }) {
   const handleNewsletterToggle = async () => {
     setLoadingNewsletter(true);
     try {
-      // Simulation d'appel API / Server Action
-      // await toggleNewsletterSubscription(user.id, !newsletterEnabled);
+      await toggleNewsletter(user.id, !newsletterEnabled);
 
-      // On simule le succès après 500ms
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       setNewsletterEnabled(!newsletterEnabled);
@@ -464,8 +463,7 @@ export default function InfosDisplay({ user }: { user: User }) {
                       </h3>
                     </div>
                     <div
-                      className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100 cursor-pointer"
-                      onClick={handleNewsletterToggle}
+                      className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100"
                     >
                       <div>
                         <p className="font-semibold text-gray-800">
