@@ -131,7 +131,7 @@ export default function ArticleDisplay({
     if (navigator.share) {
       try {
         await navigator.share(shareData);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Partage annulé ou erreur :', err);
         toast.error('Partage annulé.')
       }

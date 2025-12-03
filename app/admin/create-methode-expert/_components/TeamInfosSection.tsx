@@ -66,17 +66,18 @@ export default function TeamInfosSection({
   const fieldArrayNameRemplacants =
     `remplacantsequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
 
-  // Récupération des erreurs typées (on suppose que c'est un tableau d'erreurs car c'est un FieldArray)
-  // On utilise un cast générique ici car l'accès dynamique string complexe est difficile à inférer pour TS sans structure exacte
+  // Récupération des erreurs typées
   const titulairesErrors = errors[
     fieldArrayNameTitulaires as keyof MethodeMatchSchemaType
   ] as unknown as Array<Record<string, { message: string }>> | undefined;
 
+  // Récupération de l'erreur spécifique pour le système de jeu
+  // On utilise keyof typeof errors pour rassurer TS sur l'accès dynamique
+  const systemError = errors[systemField as keyof typeof errors];
+
   // --- LOGIQUE TITULAIRES ---
   const {
     fields: fieldsTitulaires,
-    append: appendTitulaire,
-    remove: removeTitulaire,
     replace: replaceTitulaires,
   } = useFieldArray({
     control,
@@ -124,10 +125,9 @@ export default function TeamInfosSection({
         ];
       });
 
-      // @ts-expect-error: RHF attend un tableau d'objets, mais nous utilisons des tuples ici selon votre structure
       replaceTitulaires(newTitulaires);
     }
-  }, [selectedSystem, replaceTitulaires, currentTitulaires]);
+  }, [selectedSystem]);
 
   const handleColorChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -152,7 +152,7 @@ export default function TeamInfosSection({
             type="color"
             {...register(color1Field)}
             onChange={(e) => handleColorChange(e, color1Field)}
-            className="aspect-square border-none cursor-pointer appearance-none"
+            className="aspect-square border-none cursor-pointer appearance-none h-full"
           />
           <input
             type="text"
@@ -175,7 +175,7 @@ export default function TeamInfosSection({
             type="color"
             {...register(color2Field)}
             onChange={(e) => handleColorChange(e, color2Field)}
-            className="aspect-square border-none cursor-pointer appearance-none"
+            className="aspect-square border-none cursor-pointer appearance-none h-full"
           />
           <input
             type="text"
@@ -209,9 +209,8 @@ export default function TeamInfosSection({
         </span>
         <select
           {...register(systemField)}
-          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${
-            errors[systemField] ? "border-red-500" : "border-gray-600"
-          }`}
+          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${systemError ? "border-red-500" : "border-gray-600"
+            }`}
         >
           <option value="">Sélectionner un système...</option>
           {GameSystems.map((system, index) => (
@@ -221,13 +220,10 @@ export default function TeamInfosSection({
           ))}
         </select>
 
-        {/* Le cast ici est nécessaire car systemField est dynamique, même si typé via Path */}
-        {errors[systemField as keyof MethodeMatchSchemaType] && (
+        {/* Affichage de l'erreur corrigé */}
+        {systemError && (
           <span className="text-red-500 text-xs mt-1 ml-4">
-            {
-              (errors[systemField as keyof MethodeMatchSchemaType] as any)
-                ?.message
-            }
+            {systemError.message as string}
           </span>
         )}
       </div>
@@ -251,7 +247,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    // @ts-ignore
                     {...register(`${fieldArrayNameTitulaires}.${index}.0`)}
                     placeholder="Nom (ex: Gaëtan Perrin)"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -268,11 +264,10 @@ export default function TeamInfosSection({
                     Poste
                   </label>
                   <select
-                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    // @ts-ignore
                     {...register(`${fieldArrayNameTitulaires}.${index}.2`)}
-                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${
-                      rowError?.[2] ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${rowError?.[2] ? "border-red-500" : "border-gray-300"
+                      }`}
                   >
                     <option value="">Choisir...</option>
                     {positionsDisponibles.length > 0 &&
@@ -295,7 +290,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    // @ts-ignore
                     {...register(`${fieldArrayNameTitulaires}.${index}.1`)}
                     placeholder="N°"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -315,7 +310,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    // @ts-ignore
                     {...register(`${fieldArrayNameTitulaires}.${index}.3`)}
                     placeholder="Min. (ex: 75')"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -333,7 +328,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    // @ts-ignore
                     {...register(`${fieldArrayNameTitulaires}.${index}.4`)}
                     placeholder="Buts"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -341,10 +336,10 @@ export default function TeamInfosSection({
                 </div>
 
                 <div className="w-full md:w-1/4">
-                  <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
+                  <label className="flex items-center justify-start md:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      // @ts-ignore
                       {...register(`${fieldArrayNameTitulaires}.${index}.5`)}
                     />
                     <div
@@ -356,10 +351,10 @@ export default function TeamInfosSection({
                 </div>
 
                 <div className="w-full md:w-1/4">
-                  <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
+                  <label className="flex items-center justify-start md:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      // @ts-ignore
                       {...register(`${fieldArrayNameTitulaires}.${index}.6`)}
                     />
                     <div
@@ -370,28 +365,10 @@ export default function TeamInfosSection({
                   </label>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => removeTitulaire(index)}
-                className="text-white bg-red-500 p-2 rounded-full mx-auto mt-2 mb-6 md:mb-2 hover:bg-red-600 transition"
-              >
-                <Trash size={16} />
-              </button>
-              <hr className="md:hidden border-gray-200 mb-4 w-full" />
+              <hr className="border-gray-300 my-4 w-full" />
             </React.Fragment>
           );
         })}
-
-        <button
-          type="button"
-          // @ts-expect-error: La structure attendue est un tuple, mais append attend un objet/array strict
-          onClick={() => appendTitulaire([["", "", "", "", "", false, false]])}
-          className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mt-2"
-        >
-          <Plus size={18} />
-          Ajouter un titulaire manuellement
-        </button>
       </div>
 
       {/* --- REMPLAÇANTS --- */}
@@ -418,7 +395,7 @@ export default function TeamInfosSection({
 
                 <input
                   type="text"
-                  // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                  // @ts-ignore
                   {...register(`${fieldArrayNameRemplacants}.${index}.0`)}
                   placeholder="Nom (ex: Gaëtan Perrin)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -428,7 +405,7 @@ export default function TeamInfosSection({
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
-                  // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                  // @ts-ignore
                   {...register(`${fieldArrayNameRemplacants}.${index}.1`)}
                   placeholder="Drapeau (ex: france)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -444,7 +421,7 @@ export default function TeamInfosSection({
 
               <input
                 type="text"
-                // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                // @ts-ignore
                 {...register(`${fieldArrayNameRemplacants}.${index}.2`)}
                 placeholder="Poste (ex: G)"
                 className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
@@ -459,9 +436,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // Note: Il y avait une erreur dans votre code original ici (fieldArrayNameTitulaires au lieu de Remplacants)
-                    // J'ai corrigé pour Remplacants
-                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    // @ts-ignore
                     {...register(`${fieldArrayNameRemplacants}.${index}.3`)}
                     placeholder="Min. (ex: 75')"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -474,7 +449,7 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                    // @ts-ignore
                     {...register(`${fieldArrayNameRemplacants}.${index}.4`)}
                     placeholder="Buts"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -485,7 +460,7 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      // @ts-ignore
                       {...register(`${fieldArrayNameRemplacants}.${index}.5`)}
                     />
                     <div
@@ -500,7 +475,7 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès par index sur un array de tuples pour RHF
+                      // @ts-ignore
                       {...register(`${fieldArrayNameRemplacants}.${index}.6`)}
                     />
                     <div
@@ -524,7 +499,7 @@ export default function TeamInfosSection({
         ))}
         <button
           type="button"
-          // @ts-expect-error: La structure attendue est un tuple
+          // @ts-ignore
           onClick={() => appendRemplacant([["", "", "", "", ""]])}
           className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
         >

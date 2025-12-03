@@ -189,7 +189,6 @@ export interface UpdateMethodeSaisonFromProps {
 export interface MethodeMatch extends BaseMethodeData {
   typemethode: "match";
   titrematch: string;
-  imgterrain: string;
   couleur1equipe1: string;
   couleur2equipe1: string;
   nomequipe1: string;
@@ -198,6 +197,8 @@ export interface MethodeMatch extends BaseMethodeData {
   couleur2equipe2: string;
   nomequipe2: string;
   systemeequipe2: string;
+  titulairesequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
+  titulairesequipe2: [string, string, string, string?, string?, boolean?, boolean?][];
   remplacantsequipe1: [string, string, string, string?, string?][];
   remplacantsequipe2: [string, string, string, string?, string?][];
   stade: string;
