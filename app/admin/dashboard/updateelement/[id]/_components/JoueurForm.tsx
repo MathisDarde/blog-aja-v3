@@ -126,7 +126,7 @@ export default function JoueurForm({
       if (result.success) {
         setFileList(result.files);
       } else {
-        toast.error(result.message || "Erreur lors du chargement des fichiers");
+        toast.error(result.success || "Erreur lors du chargement des fichiers");
       }
     } catch (error) {
       console.error("Erreur:", error);
