@@ -137,6 +137,7 @@ export default function MatchForm() {
         (remp1) => {
           if (
             remp1[1] &&
+            typeof remp1[1] === "string" &&
             !remp1[1].startsWith("http") &&
             !remp1[1].startsWith("/")
           ) {
@@ -153,6 +154,7 @@ export default function MatchForm() {
         (remp2) => {
           if (
             remp2[1] &&
+            typeof remp2[1] === "string" &&
             !remp2[1].startsWith("http") &&
             !remp2[1].startsWith("/")
           ) {

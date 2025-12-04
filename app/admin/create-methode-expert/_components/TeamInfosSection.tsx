@@ -127,7 +127,6 @@ export default function TeamInfosSection({
         ];
       });
 
-      // @ts-expect-error: RHF attend un tableau d'objets, mais nous utilisons des tuples ici selon votre structure
       replaceTitulaires(newTitulaires);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

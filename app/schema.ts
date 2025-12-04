@@ -183,6 +183,10 @@ export const UpdateMethodeSaisonSchema = z.object({
   imgterrain: z.union([z.string().url(), z.instanceof(File)]),
 });
 
+const PlayerRowSchema = z.array(
+  z.union([z.string(), z.boolean(), z.null(), z.undefined()])
+);
+
 export const MethodeMatchSchema = z.object({
   keywords: z
     .array(
@@ -221,61 +225,65 @@ export const MethodeMatchSchema = z.object({
       errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
     }),
   titulairesequipe1: z.array(
-    z
-      .array(z.coerce.string())
+    PlayerRowSchema
       .min(3, "Chaque titulaire doit avoir au moins nom, numéro et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du titulaire doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[1] && arr[1].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
         message: "Le numéro du titulaire doit être renseigné",
         path: [1],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du titulaire doit être renseigné",
         path: [2],
       })
   ),
   remplacantsequipe1: z.array(
-    z
-      .array(z.coerce.string())
+    PlayerRowSchema
       .min(3, "Chaque remplaçant doit avoir au moins nom, drapeau et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du remplaçant doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
+        message: "Le drapeau du remplaçant doit être renseigné",
+        path: [1],
+      })
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du remplaçant doit être renseigné",
         path: [2],
       })
   ),
   titulairesequipe2: z.array(
-    z
-      .array(z.coerce.string())
+    PlayerRowSchema
       .min(3, "Chaque titulaire doit avoir au moins nom, numéro et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du titulaire doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[1] && arr[1].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
         message: "Le numéro du titulaire doit être renseigné",
         path: [1],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du titulaire doit être renseigné",
         path: [2],
       })
   ),
   remplacantsequipe2: z.array(
-    z
-      .array(z.coerce.string())
+    PlayerRowSchema
       .min(3, "Chaque remplaçant doit avoir au moins nom, drapeau et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du remplaçant doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
+        message: "Le drapeau du remplaçant doit être renseigné",
+        path: [1],
+      })
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du remplaçant doit être renseigné",
         path: [2],
       })
@@ -325,61 +333,65 @@ export const UpdateMethodeMatchSchema = z.object({
       errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
     }),
   titulairesequipe1: z.array(
-    z
-      .array(z.coerce.string())
+    PlayerRowSchema
       .min(3, "Chaque titulaire doit avoir au moins nom, numéro et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du titulaire doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[1] && arr[1].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
         message: "Le numéro du titulaire doit être renseigné",
         path: [1],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du titulaire doit être renseigné",
         path: [2],
       })
   ),
   remplacantsequipe1: z.array(
-    z
-      .array(z.string())
+    PlayerRowSchema
       .min(3, "Chaque remplaçant doit avoir au moins nom, drapeau et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du remplaçant doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
+        message: "Le drapeau du remplaçant doit être renseigné",
+        path: [1],
+      })
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du remplaçant doit être renseigné",
         path: [2],
       })
   ),
   titulairesequipe2: z.array(
-    z
-      .array(z.coerce.string())
+    PlayerRowSchema
       .min(3, "Chaque titulaire doit avoir au moins nom, numéro et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du titulaire doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[1] && arr[1].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
         message: "Le numéro du titulaire doit être renseigné",
         path: [1],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du titulaire doit être renseigné",
         path: [2],
       })
   ),
   remplacantsequipe2: z.array(
-    z
-      .array(z.string())
+    PlayerRowSchema
       .min(3, "Chaque remplaçant doit avoir au moins nom, drapeau et poste")
-      .refine((arr) => arr[0] && arr[0].length > 0, {
+      .refine((arr) => arr[0] && String(arr[0]).length > 0, {
         message: "Le nom du remplaçant doit être renseigné",
         path: [0],
       })
-      .refine((arr) => arr[2] && arr[2].length > 0, {
+      .refine((arr) => arr[1] && String(arr[1]).length > 0, {
+        message: "Le drapeau du remplaçant doit être renseigné",
+        path: [1],
+      })
+      .refine((arr) => arr[2] && String(arr[2]).length > 0, {
         message: "Le poste du remplaçant doit être renseigné",
         path: [2],
       })

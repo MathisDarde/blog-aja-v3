@@ -286,7 +286,10 @@ export default function MatchForm({
         method="POST"
         id="methodesaisonform"
         className="max-w-[750px] mx-auto"
-        onSubmit={handleSubmit(handleSubmitForm)}
+        onSubmit={handleSubmit(handleSubmitForm, (errors) => {
+          console.error("Validation échouée", errors)
+          toast.error("Veuillez corriger les erreurs du formulaire.")
+        })}
       >
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
