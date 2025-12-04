@@ -70,9 +70,8 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
           )}
           {hasRed && (
             <div
-              className={`absolute -top-1 ${
-                hasRed && hasYellow ? "-right-2" : "-right-1"
-              } z-20 w-3 h-4 bg-red-600 border border-white rounded-sm shadow-sm`}
+              className={`absolute -top-1 ${hasRed && hasYellow ? "-right-2" : "-right-1"
+                } z-20 w-3 h-4 bg-red-600 border border-white rounded-sm shadow-sm`}
             />
           )}
 
@@ -144,7 +143,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
       {/* --- ZONE TERRAIN --- */}
       <div className="my-2 flex justify-center relative min-h-[300px] items-center">
-        
+
         {!isImageLoaded && (
           <div className="absolute inset-0 flex items-center justify-center z-0">
             <Loader2 className="w-10 h-10 text-gray-400 animate-spin" />
@@ -158,7 +157,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
             width={1024}
             height={1024}
             alt="Terrain"
-            priority 
+            priority
             className="rounded-md max-h-[400px] w-auto"
             onLoad={() => setIsImageLoaded(true)}
           />
@@ -217,87 +216,202 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
       </div>
 
       {/* Remplaçants équipe 1 */}
-      <div className="mt-4">
-        {/* ... (Reste du code inchangé) */}
-        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left">
+      <div className="mt-4 w-full">
+        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left mb-2">
           Banc {methode.nomequipe1} :
         </p>
-        <ul className="mt-2 space-y-1">
-          {methode.remplacantsequipe1.map((remp, index) => (
-            <li
-              key={index}
-              className="flex items-center gap-2 text-sm sm:text-base text-left"
-            >
-              <p>
-                {remp[2].slice(0, 3).toUpperCase()} - {remp[0]}
-              </p>
-              <Image
-                width={512}
-                height={512}
-                src={remp[1]}
-                alt=""
-                className="w-4 sm:w-5 h-[10px] sm:h-[12px] border border-black object-cover"
-              />
-              {remp[3] && (
-                <>
-                  <ArrowBigUp fill="green" size={16} stroke="green" />
-                  <p className="text-sm sm:text-base">{remp[3]}</p>
-                </>
-              )}
-              {Number(remp[4]) > 0 &&
-                Array.from({ length: Number(remp[4]) }, (_, i) => (
-                  <Image
-                    key={i}
-                    src={"/_assets/img/iconeballon.png"}
-                    alt="Buts"
-                    width={15}
-                    height={15}
-                  />
-                ))}
-            </li>
-          ))}
+        <ul className="flex flex-col gap-1.5 mt-2">
+          {methode.remplacantsequipe1.map((remp, index) => {
+            // Sécurisation des données
+            const hasYellow = String(remp[5]) === "true";
+            const hasRed = String(remp[6]) === "true";
+            const nbButs = Number(remp[4]);
+            const minute = remp[3];
+
+            return (
+              <li
+                key={index}
+                className="flex items-center justify-between p-1.5 rounded hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+              >
+                {/* GAUCHE : Identité du joueur (Poste - Drapeau - Nom) */}
+                <div className="flex items-center gap-2 overflow-hidden mr-2">
+                  {/* Poste */}
+                  <span className="font-Montserrat text-xs font-bold text-gray-500 w-[35px] shrink-0">
+                    {remp[2] ? remp[2].slice(0, 3).toUpperCase() : "-"}
+                  </span>
+
+                  {/* Drapeau */}
+                  <div className="relative w-5 h-3 shrink-0 border border-black shadow-sm">
+                    {remp[1] && (
+                      <Image
+                        src={remp[1]}
+                        alt="flag"
+                        fill
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+
+                  {/* Nom */}
+                  <p className="text-sm font-medium text-gray-800 truncate">
+                    {remp[0]}
+                  </p>
+                </div>
+
+                {/* DROITE : Événements (Buts -> Changement -> Cartons) */}
+                <div className="flex items-center gap-3 shrink-0">
+
+                  {/* 1. Buts */}
+                  {nbButs > 0 && (
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: nbButs }, (_, i) => (
+                        <Image
+                          key={i}
+                          src={"/_assets/img/iconeballon.png"}
+                          alt="But"
+                          width={14}
+                          height={14}
+                          className="drop-shadow-sm"
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* 2. Changement (Flèche + Minute) */}
+                  {minute && (
+                    <div className="flex items-center gap-0.5 text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full border border-green-100">
+                      <ArrowBigUp className="w-4 h-4 fill-green-600 stroke-none" />
+                      <span className="text-xs font-bold font-Montserrat pt-[1px]">
+                        {minute}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* 3. Cartons (Superposition) */}
+                  {(hasYellow || hasRed) && (
+                    <div className="relative h-5 w-6 flex items-center">
+                      {/* Carton Jaune */}
+                      {hasYellow && (
+                        <div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-3 h-4 bg-yellow-400 border border-white rounded-[1px] shadow-sm transform -rotate-3"
+                          title="Carton Jaune"
+                        />
+                      )}
+
+                      {/* Carton Rouge (Décalé si jaune présent, sinon position standard) */}
+                      {hasRed && (
+                        <div
+                          className={`absolute top-1/2 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-[1px] shadow-sm transform rotate-6 ${hasYellow ? "left-2 z-20" : "left-0 z-10"
+                            }`}
+                          title="Carton Rouge"
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
       {/* Remplaçants équipe 2 */}
-      <div className="mt-4">
-        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left">
+      <div className="mt-4 w-full">
+        <p className="font-semibold font-Bai_Jamjuree text-base sm:text-lg text-left mb-2">
           Banc {methode.nomequipe2} :
         </p>
-        <ul className="mt-2 space-y-1">
-          {methode.remplacantsequipe2.map((remp, index) => (
-            <li
-              key={index}
-              className="flex items-center gap-2 text-sm sm:text-base text-left"
-            >
-              <p>
-                {remp[2].slice(0, 3).toUpperCase()} - {remp[0]}
-              </p>
-              <Image
-                width={512}
-                height={512}
-                src={remp[1]}
-                alt=""
-                className="w-4 sm:w-5 h-[10px] sm:h-[12px] border border-black object-cover"
-              />
-              {remp[3] && (
-                <>
-                  <ArrowBigUp fill="green" size={16} stroke="green" />
-                  <p className="text-sm sm:text-base">{remp[3]}</p>
-                </>
-              )}
-              {Number(remp[4]) > 0 &&
-                Array.from({ length: Number(remp[4]) }, (_, i) => (
-                  <Image
-                    key={i}
-                    src={"/_assets/img/iconeballon.png"}
-                    alt="Buts"
-                    width={15}
-                    height={15}
-                  />
-                ))}
-            </li>
-          ))}
+        <ul className="flex flex-col gap-1.5 mt-2">
+          {methode.remplacantsequipe2.map((remp, index) => {
+            // Sécurisation des données
+            const hasYellow = String(remp[5]) === "true";
+            const hasRed = String(remp[6]) === "true";
+            const nbButs = Number(remp[4]);
+            const minute = remp[3];
+
+            return (
+              <li
+                key={index}
+                className="flex items-center justify-between py-1.5 rounded hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+              >
+                {/* GAUCHE : Identité du joueur (Poste - Drapeau - Nom) */}
+                <div className="flex items-center gap-2 overflow-hidden mr-2">
+                  {/* Poste */}
+                  <span className="font-Montserrat text-xs font-bold text-gray-500 w-[35px] shrink-0">
+                    {remp[2] ? remp[2].slice(0, 3).toUpperCase() : "-"}
+                  </span>
+
+                  {/* Drapeau */}
+                  <div className="relative w-5 h-3 shrink-0 border border-black shadow-sm">
+                    {remp[1] && (
+                      <Image
+                        src={remp[1]}
+                        alt="flag"
+                        fill
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+
+                  {/* Nom */}
+                  <p className="text-sm font-medium text-gray-800 truncate" title={remp[0]}>
+                    {remp[0]}
+                  </p>
+                </div>
+
+                {/* DROITE : Événements (Buts -> Changement -> Cartons) */}
+                <div className="flex items-center gap-3 shrink-0">
+
+                  {/* 1. Buts */}
+                  {nbButs > 0 && (
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: nbButs }, (_, i) => (
+                        <Image
+                          key={i}
+                          src={"/_assets/img/iconeballon.png"}
+                          alt="But"
+                          width={14}
+                          height={14}
+                          className="drop-shadow-sm"
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* 2. Changement (Flèche + Minute) */}
+                  {minute && (
+                    <div className="flex items-center gap-0.5 text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full border border-green-100">
+                      <ArrowBigUp className="w-4 h-4 fill-green-600 stroke-none" />
+                      <span className="text-xs font-bold font-Montserrat pt-[1px]">
+                        {minute}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* 3. Cartons (Superposition) */}
+                  {(hasYellow || hasRed) && (
+                    <div className="relative h-5 w-6 flex items-center">
+                      {/* Carton Jaune */}
+                      {hasYellow && (
+                        <div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-3 h-4 bg-yellow-400 border border-white rounded-[1px] shadow-sm transform -rotate-3"
+                          title="Carton Jaune"
+                        />
+                      )}
+
+                      {/* Carton Rouge (Décalé si jaune présent, sinon position standard) */}
+                      {hasRed && (
+                        <div
+                          className={`absolute top-1/2 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-[1px] shadow-sm transform rotate-6 ${hasYellow ? "left-2 z-20" : "left-0 z-10"
+                            }`}
+                          title="Carton Rouge"
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
 

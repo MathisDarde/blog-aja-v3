@@ -116,14 +116,17 @@ export default function TeamInfosSection({
       const newTitulaires = formation.postes.map((poste, index) => {
         const existingPlayer = currentTitulaires?.[index];
 
+        const isJaune = String(existingPlayer?.[5]) === "true";
+        const isRouge = String(existingPlayer?.[6]) === "true";
+
         return [
           existingPlayer?.[0] || "", // Nom
           existingPlayer?.[1] || "", // Numéro
           poste.name, // Poste
           existingPlayer?.[3] || "", // Sortie
           existingPlayer?.[4] || "", // Buts
-          existingPlayer?.[5] || false, // Jaune
-          existingPlayer?.[6] || false, // Rouge
+          isJaune,
+          isRouge
         ];
       });
 
@@ -212,9 +215,8 @@ export default function TeamInfosSection({
         </span>
         <select
           {...register(systemField)}
-          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${
-            systemError ? "border-red-500" : "border-gray-600"
-          }`}
+          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${systemError ? "border-red-500" : "border-gray-600"
+            }`}
         >
           <option value="">Sélectionner un système...</option>
           {GameSystems.map((system, index) => (
@@ -269,9 +271,8 @@ export default function TeamInfosSection({
                   <select
                     // @ts-expect-error: Accès dynamique complexe pour RHF
                     {...register(`${fieldArrayNameTitulaires}.${index}.2`)}
-                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${
-                      rowError?.[2] ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${rowError?.[2] ? "border-red-500" : "border-gray-300"
+                      }`}
                   >
                     <option value="">Choisir...</option>
                     {positionsDisponibles.length > 0 &&
