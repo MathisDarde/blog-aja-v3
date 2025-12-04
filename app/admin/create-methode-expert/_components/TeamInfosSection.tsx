@@ -504,7 +504,7 @@ export default function TeamInfosSection({
         ))}
         <button
           type="button"
-          onClick={() => appendRemplacant([["", "", "", "", ""]])}
+          onClick={() => appendRemplacant([["", "", "", "", "", "false", "false"]])}
           className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
         >
           <Plus size={18} />
