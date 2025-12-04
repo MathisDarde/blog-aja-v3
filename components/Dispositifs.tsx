@@ -6,58 +6,61 @@ export const Dispositifs = [
     postes: [
       {
         name: "Gardien",
-        positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
       },
+      // Défense en arc de cercle pour éviter la ligne droite
       {
         name: "Défenseur Gauche",
-        positionDom: "85%,18%", // Inversé (était 15)
-        positionExt: "15%,78%", // Inversé (était 85)
+        positionDom: "88%,15%",
+        positionExt: "12%,80%",
       },
       {
         name: "Défenseur Central Gauche",
-        positionDom: "64%,18%",
-        positionExt: "36%,78%",
+        positionDom: "62%,13%", // Légèrement plus haut/bas que les latéraux
+        positionExt: "38%,82%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "36%,18%",
-        positionExt: "64%,78%",
+        positionDom: "38%,13%",
+        positionExt: "62%,82%",
       },
       {
         name: "Défenseur Droit",
-        positionDom: "15%,18%",
-        positionExt: "85%,78%",
+        positionDom: "12%,15%",
+        positionExt: "88%,80%",
       },
+      // Milieu
       {
         name: "Milieu Défensif",
-        positionDom: "50%,28%",
-        positionExt: "50%,68%",
+        positionDom: "50%,24%",
+        positionExt: "50%,71%",
       },
       {
         name: "Milieu Gauche",
-        positionDom: "72%,36%",
-        positionExt: "28%,60%",
+        positionDom: "75%,32%", // Écarté pour laisser place au MDC
+        positionExt: "25%,63%",
       },
       {
         name: "Milieu Droit",
-        positionDom: "28%,36%",
-        positionExt: "72%,60%",
+        positionDom: "25%,32%",
+        positionExt: "75%,63%",
       },
+      // Attaque (Reculée pour ne pas toucher le rond central)
       {
         name: "Ailier Gauche",
-        positionDom: "85%,45%",
-        positionExt: "15%,53%",
+        positionDom: "85%,41%",
+        positionExt: "15%,54%",
       },
       {
         name: "Buteur",
-        positionDom: "50%,45%",
-        positionExt: "50%,53%",
+        positionDom: "50%,40%",
+        positionExt: "50%,55%",
       },
       {
         name: "Ailier Droit",
-        positionDom: "15%,45%",
-        positionExt: "85%,53%",
+        positionDom: "15%,41%",
+        positionExt: "85%,54%",
       },
     ],
   },
@@ -69,58 +72,60 @@ export const Dispositifs = [
     postes: [
       {
         name: "Gardien",
-        positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
       },
+      // Pistons très écartés
       {
         name: "Piston Gauche",
-        positionDom: "90%,20%",
-        positionExt: "10%,76%",
+        positionDom: "92%,18%",
+        positionExt: "8%,77%",
       },
       {
         name: "Défenseur Central Gauche",
-        positionDom: "70%,18%",
-        positionExt: "30%,78%",
+        positionDom: "70%,14%",
+        positionExt: "30%,81%",
       },
       {
         name: "Défenseur Central Axial",
-        positionDom: "50%,18%",
-        positionExt: "50%,78%",
+        positionDom: "50%,12%", // Le libéro couvre un peu derrière
+        positionExt: "50%,83%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "30%,18%",
-        positionExt: "70%,78%",
+        positionDom: "30%,14%",
+        positionExt: "70%,81%",
       },
       {
         name: "Piston Droit",
-        positionDom: "10%,20%",
-        positionExt: "90%,76%",
+        positionDom: "8%,18%",
+        positionExt: "92%,77%",
       },
+      // Milieu compact mais en arc
       {
         name: "Milieu Gauche",
-        positionDom: "80%,35%",
-        positionExt: "20%,61%",
+        positionDom: "82%,30%",
+        positionExt: "18%,65%",
       },
       {
         name: "Milieu Central Gauche",
-        positionDom: "60%,35%",
-        positionExt: "40%,61%",
+        positionDom: "60%,28%",
+        positionExt: "40%,67%",
       },
       {
         name: "Milieu Central Droit",
-        positionDom: "40%,35%",
-        positionExt: "60%,61%",
+        positionDom: "40%,28%",
+        positionExt: "60%,67%",
       },
       {
         name: "Milieu Droit",
-        positionDom: "20%,35%",
-        positionExt: "80%,61%",
+        positionDom: "18%,30%",
+        positionExt: "82%,65%",
       },
       {
         name: "Buteur",
-        positionDom: "50%,45%",
-        positionExt: "50%,53%",
+        positionDom: "50%,40%",
+        positionExt: "50%,55%",
       },
     ],
   },
@@ -132,59 +137,60 @@ export const Dispositifs = [
     postes: [
       {
         name: "Gardien",
-        positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionDom: "50%,7%",
+        positionExt: "50%,93%",
       },
       {
         name: "Défenseur Gauche",
-        positionDom: "85%,18%",
-        positionExt: "15%,78%",
+        positionDom: "88%,19%",
+        positionExt: "12%,81%",
       },
       {
         name: "Défenseur Central Gauche",
-        positionDom: "64%,18%",
-        positionExt: "36%,78%",
+        positionDom: "62%,17%",
+        positionExt: "38%,83%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "36%,18%",
-        positionExt: "64%,78%",
+        positionDom: "38%,17%",
+        positionExt: "62%,83%",
       },
       {
         name: "Défenseur Droit",
-        positionDom: "15%,18%",
-        positionExt: "85%,78%",
+        positionDom: "12%,19%",
+        positionExt: "88%,81%",
       },
-      // Le triangle du milieu est inversé par rapport au défensif
+      // Milieu Triangle inversé
       {
         name: "Milieu Relayeur Gauche",
-        positionDom: "65%,30%",
-        positionExt: "35%,66%",
+        positionDom: "68%,28%",
+        positionExt: "33%,71%",
       },
       {
         name: "Milieu Relayeur Droite",
-        positionDom: "35%,30%",
-        positionExt: "65%,66%",
+        positionDom: "32%,28%",
+        positionExt: "67%,71%",
       },
       {
         name: "Milieu Offensif Central",
-        positionDom: "50%,38%",
-        positionExt: "50%,58%",
+        positionDom: "50%,35%", // Le 10
+        positionExt: "50%,65%",
       },
+      // Attaque
       {
         name: "Ailier Gauche",
-        positionDom: "85%,45%",
-        positionExt: "15%,53%",
+        positionDom: "88%,43%",
+        positionExt: "12%,57%",
       },
       {
         name: "Buteur",
         positionDom: "50%,45%",
-        positionExt: "50%,53%",
+        positionExt: "50%,55%",
       },
       {
         name: "Ailier Droit",
-        positionDom: "15%,45%",
-        positionExt: "85%,53%",
+        positionDom: "12%,43%",
+        positionExt: "88%,57%",
       },
     ],
   },
@@ -197,59 +203,59 @@ export const Dispositifs = [
       {
         name: "Gardien",
         positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionExt: "50%,94%",
       },
       {
         name: "Défenseur Gauche",
-        positionDom: "85%,18%",
-        positionExt: "15%,78%",
+        positionDom: "88%,16%",
+        positionExt: "12%,84%",
       },
       {
         name: "Défenseur Central Gauche",
-        positionDom: "64%,18%",
-        positionExt: "36%,78%",
+        positionDom: "64%,15%",
+        positionExt: "36%,85%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "36%,18%",
-        positionExt: "64%,78%",
+        positionDom: "36%,15%",
+        positionExt: "64%,85%",
       },
       {
         name: "Défenseur Droit",
-        positionDom: "15%,18%",
-        positionExt: "85%,78%",
+        positionDom: "12%,16%",
+        positionExt: "88%,84%",
       },
       // Double Pivot
       {
         name: "Milieu Défensif Gauche",
-        positionDom: "62%,28%",
-        positionExt: "38%,68%",
+        positionDom: "67%,26%",
+        positionExt: "33%,74%",
       },
       {
         name: "Milieu Défensif Droit",
-        positionDom: "38%,28%",
-        positionExt: "62%,68%",
+        positionDom: "33%,26%",
+        positionExt: "67%,74%",
       },
-      // Ligne de 3 offensive
+      // Ligne de 3 offensive (Le coeur du problème habituellement)
       {
         name: "Milieu Offensif Gauche",
-        positionDom: "85%,38%",
-        positionExt: "15%,58%",
+        positionDom: "88%,34%", // Très écarté
+        positionExt: "12%,66%",
       },
       {
         name: "Meneur de Jeu",
-        positionDom: "50%,38%",
-        positionExt: "50%,58%",
+        positionDom: "50%,34%", // Un peu plus bas que les ailiers pour faire un V
+        positionExt: "50%,66%",
       },
       {
         name: "Milieu Offensif Droit",
-        positionDom: "15%,38%",
-        positionExt: "85%,58%",
+        positionDom: "12%,34%", // Très écarté
+        positionExt: "88%,66%",
       },
       {
         name: "Buteur",
-        positionDom: "50%,46%",
-        positionExt: "50%,52%",
+        positionDom: "50%,44%",
+        positionExt: "50%,56%",
       },
     ],
   },
@@ -261,60 +267,60 @@ export const Dispositifs = [
     postes: [
       {
         name: "Gardien",
-        positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
       },
       {
         name: "Défenseur Gauche",
-        positionDom: "85%,18%",
-        positionExt: "15%,78%",
+        positionDom: "88%,15%",
+        positionExt: "12%,80%",
       },
       {
         name: "Défenseur Central Gauche",
-        positionDom: "64%,18%",
-        positionExt: "36%,78%",
+        positionDom: "62%,13%",
+        positionExt: "38%,82%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "36%,18%",
-        positionExt: "64%,78%",
+        positionDom: "38%,13%",
+        positionExt: "62%,82%",
       },
       {
         name: "Défenseur Droit",
-        positionDom: "15%,18%",
-        positionExt: "85%,78%",
+        positionDom: "12%,15%",
+        positionExt: "88%,80%",
       },
-      // Milieu à plat
+      // Milieu à plat (en forme de U léger)
       {
         name: "Milieu Gauche",
-        positionDom: "85%,35%",
-        positionExt: "15%,61%",
+        positionDom: "90%,30%",
+        positionExt: "10%,65%",
       },
       {
         name: "Milieu Central Gauche",
-        positionDom: "62%,35%",
-        positionExt: "38%,61%",
+        positionDom: "60%,28%",
+        positionExt: "40%,67%",
       },
       {
         name: "Milieu Central Droit",
-        positionDom: "38%,35%",
-        positionExt: "62%,61%",
+        positionDom: "40%,28%",
+        positionExt: "60%,67%",
       },
       {
         name: "Milieu Droit",
-        positionDom: "15%,35%",
-        positionExt: "85%,61%",
+        positionDom: "10%,30%",
+        positionExt: "90%,65%",
       },
-      // Duo d'attaque
+      // Duo d'attaque (Rapprochés mais pas trop)
       {
         name: "Buteur Gauche",
-        positionDom: "65%,45%",
-        positionExt: "35%,53%",
+        positionDom: "60%,40%",
+        positionExt: "40%,55%",
       },
       {
         name: "Buteur Droit",
-        positionDom: "35%,45%",
-        positionExt: "65%,53%",
+        positionDom: "40%,40%",
+        positionExt: "60%,55%",
       },
     ],
   },
@@ -326,59 +332,59 @@ export const Dispositifs = [
     postes: [
       {
         name: "Gardien",
-        positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
       },
       {
         name: "Défenseur Gauche",
-        positionDom: "85%,18%",
-        positionExt: "15%,78%",
+        positionDom: "88%,15%",
+        positionExt: "12%,80%",
       },
       {
         name: "Défenseur Central Gauche",
-        positionDom: "64%,18%",
-        positionExt: "36%,78%",
+        positionDom: "62%,13%",
+        positionExt: "38%,82%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "36%,18%",
-        positionExt: "64%,78%",
+        positionDom: "38%,13%",
+        positionExt: "62%,82%",
       },
       {
         name: "Défenseur Droit",
-        positionDom: "15%,18%",
-        positionExt: "85%,78%",
+        positionDom: "12%,15%",
+        positionExt: "88%,80%",
       },
-      // Milieu à 5
+      // Milieu à 5 très dense -> il faut utiliser toute la largeur
       {
         name: "Milieu Gauche",
-        positionDom: "90%,32%",
-        positionExt: "10%,64%",
+        positionDom: "92%,28%",
+        positionExt: "8%,67%",
       },
       {
         name: "Milieu Central Gauche",
-        positionDom: "70%,32%",
-        positionExt: "30%,64%",
+        positionDom: "70%,30%",
+        positionExt: "30%,65%",
       },
       {
         name: "Milieu Sentinelle",
-        positionDom: "50%,28%",
-        positionExt: "50%,68%",
+        positionDom: "50%,25%", // En retrait
+        positionExt: "50%,70%",
       },
       {
         name: "Milieu Central Droit",
-        positionDom: "30%,32%",
-        positionExt: "70%,64%",
+        positionDom: "30%,30%",
+        positionExt: "70%,65%",
       },
       {
         name: "Milieu Droit",
-        positionDom: "10%,32%",
-        positionExt: "90%,64%",
+        positionDom: "8%,28%",
+        positionExt: "92%,67%",
       },
       {
         name: "Buteur",
-        positionDom: "50%,45%",
-        positionExt: "50%,53%",
+        positionDom: "50%,41%",
+        positionExt: "50%,54%",
       },
     ],
   },
@@ -390,59 +396,59 @@ export const Dispositifs = [
     postes: [
       {
         name: "Gardien",
-        positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
       },
       {
         name: "Défenseur Gauche",
-        positionDom: "85%,18%",
-        positionExt: "15%,78%",
+        positionDom: "88%,15%",
+        positionExt: "12%,80%",
       },
       {
         name: "Défenseur Central Gauche",
-        positionDom: "64%,18%",
-        positionExt: "36%,78%",
+        positionDom: "62%,13%",
+        positionExt: "38%,82%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "36%,18%",
-        positionExt: "64%,78%",
+        positionDom: "38%,13%",
+        positionExt: "62%,82%",
       },
       {
         name: "Défenseur Droit",
-        positionDom: "15%,18%",
-        positionExt: "85%,78%",
+        positionDom: "12%,15%",
+        positionExt: "88%,80%",
       },
       // La sentinelle
       {
         name: "Milieu Défensif",
-        positionDom: "50%,27%",
-        positionExt: "50%,69%",
+        positionDom: "50%,24%",
+        positionExt: "50%,71%",
       },
-      // La ligne de 4 milieux
+      // La ligne de 4 milieux (Arc pour éviter superposition avec MDC)
       {
         name: "Milieu Gauche",
-        positionDom: "85%,36%",
-        positionExt: "15%,60%",
+        positionDom: "90%,33%",
+        positionExt: "10%,62%",
       },
       {
         name: "Milieu Relayeur Gauche",
-        positionDom: "62%,36%",
-        positionExt: "38%,60%",
+        positionDom: "65%,31%",
+        positionExt: "35%,64%",
       },
       {
         name: "Milieu Relayeur Droit",
-        positionDom: "38%,36%",
-        positionExt: "62%,60%",
+        positionDom: "35%,31%",
+        positionExt: "65%,64%",
       },
       {
         name: "Milieu Droit",
-        positionDom: "15%,36%",
-        positionExt: "85%,60%",
+        positionDom: "10%,33%",
+        positionExt: "90%,62%",
       },
       {
         name: "Buteur",
-        positionDom: "50%,45%",
+        positionDom: "50%,42%",
         positionExt: "50%,53%",
       },
     ],
@@ -455,61 +461,61 @@ export const Dispositifs = [
     postes: [
       {
         name: "Gardien",
-        positionDom: "50%,6%",
-        positionExt: "50%,88%",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
       },
       // 3 Défenseurs Centraux
       {
         name: "Défenseur Central Gauche",
-        positionDom: "70%,18%",
-        positionExt: "30%,78%",
+        positionDom: "75%,14%",
+        positionExt: "25%,81%",
       },
       {
         name: "Défenseur Central Axial",
-        positionDom: "50%,18%",
-        positionExt: "50%,78%",
+        positionDom: "50%,12%",
+        positionExt: "50%,83%",
       },
       {
         name: "Défenseur Central Droit",
-        positionDom: "30%,18%",
-        positionExt: "70%,78%",
+        positionDom: "25%,14%",
+        positionExt: "75%,81%",
       },
       // Milieu à 5
       {
         name: "Piston Gauche",
-        positionDom: "90%,30%",
-        positionExt: "10%,66%",
+        positionDom: "92%,25%",
+        positionExt: "8%,70%",
       },
       {
         name: "Milieu Relayeur Gauche",
-        positionDom: "65%,32%",
-        positionExt: "35%,64%",
+        positionDom: "65%,30%",
+        positionExt: "35%,65%",
       },
       {
         name: "Milieu Sentinelle",
-        positionDom: "50%,26%",
-        positionExt: "50%,70%",
+        positionDom: "50%,22%", // Très bas
+        positionExt: "50%,73%",
       },
       {
         name: "Milieu Relayeur Droit",
-        positionDom: "35%,32%",
-        positionExt: "65%,64%",
+        positionDom: "35%,30%",
+        positionExt: "65%,65%",
       },
       {
         name: "Piston Droit",
-        positionDom: "10%,30%",
-        positionExt: "90%,66%",
+        positionDom: "8%,25%",
+        positionExt: "92%,70%",
       },
       // 2 Attaquants
       {
         name: "Buteur Gauche",
-        positionDom: "60%,44%",
-        positionExt: "40%,54%",
+        positionDom: "60%,40%",
+        positionExt: "40%,55%",
       },
       {
         name: "Buteur Droit",
-        positionDom: "40%,44%",
-        positionExt: "60%,54%",
+        positionDom: "40%,40%",
+        positionExt: "60%,55%",
       },
     ],
   },

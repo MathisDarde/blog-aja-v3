@@ -13,7 +13,7 @@ type PlayerTuple = [
   string,
   string,
   string | boolean,
-  string | boolean
+  string | boolean,
 ];
 
 interface GameMethodeExpertProps {
@@ -47,7 +47,8 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
     const [left, top] = positionString.split(",");
 
-    const [nom, numero, , subOutMinute, nbButs, jauneStr, rougeStr] = playerData;
+    const [nom, numero, , subOutMinute, nbButs, jauneStr, rougeStr] =
+      playerData;
     const hasYellow = String(jauneStr) === "true";
     const hasRed = String(rougeStr) === "true";
 
@@ -59,8 +60,12 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
       >
         <div className="relative">
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md border-2 relative z-10"
-            style={{ backgroundColor: teamColor, color: textColor, borderColor: textColor }}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] shadow-md border relative z-10"
+            style={{
+              backgroundColor: teamColor,
+              color: textColor,
+              borderColor: textColor,
+            }}
           >
             {numero}
           </div>
@@ -70,8 +75,9 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
           )}
           {hasRed && (
             <div
-              className={`absolute -top-1 ${hasRed && hasYellow ? "-right-2" : "-right-1"
-                } z-20 w-3 h-4 bg-red-600 border border-white rounded-sm shadow-sm`}
+              className={`absolute -top-1 ${
+                hasRed && hasYellow ? "-right-2" : "-right-1"
+              } z-20 w-3 h-4 bg-red-600 border border-white rounded-sm shadow-sm`}
             />
           )}
 
@@ -107,7 +113,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
           )}
         </div>
 
-        <span className="mt-1 text-[10px] sm:text-xs font-bold text-white bg-black/60 px-2 py-0.5 rounded-full shadow-sm backdrop-blur-[2px] whitespace-nowrap max-w-[100px] overflow-hidden text-ellipsis flex items-center gap-1">
+        <span className="mt-1 text-[9px] sm:text-xs text-white bg-black/60 px-2 py-0.5 rounded-full shadow-sm backdrop-blur-[2px] whitespace-nowrap max-w-[100px] overflow-hidden text-ellipsis flex items-center gap-1">
           {getLastName(nom)}
         </span>
       </div>
@@ -143,7 +149,6 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
       {/* --- ZONE TERRAIN --- */}
       <div className="my-2 flex justify-center relative min-h-[300px] items-center">
-
         {!isImageLoaded && (
           <div className="absolute inset-0 flex items-center justify-center z-0">
             <Loader2 className="w-10 h-10 text-gray-400 animate-spin" />
@@ -151,14 +156,16 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
         )}
 
         {/* Image du terrain */}
-        <div className={`relative transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <div
+          className={`relative transition-opacity duration-500 ${isImageLoaded ? "opacity-100" : "opacity-0"}`}
+        >
           <Image
-            src={"/_assets/terrains/ajasainteterrain2260924.png"}
+            src={"/_assets/terrains/terraincompletv2.jpg"}
             width={1024}
             height={1024}
             alt="Terrain"
             priority
-            className="rounded-md max-h-[400px] w-auto"
+            className="rounded-md max-w-[350px] w-full"
             onLoad={() => setIsImageLoaded(true)}
           />
 
@@ -260,7 +267,6 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
                 {/* DROITE : Événements (Buts -> Changement -> Cartons) */}
                 <div className="flex items-center gap-3 shrink-0">
-
                   {/* 1. Buts */}
                   {nbButs > 0 && (
                     <div className="flex gap-0.5">
@@ -301,8 +307,9 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
                       {/* Carton Rouge (Décalé si jaune présent, sinon position standard) */}
                       {hasRed && (
                         <div
-                          className={`absolute top-1/2 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-[1px] shadow-sm transform rotate-6 ${hasYellow ? "left-2 z-20" : "left-0 z-10"
-                            }`}
+                          className={`absolute top-1/2 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-[1px] shadow-sm transform rotate-6 ${
+                            hasYellow ? "left-2 z-20" : "left-0 z-10"
+                          }`}
                           title="Carton Rouge"
                         />
                       )}
@@ -353,14 +360,16 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
                   </div>
 
                   {/* Nom */}
-                  <p className="text-sm font-medium text-gray-800 truncate" title={remp[0]}>
+                  <p
+                    className="text-sm font-medium text-gray-800 truncate"
+                    title={remp[0]}
+                  >
                     {remp[0]}
                   </p>
                 </div>
 
                 {/* DROITE : Événements (Buts -> Changement -> Cartons) */}
                 <div className="flex items-center gap-3 shrink-0">
-
                   {/* 1. Buts */}
                   {nbButs > 0 && (
                     <div className="flex gap-0.5">
@@ -401,8 +410,9 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
                       {/* Carton Rouge (Décalé si jaune présent, sinon position standard) */}
                       {hasRed && (
                         <div
-                          className={`absolute top-1/2 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-[1px] shadow-sm transform rotate-6 ${hasYellow ? "left-2 z-20" : "left-0 z-10"
-                            }`}
+                          className={`absolute top-1/2 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-[1px] shadow-sm transform rotate-6 ${
+                            hasYellow ? "left-2 z-20" : "left-0 z-10"
+                          }`}
                           title="Carton Rouge"
                         />
                       )}
