@@ -4,6 +4,8 @@ import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
 import UpdateProfileGuard from "./_components/UpdateProfileGuard";
 
+export const dynamic = "force-dynamic";
+
 export default async function UpdateProfilePage() {
   const auth = await isAuthenticated();
 

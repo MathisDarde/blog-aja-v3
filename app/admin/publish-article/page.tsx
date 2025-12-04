@@ -4,6 +4,8 @@ import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
 
+export const dynamic = "force-dynamic";
+
 export default async function PublishArticle() {
   const auth = await isAuthenticated();
 
