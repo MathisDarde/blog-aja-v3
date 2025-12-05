@@ -6,4 +6,6 @@ export const GameSystems = [
   "5-4-1",
   "3-5-2",
   "4-1-4-1",
+  "4-5-1",
+  "4-4-1-1",
 ] as const;
