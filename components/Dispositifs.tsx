@@ -519,4 +519,136 @@ export const Dispositifs = [
       },
     ],
   },
+  // 9. 4-5-1 (Bloc dense au milieu)
+  {
+    id: 9,
+    name: "4-5-1",
+    postes: [
+      {
+        name: "Gardien",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
+      },
+      // 4 Défenseurs
+      {
+        name: "Latéral Gauche",
+        positionDom: "90%,15%",
+        positionExt: "10%,80%",
+      },
+      {
+        name: "Défenseur Central Gauche",
+        positionDom: "65%,14%",
+        positionExt: "35%,81%",
+      },
+      {
+        name: "Défenseur Central Droit",
+        positionDom: "35%,14%",
+        positionExt: "65%,81%",
+      },
+      {
+        name: "Latéral Droit",
+        positionDom: "10%,15%",
+        positionExt: "90%,80%",
+      },
+      // 5 Milieux (V à l'envers ou à plat, ici config milieu à 3 axiaux + ailiers bas)
+      {
+        name: "Milieu Gauche",
+        positionDom: "90%,30%",
+        positionExt: "10%,65%",
+      },
+      {
+        name: "Milieu Relayeur Gauche",
+        positionDom: "60%,25%",
+        positionExt: "40%,70%",
+      },
+      {
+        name: "Milieu Sentinelle", // Axial
+        positionDom: "50%,22%",
+        positionExt: "50%,73%",
+      },
+      {
+        name: "Milieu Relayeur Droit",
+        positionDom: "40%,25%",
+        positionExt: "60%,70%",
+      },
+      {
+        name: "Milieu Droit",
+        positionDom: "10%,30%",
+        positionExt: "90%,65%",
+      },
+      // 1 Attaquant
+      {
+        name: "Buteur",
+        positionDom: "50%,40%",
+        positionExt: "50%,55%",
+      },
+    ],
+  },
+
+// 10. 4-4-1-1 (Avec un 9 et demi)
+  {
+    id: 10,
+    name: "4-4-1-1",
+    postes: [
+      {
+        name: "Gardien",
+        positionDom: "50%,5%",
+        positionExt: "50%,90%",
+      },
+      // 4 Défenseurs
+      {
+        name: "Latéral Gauche",
+        positionDom: "90%,15%",
+        positionExt: "10%,80%",
+      },
+      {
+        name: "Défenseur Central Gauche",
+        positionDom: "65%,14%",
+        positionExt: "35%,81%",
+      },
+      {
+        name: "Défenseur Central Droit",
+        positionDom: "35%,14%",
+        positionExt: "65%,81%",
+      },
+      {
+        name: "Latéral Droit",
+        positionDom: "10%,15%",
+        positionExt: "90%,80%",
+      },
+      // 4 Milieux à plat
+      {
+        name: "Milieu Gauche",
+        positionDom: "90%,28%",
+        positionExt: "10%,67%",
+      },
+      {
+        name: "Milieu Central Gauche",
+        positionDom: "60%,25%",
+        positionExt: "40%,70%",
+      },
+      {
+        name: "Milieu Central Droit",
+        positionDom: "40%,25%",
+        positionExt: "60%,70%",
+      },
+      {
+        name: "Milieu Droit",
+        positionDom: "10%,28%",
+        positionExt: "90%,67%",
+      },
+      // 1 Attaquant de soutien (Meneur ou 9.5)
+      {
+        name: "Attaquant de Soutien",
+        positionDom: "50%,34%",
+        positionExt: "50%,61%",
+      },
+      // 1 Buteur
+      {
+        name: "Buteur",
+        positionDom: "50%,42%",
+        positionExt: "50%,53%",
+      },
+    ],
+  },
 ];
