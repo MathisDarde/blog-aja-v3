@@ -192,11 +192,11 @@ export interface MethodeMatch extends BaseMethodeData {
   couleur1equipe1: string;
   couleur2equipe1: string;
   nomequipe1: string;
-  systemeequipe1: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1";
+  systemeequipe1: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
   couleur1equipe2: string;
   couleur2equipe2: string;
   nomequipe2: string;
-  systemeequipe2: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1";
+  systemeequipe2: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
   titulairesequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
   titulairesequipe2: [string, string, string, string?, string?, boolean?, boolean?][];
   remplacantsequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
@@ -213,11 +213,11 @@ export interface UpdateMethodeMatchFromProps {
     couleur1equipe1: string;
     couleur2equipe1: string;
     nomequipe1: string;
-    systemeequipe1: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1";
+    systemeequipe1: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
     couleur1equipe2: string;
     couleur2equipe2: string;
     nomequipe2: string;
-    systemeequipe2: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1";
+    systemeequipe2: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
     titulairesequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
     titulairesequipe2: [string, string, string, string?, string?, boolean?, boolean?][];
     remplacantsequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
