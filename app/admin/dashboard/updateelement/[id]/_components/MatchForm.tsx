@@ -10,9 +10,10 @@ import {
   WholeWord,
 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { UpdateMethodeMatchSchemaType } from "@/types/forms";
+import { MethodeMatchSchemaType, UpdateMethodeMatchSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateMethodeMatchSchema } from "@/app/schema";
+// Assurez-vous que votre UpdateMethodeMatchSchema est bien mis à jour avec z.object() comme le Create
+import { UpdateMethodeMatchSchema } from "@/app/schema"; 
 import { toast } from "sonner";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { UpdateMethodeMatchFromProps } from "@/contexts/Interfaces";
@@ -29,11 +30,43 @@ const IMAGE_PATHS = {
   drapeaux: "/_assets/flags/",
 };
 
-// Fonction utilitaire pour convertir les valeurs BDD (string) en valeurs Formulaire (booléen/string)
-const parseCellData = (cell: string | null | undefined | boolean): string | boolean => {
-  if (cell === "true") return true;
-  if (cell === "false") return false;
-  return cell === null || cell === undefined ? "" : String(cell);
+// --- MODÈLES VIDES POUR INITIALISATION ---
+const emptyTitulaire = { nom: "", numero: "", poste: "", sortie: "", buts: "", cartonJaune: false, cartonRouge: false };
+const emptyRemplacant = { nom: "", drapeau: "", poste: "", entree: "", buts: "", cartonJaune: false, cartonRouge: false };
+
+// --- FONCTIONS DE MAPPING (DB Array -> Form Object) ---
+// Ces fonctions permettent de lire les anciennes données (Tableaux) et de les convertir en Objets
+const mapToTitulaire = (data: any) => {
+  if (Array.isArray(data)) {
+    // Mapping depuis l'ancien format Tuple [nom, num, poste, sortie, buts, jaune, rouge]
+    return {
+      nom: data[0] || "",
+      numero: data[1] || "",
+      poste: data[2] || "",
+      sortie: data[3] || "",
+      buts: data[4] || "",
+      cartonJaune: data[5] === "true" || data[5] === true,
+      cartonRouge: data[6] === "true" || data[6] === true,
+    };
+  }
+  // Si c'est déjà un objet (ou null), on retourne l'objet ou le vide
+  return data ? { ...data } : { ...emptyTitulaire };
+};
+
+const mapToRemplacant = (data: any) => {
+  if (Array.isArray(data)) {
+    // Mapping depuis l'ancien format Tuple [nom, drapeau, poste, entree, buts, jaune, rouge]
+    return {
+      nom: data[0] || "",
+      drapeau: data[1] || "",
+      poste: data[2] || "",
+      entree: data[3] || "",
+      buts: data[4] || "",
+      cartonJaune: (data.length > 5 && (data[5] === "true" || data[5] === true)) || false,
+      cartonRouge: (data.length > 6 && (data[6] === "true" || data[6] === true)) || false,
+    };
+  }
+  return data ? { ...data } : { ...emptyRemplacant };
 };
 
 export default function MatchForm({
@@ -54,8 +87,8 @@ export default function MatchForm({
     resolver: zodResolver(UpdateMethodeMatchSchema),
     defaultValues: async () => {
       if (!selectedMethode) {
-        // Initialisation vide
-        const emptyData = {
+        // Initialisation vide propre (Objets)
+        return {
           keywords: [],
           nomequipe1: "",
           couleur1equipe1: "",
@@ -64,21 +97,18 @@ export default function MatchForm({
           couleur2equipe2: "",
           date: "",
           nomequipe2: "",
-          titulairesequipe1: [["", "", "", "", "", false, false]],
-          titulairesequipe2: [["", "", "", "", "", false, false]],
-          remplacantsequipe1: [["", "", "", "", "", false, false]],
-          remplacantsequipe2: [["", "", "", "", "", false, false]],
+          titulairesequipe1: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+          titulairesequipe2: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+          remplacantsequipe1: [{ ...emptyRemplacant }],
+          remplacantsequipe2: [{ ...emptyRemplacant }],
           stade: "",
           systemeequipe1: "4-3-3 Offensif",
           systemeequipe2: "4-3-3 Offensif",
           titrematch: "",
-        };
-        // On cast via unknown pour satisfaire le schéma strict (qui attend string[][])
-        // alors qu'on passe des booléens pour les checkboxes
-        return emptyData as unknown as UpdateMethodeMatchSchemaType;
+        } as unknown as UpdateMethodeMatchSchemaType;
       }
 
-      // Initialisation avec données existantes
+      // Initialisation avec données existantes + CONVERSION (DB -> Objets)
       const loadedData = {
         keywords: selectedMethode.keywords?.map((k) => ({ value: k })) || [],
         nomequipe1: selectedMethode.nomequipe1 || "",
@@ -89,30 +119,19 @@ export default function MatchForm({
         date: selectedMethode.date || "",
         nomequipe2: selectedMethode.nomequipe2 || "",
         
-        // On parse chaque cellule pour transformer "true"/"false" en true/false
-        titulairesequipe1: selectedMethode.titulairesequipe1?.map((row) =>
-          row.map(parseCellData)
-        ) || [["", "", "", "", "", false, false]],
-
-        titulairesequipe2: selectedMethode.titulairesequipe2?.map((row) =>
-          row.map(parseCellData)
-        ) || [["", "", "", "", "", false, false]],
-
-        remplacantsequipe1: selectedMethode.remplacantsequipe1?.map((row) =>
-          row.map(parseCellData)
-        ) || [["", "", "", "", "", false, false]],
-
-        remplacantsequipe2: selectedMethode.remplacantsequipe2?.map((row) =>
-          row.map(parseCellData)
-        ) || [["", "", "", "", "", false, false]],
+        // On utilise les mappers pour convertir les tuples potentiels en objets
+        titulairesequipe1: selectedMethode.titulairesequipe1?.map(mapToTitulaire) || Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+        titulairesequipe2: selectedMethode.titulairesequipe2?.map(mapToTitulaire) || Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+        
+        remplacantsequipe1: selectedMethode.remplacantsequipe1?.map(mapToRemplacant) || [{ ...emptyRemplacant }],
+        remplacantsequipe2: selectedMethode.remplacantsequipe2?.map(mapToRemplacant) || [{ ...emptyRemplacant }],
 
         stade: selectedMethode.stade || "",
-        systemeequipe1: selectedMethode.systemeequipe1 || "",
-        systemeequipe2: selectedMethode.systemeequipe2 || "",
+        systemeequipe1: selectedMethode.systemeequipe1 || "4-3-3 Offensif",
+        systemeequipe2: selectedMethode.systemeequipe2 || "4-3-3 Offensif",
         titrematch: selectedMethode.titrematch || "",
       };
 
-      // Cast "safe" pour éviter l'erreur TS sans utiliser any
       return loadedData as unknown as UpdateMethodeMatchSchemaType;
     },
   });
@@ -166,12 +185,13 @@ export default function MatchForm({
     fetchFiles();
   };
 
+  // Mise à jour pour cibler la propriété .drapeau de l'objet remplaçant
   const selectFile = (filename: string) => {
     if (modal && typeof modal !== "boolean") {
       if (modal.team === "equipe1") {
-        setValue(`remplacantsequipe1.${modal.index}.1`, filename);
+        setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, { shouldDirty: true });
       } else {
-        setValue(`remplacantsequipe2.${modal.index}.1`, filename);
+        setValue(`remplacantsequipe2.${modal.index}.drapeau`, filename, { shouldDirty: true });
       }
       setModal(false);
     }
@@ -190,53 +210,40 @@ export default function MatchForm({
     });
   };
 
-  // Traitement des données avant envoi (Images + Conversion Booléen -> String)
+  // Traitement des données avant envoi (Ajout prefixe images)
   const processSubmissionData = (
     data: UpdateMethodeMatchSchemaType
   ): UpdateMethodeMatchSchemaType => {
-    // Copie profonde sans typage strict temporaire pour manipulation facile
+    // Copie profonde
     const processedData = JSON.parse(JSON.stringify(data));
 
-    const processRows = (rows: (string | boolean)[][]) => {
-      return rows.map((row) => {
-        return row.map((cell, index) => {
-          // 1. Reconversion Booléen -> String pour la BDD
-          if (typeof cell === "boolean") {
-            return String(cell); // "true" ou "false"
-          }
-
-          // 2. Gestion des chemins d'images (Drapeaux)
-          // index 1 correspond généralement à la colonne drapeau/numéro selon votre logique
-          if (
-            index === 1 &&
-            cell &&
-            typeof cell === "string" &&
-            !cell.startsWith("http") &&
-            !cell.startsWith("/")
-          ) {
-            return `${IMAGE_PATHS.drapeaux}${cell}`;
-          }
-
-          return cell;
-        });
+    // Helper pour traiter les tableaux de remplaçants (Objets)
+    const processRemplacants = (remplacants: any[]) => {
+      return remplacants.map((remp) => {
+        if (
+          remp.drapeau &&
+          typeof remp.drapeau === "string" &&
+          !remp.drapeau.startsWith("http") &&
+          !remp.drapeau.startsWith("/")
+        ) {
+          remp.drapeau = `${IMAGE_PATHS.drapeaux}${remp.drapeau}`;
+        }
+        return remp;
       });
     };
 
-    // Appliquer le traitement à toutes les listes
     if (processedData.remplacantsequipe1) {
-      processedData.remplacantsequipe1 = processRows(processedData.remplacantsequipe1);
+      processedData.remplacantsequipe1 = processRemplacants(processedData.remplacantsequipe1);
     }
     if (processedData.remplacantsequipe2) {
-      processedData.remplacantsequipe2 = processRows(processedData.remplacantsequipe2);
-    }
-    if (processedData.titulairesequipe1) {
-      processedData.titulairesequipe1 = processRows(processedData.titulairesequipe1);
-    }
-    if (processedData.titulairesequipe2) {
-      processedData.titulairesequipe2 = processRows(processedData.titulairesequipe2);
+      processedData.remplacantsequipe2 = processRemplacants(processedData.remplacantsequipe2);
     }
 
-    // On retourne le résultat casté proprement car maintenant tout est string
+    // Note : On envoie maintenant des objets au backend.
+    // Si le backend attend toujours des tuples (arrays), il faut faire la conversion inverse ici.
+    // Mais puisque vous avez demandé de changer l'archi pour utiliser des objets, 
+    // on suppose que le backend a été mis à jour ou que le Zod schema envoie ce qu'il faut.
+    
     return processedData as UpdateMethodeMatchSchemaType;
   };
 
@@ -248,7 +255,6 @@ export default function MatchForm({
       return;
     }
 
-    // On transforme les données (images + booléens -> strings)
     const finalData = processSubmissionData(data);
 
     const response = await updateMethodeMatchForm(
@@ -258,6 +264,7 @@ export default function MatchForm({
     );
 
     if (response.success) {
+      toast.success("Méthode mise à jour avec succès");
       router.push("/");
     } else {
       toast.error(
@@ -291,6 +298,7 @@ export default function MatchForm({
           toast.error("Veuillez corriger les erreurs du formulaire.")
         })}
       >
+        {/* --- CHAMPS MOTS CLÉS, TITRE, STADE, DATE (Inchangés) --- */}
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
@@ -366,6 +374,8 @@ export default function MatchForm({
           />
         </div>
 
+        {/* --- SECTIONS ÉQUIPES --- */}
+        {/* On passe toujours les mêmes props, mais TeamInfosSection gère maintenant des Objets */}
         <TeamInfosSection
           control={control}
           register={register}

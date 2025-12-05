@@ -1,7 +1,7 @@
 "use client";
 
 import submitMethodeMatchForm from "@/actions/method/methode-match-form";
-import { MethodeMatchSchema } from "@/app/schema";
+// On garde les schémas ici comme demandé, mais idéalement ils sont dans @/app/schema
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -22,16 +22,93 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
 import Button from "@/components/BlueButton";
 import TeamInfosSection from "./TeamInfosSection";
+import { z } from "zod";
+import { GameSystems } from "@/components/GameSystems";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
   drapeaux: "/_assets/flags/",
 };
 
+// --- DÉFINITION DES SCHÉMAS (Objets) ---
+
+export const TitulaireSchema = z.object({
+  nom: z.string().default(""),
+  numero: z.string().default(""),
+  poste: z.string().default(""),
+  sortie: z.string().default(""),
+  buts: z.string().default(""),
+  cartonJaune: z.boolean().default(false),
+  cartonRouge: z.boolean().default(false),
+});
+
+export const RemplacantSchema = z.object({
+  nom: z.string().default(""),
+  drapeau: z.string().default(""),
+  poste: z.string().default(""),
+  entree: z.string().default(""),
+  buts: z.string().default(""),
+  cartonJaune: z.boolean().default(false),
+  cartonRouge: z.boolean().default(false),
+});
+
+export const MethodeMatchSchema = z.object({
+  keywords: z
+    .array(
+      z.object({
+        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
+      })
+    )
+    .min(1, "Ajoute au moins un mot-clé"),
+  titrematch: z
+    .string()
+    .nonempty({ message: "Le titre du match doit être renseigné." }),
+  couleur1equipe1: z
+    .string()
+    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
+  couleur2equipe1: z
+    .string()
+    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
+  nomequipe1: z
+    .string()
+    .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
+  systemeequipe1: z
+    .enum(GameSystems, {
+      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
+    }),
+  couleur1equipe2: z
+    .string()
+    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
+  couleur2equipe2: z
+    .string()
+    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
+  nomequipe2: z
+    .string()
+    .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
+  systemeequipe2: z
+    .enum(GameSystems, {
+      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
+    }),
+  titulairesequipe1: z.array(TitulaireSchema),
+  remplacantsequipe1: z.array(RemplacantSchema),
+  titulairesequipe2: z.array(TitulaireSchema),
+  remplacantsequipe2: z.array(RemplacantSchema),
+  stade: z.string().nonempty({
+    message: "Le nom du stade doit être renseigné.",
+  }),
+  date: z.string().nonempty({
+    message: "La date du match doit être renseignée.",
+  }),
+});
+
 export default function MatchForm() {
   const { user_id } = useGlobalContext();
 
   const [loading, setLoading] = useState(false);
+
+  // Modèles d'objets vides pour l'initialisation
+  const emptyTitulaire = { nom: "", numero: "", poste: "", sortie: "", buts: "", cartonJaune: false, cartonRouge: false };
+  const emptyRemplacant = { nom: "", drapeau: "", poste: "", entree: "", buts: "", cartonJaune: false, cartonRouge: false };
 
   const {
     register,
@@ -42,6 +119,7 @@ export default function MatchForm() {
     formState: { errors },
   } = useForm<MethodeMatchSchemaType>({
     resolver: zodResolver(MethodeMatchSchema),
+    // IMPORTANT : Initialisation avec des Objets et des références uniques
     defaultValues: {
       keywords: [{ value: "" }],
       titrematch: "",
@@ -49,14 +127,22 @@ export default function MatchForm() {
       couleur2equipe1: "#000000",
       nomequipe1: "",
       systemeequipe1: "4-3-3 Offensif",
+      
+      // Initialisation correcte des titulaires (11 objets distincts)
+      titulairesequipe1: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+      remplacantsequipe1: [{ ...emptyRemplacant }],
+
       couleur1equipe2: "#000000",
       couleur2equipe2: "#000000",
       nomequipe2: "",
       systemeequipe2: "4-3-3 Offensif",
+      
+      // Initialisation correcte des titulaires (11 objets distincts)
+      titulairesequipe2: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+      remplacantsequipe2: [{ ...emptyRemplacant }],
+      
       stade: "",
       date: "",
-      remplacantsequipe1: [[""]],
-      remplacantsequipe2: [[""]],
     },
   });
 
@@ -79,7 +165,7 @@ export default function MatchForm() {
     remove: removekeywords,
   } = useFieldArray<MethodeMatchSchemaType, "keywords">({
     control,
-    name: "keywords", // Assurez-vous que c'est juste "keywords"
+    name: "keywords",
   });
 
   const fetchFiles = async () => {
@@ -110,59 +196,48 @@ export default function MatchForm() {
     fetchFiles();
   };
 
-  // Modifiez la fonction selectFile pour utiliser l'information de l'équipe
+  // Mise à jour pour cibler la propriété "drapeau" de l'objet remplaçant
   const selectFile = (filename: string) => {
     if (modal && typeof modal !== "boolean") {
       if (modal.team === "equipe1") {
-        setValue(`remplacantsequipe1.${modal.index}.1`, filename);
+        setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, { shouldDirty: true });
       } else {
-        setValue(`remplacantsequipe2.${modal.index}.1`, filename);
+        setValue(`remplacantsequipe2.${modal.index}.drapeau`, filename, { shouldDirty: true });
       }
       setModal(false);
     }
   };
 
-  // Modifiez la fonction processImagePaths pour traiter correctement les deux équipes
+  // Mise à jour pour traiter les objets au lieu des index
   const processImagePaths = (
     data: MethodeMatchSchemaType
   ): MethodeMatchSchemaType => {
-    // Crée une copie profonde des données pour éviter de modifier l'original
+    // Crée une copie profonde des données
     const processedData = JSON.parse(
       JSON.stringify(data)
     ) as MethodeMatchSchemaType;
 
-    // Traitement des logos pour l'équipe 1
-    if (processedData.remplacantsequipe1) {
-      processedData.remplacantsequipe1 = processedData.remplacantsequipe1.map(
-        (remp1) => {
-          if (
-            remp1[1] &&
-            typeof remp1[1] === "string" &&
-            !remp1[1].startsWith("http") &&
-            !remp1[1].startsWith("/")
-          ) {
-            remp1[1] = `${IMAGE_PATHS.drapeaux}${remp1[1]}`;
-          }
-          return remp1;
+    // Helper pour traiter une liste de remplaçants (Objets)
+    const processRemplacants = (remplacants: any[]) => {
+      return remplacants.map((remp) => {
+        if (
+          remp.drapeau &&
+          typeof remp.drapeau === "string" &&
+          !remp.drapeau.startsWith("http") &&
+          !remp.drapeau.startsWith("/")
+        ) {
+          remp.drapeau = `${IMAGE_PATHS.drapeaux}${remp.drapeau}`;
         }
-      );
+        return remp;
+      });
+    };
+
+    if (processedData.remplacantsequipe1) {
+      processedData.remplacantsequipe1 = processRemplacants(processedData.remplacantsequipe1);
     }
 
-    // Traitement des logos pour l'équipe 2
     if (processedData.remplacantsequipe2) {
-      processedData.remplacantsequipe2 = processedData.remplacantsequipe2.map(
-        (remp2) => {
-          if (
-            remp2[1] &&
-            typeof remp2[1] === "string" &&
-            !remp2[1].startsWith("http") &&
-            !remp2[1].startsWith("/")
-          ) {
-            remp2[1] = `${IMAGE_PATHS.drapeaux}${remp2[1]}`;
-          }
-          return remp2;
-        }
-      );
+      processedData.remplacantsequipe2 = processRemplacants(processedData.remplacantsequipe2);
     }
 
     return processedData;
@@ -194,12 +269,8 @@ export default function MatchForm() {
       return;
     }
 
-    // Compléter automatiquement les chemins d'images (logos, flags, etc.)
     const processedData = processImagePaths(data);
-
-    const finalData = {
-      ...processedData,
-    };
+    const finalData = { ...processedData };
 
     const response = await submitMethodeMatchForm(finalData, user_id);
 
