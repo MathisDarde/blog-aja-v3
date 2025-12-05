@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Control,
   UseFormRegister,
@@ -37,7 +37,7 @@ interface TeamInfosSectionProps {
   onOpenModal: (index: number) => void;
 }
 
-// Type définissant la structure d'un joueur (Tuple) pour remplacer le 'any'
+// Type définissant la structure d'un joueur (Tuple)
 type PlayerTuple = [string, string, string, string, string, boolean, boolean];
 
 export default function TeamInfosSection({
@@ -54,27 +54,15 @@ export default function TeamInfosSection({
   const isDom = teamIndex === 1;
   const domExtLabel = isDom ? "domicile" : "l'extérieur";
 
-  // Construction des clés typées pour correspondre au Schema
   const teamNameField = `nomequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
-  const systemField =
-    `systemeequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
-  const color1Field =
-    `couleur1equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
-  const color2Field =
-    `couleur2equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const systemField = `systemeequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const color1Field = `couleur1equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const color2Field = `couleur2equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
 
-  // Pour les FieldArrays, on force le type attendu par RHF
-  const fieldArrayNameTitulaires =
-    `titulairesequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
-  const fieldArrayNameRemplacants =
-    `remplacantsequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
+  const fieldArrayNameTitulaires = `titulairesequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
+  const fieldArrayNameRemplacants = `remplacantsequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
 
-  // Récupération des erreurs typées
-  const titulairesErrors = errors[
-    fieldArrayNameTitulaires as keyof MethodeMatchSchemaType
-  ] as unknown as Array<Record<string, { message: string }>> | undefined;
-
-  // Récupération de l'erreur spécifique pour le système de jeu
+  const titulairesErrors = errors[fieldArrayNameTitulaires as keyof MethodeMatchSchemaType] as unknown as Array<Record<string, { message: string }>> | undefined;
   const systemError = errors[systemField as keyof typeof errors];
 
   // --- LOGIQUE TITULAIRES ---
@@ -91,40 +79,106 @@ export default function TeamInfosSection({
     fields: fieldsRemplacants,
     append: appendRemplacant,
     remove: removeRemplacant,
+    replace: replaceRemplacants, // <--- IMPORTANT : On récupère replace ici
   } = useFieldArray({
     control,
     name: fieldArrayNameRemplacants,
   });
 
-  // Surveiller le changement de système
-  const selectedSystem = watch(systemField);
+  // Force le typage en string
+  const selectedSystem = watch(systemField) as string;
   const currentDispositif = Dispositifs.find((d) => d.name === selectedSystem);
   const positionsDisponibles = currentDispositif?.postes || [];
 
-  // Surveiller les titulaires actuels
   const currentTitulaires = watch(
     fieldArrayNameTitulaires as Path<MethodeMatchSchemaType>
-  ) as unknown as PlayerTuple[]; // Correction du any ici
+  ) as unknown as PlayerTuple[];
 
-  // --- EFFET: PRÉ-REMPLISSAGE DES POSTES ---
+  // On surveille aussi les remplaçants pour pouvoir les nettoyer
+  const currentRemplacants = watch(
+    fieldArrayNameRemplacants as Path<MethodeMatchSchemaType>
+  ) as unknown as PlayerTuple[];
+
+  // --- REFERENCE POUR LE SYSTEME PRECEDENT ---
+  const prevSystemRef = useRef<string | null>(null);
+
+  // --- EFFET: GESTION DES POSTES ET NETTOYAGE ---
   useEffect(() => {
     if (!selectedSystem) return;
 
+    // 1. CAS DU PREMIER CHARGEMENT (INIT)
+    if (prevSystemRef.current === null) {
+      
+      // A. NETTOYAGE DES TITULAIRES
+      if (currentTitulaires && currentTitulaires.length === 11) {
+        const sanitizedTitulaires = currentTitulaires.map((player) => {
+          const safePlayer = Array.isArray(player) ? [...player] : [];
+          
+          const isJaune = safePlayer[5] === true || safePlayer[5] === "true";
+          const isRouge = safePlayer[6] === true || safePlayer[6] === "true";
+
+          return [
+            safePlayer[0], safePlayer[1], safePlayer[2], safePlayer[3], safePlayer[4],
+            isJaune, isRouge
+          ];
+        });
+        replaceTitulaires(sanitizedTitulaires);
+      }
+
+      // B. NETTOYAGE DES REMPLAÇANTS (AJOUTÉ ICI)
+      if (currentRemplacants && currentRemplacants.length > 0) {
+        const sanitizedRemplacants = currentRemplacants.map((player) => {
+          const safePlayer = Array.isArray(player) ? [...player] : [];
+          
+          // Attention : Le coach (souvent index 0 ou autre) peut avoir moins d'éléments.
+          // On vérifie que les indices existent avant de convertir.
+          let isJaune = false;
+          let isRouge = false;
+
+          if (safePlayer.length > 5) {
+             isJaune = safePlayer[5] === true || safePlayer[5] === "true";
+          }
+          if (safePlayer.length > 6) {
+             isRouge = safePlayer[6] === true || safePlayer[6] === "true";
+          }
+
+          // On reconstruit le tableau en préservant les premiers éléments
+          // et en forçant les booléens à la fin
+          const newPlayer = [...safePlayer];
+          if (newPlayer.length > 5) newPlayer[5] = isJaune;
+          if (newPlayer.length > 6) newPlayer[6] = isRouge;
+          
+          return newPlayer;
+        });
+        replaceRemplacants(sanitizedRemplacants);
+      }
+
+      prevSystemRef.current = selectedSystem;
+      return;
+    }
+
+    // 2. CAS OU LE SYSTÈME N'A PAS CHANGÉ
+    if (prevSystemRef.current === selectedSystem) {
+      return;
+    }
+
+    // 3. CAS DU CHANGEMENT DE SYSTÈME (Uniquement pour les titulaires)
     const formation = Dispositifs.find((d) => d.name === selectedSystem);
 
     if (formation) {
       const newTitulaires = formation.postes.map((poste, index) => {
         const existingPlayer = currentTitulaires?.[index];
+        const safePlayer = Array.isArray(existingPlayer) ? existingPlayer : [];
 
-        const isJaune = String(existingPlayer?.[5]) === "true";
-        const isRouge = String(existingPlayer?.[6]) === "true";
+        const isJaune = safePlayer[5] === true;
+        const isRouge = safePlayer[6] === true;
 
         return [
-          existingPlayer?.[0] || "", // Nom
-          existingPlayer?.[1] || "", // Numéro
-          poste.name, // Poste
-          existingPlayer?.[3] || "", // Sortie
-          existingPlayer?.[4] || "", // Buts
+          safePlayer[0] || "", 
+          safePlayer[1] || "", 
+          poste.name,
+          safePlayer[3] || "", 
+          safePlayer[4] || "", 
           isJaune,
           isRouge
         ];
@@ -132,8 +186,11 @@ export default function TeamInfosSection({
 
       replaceTitulaires(newTitulaires);
     }
+
+    prevSystemRef.current = selectedSystem;
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSystem]);
+  }, [selectedSystem]); 
 
   const handleColorChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -147,6 +204,7 @@ export default function TeamInfosSection({
 
   return (
     <Section title={`Infos sur équipe à ${domExtLabel}`}>
+      {/* ... (LE RESTE DU RENDU RESTE IDENTIQUE) ... */}
       {/* --- COULEUR PRINCIPALE --- */}
       <div className="relative w-full my-4">
         <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
