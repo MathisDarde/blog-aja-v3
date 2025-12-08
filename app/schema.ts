@@ -148,10 +148,10 @@ export const RemplacantSchema = z.object({
   nom: z.string().default(""),
   drapeau: z.string().default(""),
   poste: z.string().default(""),
-  entree: z.string().default(""),
-  buts: z.string().default(""),
-  cartonJaune: z.boolean().default(false),
-  cartonRouge: z.boolean().default(false),
+  entree: z.string().default("").optional(),
+  buts: z.string().default("").optional(),
+  cartonJaune: z.boolean().default(false).optional(),
+  cartonRouge: z.boolean().default(false).optional(),
 });
 
 export const MethodeSaisonSchema = z.object({
@@ -223,10 +223,9 @@ export const MethodeMatchSchema = z.object({
   nomequipe1: z
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe1: z
-    .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
-    }),
+  systemeequipe1: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
   couleur1equipe2: z
     .string()
     .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
@@ -236,10 +235,9 @@ export const MethodeMatchSchema = z.object({
   nomequipe2: z
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe2: z
-    .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
-    }),
+  systemeequipe2: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
   titulairesequipe1: z.array(TitulaireSchema),
   remplacantsequipe1: z.array(RemplacantSchema),
   titulairesequipe2: z.array(TitulaireSchema),
@@ -271,10 +269,9 @@ export const UpdateMethodeMatchSchema = z.object({
   nomequipe1: z
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe1: z
-    .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
-    }),
+  systemeequipe1: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
   couleur1equipe2: z
     .string()
     .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
@@ -284,10 +281,9 @@ export const UpdateMethodeMatchSchema = z.object({
   nomequipe2: z
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe2: z
-    .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
-    }),
+  systemeequipe2: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
   titulairesequipe1: z.array(TitulaireSchema),
   remplacantsequipe1: z.array(RemplacantSchema),
   titulairesequipe2: z.array(TitulaireSchema),

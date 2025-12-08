@@ -24,6 +24,7 @@ import Section from "./DropdownContainerDomExt";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { GameSystems } from "@/components/GameSystems";
 import { Dispositifs } from "@/components/Dispositifs";
+import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
 
 interface TeamInfosSectionProps {
   control: Control<MethodeMatchSchemaType>;
@@ -36,9 +37,6 @@ interface TeamInfosSectionProps {
   onToggleExpand: (index: number) => void;
   onOpenModal: (index: number) => void;
 }
-
-// Plus besoin de PlayerTuple, on utilise directement les types inférés ou 'any' contrôlé
-// car RHF gère maintenant des objets structurés.
 
 export default function TeamInfosSection({
   control,
@@ -54,34 +52,38 @@ export default function TeamInfosSection({
   const isDom = teamIndex === 1;
   const domExtLabel = isDom ? "domicile" : "l'extérieur";
 
+  // Construction des noms de champs dynamiques
   const teamNameField = `nomequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
-  const systemField = `systemeequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
-  const color1Field = `couleur1equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
-  const color2Field = `couleur2equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const systemField =
+    `systemeequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const color1Field =
+    `couleur1equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const color2Field =
+    `couleur2equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
 
-  // Chemins vers les tableaux d'objets
-  const fieldArrayNameTitulaires = `titulairesequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
-  const fieldArrayNameRemplacants = `remplacantsequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
+  const fieldArrayNameTitulaires =
+    `titulairesequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
+  const fieldArrayNameRemplacants =
+    `remplacantsequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
 
-  // Typage approximatif pour les erreurs car RHF Typescript est complexe sur les array dynamiques
-  const titulairesErrors = errors[fieldArrayNameTitulaires as keyof MethodeMatchSchemaType] as any;
+  // Récupération des erreurs spécifiques
+  const titulairesErrors = errors[
+    `titulairesequipe${teamIndex}` as keyof MethodeMatchSchemaType
+  ] as FieldErrors<TituPlayerType>[];
   const systemError = errors[systemField as keyof typeof errors];
 
   // --- LOGIQUE TITULAIRES ---
-  const {
-    fields: fieldsTitulaires,
-    replace: replaceTitulaires,
-  } = useFieldArray({
-    control,
-    name: fieldArrayNameTitulaires,
-  });
+  const { fields: fieldsTitulaires, replace: replaceTitulaires } =
+    useFieldArray({
+      control,
+      name: fieldArrayNameTitulaires,
+    });
 
   // --- LOGIQUE REMPLACANTS ---
   const {
     fields: fieldsRemplacants,
     append: appendRemplacant,
     remove: removeRemplacant,
-    replace: replaceRemplacants,
   } = useFieldArray({
     control,
     name: fieldArrayNameRemplacants,
@@ -91,59 +93,53 @@ export default function TeamInfosSection({
   const currentDispositif = Dispositifs.find((d) => d.name === selectedSystem);
   const positionsDisponibles = currentDispositif?.postes || [];
 
-  // On récupère les tableaux d'objets
-  const currentTitulaires = watch(fieldArrayNameTitulaires) as any[];
-  const currentRemplacants = watch(fieldArrayNameRemplacants) as any[];
-
-  // --- REFERENCE POUR LE SYSTEME PRECEDENT ---
+  const currentTitulaires = watch(fieldArrayNameTitulaires) as TituPlayerType[];
   const prevSystemRef = useRef<string | null>(null);
 
   // --- EFFET: GESTION DES POSTES ET MAINTENANCE ---
   useEffect(() => {
     if (!selectedSystem) return;
 
-    // 1. CAS DU PREMIER CHARGEMENT (INIT)
-    // Avec la nouvelle structure objet, le besoin de "nettoyage" (sanitization) est moindre
-    // car les types sont respectés (boolean reste boolean), mais on garde la logique
-    // pour s'assurer que les données sont propres.
+    // 1. Init
     if (prevSystemRef.current === null) {
       prevSystemRef.current = selectedSystem;
       return;
     }
 
-    // 2. CAS OU LE SYSTÈME N'A PAS CHANGÉ
+    // 2. Pas de changement
     if (prevSystemRef.current === selectedSystem) {
       return;
     }
 
-    // 3. CAS DU CHANGEMENT DE SYSTÈME (Uniquement pour les titulaires)
+    // 3. Changement de système : Réorganiser les titulaires
     const formation = Dispositifs.find((d) => d.name === selectedSystem);
 
     if (formation) {
       // On mapppe sur les nouvelles positions du système
-      const newTitulaires = formation.postes.map((poste, index) => {
-        // On récupère l'objet joueur existant à cet index
-        const existingPlayer = currentTitulaires?.[index] || {};
+      const newTitulaires: TituPlayerType[] = formation.postes.map(
+        (poste, index) => {
+          // On récupère l'objet joueur existant à cet index (ou vide)
+          const existingPlayer = currentTitulaires?.[index] || {};
 
-        // On retourne un NOUVEL objet combinant l'existant et le nouveau poste
-        return {
-          nom: existingPlayer.nom || "",
-          numero: existingPlayer.numero || "",
-          poste: poste.name, // <--- On impose le poste du système
-          sortie: existingPlayer.sortie || "",
-          buts: existingPlayer.buts || "",
-          cartonJaune: !!existingPlayer.cartonJaune,
-          cartonRouge: !!existingPlayer.cartonRouge,
-        };
-      });
+          return {
+            nom: existingPlayer.nom || "",
+            numero: existingPlayer.numero || "",
+            poste: poste.name,
+            sortie: existingPlayer.sortie || "",
+            buts: existingPlayer.buts || "",
+            cartonJaune: !!existingPlayer.cartonJaune,
+            cartonRouge: !!existingPlayer.cartonRouge,
+          };
+        }
+      );
 
-      // On remplace le field array avec les nouveaux objets
+      // @ts-expect-error : Si le typage inféré est encore trop complexe pour le fieldArray, on peut forcer l'acceptation
+      // mais normalement sans l'annotation explicite ci-dessus, cela devrait passer.
       replaceTitulaires(newTitulaires);
     }
 
     prevSystemRef.current = selectedSystem;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSystem]);
+  }, [selectedSystem, currentTitulaires, replaceTitulaires]);
 
   const handleColorChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -155,20 +151,18 @@ export default function TeamInfosSection({
     }
   };
 
-  // Modèle d'objet vide pour l'ajout d'un remplaçant
-  const emptyRemplacant = {
+  const emptyRemplacant: RempPlayerType = {
     nom: "",
     drapeau: "",
     poste: "",
     entree: "",
     buts: "",
     cartonJaune: false,
-    cartonRouge: false
+    cartonRouge: false,
   };
 
   return (
     <Section title={`Infos sur équipe à ${domExtLabel}`}>
-      
       {/* --- COULEUR PRINCIPALE --- */}
       <div className="relative w-full my-4">
         <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
@@ -237,8 +231,9 @@ export default function TeamInfosSection({
         </span>
         <select
           {...register(systemField)}
-          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${systemError ? "border-red-500" : "border-gray-600"
-            }`}
+          className={`w-full py-3 sm:py-4 px-6 rounded-full border font-Montserrat text-xs sm:text-sm bg-white ${
+            systemError ? "border-red-500" : "border-gray-600"
+          }`}
         >
           <option value="">Sélectionner un système...</option>
           {GameSystems.map((system, index) => (
@@ -263,13 +258,11 @@ export default function TeamInfosSection({
         </span>
 
         {fieldsTitulaires.map((field, index) => {
-          // Gestion des erreurs adaptée aux objets
           const rowErrors = titulairesErrors?.[index];
 
           return (
             <React.Fragment key={field.id}>
               <div className="flex flex-col md:flex-row items-start md:items-center gap-3 w-full">
-                
                 {/* NOM */}
                 <div className="w-full md:w-5/12">
                   <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
@@ -277,8 +270,9 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès dynamique aux propriétés de l'objet
-                    {...register(`${fieldArrayNameTitulaires}.${index}.nom`)}
+                    {...register(
+                      `${fieldArrayNameTitulaires}.${index}.nom` as Path<MethodeMatchSchemaType>
+                    )}
                     placeholder="Nom (ex: Gaëtan Perrin)"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
@@ -295,10 +289,12 @@ export default function TeamInfosSection({
                     Poste
                   </label>
                   <select
-                    // @ts-expect-error: Accès dynamique
-                    {...register(`${fieldArrayNameTitulaires}.${index}.poste`)}
-                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${rowErrors?.poste ? "border-red-500" : "border-gray-300"
-                      }`}
+                    {...register(
+                      `${fieldArrayNameTitulaires}.${index}.poste` as Path<MethodeMatchSchemaType>
+                    )}
+                    className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none ${
+                      rowErrors?.poste ? "border-red-500" : "border-gray-300"
+                    }`}
                   >
                     <option value="">Choisir...</option>
                     {positionsDisponibles.length > 0 &&
@@ -322,8 +318,9 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès dynamique
-                    {...register(`${fieldArrayNameTitulaires}.${index}.numero`)}
+                    {...register(
+                      `${fieldArrayNameTitulaires}.${index}.numero` as Path<MethodeMatchSchemaType>
+                    )}
                     placeholder="N°"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
@@ -343,18 +340,19 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès dynamique
-                    {...register(`${fieldArrayNameTitulaires}.${index}.sortie`)}
+                    {...register(
+                      `${fieldArrayNameTitulaires}.${index}.sortie` as Path<MethodeMatchSchemaType>
+                    )}
                     placeholder="Min. (ex: 75')"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
-                   {rowErrors?.sortie && (
+                  {rowErrors?.sortie && (
                     <span className="text-red-500 text-[10px]">
                       {rowErrors.sortie.message}
                     </span>
                   )}
                 </div>
-               
+
                 {/* BUTS */}
                 <div className="w-full md:w-1/4">
                   <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
@@ -362,8 +360,9 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès dynamique
-                    {...register(`${fieldArrayNameTitulaires}.${index}.buts`)}
+                    {...register(
+                      `${fieldArrayNameTitulaires}.${index}.buts` as Path<MethodeMatchSchemaType>
+                    )}
                     placeholder="Buts"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
@@ -374,8 +373,9 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start md:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès dynamique
-                      {...register(`${fieldArrayNameTitulaires}.${index}.cartonJaune`)}
+                      {...register(
+                        `${fieldArrayNameTitulaires}.${index}.cartonJaune` as Path<MethodeMatchSchemaType>
+                      )}
                     />
                     <div
                       className="w-4 h-6 bg-yellow-400 border border-gray-400 rounded-sm"
@@ -390,8 +390,9 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start md:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès dynamique
-                      {...register(`${fieldArrayNameTitulaires}.${index}.cartonRouge`)}
+                      {...register(
+                        `${fieldArrayNameTitulaires}.${index}.cartonRouge` as Path<MethodeMatchSchemaType>
+                      )}
                     />
                     <div
                       className="w-4 h-6 bg-red-600 border border-gray-400 rounded-sm"
@@ -432,19 +433,21 @@ export default function TeamInfosSection({
                 {/* NOM REMPLACANT */}
                 <input
                   type="text"
-                  // @ts-expect-error: Accès dynamique
-                  {...register(`${fieldArrayNameRemplacants}.${index}.nom`)}
+                  {...register(
+                    `${fieldArrayNameRemplacants}.${index}.nom` as Path<MethodeMatchSchemaType>
+                  )}
                   placeholder="Nom (ex: Gaëtan Perrin)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
               </div>
 
-              {/* DRAPEAU (au lieu de numero) */}
+              {/* DRAPEAU */}
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
-                  // @ts-expect-error: Accès dynamique
-                  {...register(`${fieldArrayNameRemplacants}.${index}.drapeau`)}
+                  {...register(
+                    `${fieldArrayNameRemplacants}.${index}.drapeau` as Path<MethodeMatchSchemaType>
+                  )}
                   placeholder="Drapeau (ex: france)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
@@ -460,8 +463,9 @@ export default function TeamInfosSection({
               {/* POSTE */}
               <input
                 type="text"
-                // @ts-expect-error: Accès dynamique
-                {...register(`${fieldArrayNameRemplacants}.${index}.poste`)}
+                {...register(
+                  `${fieldArrayNameRemplacants}.${index}.poste` as Path<MethodeMatchSchemaType>
+                )}
                 placeholder="Poste (ex: G)"
                 className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
               />
@@ -469,16 +473,16 @@ export default function TeamInfosSection({
 
             {expandedIndices.includes(index) && (
               <div className="flex flex-col md:flex-row gap-2 items-center my-2">
-                
-                {/* ENTREE (au lieu de sortie) */}
+                {/* ENTREE */}
                 <div className="w-full md:w-1/4">
                   <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
                     Entrée
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès dynamique
-                    {...register(`${fieldArrayNameRemplacants}.${index}.entree`)}
+                    {...register(
+                      `${fieldArrayNameRemplacants}.${index}.entree` as Path<MethodeMatchSchemaType>
+                    )}
                     placeholder="Min. (ex: 75')"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
@@ -491,8 +495,9 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
-                    // @ts-expect-error: Accès dynamique
-                    {...register(`${fieldArrayNameRemplacants}.${index}.buts`)}
+                    {...register(
+                      `${fieldArrayNameRemplacants}.${index}.buts` as Path<MethodeMatchSchemaType>
+                    )}
                     placeholder="Buts"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                   />
@@ -503,8 +508,9 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès dynamique
-                      {...register(`${fieldArrayNameRemplacants}.${index}.cartonJaune`)}
+                      {...register(
+                        `${fieldArrayNameRemplacants}.${index}.cartonJaune` as Path<MethodeMatchSchemaType>
+                      )}
                     />
                     <div
                       className="w-4 h-6 bg-yellow-400 border border-gray-400 rounded-sm"
@@ -519,8 +525,9 @@ export default function TeamInfosSection({
                   <label className="flex items-center justify-start sm:justify-center gap-2 text-xs sm:text-sm mt-4 md:mt-0">
                     <input
                       type="checkbox"
-                      // @ts-expect-error: Accès dynamique
-                      {...register(`${fieldArrayNameRemplacants}.${index}.cartonRouge`)}
+                      {...register(
+                        `${fieldArrayNameRemplacants}.${index}.cartonRouge` as Path<MethodeMatchSchemaType>
+                      )}
                     />
                     <div
                       className="w-4 h-6 bg-red-600 border border-gray-400 rounded-sm"
@@ -543,8 +550,7 @@ export default function TeamInfosSection({
         ))}
         <button
           type="button"
-          // Ajout d'un objet vide au lieu d'un tableau
-          onClick={() => appendRemplacant({ ...emptyRemplacant } as any)}
+          onClick={() => appendRemplacant(emptyRemplacant)}
           className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
         >
           <Plus size={18} />

@@ -2,20 +2,48 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import { ArrowBigDown, ArrowBigUp, Loader2 } from "lucide-react";
-import { MethodeMatch } from "@/contexts/Interfaces";
+import { ArrowBigDown, Loader2 } from "lucide-react";
 import { Dispositifs } from "@/components/Dispositifs";
 
-// --- TYPES ---
-interface PlayerObject {
+// On définit les interfaces ici pour être sûr (ou on utilise celles de l'import si elles sont identiques)
+export interface TituPlayerType {
   nom: string;
-  numero?: string; // Pour les titulaires
-  drapeau?: string; // Pour les remplaçants
   poste: string;
-  minutes: string; // "sortie" pour titulaire, "entree" pour remplaçant
-  buts: string | number;
-  cartonJaune: boolean;
-  cartonRouge: boolean;
+  numero: string;
+  sortie?: string;
+  buts?: string;
+  cartonJaune?: boolean;
+  cartonRouge?: boolean;
+}
+
+export interface RempPlayerType {
+  nom: string;
+  poste: string;
+  drapeau: string;
+  entree?: string;
+  buts?: string;
+  cartonJaune?: boolean;
+  cartonRouge?: boolean;
+}
+
+// On redéfinit partiellement MethodeMatch pour s'assurer que les tableaux sont bien typés
+// Si votre import @/contexts/Interfaces est déjà à jour, vous pouvez retirer cette partie et utiliser l'import.
+interface MethodeMatch {
+  titrematch: string;
+  date: string;
+  stade: string;
+  nomequipe1: string;
+  nomequipe2: string;
+  systemeequipe1: string;
+  systemeequipe2: string;
+  couleur1equipe1: string;
+  couleur2equipe1: string;
+  couleur1equipe2: string;
+  couleur2equipe2: string;
+  titulairesequipe1: TituPlayerType[];
+  titulairesequipe2: TituPlayerType[];
+  remplacantsequipe1: RempPlayerType[];
+  remplacantsequipe2: RempPlayerType[];
 }
 
 interface GameMethodeExpertProps {
@@ -30,50 +58,6 @@ const getLastName = (fullName: string) => {
   return parts.length > 1 ? parts.slice(1).join(" ") : parts[0];
 };
 
-// Fonction magique qui transforme n'importe quelle donnée (Tableau ou Objet) en Objet propre
-const normalizePlayer = (player: any, type: "titulaire" | "remplacant"): PlayerObject => {
-  // Cas 1 : C'est un ancien format (Tableau / Tuple)
-  if (Array.isArray(player)) {
-    const isJaune = player[5] === true || player[5] === "true";
-    const isRouge = player[6] === true || player[6] === "true";
-
-    if (type === "titulaire") {
-      return {
-        nom: player[0] || "",
-        numero: player[1] || "",
-        poste: player[2] || "",
-        minutes: player[3] || "", // Sortie
-        buts: player[4] || "",
-        cartonJaune: isJaune,
-        cartonRouge: isRouge,
-      };
-    } else {
-      return {
-        nom: player[0] || "",
-        drapeau: player[1] || "",
-        poste: player[2] || "",
-        minutes: player[3] || "", // Entrée
-        buts: player[4] || "",
-        cartonJaune: (player.length > 5 && (player[5] === true || player[5] === "true")) || false,
-        cartonRouge: (player.length > 6 && (player[6] === true || player[6] === "true")) || false,
-      };
-    }
-  }
-
-  // Cas 2 : C'est déjà le nouveau format (Objet)
-  // On harmonise juste les noms de clés si nécessaire (sortie/entree -> minutes)
-  return {
-    nom: player.nom || "",
-    numero: player.numero || "",
-    drapeau: player.drapeau || "",
-    poste: player.poste || "",
-    minutes: type === "titulaire" ? (player.sortie || "") : (player.entree || ""),
-    buts: player.buts || "",
-    cartonJaune: player.cartonJaune === true || String(player.cartonJaune) === "true",
-    cartonRouge: player.cartonRouge === true || String(player.cartonRouge) === "true",
-  };
-};
-
 export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -82,22 +66,22 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
   // --- LOGIQUE DE PLACEMENT ---
   const mapPlayersToSystem = (
-    rawPlayers: any[] | undefined,
+    rawPlayers: TituPlayerType[] | undefined,
     systeme: typeof systemeDom
   ) => {
     if (!rawPlayers || !systeme) return [];
 
-    // 1. Normalisation de tous les joueurs en Objets
-    const availablePlayers = rawPlayers.map((p) => normalizePlayer(p, "titulaire"));
+    // On fait une copie pour pouvoir manipuler la liste sans muter les props
+    const availablePlayers = [...rawPlayers];
 
-    // 2. Distribution sur le terrain
+    // Distribution sur le terrain
     return systeme.postes.map((posteConfig) => {
       // Cherche correspondance exacte du poste
       const exactMatchIndex = availablePlayers.findIndex(
         (p) => p.poste === posteConfig.name
       );
 
-      let playerToPlace;
+      let playerToPlace: TituPlayerType | undefined;
 
       if (exactMatchIndex !== -1) {
         playerToPlace = availablePlayers[exactMatchIndex];
@@ -118,11 +102,21 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
     });
   };
 
-  const mappedTeam1 = useMemo(() => mapPlayersToSystem(methode.titulairesequipe1, systemeDom), [methode.titulairesequipe1, systemeDom]);
-  const mappedTeam2 = useMemo(() => mapPlayersToSystem(methode.titulairesequipe2, systemeExt), [methode.titulairesequipe2, systemeExt]);
+  const mappedTeam1 = useMemo(
+    () => mapPlayersToSystem(methode.titulairesequipe1, systemeDom),
+    [methode.titulairesequipe1, systemeDom]
+  );
+  const mappedTeam2 = useMemo(
+    () => mapPlayersToSystem(methode.titulairesequipe2, systemeExt),
+    [methode.titulairesequipe2, systemeExt]
+  );
 
   const renderPlayerEntity = (
-    mappedData: any,
+    mappedData: {
+      playerData: TituPlayerType;
+      positionDom: string;
+      positionExt: string;
+    } | null,
     index: number,
     isDomicile: boolean,
     teamColor: string,
@@ -134,8 +128,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
     const positionString = isDomicile ? positionDom : positionExt;
     const [left, top] = positionString.split(",");
 
-    // Accès via propriétés d'Objet (grâce à normalizePlayer)
-    const { nom, numero, minutes, buts, cartonJaune, cartonRouge } = playerData as PlayerObject;
+    const { nom, numero, sortie, buts, cartonJaune, cartonRouge } = playerData;
 
     return (
       <div
@@ -169,7 +162,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
           )}
 
           {/* Flèche Sortie */}
-          {minutes && (
+          {sortie && (
             <div className="absolute -bottom-1 -left-2 z-20 drop-shadow-md">
               <ArrowBigDown
                 size={20}
@@ -210,9 +203,11 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
   };
 
   // Helper pour afficher une liste de remplaçants
-  const renderSubstitutesList = (teamName: string, rawPlayers: any[]) => {
-    if (!rawPlayers) return null;
-    const players = rawPlayers.map(p => normalizePlayer(p, "remplacant"));
+  const renderSubstitutesList = (
+    teamName: string,
+    players: RempPlayerType[]
+  ) => {
+    if (!players || players.length === 0) return null;
 
     return (
       <div className="mt-4 w-full">
@@ -222,7 +217,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
         <ul className="flex flex-col gap-1.5 mt-2">
           {players.map((remp, index) => {
             const nbButs = Number(remp.buts);
-            
+
             return (
               <li
                 key={index}
@@ -248,9 +243,9 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   {nbButs > 0 && <span className="text-xs">⚽ x{nbButs}</span>}
-                  {remp.minutes && (
+                  {remp.entree && (
                     <span className="text-xs font-bold text-green-600">
-                      ⬆ {remp.minutes}
+                      ⬆ {remp.entree}
                     </span>
                   )}
                   {(remp.cartonJaune || remp.cartonRouge) && (

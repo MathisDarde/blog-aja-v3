@@ -10,13 +10,17 @@ import {
   WholeWord,
 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { MethodeMatchSchemaType, UpdateMethodeMatchSchemaType } from "@/types/forms";
+import { UpdateMethodeMatchSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 // Assurez-vous que votre UpdateMethodeMatchSchema est bien mis à jour avec z.object() comme le Create
-import { UpdateMethodeMatchSchema } from "@/app/schema"; 
+import { UpdateMethodeMatchSchema } from "@/app/schema";
 import { toast } from "sonner";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { UpdateMethodeMatchFromProps } from "@/contexts/Interfaces";
+import {
+  RempPlayerType,
+  TituPlayerType,
+  UpdateMethodeMatchFromProps,
+} from "@/contexts/Interfaces";
 import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeMatchForm from "@/actions/method/update-match-form";
 import { useRouter } from "next/navigation";
@@ -31,14 +35,28 @@ const IMAGE_PATHS = {
 };
 
 // --- MODÈLES VIDES POUR INITIALISATION ---
-const emptyTitulaire = { nom: "", numero: "", poste: "", sortie: "", buts: "", cartonJaune: false, cartonRouge: false };
-const emptyRemplacant = { nom: "", drapeau: "", poste: "", entree: "", buts: "", cartonJaune: false, cartonRouge: false };
+const emptyTitulaire = {
+  nom: "",
+  numero: "",
+  poste: "",
+  sortie: "",
+  buts: "",
+  cartonJaune: false,
+  cartonRouge: false,
+};
+const emptyRemplacant = {
+  nom: "",
+  drapeau: "",
+  poste: "",
+  entree: "",
+  buts: "",
+  cartonJaune: false,
+  cartonRouge: false,
+};
 
-// --- FONCTIONS DE MAPPING (DB Array -> Form Object) ---
 // Ces fonctions permettent de lire les anciennes données (Tableaux) et de les convertir en Objets
-const mapToTitulaire = (data: any) => {
+const mapToTitulaire = (data: TituPlayerType) => {
   if (Array.isArray(data)) {
-    // Mapping depuis l'ancien format Tuple [nom, num, poste, sortie, buts, jaune, rouge]
     return {
       nom: data[0] || "",
       numero: data[1] || "",
@@ -53,7 +71,7 @@ const mapToTitulaire = (data: any) => {
   return data ? { ...data } : { ...emptyTitulaire };
 };
 
-const mapToRemplacant = (data: any) => {
+const mapToRemplacant = (data: RempPlayerType) => {
   if (Array.isArray(data)) {
     // Mapping depuis l'ancien format Tuple [nom, drapeau, poste, entree, buts, jaune, rouge]
     return {
@@ -62,8 +80,10 @@ const mapToRemplacant = (data: any) => {
       poste: data[2] || "",
       entree: data[3] || "",
       buts: data[4] || "",
-      cartonJaune: (data.length > 5 && (data[5] === "true" || data[5] === true)) || false,
-      cartonRouge: (data.length > 6 && (data[6] === "true" || data[6] === true)) || false,
+      cartonJaune:
+        (data.length > 5 && (data[5] === "true" || data[5] === true)) || false,
+      cartonRouge:
+        (data.length > 6 && (data[6] === "true" || data[6] === true)) || false,
     };
   }
   return data ? { ...data } : { ...emptyRemplacant };
@@ -97,8 +117,12 @@ export default function MatchForm({
           couleur2equipe2: "",
           date: "",
           nomequipe2: "",
-          titulairesequipe1: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
-          titulairesequipe2: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+          titulairesequipe1: Array.from({ length: 11 }).map(() => ({
+            ...emptyTitulaire,
+          })),
+          titulairesequipe2: Array.from({ length: 11 }).map(() => ({
+            ...emptyTitulaire,
+          })),
           remplacantsequipe1: [{ ...emptyRemplacant }],
           remplacantsequipe2: [{ ...emptyRemplacant }],
           stade: "",
@@ -118,13 +142,21 @@ export default function MatchForm({
         couleur2equipe2: selectedMethode.couleur2equipe2 || "",
         date: selectedMethode.date || "",
         nomequipe2: selectedMethode.nomequipe2 || "",
-        
+
         // On utilise les mappers pour convertir les tuples potentiels en objets
-        titulairesequipe1: selectedMethode.titulairesequipe1?.map(mapToTitulaire) || Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
-        titulairesequipe2: selectedMethode.titulairesequipe2?.map(mapToTitulaire) || Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
-        
-        remplacantsequipe1: selectedMethode.remplacantsequipe1?.map(mapToRemplacant) || [{ ...emptyRemplacant }],
-        remplacantsequipe2: selectedMethode.remplacantsequipe2?.map(mapToRemplacant) || [{ ...emptyRemplacant }],
+        titulairesequipe1:
+          selectedMethode.titulairesequipe1?.map(mapToTitulaire) ||
+          Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+        titulairesequipe2:
+          selectedMethode.titulairesequipe2?.map(mapToTitulaire) ||
+          Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+
+        remplacantsequipe1: selectedMethode.remplacantsequipe1?.map(
+          mapToRemplacant
+        ) || [{ ...emptyRemplacant }],
+        remplacantsequipe2: selectedMethode.remplacantsequipe2?.map(
+          mapToRemplacant
+        ) || [{ ...emptyRemplacant }],
 
         stade: selectedMethode.stade || "",
         systemeequipe1: selectedMethode.systemeequipe1 || "4-3-3 Offensif",
@@ -189,9 +221,13 @@ export default function MatchForm({
   const selectFile = (filename: string) => {
     if (modal && typeof modal !== "boolean") {
       if (modal.team === "equipe1") {
-        setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, { shouldDirty: true });
+        setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, {
+          shouldDirty: true,
+        });
       } else {
-        setValue(`remplacantsequipe2.${modal.index}.drapeau`, filename, { shouldDirty: true });
+        setValue(`remplacantsequipe2.${modal.index}.drapeau`, filename, {
+          shouldDirty: true,
+        });
       }
       setModal(false);
     }
@@ -218,7 +254,7 @@ export default function MatchForm({
     const processedData = JSON.parse(JSON.stringify(data));
 
     // Helper pour traiter les tableaux de remplaçants (Objets)
-    const processRemplacants = (remplacants: any[]) => {
+    const processRemplacants = (remplacants: RempPlayerType[]) => {
       return remplacants.map((remp) => {
         if (
           remp.drapeau &&
@@ -233,17 +269,21 @@ export default function MatchForm({
     };
 
     if (processedData.remplacantsequipe1) {
-      processedData.remplacantsequipe1 = processRemplacants(processedData.remplacantsequipe1);
+      processedData.remplacantsequipe1 = processRemplacants(
+        processedData.remplacantsequipe1
+      );
     }
     if (processedData.remplacantsequipe2) {
-      processedData.remplacantsequipe2 = processRemplacants(processedData.remplacantsequipe2);
+      processedData.remplacantsequipe2 = processRemplacants(
+        processedData.remplacantsequipe2
+      );
     }
 
     // Note : On envoie maintenant des objets au backend.
     // Si le backend attend toujours des tuples (arrays), il faut faire la conversion inverse ici.
-    // Mais puisque vous avez demandé de changer l'archi pour utiliser des objets, 
+    // Mais puisque vous avez demandé de changer l'archi pour utiliser des objets,
     // on suppose que le backend a été mis à jour ou que le Zod schema envoie ce qu'il faut.
-    
+
     return processedData as UpdateMethodeMatchSchemaType;
   };
 
@@ -294,8 +334,8 @@ export default function MatchForm({
         id="methodesaisonform"
         className="max-w-[750px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm, (errors) => {
-          console.error("Validation échouée", errors)
-          toast.error("Veuillez corriger les erreurs du formulaire.")
+          console.error("Validation échouée", errors);
+          toast.error("Veuillez corriger les erreurs du formulaire.");
         })}
       >
         {/* --- CHAMPS MOTS CLÉS, TITRE, STADE, DATE (Inchangés) --- */}

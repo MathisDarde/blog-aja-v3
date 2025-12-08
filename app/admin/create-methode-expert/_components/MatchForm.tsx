@@ -24,6 +24,7 @@ import Button from "@/components/BlueButton";
 import TeamInfosSection from "./TeamInfosSection";
 import { z } from "zod";
 import { GameSystems } from "@/components/GameSystems";
+import { RempPlayerType } from "@/contexts/Interfaces";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -72,10 +73,9 @@ export const MethodeMatchSchema = z.object({
   nomequipe1: z
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe1: z
-    .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
-    }),
+  systemeequipe1: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
   couleur1equipe2: z
     .string()
     .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
@@ -85,10 +85,9 @@ export const MethodeMatchSchema = z.object({
   nomequipe2: z
     .string()
     .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe2: z
-    .enum(GameSystems, {
-      errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." })
-    }),
+  systemeequipe2: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
   titulairesequipe1: z.array(TitulaireSchema),
   remplacantsequipe1: z.array(RemplacantSchema),
   titulairesequipe2: z.array(TitulaireSchema),
@@ -107,8 +106,24 @@ export default function MatchForm() {
   const [loading, setLoading] = useState(false);
 
   // Modèles d'objets vides pour l'initialisation
-  const emptyTitulaire = { nom: "", numero: "", poste: "", sortie: "", buts: "", cartonJaune: false, cartonRouge: false };
-  const emptyRemplacant = { nom: "", drapeau: "", poste: "", entree: "", buts: "", cartonJaune: false, cartonRouge: false };
+  const emptyTitulaire = {
+    nom: "",
+    numero: "",
+    poste: "",
+    sortie: "",
+    buts: "",
+    cartonJaune: false,
+    cartonRouge: false,
+  };
+  const emptyRemplacant = {
+    nom: "",
+    drapeau: "",
+    poste: "",
+    entree: "",
+    buts: "",
+    cartonJaune: false,
+    cartonRouge: false,
+  };
 
   const {
     register,
@@ -127,20 +142,24 @@ export default function MatchForm() {
       couleur2equipe1: "#000000",
       nomequipe1: "",
       systemeequipe1: "4-3-3 Offensif",
-      
+
       // Initialisation correcte des titulaires (11 objets distincts)
-      titulairesequipe1: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+      titulairesequipe1: Array.from({ length: 11 }).map(() => ({
+        ...emptyTitulaire,
+      })),
       remplacantsequipe1: [{ ...emptyRemplacant }],
 
       couleur1equipe2: "#000000",
       couleur2equipe2: "#000000",
       nomequipe2: "",
       systemeequipe2: "4-3-3 Offensif",
-      
+
       // Initialisation correcte des titulaires (11 objets distincts)
-      titulairesequipe2: Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
+      titulairesequipe2: Array.from({ length: 11 }).map(() => ({
+        ...emptyTitulaire,
+      })),
       remplacantsequipe2: [{ ...emptyRemplacant }],
-      
+
       stade: "",
       date: "",
     },
@@ -200,9 +219,13 @@ export default function MatchForm() {
   const selectFile = (filename: string) => {
     if (modal && typeof modal !== "boolean") {
       if (modal.team === "equipe1") {
-        setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, { shouldDirty: true });
+        setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, {
+          shouldDirty: true,
+        });
       } else {
-        setValue(`remplacantsequipe2.${modal.index}.drapeau`, filename, { shouldDirty: true });
+        setValue(`remplacantsequipe2.${modal.index}.drapeau`, filename, {
+          shouldDirty: true,
+        });
       }
       setModal(false);
     }
@@ -217,8 +240,7 @@ export default function MatchForm() {
       JSON.stringify(data)
     ) as MethodeMatchSchemaType;
 
-    // Helper pour traiter une liste de remplaçants (Objets)
-    const processRemplacants = (remplacants: any[]) => {
+    const processRemplacants = (remplacants: RempPlayerType[]) => {
       return remplacants.map((remp) => {
         if (
           remp.drapeau &&
@@ -233,11 +255,15 @@ export default function MatchForm() {
     };
 
     if (processedData.remplacantsequipe1) {
-      processedData.remplacantsequipe1 = processRemplacants(processedData.remplacantsequipe1);
+      processedData.remplacantsequipe1 = processRemplacants(
+        processedData.remplacantsequipe1
+      );
     }
 
     if (processedData.remplacantsequipe2) {
-      processedData.remplacantsequipe2 = processRemplacants(processedData.remplacantsequipe2);
+      processedData.remplacantsequipe2 = processRemplacants(
+        processedData.remplacantsequipe2
+      );
     }
 
     return processedData;
