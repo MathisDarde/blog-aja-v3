@@ -1,5 +1,9 @@
+import Button from "@/components/BlueButton";
 import { MethodeCoach } from "@/contexts/Interfaces";
+import { authClient } from "@/lib/auth-client";
+import { PenBox } from "lucide-react";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 interface CoachMethodeExpertProps {
   methode: MethodeCoach;
@@ -8,6 +12,9 @@ interface CoachMethodeExpertProps {
 export default function CoachMethodeExpert({
   methode,
 }: CoachMethodeExpertProps) {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   const formattedClubs = methode.clubscoach.map(([logo, name, years]) => ({
     logo,
     name,
@@ -85,6 +92,20 @@ export default function CoachMethodeExpert({
           {methode.statistiques}
         </p>
       </div>
+
+      {user?.admin && (
+        <Button
+          onClick={() =>
+            redirect(`/admin/dashboard/updateelement/${methode.id_methode}`)
+          }
+          size="slim"
+          type="button"
+          className="flex items-center gap-2 w-fit mx-auto mt-4"
+        >
+          <PenBox />
+          Modifier cette méthode
+        </Button>
+      )}
     </div>
   );
 }

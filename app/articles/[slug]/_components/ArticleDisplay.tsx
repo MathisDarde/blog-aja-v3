@@ -49,7 +49,7 @@ export default function ArticleDisplay({
   const router = useRouter();
   const isAdmin = user?.admin;
 
-  const [activeMethode, setActiveMethode] = useState<Methodes[]>([]);
+  const [activeMethodes, setActiveMethodes] = useState<Methodes[]>([]);
   const [isMethodOpen, setIsMethodOpen] = useState(false);
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 
@@ -115,7 +115,7 @@ export default function ArticleDisplay({
     const selectedMethodes = methodes.filter(
       (m) => m.id_methode === id_methode && m.typemethode === typemethode
     );
-    setActiveMethode(selectedMethodes);
+    setActiveMethodes(selectedMethodes);
     setIsMethodOpen(true);
   };
 
@@ -132,16 +132,18 @@ export default function ArticleDisplay({
       try {
         await navigator.share(shareData);
       } catch (err: unknown) {
-        console.error('Partage annulé ou erreur :', err);
-        toast.error('Partage annulé.')
+        console.error("Partage annulé ou erreur :", err);
+        toast.error("Partage annulé.");
       }
     } else {
       try {
         await navigator.clipboard.writeText(url);
         toast.success("Lien copié dans le presse papiers !");
       } catch (err) {
-        console.error("Impossible de partager automatiquement", err)
-        toast.error("Impossible de partager automatiquement. Copiez l'URL manuellement.");
+        console.error("Impossible de partager automatiquement", err);
+        toast.error(
+          "Impossible de partager automatiquement. Copiez l'URL manuellement."
+        );
       }
     }
   };
@@ -341,8 +343,8 @@ export default function ArticleDisplay({
       {isMethodOpen && (
         <MethodPopup
           onClose={() => setIsMethodOpen(false)}
-          activeMethode={activeMethode}
-          setActiveMethode={setActiveMethode}
+          activeMethodes={activeMethodes}
+          setActiveMethodes={setActiveMethodes}
           methodes={methodes}
           id_article={article.id_article}
           articles={articles}

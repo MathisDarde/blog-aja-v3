@@ -279,11 +279,6 @@ export default function MatchForm({
       );
     }
 
-    // Note : On envoie maintenant des objets au backend.
-    // Si le backend attend toujours des tuples (arrays), il faut faire la conversion inverse ici.
-    // Mais puisque vous avez demandé de changer l'archi pour utiliser des objets,
-    // on suppose que le backend a été mis à jour ou que le Zod schema envoie ce qu'il faut.
-
     return processedData as UpdateMethodeMatchSchemaType;
   };
 

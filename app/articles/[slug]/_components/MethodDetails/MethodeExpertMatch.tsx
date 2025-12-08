@@ -2,8 +2,11 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import { ArrowBigDown, Loader2 } from "lucide-react";
+import { ArrowBigDown, ArrowBigUp, Loader2, PenBox } from "lucide-react";
 import { Dispositifs } from "@/components/Dispositifs";
+import { redirect } from "next/navigation";
+import Button from "@/components/BlueButton";
+import { authClient } from "@/lib/auth-client";
 
 // On définit les interfaces ici pour être sûr (ou on utilise celles de l'import si elles sont identiques)
 export interface TituPlayerType {
@@ -29,6 +32,7 @@ export interface RempPlayerType {
 // On redéfinit partiellement MethodeMatch pour s'assurer que les tableaux sont bien typés
 // Si votre import @/contexts/Interfaces est déjà à jour, vous pouvez retirer cette partie et utiliser l'import.
 interface MethodeMatch {
+  id_methode: string;
   titrematch: string;
   date: string;
   stade: string;
@@ -59,6 +63,9 @@ const getLastName = (fullName: string) => {
 };
 
 export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const systemeDom = Dispositifs.find((d) => d.name === methode.systemeequipe1);
@@ -244,8 +251,8 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
                 <div className="flex items-center gap-3 shrink-0">
                   {nbButs > 0 && <span className="text-xs">⚽ x{nbButs}</span>}
                   {remp.entree && (
-                    <span className="text-xs font-bold text-green-600">
-                      ⬆ {remp.entree}
+                    <span className="text-xs font-bold text-green-600 flex items-center gap-1">
+                      <ArrowBigUp fill="#16a34a" size={14} /> {remp.entree}
                     </span>
                   )}
                   {(remp.cartonJaune || remp.cartonRouge) && (
@@ -374,6 +381,20 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
         </p>
         <p className="text-sm sm:text-base text-black">{methode.date}</p>
       </div>
+
+      {user?.admin && (
+        <Button
+          onClick={() =>
+            redirect(`/admin/dashboard/updateelement/${methode.id_methode}`)
+          }
+          size="slim"
+          type="button"
+          className="flex items-center gap-2 w-fit mx-auto mt-4"
+        >
+          <PenBox />
+          Modifier cette méthode
+        </Button>
+      )}
     </div>
   );
 }
