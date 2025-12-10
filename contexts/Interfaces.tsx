@@ -168,7 +168,6 @@ export interface UpdateMethodeJoueurFromProps {
 export interface MethodeSaison extends BaseMethodeData {
   typemethode: "saison";
   saison: string;
-  imgterrain: string;
   coach: string;
   systeme:
     | "4-3-3 Offensif"
