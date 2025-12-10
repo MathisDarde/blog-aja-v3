@@ -27,7 +27,7 @@ export const composEnum = pgEnum("compos", [
   "4-4-1-1",
   "5-3-2",
   "3-4-3",
-  "4-2-4"
+  "4-2-4",
 ]);
 
 export const user = pgTable("user", {
@@ -145,9 +145,9 @@ export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
   typemethode: text("typemethode").notNull().default("saison"),
   keywords: varchar("keywords", { length: 255 }).array().notNull(),
   saison: text("saison").notNull(),
-  imgterrain: text("imgterrain").notNull(),
   coach: text("coach").notNull(),
-  systeme: text("systeme").notNull(),
+  systeme: composEnum().notNull().default("4-2-3-1"),
+  titulaires: json("titulaires").notNull(),
   remplacants: json("remplacants").notNull(),
   userId: text("userId")
     .notNull()

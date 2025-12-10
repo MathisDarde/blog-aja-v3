@@ -134,24 +134,15 @@ export const CommentSchema = z.object({
     .nonempty({ message: "Le contenu du message ne peut pas être vide." }),
 });
 
-export const TitulaireSchema = z.object({
+export const SaisonTitulaireSchema = z.object({
   nom: z.string().default(""),
   numero: z.string().default(""),
   poste: z.string().default(""),
-  sortie: z.string().default(""),
-  buts: z.string().default(""),
-  cartonJaune: z.boolean().default(false),
-  cartonRouge: z.boolean().default(false),
 });
-
-export const RemplacantSchema = z.object({
+export const SaisonRemplacantSchema = z.object({
   nom: z.string().default(""),
   drapeau: z.string().default(""),
   poste: z.string().default(""),
-  entree: z.string().default("").optional(),
-  buts: z.string().default("").optional(),
-  cartonJaune: z.boolean().default(false).optional(),
-  cartonRouge: z.boolean().default(false).optional(),
 });
 
 export const MethodeSaisonSchema = z.object({
@@ -166,17 +157,12 @@ export const MethodeSaisonSchema = z.object({
   coach: z
     .string()
     .nonempty({ message: "Le nom du coach doit être renseigné." }),
-  systeme: z
-    .string()
-    .nonempty({ message: "Le système de jeu doit être renseigné." }),
-  remplacants: z.array(
-    z.array(
-      z.string().nonempty({
-        message: "Les remplaçants de jeu doivent être renseignés.",
-      })
-    )
-  ),
-  imgterrain: z.union([z.string().url(), z.instanceof(File)]),
+  systeme: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
+
+  titulaires: z.array(SaisonTitulaireSchema),
+  remplacants: z.array(SaisonRemplacantSchema),
 });
 export const UpdateMethodeSaisonSchema = z.object({
   keywords: z
@@ -190,17 +176,30 @@ export const UpdateMethodeSaisonSchema = z.object({
   coach: z
     .string()
     .nonempty({ message: "Le nom du coach doit être renseigné." }),
-  systeme: z
-    .string()
-    .nonempty({ message: "Le système de jeu doit être renseigné." }),
-  remplacants: z.array(
-    z.array(
-      z.string().nonempty({
-        message: "Les remplaçants de jeu doivent être renseignés.",
-      })
-    )
-  ),
-  imgterrain: z.union([z.string().url(), z.instanceof(File)]),
+  systeme: z.enum(GameSystems, {
+    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
+  }),
+  titulaires: z.array(SaisonTitulaireSchema),
+  remplacants: z.array(SaisonRemplacantSchema),
+});
+
+export const MatchTitulaireSchema = z.object({
+  nom: z.string().default(""),
+  numero: z.string().default(""),
+  poste: z.string().default(""),
+  sortie: z.string().default("").optional(),
+  buts: z.string().default("").optional(),
+  cartonJaune: z.boolean().default(false).optional(),
+  cartonRouge: z.boolean().default(false).optional(),
+});
+export const MatchRemplacantSchema = z.object({
+  nom: z.string().default(""),
+  drapeau: z.string().default(""),
+  poste: z.string().default(""),
+  entree: z.string().default("").optional(),
+  buts: z.string().default("").optional(),
+  cartonJaune: z.boolean().default(false).optional(),
+  cartonRouge: z.boolean().default(false).optional(),
 });
 
 export const MethodeMatchSchema = z.object({
@@ -238,10 +237,10 @@ export const MethodeMatchSchema = z.object({
   systemeequipe2: z.enum(GameSystems, {
     errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
   }),
-  titulairesequipe1: z.array(TitulaireSchema),
-  remplacantsequipe1: z.array(RemplacantSchema),
-  titulairesequipe2: z.array(TitulaireSchema),
-  remplacantsequipe2: z.array(RemplacantSchema),
+  titulairesequipe1: z.array(MatchTitulaireSchema),
+  remplacantsequipe1: z.array(MatchRemplacantSchema),
+  titulairesequipe2: z.array(MatchTitulaireSchema),
+  remplacantsequipe2: z.array(MatchRemplacantSchema),
   stade: z.string().nonempty({
     message: "Le nom du stade doit être renseigné.",
   }),
@@ -284,10 +283,10 @@ export const UpdateMethodeMatchSchema = z.object({
   systemeequipe2: z.enum(GameSystems, {
     errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
   }),
-  titulairesequipe1: z.array(TitulaireSchema),
-  remplacantsequipe1: z.array(RemplacantSchema),
-  titulairesequipe2: z.array(TitulaireSchema),
-  remplacantsequipe2: z.array(RemplacantSchema),
+  titulairesequipe1: z.array(MatchTitulaireSchema),
+  remplacantsequipe1: z.array(MatchRemplacantSchema),
+  titulairesequipe2: z.array(MatchTitulaireSchema),
+  remplacantsequipe2: z.array(MatchRemplacantSchema),
   stade: z.string().nonempty({
     message: "Le nom du stade doit être renseigné.",
   }),

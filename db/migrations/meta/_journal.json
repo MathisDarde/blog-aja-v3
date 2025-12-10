@@ -113,6 +113,13 @@
       "when": 1764932794903,
       "tag": "0015_living_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1765354890829,
+      "tag": "0016_abnormal_tyrannus",
+      "breakpoints": true
     }
   ]
 }

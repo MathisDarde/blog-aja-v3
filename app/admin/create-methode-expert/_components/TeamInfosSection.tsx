@@ -133,8 +133,6 @@ export default function TeamInfosSection({
         }
       );
 
-      // @ts-expect-error : Si le typage inféré est encore trop complexe pour le fieldArray, on peut forcer l'acceptation
-      // mais normalement sans l'annotation explicite ci-dessus, cela devrait passer.
       replaceTitulaires(newTitulaires);
     }
 

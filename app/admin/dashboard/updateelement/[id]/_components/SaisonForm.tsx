@@ -4,6 +4,7 @@ import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeSaisonForm from "@/actions/method/update-saison-form";
 import { UpdateMethodeSaisonSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
+import { Dispositifs } from "@/components/Dispositifs";
 import FlagSelectorModal from "@/components/FlagSelector";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -16,15 +17,12 @@ import {
   ChartBarBig,
   Clock4,
   FileQuestion,
-  ImageIcon,
-  Loader2,
   Plus,
   Trash,
   WholeWord,
 } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -42,11 +40,31 @@ export default function SaisonForm({
 
   const [loading, setLoading] = useState(false);
 
+  const emptyTitulaire = {
+    nom: "",
+    numero: "",
+    poste: "",
+    sortie: "",
+    buts: "",
+    cartonJaune: false,
+    cartonRouge: false,
+  };
+  const emptyRemplacant = {
+    nom: "",
+    drapeau: "",
+    poste: "",
+    entree: "",
+    buts: "",
+    cartonJaune: false,
+    cartonRouge: false,
+  };
+
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<UpdateMethodeSaisonSchemaType>({
     resolver: zodResolver(UpdateMethodeSaisonSchema),
@@ -55,27 +73,26 @@ export default function SaisonForm({
         return {
           keywords: [],
           coach: "",
-          remplacants: [],
           saison: "",
-          systeme: "",
-          imgterrain: "",
+          systeme: "4-3-3 Offensif",
+          titulaires: Array.from({ length: 11 }).map(() => ({
+            ...emptyTitulaire,
+          })),
+          remplacants: [{ ...emptyRemplacant }],
         };
       }
 
       return {
         keywords: selectedMethode.keywords?.map((k) => ({ value: k })) || [],
         coach: selectedMethode.coach || "",
-        imgterrain: selectedMethode.imgterrain || "",
+        titulaires: selectedMethode.titulaires || [],
         remplacants: selectedMethode.remplacants || [],
-        systeme: selectedMethode.systeme || "",
+        systeme: selectedMethode.systeme || "4-3-3 Offensif",
         saison: selectedMethode.saison || "",
       };
     },
   });
 
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
-  const [uploadedUrl, setUploadedUrl] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
   const [modal, setModal] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
   const [activeFlagIndex, setActiveFlagIndex] = useState<number | null>(null);
@@ -89,6 +106,10 @@ export default function SaisonForm({
     control,
     name: "keywords",
   });
+  const { fields: fieldsTitulaires } = useFieldArray({
+    control,
+    name: "titulaires",
+  });
   const {
     fields: remplacantsfield,
     append: appendremplacants,
@@ -98,13 +119,9 @@ export default function SaisonForm({
     name: "remplacants",
   });
 
-  useEffect(() => {
-    if (selectedMethode?.imgterrain) {
-      setPreviewPhoto(selectedMethode.imgterrain);
-      setUploadedUrl(selectedMethode.imgterrain);
-      setValue("imgterrain", selectedMethode.imgterrain);
-    }
-  }, [selectedMethode, setValue]);
+  const selectedSystem = watch("systeme") as string;
+  const currentDispositif = Dispositifs.find((d) => d.name === selectedSystem);
+  const positionsDisponibles = currentDispositif?.postes || [];
 
   const fetchFiles = async () => {
     setLoading(true);
@@ -133,58 +150,8 @@ export default function SaisonForm({
   // Sélectionner un fichier et le mettre dans le champ correspondant
   const selectFile = (filename: string) => {
     if (activeFlagIndex !== null) {
-      setValue(`remplacants.${activeFlagIndex}.1`, filename);
+      setValue(`remplacants.${activeFlagIndex}.drapeau`, filename);
       setModal(false);
-    }
-  };
-
-  const uploadToCloudinary = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-      return data.secure_url;
-    } catch (error) {
-      console.error("Cloudinary upload error:", error);
-      throw error;
-    }
-  };
-
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setPreviewPhoto(URL.createObjectURL(file));
-
-      // Upload immédiatement vers Cloudinary
-      setIsUploading(true);
-      try {
-        const url = await uploadToCloudinary(file);
-        setUploadedUrl(url);
-
-        setValue("imgterrain", url, { shouldValidate: true });
-        toast.success("Image uploadée avec succès !");
-      } catch (error) {
-        console.error(error);
-        toast.error("Erreur lors de l'upload de l'image");
-        setPreviewPhoto(null);
-      } finally {
-        setIsUploading(false);
-      }
-    } else {
-      setPreviewPhoto(null);
-      setUploadedUrl("");
     }
   };
 
@@ -201,11 +168,11 @@ export default function SaisonForm({
     if (processedData.remplacants) {
       processedData.remplacants = processedData.remplacants.map((remp) => {
         if (
-          remp[1] &&
-          !remp[1].startsWith("http") &&
-          !remp[1].startsWith("/")
+          remp.drapeau &&
+          !remp.drapeau.startsWith("http") &&
+          !remp.drapeau.startsWith("/")
         ) {
-          remp[1] = `${IMAGE_PATHS.drapeaux}${remp[1]}`;
+          remp.drapeau = `${IMAGE_PATHS.drapeaux}${remp.drapeau}`;
         }
         return remp;
       });
@@ -227,7 +194,6 @@ export default function SaisonForm({
 
     const finalData = {
       ...processedData,
-      imagecoach: uploadedUrl, // URL cloudinary déjà traitée avant
     };
 
     const response = await updateMethodeSaisonForm(
@@ -267,66 +233,6 @@ export default function SaisonForm({
         className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
-        {/* Image coach */}
-        <div className="relative w-full mx-auto">
-          {/* SI PAS DE PHOTO → afficher l'input */}
-          {!previewPhoto ? (
-            <div>
-              <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600">
-                <ImageIcon className="mr-4" />
-                Image :
-              </span>
-              <input
-                type="file"
-                onChange={handleFileChange}
-                className="w-full my-3 sm:my-4 py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-                accept="image/*"
-                disabled={isUploading}
-              />
-            </div>
-          ) : (
-            <>
-              {/* SI PHOTO → l'afficher */}
-              <div className="w-fit mb-4 relative mx-auto">
-                <Image
-                  width={1024}
-                  height={1024}
-                  src={previewPhoto}
-                  alt="Photo de l'article"
-                  className="w-full aspect-video object-cover rounded-xl"
-                />
-                {isUploading && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-xl">
-                    <Loader2 className="w-12 h-12 text-white animate-spin" />
-                  </div>
-                )}
-              </div>
-
-              {/* input hidden permanent */}
-              <input
-                type="file"
-                id="fileInput"
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*"
-                disabled={isUploading}
-              />
-
-              {/* Bouton pour changer l'image */}
-              <label
-                htmlFor="fileInput"
-                className={`cursor-pointer underline inline-flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline mx-auto ${
-                  isUploading ? "opacity-50 pointer-events-none" : ""
-                }`}
-              >
-                {isUploading
-                  ? "Upload en cours..."
-                  : "Modifier l'image de bannière"}
-              </label>
-            </>
-          )}
-        </div>
-
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <WholeWord className="mr-4" />
@@ -402,6 +308,68 @@ export default function SaisonForm({
           />
         </div>
 
+        {/* --- TITULAIRES --- */}
+        <div className="relative w-auto my-4">
+          <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+            <ArrowLeftRight className="mr-4" />
+            Titulaires :
+          </span>
+
+          {fieldsTitulaires.map((field, index) => {
+            return (
+              <React.Fragment key={field.id}>
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-3 w-full font-Montserrat">
+                  {/* NOM */}
+                  <div className="w-full md:w-5/12">
+                    <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                      Nom du joueur
+                    </label>
+                    <input
+                      type="text"
+                      {...register(`titulaires.${index}.nom`)}
+                      placeholder="Nom (ex: Gaëtan Perrin)"
+                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                    />
+                  </div>
+
+                  {/* POSTE */}
+                  <div className="w-full md:w-5/12">
+                    <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                      Poste
+                    </label>
+                    <select
+                      {...register(`titulaires.${index}.poste`)}
+                      className={`py-2 px-4 border rounded-md w-full text-xs sm:text-sm bg-white focus:ring-2 focus:ring-aja-blue focus:outline-none`}
+                    >
+                      <option value="">Choisir...</option>
+                      {positionsDisponibles.length > 0 &&
+                        positionsDisponibles.map((poste, pIndex) => (
+                          <option key={pIndex} value={poste.name}>
+                            {poste.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+
+                  {/* NUMERO */}
+                  <div className="w-full md:w-2/12 relative">
+                    <label className="text-xs text-left text-gray-500 font-semibold ml-1 mb-1 block">
+                      Numéro
+                    </label>
+                    <input
+                      type="text"
+                      {...register(`titulaires.${index}.numero`)}
+                      placeholder="N°"
+                      className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                    />
+                  </div>
+                </div>
+                <hr className="border-gray-300 my-4 w-full" />
+              </React.Fragment>
+            );
+          })}
+        </div>
+
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
             <ArrowLeftRight className="mr-4" />
@@ -415,14 +383,14 @@ export default function SaisonForm({
             >
               <input
                 type="text"
-                {...register(`remplacants.${index}.0`)}
+                {...register(`remplacants.${index}.nom`)}
                 placeholder="Nom (ex: Gaëtan Perrin)"
                 className="py-2 px-4 border rounded w-full md:w-2/5 text-xs sm:text-sm"
               />
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
-                  {...register(`remplacants.${index}.1`)}
+                  {...register(`remplacants.${index}.drapeau`)}
                   placeholder="Drapeau (ex: france)"
                   className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                 />
@@ -436,7 +404,7 @@ export default function SaisonForm({
               </div>
               <input
                 type="text"
-                {...register(`remplacants.${index}.2`)}
+                {...register(`remplacants.${index}.poste`)}
                 placeholder="Poste (ex: G ou Gardien)"
                 className="py-2 px-4 border rounded w-full md:w-1/5 text-xs sm:text-sm"
               />
@@ -451,7 +419,7 @@ export default function SaisonForm({
           ))}
           <button
             type="button"
-            onClick={() => appendremplacants([""])}
+            onClick={() => appendremplacants(emptyRemplacant)}
             className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
           >
             <Plus size={18} />

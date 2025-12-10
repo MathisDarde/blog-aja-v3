@@ -22,83 +22,13 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
 import Button from "@/components/BlueButton";
 import TeamInfosSection from "./TeamInfosSection";
-import { z } from "zod";
-import { GameSystems } from "@/components/GameSystems";
 import { RempPlayerType } from "@/contexts/Interfaces";
+import { MethodeMatchSchema } from "@/app/schema";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
   drapeaux: "/_assets/flags/",
 };
-
-// --- DÉFINITION DES SCHÉMAS (Objets) ---
-
-export const TitulaireSchema = z.object({
-  nom: z.string().default(""),
-  numero: z.string().default(""),
-  poste: z.string().default(""),
-  sortie: z.string().default(""),
-  buts: z.string().default(""),
-  cartonJaune: z.boolean().default(false),
-  cartonRouge: z.boolean().default(false),
-});
-
-export const RemplacantSchema = z.object({
-  nom: z.string().default(""),
-  drapeau: z.string().default(""),
-  poste: z.string().default(""),
-  entree: z.string().default(""),
-  buts: z.string().default(""),
-  cartonJaune: z.boolean().default(false),
-  cartonRouge: z.boolean().default(false),
-});
-
-export const MethodeMatchSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
-  titrematch: z
-    .string()
-    .nonempty({ message: "Le titre du match doit être renseigné." }),
-  couleur1equipe1: z
-    .string()
-    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
-  couleur2equipe1: z
-    .string()
-    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
-  nomequipe1: z
-    .string()
-    .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe1: z.enum(GameSystems, {
-    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
-  }),
-  couleur1equipe2: z
-    .string()
-    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
-  couleur2equipe2: z
-    .string()
-    .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
-  nomequipe2: z
-    .string()
-    .nonempty({ message: "Le nom de l'équipe doit être renseigné." }),
-  systemeequipe2: z.enum(GameSystems, {
-    errorMap: () => ({ message: "Veuillez sélectionner un système de jeu." }),
-  }),
-  titulairesequipe1: z.array(TitulaireSchema),
-  remplacantsequipe1: z.array(RemplacantSchema),
-  titulairesequipe2: z.array(TitulaireSchema),
-  remplacantsequipe2: z.array(RemplacantSchema),
-  stade: z.string().nonempty({
-    message: "Le nom du stade doit être renseigné.",
-  }),
-  date: z.string().nonempty({
-    message: "La date du match doit être renseignée.",
-  }),
-});
 
 export default function MatchForm() {
   const { user_id } = useGlobalContext();

@@ -170,8 +170,21 @@ export interface MethodeSaison extends BaseMethodeData {
   saison: string;
   imgterrain: string;
   coach: string;
-  systeme: string;
-  remplacants: [string, string, string][];
+  systeme:
+    | "4-3-3 Offensif"
+    | "4-3-3 Défensif"
+    | "4-2-3-1"
+    | "4-4-2"
+    | "5-4-1"
+    | "3-5-2"
+    | "4-1-4-1"
+    | "4-5-1"
+    | "4-4-1-1"
+    | "5-3-2"
+    | "3-4-3"
+    | "4-2-4";
+  titulaires: LightTituPlayerType[];
+  remplacants: LightRempPlayerType[];
 }
 
 export interface UpdateMethodeSaisonFromProps {
@@ -179,10 +192,22 @@ export interface UpdateMethodeSaisonFromProps {
     id_methode: string;
     keywords: string[];
     saison: string;
-    imgterrain: string | null;
     coach: string;
-    systeme: string;
-    remplacants: [string, string, string][];
+    systeme:
+      | "4-3-3 Offensif"
+      | "4-3-3 Défensif"
+      | "4-2-3-1"
+      | "4-4-2"
+      | "5-4-1"
+      | "3-5-2"
+      | "4-1-4-1"
+      | "4-5-1"
+      | "4-4-1-1"
+      | "5-3-2"
+      | "3-4-3"
+      | "4-2-4";
+    titulaires: LightTituPlayerType[];
+    remplacants: LightRempPlayerType[];
   };
 }
 
@@ -196,6 +221,12 @@ export interface TituPlayerType {
   cartonRouge?: boolean;
 }
 
+export interface LightTituPlayerType {
+  nom: string;
+  poste: string;
+  numero: string;
+}
+
 export interface RempPlayerType {
   nom: string;
   poste: string;
@@ -204,6 +235,12 @@ export interface RempPlayerType {
   buts?: string;
   cartonJaune?: boolean;
   cartonRouge?: boolean;
+}
+
+export interface LightRempPlayerType {
+  nom: string;
+  poste: string;
+  drapeau: string;
 }
 
 export interface MethodeMatch extends BaseMethodeData {
