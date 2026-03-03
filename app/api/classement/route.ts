@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const url =
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/classement.json";
+    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json?t=" +
+    new Date().getTime();
   const response = await fetch(url);
 
   if (!response.ok) {
     return NextResponse.json(
       { error: "Impossible de récupérer le classement" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

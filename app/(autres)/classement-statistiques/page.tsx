@@ -3,12 +3,14 @@ import PlayerStatistics from "./_components/PlayerStatistics";
 
 export default async function ClassementStatsPage() {
   const res = await fetch(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json"
+    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json?t=" +
+      new Date().getTime(),
   );
   const classement = await res.json();
 
   const statistics = await fetch(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_statistics.json"
+    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_statistics.json?t=" +
+      new Date().getTime(),
   );
 
   const stats = await statistics.json();

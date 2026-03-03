@@ -3,7 +3,8 @@ import Calendar from "./_components/Calendar";
 
 export default async function CalendrierPage() {
   const matches = await fetchMatches(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_calendrier.json"
+    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_calendrier.json?t=" +
+      new Date().getTime(),
   );
 
   return (

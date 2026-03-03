@@ -6,10 +6,12 @@ import { MatchAPI } from "@/contexts/Interfaces";
 
 export default async function TeamStatsBlock() {
   const matches = await fetchMatches(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_calendrier.json"
+    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_calendrier.json?t=" +
+      new Date().getTime(),
   );
   const teams = await fetchClassement(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json"
+    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json?t=" +
+      new Date().getTime(),
   );
 
   const lastMatch = matches
