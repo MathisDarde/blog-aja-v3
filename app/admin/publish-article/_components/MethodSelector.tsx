@@ -25,9 +25,11 @@ export const MethodSelect = ({
     const fetchData = async () => {
       try {
         const data = await getAllMethodes();
-        setMethods(data);
-        if (data.length > 0) {
-          setSelectedMethod(data[0].id_methode);
+        if (data && data.length > 0) {
+          setMethods(data as unknown as Methode[]);
+          setSelectedMethod(data[0] as BaseMethodeData);
+        } else {
+          setMethods([]);
         }
       } catch (error) {
         console.error("Erreur lors de la récupération :", error);
