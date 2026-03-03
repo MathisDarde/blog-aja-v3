@@ -18,7 +18,7 @@ interface Props {
 export const VideoSettings = ({ editor, onClose }: Props) => {
   const attrs = editor.getAttributes("youtube");
 
-  const updateAttr = (newAttrs: Record<string, any>) => {
+  const updateAttr = (newAttrs: Partial<Record<string, string | number>>) => {
     editor
       .chain()
       .focus(undefined, { scrollIntoView: false })

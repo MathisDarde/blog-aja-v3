@@ -3,7 +3,6 @@ import ArticleForm from "./_components/ArticleForm";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
-import { ArticleEditor } from "./_components/ArticleEditor";
 
 export const dynamic = "force-dynamic";
 

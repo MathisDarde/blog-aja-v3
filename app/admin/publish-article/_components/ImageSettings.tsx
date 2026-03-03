@@ -16,7 +16,7 @@ interface Props {
 export const ImageSettings = ({ editor, onClose }: Props) => {
   const attrs = editor.getAttributes("image");
 
-  const updateAttr = (newAttrs: Record<string, any>) => {
+  const updateAttr = (newAttrs: Record<string, string | number>) => {
     editor
       .chain()
       .focus(undefined, { scrollIntoView: false })
