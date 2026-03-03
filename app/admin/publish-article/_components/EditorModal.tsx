@@ -32,6 +32,7 @@ export default function EditorModal({
             {title}
           </h3>
           <button
+            type="button"
             onClick={onClose}
             className="text-slate-400 hover:text-slate-600 transition-colors"
           >

@@ -53,7 +53,6 @@ export interface Keyword {
 
 export interface KeywordProps {
   text: string;
-  keywords: Keyword[];
   onKeywordClick: (id: string, type: string) => void;
 }
 

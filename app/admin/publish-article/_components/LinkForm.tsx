@@ -23,6 +23,7 @@ export const LinkForm = ({
         onChange={(e) => setUrl(e.target.value)}
       />
       <Button
+        type="button"
         onClick={() => {
           editor?.chain().focus().setLink({ href: url }).run();
           onSuccess();

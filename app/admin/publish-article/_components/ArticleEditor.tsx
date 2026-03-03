@@ -3,26 +3,40 @@
 import React, { useState, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
-import Mention from "@tiptap/extension-mention";
-import SlashPopupContent from "./SlashPopupContent";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 import TextAlign from "@tiptap/extension-text-align";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import { CustomYoutube } from "./CustomVideo";
+import SlashPopupContent from "./SlashPopupContent";
 import FloatingMenuContent from "./FloatingMenuContent";
+import { ImageSettings } from "./ImageSettings";
+import { CustomImage } from "./CustomImage";
 import EditorModal from "./EditorModal";
 import { MethodSelect } from "./MethodSelector";
 import { ColorPicker } from "./ColorPicker";
 import { LinkForm } from "./LinkForm";
 import { TextColorPicker } from "./TextColor";
+import VideoUrlPopup from "./VideoPopup";
+import BaseNodeSettings from "./BaseNodeSettings";
+import { VideoSettings } from "./VideoSettings";
+import { CustomMention } from "./CustomMention";
 
-export const ArticleEditor = () => {
+interface ArticleEditorProps {
+  onChange: (html: string) => void;
+  initialContent?: string;
+}
+
+export const ArticleEditor = ({
+  onChange,
+  initialContent,
+}: ArticleEditorProps) => {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0, show: false });
   const [activePopup, setActivePopup] = useState<
-    "link" | "color" | "method" | "text-color" | null
+    "link" | "color" | "method" | "text-color" | "youtube" | null
   >(null);
   const [slashMenu, setSlashMenu] = useState({
     show: false,
@@ -31,38 +45,34 @@ export const ArticleEditor = () => {
     selectedParent: null as string | null,
   });
 
-  const onOpenPopup = (type: "link" | "color" | "method" | "text-color") => {
-    setActivePopup(type);
-    setMenuPos((prev) => ({ ...prev, show: false }));
-  };
-
   const containerRef = useRef<HTMLDivElement>(null);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
-      Image,
-      Mention,
-      Underline, // Ajouté
-      Highlight.configure({ multicolor: true }), // Ajouté
+      CustomImage,
+      CustomMention,
+      Underline,
+      Highlight.configure({ multicolor: true }),
       Link.configure({
-        openOnClick: false, // Empêche d'ouvrir le lien en éditant
-        HTMLAttributes: {
-          class: "my-custom-link-class",
-        },
+        openOnClick: false,
+        HTMLAttributes: { class: "my-custom-link-class" },
       }),
       TextStyle,
       Color,
       TextAlign.configure({
-        types: ["heading", "paragraph"],
+        types: ["heading", "paragraph", "image"],
       }),
+      HorizontalRule,
+      CustomYoutube.configure({ inline: false }),
     ],
-    content: `
-      <h2>Titre H2</h2>
-      <p>Voici le paragraphe suivant.</p>
-    `,
+    content:
+      initialContent || `<h2>Titre H2</h2><p>Voici un exemple de texte.</p>`,
     immediatelyRender: false,
-    onUpdate: () => handleUpdate(),
+    onUpdate: ({ editor }) => {
+      handleUpdate();
+      onChange(editor.getHTML());
+    },
     onSelectionUpdate: () => handleUpdate(),
     onBlur: () => {
       setTimeout(() => {
@@ -78,10 +88,39 @@ export const ArticleEditor = () => {
     if (!editor || !containerRef.current) return;
 
     const { state, view } = editor;
-    const { from, to, $from } = state.selection;
+    const { from, to } = state.selection;
     const containerRect = containerRef.current.getBoundingClientRect();
 
-    // 1. LOGIQUE MENU SLASH (Détection du /)
+    if (editor.isActive("image")) {
+      const node = view.nodeDOM(from) as HTMLElement;
+      if (node) {
+        const nodeRect = node.getBoundingClientRect();
+        setMenuPos({
+          top: nodeRect.top - containerRect.top - 120,
+
+          left: containerRect.width / 2 - 144,
+
+          show: true,
+        });
+        return;
+      }
+    }
+
+    if (editor.isActive("youtube")) {
+      const node = view.nodeDOM(from) as HTMLElement;
+      if (node) {
+        const nodeRect = node.getBoundingClientRect();
+        setMenuPos({
+          top: nodeRect.top - containerRect.top - 120,
+          left: containerRect.width / 2 - 144,
+          show: true,
+        });
+        return;
+      }
+    }
+
+    // B. LOGIQUE SLASH
+    const $from = state.selection.$from;
     const textBefore = $from.nodeBefore?.textContent || "";
     if (from === to && textBefore.endsWith("/")) {
       const coords = view.coordsAtPos(from);
@@ -91,13 +130,11 @@ export const ArticleEditor = () => {
         left: coords.left - containerRect.left,
         selectedParent: null,
       });
-      setMenuPos((prev) => ({ ...prev, show: false }));
+      setMenuPos((p) => ({ ...p, show: false }));
       return;
-    } else {
-      setSlashMenu((prev) => ({ ...prev, show: false }));
     }
 
-    // 2. LOGIQUE MENU FORMATAGE (Sélection)
+    // C. LOGIQUE TEXTE
     if (from !== to && view.hasFocus()) {
       const start = view.coordsAtPos(from);
       setMenuPos({
@@ -106,8 +143,15 @@ export const ArticleEditor = () => {
         show: true,
       });
     } else {
-      setMenuPos((prev) => ({ ...prev, show: false }));
+      // On ne ferme le menu que si on n'est pas déjà sur un slash menu
+      setMenuPos((p) => (p.show ? { ...p, show: false } : p));
+      setSlashMenu((p) => (p.show ? { ...p, show: false } : p));
     }
+  };
+
+  const onOpenPopup = (type: "link" | "color" | "method" | "text-color") => {
+    setActivePopup(type);
+    setMenuPos((prev) => ({ ...prev, show: false }));
   };
 
   return (
@@ -116,18 +160,51 @@ export const ArticleEditor = () => {
         ref={containerRef}
         className="relative border border-gray-300 rounded-xl bg-white shadow-sm"
       >
-        <FloatingMenuContent
-          menuPos={menuPos}
-          editor={editor}
-          onOpenPopup={onOpenPopup}
-        />
+        {/* MENU FLOTTANT (Texte) */}
+        {editor && !editor.isActive("image") && !editor.isActive("youtube") && (
+          <FloatingMenuContent
+            menuPos={menuPos}
+            editor={editor}
+            onOpenPopup={onOpenPopup}
+          />
+        )}
 
-        {/* --- MENU SLASH (BASÉ SUR POPUPOPTIONS) --- */}
+        {/* MENU RÉGLAGES IMAGE (Celui que tu viens de créer) */}
+        <BaseNodeSettings
+          show={(menuPos.show && editor?.isActive("image")) ?? false}
+          menuPos={menuPos}
+          title="Inspecteur Image"
+          onClose={() => setMenuPos((p) => ({ ...p, show: false }))}
+        >
+          {editor && (
+            <ImageSettings
+              editor={editor}
+              onClose={() => setMenuPos((p) => ({ ...p, show: false }))}
+            />
+          )}
+        </BaseNodeSettings>
+
+        <BaseNodeSettings
+          show={menuPos.show && (editor?.isActive("youtube") ?? false)}
+          menuPos={menuPos}
+          title="Réglages Vidéo"
+          onClose={() => setMenuPos((p) => ({ ...p, show: false }))}
+        >
+          {editor && (
+            <VideoSettings
+              editor={editor}
+              onClose={() => setMenuPos((p) => ({ ...p, show: false }))}
+            />
+          )}
+        </BaseNodeSettings>
+
+        {/* MENU SLASH */}
         {slashMenu.show && (
           <SlashPopupContent
             slashMenu={slashMenu}
             setSlashMenu={setSlashMenu}
             editor={editor}
+            setActivePopup={setActivePopup}
           />
         )}
 
@@ -169,6 +246,17 @@ export const ArticleEditor = () => {
           title="Changer la couleur"
         >
           <TextColorPicker
+            editor={editor}
+            onSuccess={() => setActivePopup(null)}
+          />
+        </EditorModal>
+
+        <EditorModal
+          isOpen={activePopup === "youtube"}
+          onClose={() => setActivePopup(null)}
+          title="Ajouter une vidéo YouTube"
+        >
+          <VideoUrlPopup
             editor={editor}
             onSuccess={() => setActivePopup(null)}
           />

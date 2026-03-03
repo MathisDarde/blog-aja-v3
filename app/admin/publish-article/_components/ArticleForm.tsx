@@ -24,6 +24,7 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Image from "next/image";
 import storeDraftArticle from "@/actions/article/store-draft";
 import { ArticleEditor } from "./ArticleEditor";
+import { Controller } from "react-hook-form";
 
 export default function MultiStepArticleForm({ user }: { user: User | null }) {
   const [step, setStep] = useState(1);
@@ -36,6 +37,7 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     trigger,
@@ -44,7 +46,7 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
     getValues,
   } = useForm<ArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
-    defaultValues: { tags: [] },
+    defaultValues: { tags: [], content: "" },
   });
 
   const selectedTags = watch("tags") || [];
@@ -104,7 +106,7 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
   };
 
   const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (event.target.files?.[0]) {
       const file = event.target.files[0];
@@ -132,7 +134,7 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
   const onSubmit = async (data: ArticleSchemaType) => {
     const response = await submitArticleForm(
       { ...data, imageUrl: uploadedUrl },
-      user_id!
+      user_id!,
     );
     if (response.success) redirect("/");
   };
@@ -329,7 +331,7 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
                         type="button"
                         onClick={() =>
                           setOpenTagsCategory(
-                            openTagsCategory === cat ? null : cat
+                            openTagsCategory === cat ? null : cat,
                           )
                         }
                         className={`w-full flex justify-between items-center p-4 sm:p-6 rounded-2xl border transition-all ${openTagsCategory === cat ? "border-aja-blue bg-aja-blue/5 shadow-sm" : "border-gray-100 hover:border-gray-200 bg-gray-50/30"}`}
@@ -387,7 +389,16 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
                 </p>
               </div>
               <div className="overflow-x-auto">
-                <ArticleEditor />
+                <Controller
+                  name="content"
+                  control={control}
+                  render={({ field }) => (
+                    <ArticleEditor
+                      initialContent={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
               </div>
             </div>
           )}

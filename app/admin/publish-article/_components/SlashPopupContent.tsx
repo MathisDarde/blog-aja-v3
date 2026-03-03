@@ -17,13 +17,40 @@ interface Props {
     }>
   >;
   editor: Editor | null;
+  setActivePopup: React.Dispatch<
+    React.SetStateAction<
+      "link" | "color" | "method" | "text-color" | "youtube" | null
+    >
+  >;
 }
 
 export default function SlashPopupContent({
   slashMenu,
   setSlashMenu,
   editor,
+  setActivePopup,
 }: Props) {
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      const data = await response.json();
+      // On retourne le champ secure_url renvoyé par Cloudinary
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
+
   const executeSlashCommand = (id: string) => {
     if (!editor) return;
 
@@ -48,8 +75,73 @@ export default function SlashPopupContent({
       case "bulletList":
         editor.chain().focus().toggleBulletList().run();
         break;
-      case "underline":
-        editor.chain().focus().toggleUnderline().run();
+      case "citation":
+        editor
+          .chain()
+          .focus()
+          .insertContent("«  »")
+          .setTextSelection(editor.state.selection.from + 2)
+          .run();
+        break;
+
+      case "image":
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = async () => {
+          if (input.files?.length) {
+            const file = input.files[0];
+            try {
+              const imageUrl = await uploadToCloudinary(file);
+              editor.chain().focus().setImage({ src: imageUrl }).run();
+            } catch (err) {
+              console.error(err);
+              alert("Erreur upload");
+            }
+          }
+        };
+        input.click();
+        break;
+
+      case "separator":
+        editor.chain().focus().setHorizontalRule().run();
+        break;
+
+      case "youtube": {
+        setActivePopup("youtube");
+
+        setSlashMenu((prev) => ({ ...prev, show: false }));
+        break;
+      }
+
+      case "column":
+        editor
+          .chain()
+          .focus()
+          .insertContent({
+            type: "columns",
+            content: [
+              {
+                type: "column",
+                content: [
+                  {
+                    type: "paragraph",
+                    content: [{ type: "text", text: "Colonne gauche" }],
+                  },
+                ],
+              },
+              {
+                type: "column",
+                content: [
+                  {
+                    type: "paragraph",
+                    content: [{ type: "text", text: "Colonne droite" }],
+                  },
+                ],
+              },
+            ],
+          })
+          .run();
         break;
     }
     setSlashMenu((prev) => ({ ...prev, show: false }));
@@ -73,6 +165,7 @@ export default function SlashPopupContent({
         </span>
         {slashMenu.selectedParent && (
           <button
+            type="button"
             onClick={() =>
               setSlashMenu((prev) => ({ ...prev, selectedParent: null }))
             }
@@ -88,6 +181,7 @@ export default function SlashPopupContent({
         {!slashMenu.selectedParent &&
           Object.entries(PopupCategories).map(([key, cat]) => (
             <button
+              type="button"
               key={key}
               onClick={() =>
                 setSlashMenu((prev) => ({ ...prev, selectedParent: key }))
@@ -112,9 +206,10 @@ export default function SlashPopupContent({
         {/* VUE 2 : LISTE DES ÉLÉMENTS DE LA CATÉGORIE SÉLECTIONNÉE */}
         {slashMenu.selectedParent &&
           PopupOptions.filter(
-            (opt) => opt.parent === slashMenu.selectedParent
+            (opt) => opt.parent === slashMenu.selectedParent,
           ).map((option) => (
             <button
+              type="button"
               key={option.id}
               onClick={() => executeSlashCommand(option.id)}
               className="w-full flex items-center px-3 py-2 hover:bg-slate-50 text-left rounded-lg transition-colors"

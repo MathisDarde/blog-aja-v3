@@ -21,6 +21,7 @@ export const TextColorPicker = ({
     <div className="grid grid-cols-3 gap-2">
       {colors.map((c) => (
         <button
+          type="button"
           key={c}
           className="flex flex-col items-center gap-1 p-2 hover:bg-slate-50 rounded-lg transition-colors"
           onClick={() => {
@@ -36,6 +37,7 @@ export const TextColorPicker = ({
       ))}
       <button
         className="col-span-3 text-xs py-2 text-slate-500 hover:text-slate-800"
+        type="button"
         onClick={() => {
           editor?.chain().focus().unsetColor().run();
           onSuccess();

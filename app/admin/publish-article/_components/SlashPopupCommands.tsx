@@ -26,7 +26,7 @@ export const PopupOptions = [
     parent: "textelement",
   },
   {
-    id: "blockquote",
+    id: "citation",
     title: "Citation",
     icon: "“",
     description: "Citer un auteur",
@@ -47,31 +47,17 @@ export const PopupOptions = [
     parent: "component",
   },
   {
-    id: "divider",
+    id: "separator",
     title: "Séparateur",
     icon: "—",
     description: "Ligne de rupture",
     parent: "component",
   },
   {
-    id: "columns",
+    id: "column",
     title: "Colonnes",
     icon: "◫",
     description: "Layout complexe",
-    parent: "component",
-  },
-  {
-    id: "toc",
-    title: "Sommaire",
-    icon: "☰",
-    description: "Table des matières",
-    parent: "component",
-  },
-  {
-    id: "callout",
-    title: "Callout",
-    icon: "💡",
-    description: "Bloc d'info coloré",
     parent: "component",
   },
 ];

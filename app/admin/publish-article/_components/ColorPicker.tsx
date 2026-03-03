@@ -21,6 +21,7 @@ export const ColorPicker = ({
       {colors.map((color) => (
         <button
           key={color}
+          type="button"
           className="w-10 h-10 rounded-full border border-slate-200 shadow-sm transition-transform hover:scale-110"
           style={{ backgroundColor: color }}
           onClick={() => {
@@ -30,6 +31,7 @@ export const ColorPicker = ({
         />
       ))}
       <button
+        type="button"
         onClick={() => {
           editor?.chain().focus().unsetHighlight().run();
           onSuccess();

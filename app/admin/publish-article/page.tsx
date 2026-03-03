@@ -24,7 +24,7 @@ export default async function PublishArticle() {
           Publier un article
         </h1>
 
-        <ArticleEditor />
+        <ArticleForm user={user} />
       </div>
     </>
   );

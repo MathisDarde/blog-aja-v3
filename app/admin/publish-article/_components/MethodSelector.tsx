@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
-import { Methode } from "@/contexts/Interfaces";
+import { BaseMethodeData, Methode } from "@/contexts/Interfaces";
 import Button from "@/components/BlueButton";
 import { Editor } from "@tiptap/react";
 
@@ -16,18 +16,18 @@ export const MethodSelect = ({
   const [methods, setMethods] = useState<Methode[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // États pour le formulaire
   const [label, setLabel] = useState("");
-  const [selectedMethodId, setSelectedMethodId] = useState<string | number>("");
+  const [selectedMethod, setSelectedMethod] = useState<BaseMethodeData | null>(
+    null,
+  );
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getAllMethodes();
         setMethods(data);
-        // On sélectionne la première méthode par défaut si elle existe
         if (data.length > 0) {
-          setSelectedMethodId(data[0].id_methode);
+          setSelectedMethod(data[0].id_methode);
         }
       } catch (error) {
         console.error("Erreur lors de la récupération :", error);
@@ -41,11 +41,8 @@ export const MethodSelect = ({
   const handleInsert = () => {
     if (!editor) return;
 
-    // On définit le texte à afficher : soit le label saisi, soit un fallback
-    const textToInsert = label.trim() !== "" ? label : "Méthode";
+    const textToInsert = label;
 
-    // Insertion dans Tiptap
-    // Note : On ajoute l'ID en attribut si tu veux plus tard rendre ça cliquable
     editor
       .chain()
       .focus()
@@ -53,8 +50,9 @@ export const MethodSelect = ({
         {
           type: "mention",
           attrs: {
-            id: selectedMethodId,
+            id: selectedMethod?.id_methode,
             label: textToInsert,
+            type: selectedMethod?.typemethode,
           },
         },
         {
@@ -64,7 +62,7 @@ export const MethodSelect = ({
       ])
       .run();
 
-    onSuccess(); // Ferme la modal
+    onSuccess();
   };
 
   if (loading)
@@ -96,8 +94,13 @@ export const MethodSelect = ({
           Sélectionner la méthode source
         </label>
         <select
-          value={selectedMethodId}
-          onChange={(e) => setSelectedMethodId(e.target.value)}
+          value={selectedMethod?.id_methode || ""}
+          onChange={(e) => {
+            const selected = methods.find(
+              (m) => m.id_methode === e.target.value,
+            );
+            setSelectedMethod(selected || null);
+          }}
           className="rounded-md font-Montserrat px-3 py-2 w-full outline-none border-gray-300 border bg-white focus:border-blue-500"
         >
           {methods.map((method) => (
@@ -115,6 +118,7 @@ export const MethodSelect = ({
       {/* 3. BOUTON D'ACTION */}
       <div className="pt-2">
         <Button
+          type="button"
           onClick={handleInsert}
           disabled={methods.length === 0 || label.trim() === ""}
           className="w-full m-0"
