@@ -69,72 +69,85 @@
   background-color: #3c77b4; /* aja-blue */
 }
 
-.tiptap,
-.article-content {
-  p {
-    @apply my-4 first:mt-0 last:mb-0 text-sm sm:text-base leading-relaxed font-Montserrat;
-  }
+.tiptap p,
+.article-content p {
+  @apply my-4 text-sm sm:text-base font-Montserrat;
+  line-height: 1.8 !important;
+}
 
-  h2 {
-    @apply text-2xl sm:text-3xl font-bold mt-8 mb-4 first:mt-0 last:mb-0 font-Bai_Jamjuree;
-  }
+.tiptap h2,
+.article-content h2 {
+  @apply text-2xl sm:text-3xl font-bold mt-8 mb-4 font-Bai_Jamjuree;
+}
 
-  h3 {
-    @apply text-xl sm:text-2xl font-bold mt-4 mb-2 first:mt-0 last:mb-0 font-Bai_Jamjuree;
-  }
+.tiptap h3,
+.article-content h3 {
+  @apply text-xl sm:text-2xl font-bold mt-4 mb-2 font-Bai_Jamjuree;
+}
 
-  a {
-    @apply text-aja-blue underline decoration-2 underline-offset-4 cursor-pointer hover:text-[#174d88] transition-colors;
-  }
+.tiptap a,
+.article-content a {
+  @apply text-aja-blue underline cursor-pointer hover:text-[#174d88] transition-colors;
+}
 
-  .methode-expert {
-    color: #f76200;
-    text-decoration: underline;
-    cursor: pointer;
-  }
+.tiptap .editor-link {
+  color: #3c77b4;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
 
-  mark {
-    @apply bg-yellow-200 px-1 rounded-sm text-inherit;
-  }
+.tiptap .methode-expert,
+.article-content .methode-expert {
+  color: #f76200;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700 !important;
+}
 
-  blockquote {
-    @apply border-l-4 border-slate-300 pl-4 italic text-slate-600 my-6;
-  }
+.tiptap mark,
+.article-content mark {
+  @apply bg-yellow-200 px-1 rounded-sm text-inherit;
+}
 
-  :focus {
-    outline: none;
-  }
+.tiptap blockquote,
+.article-content blockquote {
+  @apply border-l-4 border-slate-300 pl-4 italic text-slate-600 my-6;
+}
 
-  ul {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-  }
-  ol {
-    list-style-type: decimal;
-    padding-left: 1.5rem;
-  }
+.tiptap:focus {
+  outline: none;
+}
 
-  p.is-editor-empty:first-child::before {
-    content: attr(data-placeholder);
-    @apply float-left text-zinc-300 pointer-events-none h-0 font-normal italic;
-  }
+.tiptap ul,
+.article-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
 
-  .prose :where(h2, h3):first-child {
-    margin-top: 0;
-  }
+.tiptap ol,
+.article-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
 
-  img {
-    border-radius: 1rem;
-    margin: 2rem auto;
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply float-left text-zinc-300 pointer-events-none h-0 font-normal italic;
+}
 
-  img.ProseMirror-selectednode {
-    outline: 3px solid #3b82f6;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
-  }
+.tiptap img,
+.article-content img {
+  border-radius: 1rem;
+  margin: 2rem auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tiptap img.ProseMirror-selectednode {
+  outline: 3px solid #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
 }
 
 .notion-menu {

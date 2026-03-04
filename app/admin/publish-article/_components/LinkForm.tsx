@@ -5,15 +5,17 @@ import { Editor } from "@tiptap/react";
 export const LinkForm = ({
   editor,
   onSuccess,
+  currentHref = "",
 }: {
   editor: Editor | null;
   onSuccess: () => void;
+  currentHref?: string;
 }) => {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(currentHref);
   return (
     <div className="space-y-2 text-left">
       <label className="font-Bai_Jamjuree font-bold text-[10px] text-gray-400 uppercase ml-1">
-        Label affiché dans le texte
+        URL du lien
       </label>
       <input
         autoFocus
@@ -25,7 +27,11 @@ export const LinkForm = ({
       <Button
         type="button"
         onClick={() => {
-          editor?.chain().focus().setLink({ href: url }).run();
+          editor
+            ?.chain()
+            .focus()
+            .setLink({ href: url, target: "_blank", rel: "noopener noreferrer" })
+            .run();
           onSuccess();
         }}
         className="w-full m-0"

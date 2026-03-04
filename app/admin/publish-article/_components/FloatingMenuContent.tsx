@@ -1,4 +1,5 @@
 import { Editor } from "@tiptap/react";
+import { useRef, useState, useLayoutEffect } from "react";
 
 interface Props {
   menuPos: { top: number; left: number; show: boolean };
@@ -11,22 +12,56 @@ export default function FloatingMenuContent({
   editor,
   onOpenPopup,
 }: Props) {
+  const barRef = useRef<HTMLDivElement>(null);
+  const [adjusted, setAdjusted] = useState({ top: 0, left: 0 });
+
+  useLayoutEffect(() => {
+    if (!menuPos.show || !barRef.current) {
+      setAdjusted({ top: menuPos.top, left: menuPos.left });
+      return;
+    }
+    const rect = barRef.current.getBoundingClientRect();
+    const pad = 8;
+    let left = menuPos.left;
+    let top = menuPos.top;
+
+    // Dépasse à droite → caler à droite
+    if (left + rect.width > window.innerWidth - pad) {
+      left = window.innerWidth - rect.width - pad;
+    }
+    // Dépasse à gauche → caler à gauche
+    if (left < pad) {
+      left = pad;
+    }
+    // Dépasse en haut → passer en dessous du texte
+    if (top < pad) {
+      top = menuPos.top + 80; // sous le texte
+    }
+    // Dépasse en bas (rare)
+    if (top + rect.height > window.innerHeight - pad) {
+      top = window.innerHeight - rect.height - pad;
+    }
+
+    setAdjusted({ top, left });
+  }, [menuPos]);
+
   if (!editor) return null;
 
   if (editor.isActive("image") || editor.isActive("column")) return null;
 
   return (
     <div
+      ref={barRef}
       onMouseDown={(e) => e.preventDefault()}
       style={{
-        position: "absolute",
-        top: `${menuPos.top}px`,
-        left: `${menuPos.left}px`,
+        position: "fixed",
+        top: `${adjusted.top}px`,
+        left: `${adjusted.left}px`,
         visibility: menuPos.show ? "visible" : "hidden",
         opacity: menuPos.show ? 1 : 0,
         transform: `translateY(${menuPos.show ? 0 : 10}px)`,
         transition: "all 0.2s",
-        zIndex: 100,
+        zIndex: 9999,
       }}
       className="menu-container flex items-center bg-slate-900 text-white p-1 rounded-lg shadow-xl border border-slate-700 whitespace-nowrap gap-0.5"
     >
