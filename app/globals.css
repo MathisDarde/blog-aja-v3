@@ -71,7 +71,7 @@
 
 .tiptap p,
 .article-content p {
-  @apply my-4 text-sm sm:text-base font-Montserrat;
+  @apply text-sm sm:text-base font-Montserrat;
   line-height: 1.8 !important;
 }
 
@@ -182,64 +182,73 @@
   outline: none;
 }
 
-/* Conteneur principal */
-.columns-container {
-  display: flex;
-  width: 100%;
-  margin: 2rem 0;
-  align-items: stretch;
-}
-
-/* Chaque colonne */
-.column {
-  flex: 1; /* Les colonnes prennent la même largeur par défaut */
-  border: 1px dashed #e2e8f0; /* Optionnel : aide à voir les colonnes dans l'éditeur */
-  padding: 1rem;
+/* ─── Columns Grid (editor only) ─── */
+.ProseMirror [data-type="columns"] {
+  outline: 2px dashed #93c5fd;
+  outline-offset: 4px;
   border-radius: 8px;
-  min-width: 0; /* Évite que les colonnes ne cassent le layout */
+  position: relative;
+  transition: outline-color 0.2s;
 }
 
-/* Responsive : On empile sur mobile */
-@media (max-width: 768px) {
-  .columns-container {
-    flex-direction: column;
-    gap: 1rem !important;
-  }
+.ProseMirror [data-type="columns"]:hover {
+  outline-color: #3b82f6;
 }
 
-/* Aspect Tableau par défaut */
-[data-type="columns"] {
-  display: flex;
-  min-height: 50px;
-  outline: none;
-  transition: all 0.2s;
-  margin: 1rem 0;
-  box-sizing: border-box;
+.ProseMirror [data-type="columns"]::after {
+  content: "⬡ Grille";
+  position: absolute;
+  top: -11px;
+  left: 12px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #93c5fd;
+  background: white;
+  padding: 0 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  transition: color 0.2s;
 }
 
-[data-type="column"] {
-  border: 1px solid #000000; /* Bordure noire par défaut comme demandé */
-  min-width: 50px;
-  min-height: 50px;
-  padding: 10px;
-  margin: -0.5px; /* Évite les doubles bordures */
-  transition: all 0.2s;
+.ProseMirror [data-type="columns"]:hover::after {
+  color: #3b82f6;
 }
 
-/* UI : Au survol du conteneur global */
-[data-type="columns"]:hover {
-  outline: 2px solid #3b82f633;
+.ProseMirror [data-type="column"] {
+  outline: 1px dashed #c7d2fe;
+  outline-offset: -1px;
+  border-radius: 6px;
+  position: relative;
+  min-height: 48px;
+  transition: outline-color 0.2s, background-color 0.2s;
 }
 
-/* UI : Focus sur une colonne précise */
-[data-type="column"]:focus-within {
-  outline: 2px solid #3b82f6;
-  outline-offset: -2px;
-  z-index: 10;
+.ProseMirror [data-type="column"]:hover {
+  outline-color: #818cf8;
+  background-color: rgba(99, 102, 241, 0.03);
 }
 
-/* UI : Sélection du bloc global (quand on clique sur les bords) */
+.ProseMirror [data-type="column"]:empty::before {
+  content: "Tapez / pour insérer…";
+  color: #a5b4fc;
+  font-size: 0.8rem;
+  font-style: italic;
+  pointer-events: none;
+}
+
 .ProseMirror-selectednode[data-type="columns"] {
   outline: 3px solid #3b82f6 !important;
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+/* ─── Columns responsive stacking ─── */
+@media (max-width: 768px) {
+  .stack-on-mobile {
+    flex-direction: column !important;
+  }
+  .stack-on-mobile > [data-type="column"] {
+    flex: 1 1 100% !important;
+  }
 }

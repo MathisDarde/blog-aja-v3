@@ -47,7 +47,10 @@ export default function FloatingMenuContent({
 
   if (!editor) return null;
 
-  if (editor.isActive("image") || editor.isActive("column")) return null;
+  if (editor.isActive("image")) return null;
+  // Hide text toolbar when columns settings panel is active (no text selection)
+  const { from: selFrom, to: selTo } = editor.state.selection;
+  if (selFrom === selTo && editor.isActive("columns")) return null;
 
   return (
     <div

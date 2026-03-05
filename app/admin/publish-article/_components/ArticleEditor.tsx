@@ -25,6 +25,8 @@ import VideoUrlPopup from "./VideoPopup";
 import BaseNodeSettings from "./BaseNodeSettings";
 import { VideoSettings } from "./VideoSettings";
 import { CustomMention } from "./CustomMention";
+import { Column, Columns } from "./CustomColumns";
+import { GridSettings } from "./ColumnsSettings";
 
 interface ArticleEditorProps {
   onChange: (html: string) => void;
@@ -62,6 +64,8 @@ export const ArticleEditor = ({
       StarterKit.configure({ heading: { levels: [2, 3] } }),
       CustomImage,
       CustomMention,
+      Columns,
+      Column,
       Underline,
       Highlight.configure({ multicolor: true }),
       Link.extend({
@@ -137,7 +141,42 @@ export const ArticleEditor = ({
       }
     }
 
-    // LIEN : curseur posé dans un lien sans sélection → afficher le tooltip
+    // A. LOGIQUE SLASH — prioritaire pour fonctionner dans les colonnes
+    const $from = state.selection.$from;
+    const textBefore = $from.nodeBefore?.textContent || "";
+    if (from === to && textBefore.endsWith("/")) {
+      const coords = view.coordsAtPos(from);
+      setSlashMenu({
+        show: true,
+        top: coords.top - containerRect.top + 30,
+        left: coords.left - containerRect.left,
+        selectedParent: null,
+      });
+      setMenuPos((p) => ({ ...p, show: false }));
+      return;
+    }
+
+    // B. COLUMNS — panneau de réglages (seulement sans sélection de texte)
+    if (from === to && editor.isActive("columns")) {
+      let depth = $from.depth;
+      let nodePos = $from.before(depth);
+      while (depth > 0 && state.doc.nodeAt(nodePos)?.type.name !== 'columns') {
+        depth--;
+        nodePos = $from.before(depth);
+      }
+      const node = view.nodeDOM(nodePos) as HTMLElement;
+      if (node) {
+        const nodeRect = node.getBoundingClientRect();
+        setMenuPos({
+          top: nodeRect.top - containerRect.top - 80,
+          left: containerRect.width / 2 - 160,
+          show: true,
+        });
+        return;
+      }
+    }
+
+    // C. LIEN : curseur posé dans un lien sans sélection → afficher le tooltip
     if (from === to && editor.isActive("link")) {
       const href = editor.getAttributes("link").href || "";
       linkPosRef.current = from;
@@ -153,25 +192,9 @@ export const ArticleEditor = ({
       setSlashMenu((p) => ({ ...p, show: false }));
       return;
     }
-    // Cacher le tooltip si on n'est plus dans un lien
     setLinkTooltip((p) => (p.show ? { ...p, show: false } : p));
 
-    // B. LOGIQUE SLASH
-    const $from = state.selection.$from;
-    const textBefore = $from.nodeBefore?.textContent || "";
-    if (from === to && textBefore.endsWith("/")) {
-      const coords = view.coordsAtPos(from);
-      setSlashMenu({
-        show: true,
-        top: coords.top - containerRect.top + 30,
-        left: coords.left - containerRect.left,
-        selectedParent: null,
-      });
-      setMenuPos((p) => ({ ...p, show: false }));
-      return;
-    }
-
-    // C. LOGIQUE TEXTE
+    // D. LOGIQUE TEXTE (fonctionne aussi dans les colonnes)
     if (from !== to && view.hasFocus()) {
       const start = view.coordsAtPos(from);
       setMenuPos({
@@ -180,7 +203,6 @@ export const ArticleEditor = ({
         show: true,
       });
     } else {
-      // On ne ferme le menu que si on n'est pas déjà sur un slash menu
       setMenuPos((p) => (p.show ? { ...p, show: false } : p));
       setSlashMenu((p) => (p.show ? { ...p, show: false } : p));
     }
@@ -295,7 +317,7 @@ export const ArticleEditor = ({
       container.removeEventListener("mouseout", handleMouseOut, true);
       container.removeEventListener("click", handleClick, true);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
   return (
@@ -360,6 +382,20 @@ export const ArticleEditor = ({
         >
           {editor && (
             <VideoSettings
+              editor={editor}
+              onClose={() => setMenuPos((p) => ({ ...p, show: false }))}
+            />
+          )}
+        </BaseNodeSettings>
+
+        <BaseNodeSettings
+          show={menuPos.show && !!editor && editor.isActive("columns") && editor.state.selection.from === editor.state.selection.to}
+          menuPos={menuPos}
+          title="Mise en page"
+          onClose={() => setMenuPos((p) => ({ ...p, show: false }))}
+        >
+          {editor && (
+            <GridSettings
               editor={editor}
               onClose={() => setMenuPos((p) => ({ ...p, show: false }))}
             />

@@ -1,3 +1,5 @@
+"use client";
+
 import { PopupCategories, PopupOptions } from "./SlashPopupCommands";
 import { Editor } from "@tiptap/react";
 
@@ -43,7 +45,6 @@ export default function SlashPopupContent({
       if (!response.ok) throw new Error("Upload failed");
 
       const data = await response.json();
-      // On retourne le champ secure_url renvoyé par Cloudinary
       return data.secure_url;
     } catch (error) {
       console.error("Cloudinary upload error:", error);
@@ -54,17 +55,20 @@ export default function SlashPopupContent({
   const executeSlashCommand = (id: string) => {
     if (!editor) return;
 
-    // Supprimer le slash
+    // 1. On récupère la position actuelle avant de supprimer le slash
+    const { from } = editor.state.selection;
+
+    // 2. Supprimer le caractère "/" déclencheur
     editor
       .chain()
       .focus()
       .deleteRange({
-        from: editor.state.selection.from - 1,
-        to: editor.state.selection.from,
+        from: from - 1,
+        to: from,
       })
       .run();
 
-    // Exécuter l'action correspondante
+    // 3. Exécuter l'action correspondante
     switch (id) {
       case "h2":
         editor.chain().focus().toggleHeading({ level: 2 }).run();
@@ -107,14 +111,12 @@ export default function SlashPopupContent({
         editor.chain().focus().setHorizontalRule().run();
         break;
 
-      case "youtube": {
+      case "youtube":
         setActivePopup("youtube");
-
-        setSlashMenu((prev) => ({ ...prev, show: false }));
         break;
-      }
 
       case "column":
+        // On insère la structure de colonnes
         editor
           .chain()
           .focus()
@@ -123,28 +125,22 @@ export default function SlashPopupContent({
             content: [
               {
                 type: "column",
-                content: [
-                  {
-                    type: "paragraph",
-                    content: [{ type: "text", text: "Colonne gauche" }],
-                  },
-                ],
+                attrs: { flex: 1 },
+                content: [{ type: "paragraph" }],
               },
               {
                 type: "column",
-                content: [
-                  {
-                    type: "paragraph",
-                    content: [{ type: "text", text: "Colonne droite" }],
-                  },
-                ],
+                attrs: { flex: 1 },
+                content: [{ type: "paragraph" }],
               },
             ],
           })
           .run();
         break;
     }
-    setSlashMenu((prev) => ({ ...prev, show: false }));
+
+    // Fermer le menu après exécution
+    setSlashMenu((prev) => ({ ...prev, show: false, selectedParent: null }));
   };
 
   return (
@@ -169,7 +165,7 @@ export default function SlashPopupContent({
             onClick={() =>
               setSlashMenu((prev) => ({ ...prev, selectedParent: null }))
             }
-            className="text-[10px] font-Montserrat bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded text-slate-500 transition-colors"
+            className="text-[10px] bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded text-slate-500 transition-colors"
           >
             ← Retour
           </button>
@@ -177,7 +173,7 @@ export default function SlashPopupContent({
       </div>
 
       <div className="max-h-80 overflow-y-auto px-1">
-        {/* VUE 1 : LISTE DES CATÉGORIES (si selectedParent est null) */}
+        {/* VUE 1 : CATÉGORIES */}
         {!slashMenu.selectedParent &&
           Object.entries(PopupCategories).map(([key, cat]) => (
             <button
@@ -192,10 +188,10 @@ export default function SlashPopupContent({
                 {cat.icon}
               </div>
               <div className="flex-1">
-                <div className="text-sm font-semibold text-slate-900 font-Montserrat">
+                <div className="text-sm font-semibold text-slate-900">
                   {cat.label}
                 </div>
-                <div className="text-[11px] text-slate-400 font-Montserrat">
+                <div className="text-[11px] text-slate-400">
                   Voir les éléments
                 </div>
               </div>
@@ -203,7 +199,7 @@ export default function SlashPopupContent({
             </button>
           ))}
 
-        {/* VUE 2 : LISTE DES ÉLÉMENTS DE LA CATÉGORIE SÉLECTIONNÉE */}
+        {/* VUE 2 : OPTIONS DÉTAILLÉES */}
         {slashMenu.selectedParent &&
           PopupOptions.filter(
             (opt) => opt.parent === slashMenu.selectedParent,
@@ -218,10 +214,10 @@ export default function SlashPopupContent({
                 {option.icon}
               </div>
               <div>
-                <div className="text-sm font-medium font-Montserrat text-slate-900">
+                <div className="text-sm font-medium text-slate-900">
                   {option.title}
                 </div>
-                <div className="text-[11px] font-Montserrat text-slate-500">
+                <div className="text-[11px] text-slate-500">
                   {option.description}
                 </div>
               </div>
