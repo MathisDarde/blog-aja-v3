@@ -7,7 +7,12 @@ export const CustomImage = Image.extend({
       width: {
         default: "100%",
         parseHTML: (el) => el.style.width || "100%",
-        renderHTML: (attr) => ({ style: `width: ${attr.width}` }),
+        renderHTML: (attr) => ({ style: `width: ${attr.width}; max-width: 100%` }),
+      },
+      height: {
+        default: "auto",
+        parseHTML: (el) => el.style.height || "auto",
+        renderHTML: (attr) => ({ style: `height: ${attr.height}` }),
       },
       aspectRatio: {
         default: "auto",

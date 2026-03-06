@@ -31,26 +31,33 @@ export const ImageSettings = ({ editor, onClose }: Props) => {
 
   return (
     <>
-      {/* LARGEUR */}
+      {/* HAUTEUR */}
       <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <label className="text-[11px] font-bold text-slate-400 uppercase">
-            Largeur
-          </label>
-          <span className="text-[10px] font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
-            {attrs.width || "100%"}
-          </span>
+        <label className="text-[11px] font-bold text-slate-400 uppercase">
+          Hauteur
+        </label>
+        <div className="grid grid-cols-5 gap-1">
+          {(["auto", "200px", "300px", "400px", "500px"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onMouseDown={preventBlur}
+              onClick={() =>
+                updateAttr({
+                  height: value,
+                  width: value === "auto" ? "100%" : "auto",
+                })
+              }
+              className={`text-[9px] py-1 border rounded transition-all ${
+                (attrs.height || "auto") === value
+                  ? "bg-blue-600 border-blue-600 text-white"
+                  : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              {value === "auto" ? "Libre" : value}
+            </button>
+          ))}
         </div>
-        <input
-          type="range"
-          min="10"
-          max="100"
-          step="1"
-          value={parseInt(attrs.width) || 100}
-          onPointerDown={(e) => e.stopPropagation()}
-          onChange={(e) => updateAttr({ width: `${e.target.value}%` })}
-          className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-        />
       </div>
 
       {/* ASPECT RATIO */}
