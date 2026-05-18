@@ -12,7 +12,7 @@ export async function getSaisonMethodes(): Promise<SelectSaisonMethode[]> {
 
 export async function createMethodeSaison(
   data: MethodeSaisonSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
@@ -41,7 +41,7 @@ export async function createMethodeSaison(
 }
 
 export async function getMethodeById(
-  methodeId: string
+  methodeId: string,
 ): Promise<SelectSaisonMethode[]> {
   const results = await db
     .select()
@@ -57,12 +57,12 @@ export async function getMethodeById(
 export async function updateMethodeSaison(
   id_methode: string,
   data: MethodeSaisonSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
 
-    const updateData: any = {
+    const updateData: Partial<typeof methodeExpertSaisonTable.$inferInsert> = {
       saison,
       coach,
       systeme,

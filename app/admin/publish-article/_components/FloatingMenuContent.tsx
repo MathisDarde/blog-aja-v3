@@ -113,6 +113,13 @@ export default function FloatingMenuContent({
       >
         <AlignRight size={16} />
       </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+        className={`p-2 hover:bg-slate-700 rounded ${editor.isActive({ textAlign: "justify" }) ? "text-blue-400 bg-slate-800" : ""}`}
+      >
+        <AlignJustify size={16} />
+      </button>
 
       <div className="w-[1px] h-4 bg-slate-700 mx-1" />
 
@@ -230,5 +237,23 @@ const AlignRight = ({ size }: { size: number }) => (
     <line x1="21" y1="6" x2="3" y2="6"></line>
     <line x1="21" y1="14" x2="3" y2="14"></line>
     <line x1="21" y1="18" x2="7" y2="18"></line>
+  </svg>
+);
+
+const AlignJustify = ({ size }: { size: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <line x1="3" y1="10" x2="21" y2="10"></line>
+    <line x1="3" y1="14" x2="21" y2="14"></line>
+    <line x1="3" y1="18" x2="21" y2="18"></line>
   </svg>
 );

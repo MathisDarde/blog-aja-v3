@@ -167,6 +167,9 @@ export async function updateStatus(
 }
 
 export async function deleteArticle(articleId: SelectPost["id_article"]) {
+  // Delete related likes first (in case cascade delete hasn't been applied yet)
+  await db.delete(likedArticles).where(eq(likedArticles.articleId, articleId));
+  // Then delete the article
   await db.delete(articlesTable).where(eq(articlesTable.id_article, articleId));
 }
 

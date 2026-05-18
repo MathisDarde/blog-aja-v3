@@ -13,7 +13,7 @@ export async function getJoueurMethodes(): Promise<SelectJoueurMethode[]> {
 
 export async function createMethodeJoueur(
   data: MethodeJoueurSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagejoueur);
@@ -59,7 +59,7 @@ export async function createMethodeJoueur(
 }
 
 export async function getMethodeById(
-  methodeId: string
+  methodeId: string,
 ): Promise<SelectJoueurMethode[]> {
   const results = await db
     .select()
@@ -75,7 +75,7 @@ export async function getMethodeById(
 export async function updateMethodeJoueur(
   id_methode: string,
   data: MethodeJoueurSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagejoueur);
@@ -93,18 +93,19 @@ export async function updateMethodeJoueur(
     } = data;
 
     // Construction des données à mettre à jour
-    const updatedFields: any = {
-      joueurnom,
-      poste,
-      taille,
-      piedfort,
-      matchs,
-      buts,
-      passesd,
-      keywords: keywords.map((keyword) => keyword.value),
-      clubs,
-      userId,
-    };
+    const updatedFields: Partial<typeof methodeExpertJoueurTable.$inferInsert> =
+      {
+        joueurnom,
+        poste,
+        taille,
+        piedfort,
+        matchs,
+        buts,
+        passesd,
+        keywords: keywords.map((keyword) => keyword.value),
+        clubs,
+        userId,
+      };
 
     // Si une nouvelle image a été uploadée, on met à jour le champ
     if (imageUrl) {

@@ -50,6 +50,7 @@
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.475.0",
+    "mini-css-extract-plugin": "^2.10.1",
     "next": "15.5.7",
     "next-cloudinary": "^6.17.5",
     "node": "^24.0.0",

@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { Editor } from "@tiptap/react";
 import {
-  Columns, Box, Trash2, Plus, Smartphone, Minus,
+  Columns,
+  Box,
+  Trash2,
+  Plus,
+  Smartphone,
+  Minus,
   AlignVerticalSpaceAround as AlignVerticalTop,
   AlignVerticalSpaceBetween as AlignVerticalBottom,
-  AlignVerticalJustifyCenter, StretchVertical,
-  ChevronRight, AlignLeft, AlignCenter, AlignRight,
-  Palette, SunDim
+  AlignVerticalJustifyCenter,
+  StretchVertical,
+  ChevronRight,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Palette,
+  SunDim,
 } from "lucide-react";
 
 interface Props {
@@ -79,7 +90,8 @@ export const GridSettings = ({ editor, onClose }: Props) => {
           {/* Info bar */}
           <div className="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
             <span className="text-[10px] font-bold text-blue-600 flex items-center gap-1.5">
-              <Columns size={12} /> {countColumns()} colonne{countColumns() > 1 ? "s" : ""}
+              <Columns size={12} /> {countColumns()} colonne
+              {countColumns() > 1 ? "s" : ""}
             </span>
             <button
               type="button"
@@ -93,7 +105,9 @@ export const GridSettings = ({ editor, onClose }: Props) => {
           {/* Gap & Padding */}
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <span className="text-[9px] text-slate-400 uppercase font-bold">Gap</span>
+              <span className="text-[9px] text-slate-400 uppercase font-bold">
+                Gap
+              </span>
               <input
                 type="text"
                 value={gridAttrs.gap ?? ""}
@@ -103,7 +117,9 @@ export const GridSettings = ({ editor, onClose }: Props) => {
               />
             </div>
             <div className="space-y-1">
-              <span className="text-[9px] text-slate-400 uppercase font-bold">Padding</span>
+              <span className="text-[9px] text-slate-400 uppercase font-bold">
+                Padding
+              </span>
               <input
                 type="text"
                 value={gridAttrs.padding ?? ""}
@@ -117,33 +133,41 @@ export const GridSettings = ({ editor, onClose }: Props) => {
           {/* Margins */}
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <span className="text-[9px] text-slate-400 uppercase font-bold">Marge haut</span>
+              <span className="text-[9px] text-slate-400 uppercase font-bold">
+                Marge haut
+              </span>
               <input
                 type="text"
                 value={gridAttrs.marginTop ?? ""}
                 onChange={(e) => updateGrid({ marginTop: e.target.value })}
                 className="w-full text-xs p-1.5 border rounded-lg bg-slate-50 focus:ring-1 focus:ring-blue-300 outline-none"
-                placeholder="1.5rem"
+                placeholder="5px"
               />
             </div>
             <div className="space-y-1">
-              <span className="text-[9px] text-slate-400 uppercase font-bold">Marge bas</span>
+              <span className="text-[9px] text-slate-400 uppercase font-bold">
+                Marge bas
+              </span>
               <input
                 type="text"
                 value={gridAttrs.marginBottom ?? ""}
                 onChange={(e) => updateGrid({ marginBottom: e.target.value })}
                 className="w-full text-xs p-1.5 border rounded-lg bg-slate-50 focus:ring-1 focus:ring-blue-300 outline-none"
-                placeholder="1.5rem"
+                placeholder="5px"
               />
             </div>
           </div>
 
           {/* Border */}
           <div className="space-y-2">
-            <span className="text-[9px] text-slate-400 uppercase font-bold block">Bordure</span>
+            <span className="text-[9px] text-slate-400 uppercase font-bold block">
+              Bordure
+            </span>
             <div className="grid grid-cols-3 gap-2">
               <div className="space-y-1">
-                <span className="text-[8px] text-slate-300 uppercase">Taille</span>
+                <span className="text-[8px] text-slate-300 uppercase">
+                  Taille
+                </span>
                 <input
                   type="text"
                   value={gridAttrs.borderWidth ?? ""}
@@ -153,7 +177,9 @@ export const GridSettings = ({ editor, onClose }: Props) => {
                 />
               </div>
               <div className="space-y-1">
-                <span className="text-[8px] text-slate-300 uppercase">Style</span>
+                <span className="text-[8px] text-slate-300 uppercase">
+                  Style
+                </span>
                 <select
                   value={gridAttrs.borderStyle ?? "solid"}
                   onChange={(e) => updateGrid({ borderStyle: e.target.value })}
@@ -166,7 +192,9 @@ export const GridSettings = ({ editor, onClose }: Props) => {
                 </select>
               </div>
               <div className="space-y-1">
-                <span className="text-[8px] text-slate-300 uppercase">Couleur</span>
+                <span className="text-[8px] text-slate-300 uppercase">
+                  Couleur
+                </span>
                 <input
                   type="color"
                   value={gridAttrs.borderColor ?? "#e2e8f0"}
@@ -179,7 +207,9 @@ export const GridSettings = ({ editor, onClose }: Props) => {
 
           {/* Border Radius */}
           <div className="space-y-1">
-            <span className="text-[9px] text-slate-400 uppercase font-bold">Rayon bordure</span>
+            <span className="text-[9px] text-slate-400 uppercase font-bold">
+              Rayon bordure
+            </span>
             <input
               type="text"
               value={gridAttrs.borderRadius ?? ""}
@@ -197,14 +227,22 @@ export const GridSettings = ({ editor, onClose }: Props) => {
             <div className="flex items-center gap-2">
               <input
                 type="color"
-                value={gridAttrs.backgroundColor === "transparent" ? "#ffffff" : (gridAttrs.backgroundColor ?? "#ffffff")}
-                onChange={(e) => updateGrid({ backgroundColor: e.target.value })}
+                value={
+                  gridAttrs.backgroundColor === "transparent"
+                    ? "#ffffff"
+                    : (gridAttrs.backgroundColor ?? "#ffffff")
+                }
+                onChange={(e) =>
+                  updateGrid({ backgroundColor: e.target.value })
+                }
                 className="w-8 h-8 rounded border cursor-pointer"
               />
               <input
                 type="text"
                 value={gridAttrs.backgroundColor ?? ""}
-                onChange={(e) => updateGrid({ backgroundColor: e.target.value })}
+                onChange={(e) =>
+                  updateGrid({ backgroundColor: e.target.value })
+                }
                 className="flex-1 text-xs p-1.5 border rounded-lg bg-slate-50 outline-none"
                 placeholder="transparent"
               />
@@ -290,12 +328,16 @@ export const GridSettings = ({ editor, onClose }: Props) => {
             <div className="flex items-center justify-between bg-white border rounded-xl p-1">
               <button
                 type="button"
-                onClick={() => updateCell({ flex: Math.max(1, (colAttrs.flex || 1) - 1) })}
+                onClick={() =>
+                  updateCell({ flex: Math.max(1, (colAttrs.flex || 1) - 1) })
+                }
                 className="p-1.5 hover:bg-slate-100 rounded text-slate-400"
               >
                 <Minus size={14} />
               </button>
-              <span className="text-sm font-black text-purple-600">x{colAttrs.flex || 1}</span>
+              <span className="text-sm font-black text-purple-600">
+                x{colAttrs.flex || 1}
+              </span>
               <button
                 type="button"
                 onClick={() => updateCell({ flex: (colAttrs.flex || 1) + 1 })}
@@ -308,13 +350,31 @@ export const GridSettings = ({ editor, onClose }: Props) => {
 
           {/* Vertical Alignment */}
           <div className="space-y-1.5">
-            <span className="text-[9px] text-slate-400 uppercase font-bold block">Alignement vertical</span>
+            <span className="text-[9px] text-slate-400 uppercase font-bold block">
+              Alignement vertical
+            </span>
             <div className="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-lg">
               {[
-                { id: "flex-start", icon: <AlignVerticalTop size={14} />, label: "Haut" },
-                { id: "center", icon: <AlignVerticalJustifyCenter size={14} />, label: "Centre" },
-                { id: "flex-end", icon: <AlignVerticalBottom size={14} />, label: "Bas" },
-                { id: "stretch", icon: <StretchVertical size={14} />, label: "Étirer" },
+                {
+                  id: "flex-start",
+                  icon: <AlignVerticalTop size={14} />,
+                  label: "Haut",
+                },
+                {
+                  id: "center",
+                  icon: <AlignVerticalJustifyCenter size={14} />,
+                  label: "Centre",
+                },
+                {
+                  id: "flex-end",
+                  icon: <AlignVerticalBottom size={14} />,
+                  label: "Bas",
+                },
+                {
+                  id: "stretch",
+                  icon: <StretchVertical size={14} />,
+                  label: "Étirer",
+                },
               ].map((opt) => (
                 <button
                   type="button"
@@ -335,12 +395,15 @@ export const GridSettings = ({ editor, onClose }: Props) => {
 
           {/* Text Alignment */}
           <div className="space-y-1.5">
-            <span className="text-[9px] text-slate-400 uppercase font-bold block">Alignement texte</span>
-            <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-lg">
+            <span className="text-[9px] text-slate-400 uppercase font-bold block">
+              Alignement texte
+            </span>
+            <div className="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-lg">
               {[
                 { id: "left", icon: <AlignLeft size={14} /> },
                 { id: "center", icon: <AlignCenter size={14} /> },
                 { id: "right", icon: <AlignRight size={14} /> },
+                { id: "justify", icon: <AlignJustify size={14} /> },
               ].map((opt) => (
                 <button
                   type="button"
@@ -360,7 +423,9 @@ export const GridSettings = ({ editor, onClose }: Props) => {
 
           {/* Cell Padding */}
           <div className="space-y-1">
-            <span className="text-[9px] text-slate-400 uppercase font-bold">Padding cellule</span>
+            <span className="text-[9px] text-slate-400 uppercase font-bold">
+              Padding cellule
+            </span>
             <input
               type="text"
               value={colAttrs.padding ?? ""}
@@ -378,14 +443,22 @@ export const GridSettings = ({ editor, onClose }: Props) => {
             <div className="flex items-center gap-2">
               <input
                 type="color"
-                value={colAttrs.backgroundColor === "transparent" ? "#ffffff" : (colAttrs.backgroundColor ?? "#ffffff")}
-                onChange={(e) => updateCell({ backgroundColor: e.target.value })}
+                value={
+                  colAttrs.backgroundColor === "transparent"
+                    ? "#ffffff"
+                    : (colAttrs.backgroundColor ?? "#ffffff")
+                }
+                onChange={(e) =>
+                  updateCell({ backgroundColor: e.target.value })
+                }
                 className="w-8 h-8 rounded border cursor-pointer"
               />
               <input
                 type="text"
                 value={colAttrs.backgroundColor ?? ""}
-                onChange={(e) => updateCell({ backgroundColor: e.target.value })}
+                onChange={(e) =>
+                  updateCell({ backgroundColor: e.target.value })
+                }
                 className="flex-1 text-xs p-1.5 border rounded-lg bg-slate-50 outline-none"
                 placeholder="transparent"
               />

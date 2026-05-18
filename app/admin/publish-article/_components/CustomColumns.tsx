@@ -1,4 +1,5 @@
 import { Node, mergeAttributes } from "@tiptap/core";
+import { Node as ProseMirrorNode } from "@tiptap/pm/model";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -37,8 +38,8 @@ export const Column = Node.create({
           background-color: ${HTMLAttributes.backgroundColor};
           display: flex;
           flex-direction: column;
-          justify-content: ${HTMLAttributes.verticalAlign === 'stretch' ? 'flex-start' : HTMLAttributes.verticalAlign};
-          align-self: ${HTMLAttributes.verticalAlign === 'stretch' ? 'stretch' : 'auto'};
+          justify-content: ${HTMLAttributes.verticalAlign === "stretch" ? "flex-start" : HTMLAttributes.verticalAlign};
+          align-self: ${HTMLAttributes.verticalAlign === "stretch" ? "stretch" : "auto"};
           text-align: ${HTMLAttributes.textAlign};
           min-height: 48px;
         `,
@@ -59,9 +60,9 @@ export const Columns = Node.create({
   addAttributes() {
     return {
       gap: { default: "1.5rem" },
-      padding: { default: "0px" },
-      marginTop: { default: "2rem" },
-      marginBottom: { default: "2rem" },
+      padding: { default: "5px 0px" },
+      marginTop: { default: "5px" },
+      marginBottom: { default: "5px" },
       borderWidth: { default: "0px" },
       borderColor: { default: "#e2e8f0" },
       borderStyle: { default: "solid" },
@@ -109,7 +110,11 @@ export const Columns = Node.create({
           const $from = selection.$from;
           let columnsDepth = $from.depth;
           while (columnsDepth > 0) {
-            if (state.doc.nodeAt($from.before(columnsDepth))?.type.name === "columns") break;
+            if (
+              state.doc.nodeAt($from.before(columnsDepth))?.type.name ===
+              "columns"
+            )
+              break;
             columnsDepth--;
           }
           if (columnsDepth <= 0) return false;
@@ -119,7 +124,12 @@ export const Columns = Node.create({
           // Insert inside the columns node, after the last column child
           const insertPos = columnsPos + columnsNode.nodeSize - 1;
           if (dispatch) {
-            dispatch(state.tr.insert(insertPos, state.schema.nodes.column.createAndFill()!));
+            dispatch(
+              state.tr.insert(
+                insertPos,
+                state.schema.nodes.column.createAndFill()!,
+              ),
+            );
           }
           return true;
         },
@@ -131,7 +141,11 @@ export const Columns = Node.create({
           const $from = selection.$from;
           let columnsDepth = $from.depth;
           while (columnsDepth > 0) {
-            if (state.doc.nodeAt($from.before(columnsDepth))?.type.name === "columns") break;
+            if (
+              state.doc.nodeAt($from.before(columnsDepth))?.type.name ===
+              "columns"
+            )
+              break;
             columnsDepth--;
           }
           if (columnsDepth <= 0) return false;
@@ -141,13 +155,13 @@ export const Columns = Node.create({
           // Create a new columns row after the current one with the same number of columns
           const insertPos = columnsPos + columnsNode.nodeSize;
           if (dispatch) {
-            const cols = [];
+            const cols: ProseMirrorNode[] = [];
             for (let i = 0; i < columnsNode.childCount; i++) {
               cols.push(state.schema.nodes.column.createAndFill()!);
             }
             const newRow = state.schema.nodes.columns.create(
               { ...columnsNode.attrs },
-              cols as any
+              cols,
             );
             dispatch(state.tr.insert(insertPos, newRow));
           }
@@ -162,14 +176,22 @@ export const Columns = Node.create({
           // Find the column node
           let columnDepth = $from.depth;
           while (columnDepth > 0) {
-            if (state.doc.nodeAt($from.before(columnDepth))?.type.name === "column") break;
+            if (
+              state.doc.nodeAt($from.before(columnDepth))?.type.name ===
+              "column"
+            )
+              break;
             columnDepth--;
           }
           if (columnDepth <= 0) return false;
           // Find the parent columns
           let columnsDepth = columnDepth - 1;
           while (columnsDepth > 0) {
-            if (state.doc.nodeAt($from.before(columnsDepth))?.type.name === "columns") break;
+            if (
+              state.doc.nodeAt($from.before(columnsDepth))?.type.name ===
+              "columns"
+            )
+              break;
             columnsDepth--;
           }
           if (columnsDepth <= 0) return false;
@@ -179,7 +201,9 @@ export const Columns = Node.create({
           if (columnsNode.childCount <= 1) {
             if (dispatch) {
               const columnsPos = $from.before(columnsDepth);
-              dispatch(state.tr.delete(columnsPos, columnsPos + columnsNode.nodeSize));
+              dispatch(
+                state.tr.delete(columnsPos, columnsPos + columnsNode.nodeSize),
+              );
             }
             return true;
           }
@@ -188,7 +212,9 @@ export const Columns = Node.create({
             const columnPos = $from.before(columnDepth);
             const columnNode = state.doc.nodeAt(columnPos);
             if (!columnNode) return false;
-            dispatch(state.tr.delete(columnPos, columnPos + columnNode.nodeSize));
+            dispatch(
+              state.tr.delete(columnPos, columnPos + columnNode.nodeSize),
+            );
           }
           return true;
         },

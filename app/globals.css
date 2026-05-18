@@ -222,7 +222,10 @@
   border-radius: 6px;
   position: relative;
   min-height: 48px;
-  transition: outline-color 0.2s, background-color 0.2s;
+  min-width: 0;
+  transition:
+    outline-color 0.2s,
+    background-color 0.2s;
 }
 
 .ProseMirror [data-type="column"]:hover {
@@ -243,12 +246,79 @@
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
 }
 
+/* Keep text and media aligned inside article/editor columns */
+.tiptap [data-type="columns"],
+.article-content [data-type="columns"] {
+  align-items: stretch;
+}
+
+.tiptap [data-type="column"],
+.article-content [data-type="column"] {
+  min-width: 0;
+}
+
+.tiptap [data-type="column"] > :first-child,
+.article-content [data-type="column"] > :first-child {
+  margin-top: 0 !important;
+}
+
+.tiptap [data-type="column"] > :last-child,
+.article-content [data-type="column"] > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.tiptap [data-type="column"] img,
+.article-content [data-type="column"] img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0 0 1rem 0;
+}
+
+/* Keep text measure readable inside wide columns */
+.tiptap [data-type="column"] > p,
+.tiptap [data-type="column"] > h2,
+.tiptap [data-type="column"] > h3,
+.tiptap [data-type="column"] > ul,
+.tiptap [data-type="column"] > ol,
+.tiptap [data-type="column"] > blockquote,
+.article-content [data-type="column"] > p,
+.article-content [data-type="column"] > h2,
+.article-content [data-type="column"] > h3,
+.article-content [data-type="column"] > ul,
+.article-content [data-type="column"] > ol,
+.article-content [data-type="column"] > blockquote {
+  max-width: 65ch;
+}
+
+/* In 2-column image/text layouts, keep text balanced against image height */
+.tiptap
+  [data-type="columns"]:has([data-type="column"] img)
+  > [data-type="column"]:not(:has(img)),
+.article-content
+  [data-type="columns"]:has([data-type="column"] img)
+  > [data-type="column"]:not(:has(img)) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 /* ─── Columns responsive stacking ─── */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .stack-on-mobile {
     flex-direction: column !important;
   }
   .stack-on-mobile > [data-type="column"] {
     flex: 1 1 100% !important;
+  }
+
+  .stack-on-mobile > [data-type="column"] > p,
+  .stack-on-mobile > [data-type="column"] > h2,
+  .stack-on-mobile > [data-type="column"] > h3,
+  .stack-on-mobile > [data-type="column"] > ul,
+  .stack-on-mobile > [data-type="column"] > ol,
+  .stack-on-mobile > [data-type="column"] > blockquote {
+    max-width: none;
+    width: 100%;
   }
 }
