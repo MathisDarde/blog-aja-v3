@@ -233,7 +233,7 @@ export const likedArticles = pgTable("likedArticles", {
     .references(() => user.id),
   articleId: text("articleId")
     .notNull()
-    .references(() => articlesTable.id_article),
+    .references(() => articlesTable.id_article, { onDelete: "cascade" }),
   likedAt: timestamp("likedAt").notNull().defaultNow(),
 });
 

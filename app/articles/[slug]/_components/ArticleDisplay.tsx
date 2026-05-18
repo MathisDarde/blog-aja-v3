@@ -33,7 +33,6 @@ export default function ArticleDisplay({
   article,
   articles,
   methodes,
-  keywords,
   articleComments,
   articleLikes,
   user,
@@ -113,7 +112,7 @@ export default function ArticleDisplay({
 
   const handleKeywordClick = (id_methode: string, typemethode: string) => {
     const selectedMethodes = methodes.filter(
-      (m) => m.id_methode === id_methode && m.typemethode === typemethode
+      (m) => m.id_methode === id_methode && m.typemethode === typemethode,
     );
     setActiveMethodes(selectedMethodes);
     setIsMethodOpen(true);
@@ -142,7 +141,7 @@ export default function ArticleDisplay({
       } catch (err) {
         console.error("Impossible de partager automatiquement", err);
         toast.error(
-          "Impossible de partager automatiquement. Copiez l'URL manuellement."
+          "Impossible de partager automatiquement. Copiez l'URL manuellement.",
         );
       }
     }
@@ -231,7 +230,7 @@ export default function ArticleDisplay({
                     onClick={() => {
                       if (!user) {
                         toast.warning(
-                          "Veuillez vous connecter pour liker cet article."
+                          "Veuillez vous connecter pour liker cet article.",
                         );
                         return;
                       }
@@ -325,7 +324,6 @@ export default function ArticleDisplay({
           <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-5 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base ">
             <KeywordHighlighter
               text={article.content}
-              keywords={keywords}
               onKeywordClick={handleKeywordClick}
             />
           </div>

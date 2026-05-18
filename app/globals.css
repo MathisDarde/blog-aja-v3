@@ -68,3 +68,257 @@
 [data-sonner-toast][data-type="info"] {
   background-color: #3c77b4; /* aja-blue */
 }
+
+.tiptap p,
+.article-content p {
+  @apply text-sm sm:text-base font-Montserrat;
+  line-height: 1.8 !important;
+}
+
+.tiptap h2,
+.article-content h2 {
+  @apply text-2xl sm:text-3xl font-bold mt-8 mb-4 font-Bai_Jamjuree;
+}
+
+.tiptap h3,
+.article-content h3 {
+  @apply text-xl sm:text-2xl font-bold mt-4 mb-2 font-Bai_Jamjuree;
+}
+
+.tiptap a,
+.article-content a {
+  @apply text-aja-blue underline cursor-pointer hover:text-[#174d88] transition-colors;
+}
+
+.tiptap .editor-link {
+  color: #3c77b4;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tiptap .methode-expert,
+.article-content .methode-expert {
+  color: #f76200;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700 !important;
+}
+
+.tiptap mark,
+.article-content mark {
+  @apply bg-yellow-200 px-1 rounded-sm text-inherit;
+}
+
+.tiptap blockquote,
+.article-content blockquote {
+  @apply border-l-4 border-slate-300 pl-4 italic text-slate-600 my-6;
+}
+
+.tiptap:focus {
+  outline: none;
+}
+
+.tiptap ul,
+.article-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.tiptap ol,
+.article-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply float-left text-zinc-300 pointer-events-none h-0 font-normal italic;
+}
+
+.tiptap img,
+.article-content img {
+  border-radius: 1rem;
+  margin: 1rem auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tiptap img.ProseMirror-selectednode {
+  outline: 3px solid #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.notion-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #09090b; /* Zinc 950 */
+  padding: 6px;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  border: 1px solid #27272a;
+  z-index: 9999;
+}
+
+.notion-menu button {
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  transition: all 0.2s;
+}
+
+.notion-menu button:hover {
+  background-color: #27272a;
+}
+
+.notion-menu button.is-active {
+  color: #0066ff; /* Aja Blue */
+  background-color: #18181b;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* ─── Columns Grid (editor only) ─── */
+.ProseMirror [data-type="columns"] {
+  outline: 2px dashed #93c5fd;
+  outline-offset: 4px;
+  border-radius: 8px;
+  position: relative;
+  transition: outline-color 0.2s;
+}
+
+.ProseMirror [data-type="columns"]:hover {
+  outline-color: #3b82f6;
+}
+
+.ProseMirror [data-type="columns"]::after {
+  content: "⬡ Grille";
+  position: absolute;
+  top: -11px;
+  left: 12px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #93c5fd;
+  background: white;
+  padding: 0 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.ProseMirror [data-type="columns"]:hover::after {
+  color: #3b82f6;
+}
+
+.ProseMirror [data-type="column"] {
+  outline: 1px dashed #c7d2fe;
+  outline-offset: -1px;
+  border-radius: 6px;
+  position: relative;
+  min-height: 48px;
+  min-width: 0;
+  transition:
+    outline-color 0.2s,
+    background-color 0.2s;
+}
+
+.ProseMirror [data-type="column"]:hover {
+  outline-color: #818cf8;
+  background-color: rgba(99, 102, 241, 0.03);
+}
+
+.ProseMirror [data-type="column"]:empty::before {
+  content: "Tapez / pour insérer…";
+  color: #a5b4fc;
+  font-size: 0.8rem;
+  font-style: italic;
+  pointer-events: none;
+}
+
+.ProseMirror-selectednode[data-type="columns"] {
+  outline: 3px solid #3b82f6 !important;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+/* Keep text and media aligned inside article/editor columns */
+.tiptap [data-type="columns"],
+.article-content [data-type="columns"] {
+  align-items: stretch;
+}
+
+.tiptap [data-type="column"],
+.article-content [data-type="column"] {
+  min-width: 0;
+}
+
+.tiptap [data-type="column"] > :first-child,
+.article-content [data-type="column"] > :first-child {
+  margin-top: 0 !important;
+}
+
+.tiptap [data-type="column"] > :last-child,
+.article-content [data-type="column"] > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.tiptap [data-type="column"] img,
+.article-content [data-type="column"] img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0 0 1rem 0;
+}
+
+/* Keep text measure readable inside wide columns */
+.tiptap [data-type="column"] > p,
+.tiptap [data-type="column"] > h2,
+.tiptap [data-type="column"] > h3,
+.tiptap [data-type="column"] > ul,
+.tiptap [data-type="column"] > ol,
+.tiptap [data-type="column"] > blockquote,
+.article-content [data-type="column"] > p,
+.article-content [data-type="column"] > h2,
+.article-content [data-type="column"] > h3,
+.article-content [data-type="column"] > ul,
+.article-content [data-type="column"] > ol,
+.article-content [data-type="column"] > blockquote {
+  max-width: 65ch;
+}
+
+/* In 2-column image/text layouts, keep text balanced against image height */
+.tiptap
+  [data-type="columns"]:has([data-type="column"] img)
+  > [data-type="column"]:not(:has(img)),
+.article-content
+  [data-type="columns"]:has([data-type="column"] img)
+  > [data-type="column"]:not(:has(img)) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ─── Columns responsive stacking ─── */
+@media (max-width: 1000px) {
+  .stack-on-mobile {
+    flex-direction: column !important;
+  }
+  .stack-on-mobile > [data-type="column"] {
+    flex: 1 1 100% !important;
+  }
+
+  .stack-on-mobile > [data-type="column"] > p,
+  .stack-on-mobile > [data-type="column"] > h2,
+  .stack-on-mobile > [data-type="column"] > h3,
+  .stack-on-mobile > [data-type="column"] > ul,
+  .stack-on-mobile > [data-type="column"] > ol,
+  .stack-on-mobile > [data-type="column"] > blockquote {
+    max-width: none;
+    width: 100%;
+  }
+}

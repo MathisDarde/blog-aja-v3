@@ -5,86 +5,34 @@ import { KeywordProps } from "@/contexts/Interfaces";
 
 const KeywordHighlighter: React.FC<KeywordProps> = ({
   text,
-  keywords,
   onKeywordClick,
 }) => {
   const displayText = text?.trim()
     ? text
-    : "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+    : "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>";
 
-  // Process text for headings and line breaks
-  const processText = (text: string) => {
-    const lines = text.split("\n");
-    const processedLines = lines.map((line) => {
-      if (line.startsWith("# ")) {
-        return `<h2 class="font-Montserrat text-left font-extrabold text-2xl sm:text-3xl text-aja-blue mt-0 sm:mt-6 mb-3">${line.substring(
-          2
-        )}</h2>`;
-      } else if (line.startsWith("## ")) {
-        return `<h3 class="font-Montserrat font-bold text-xl sm:text-2xl text-aja-blue mt-0 sm:mt-5 mb-2">${line.substring(
-          3
-        )}</h3>`;
-      } else if (line.trim() === "") {
-        return "<br />";
-      }
-      return line;
-    });
-
-    return processedLines.join("<br />");
-  };
-
-  // Improved click handler with more specific targeting
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const target = e.target as HTMLElement;
-      if (target.classList.contains("highlightedtext")) {
+      if (target.classList.contains("methode-expert")) {
         const id = target.getAttribute("data-id");
         const type = target.getAttribute("data-type");
-
         if (id && type) {
-          e.stopPropagation(); // Prevent event bubbling
+          e.stopPropagation();
           onKeywordClick(id, type);
         }
       }
     },
-    [onKeywordClick]
+    [onKeywordClick],
   );
 
-  // Process the text
-  const processedText = processText(displayText);
-  let highlightedText = processedText;
-
-  // Apply keyword highlighting
-  keywords.forEach((keyword) => {
-    const keywordArray = Array.isArray(keyword.keywordsList)
-      ? keyword.keywordsList
-      : [keyword.keywordsList];
-
-    keywordArray.forEach((kw) => {
-      // Make sure keyword is a string before processing
-      if (typeof kw !== "string") {
-        console.warn("Invalid keyword type:", kw);
-        return;
-      }
-
-      const escapedKeyword = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(`(${escapedKeyword})`, "gi");
-
-      // Use a more distinctive class and add data attributes
-      highlightedText = highlightedText.replace(
-        regex,
-        `<span class="highlightedtext cursor-pointer text-orange-third font-bold underline" data-id="${keyword.id_methode}" data-type="${keyword.typemethode}">$1</span>`
-      );
-    });
-  });
-
   return (
-    <>
-      <div
-        dangerouslySetInnerHTML={{ __html: highlightedText }}
-        onClick={handleClick}
-      />
-    </>
+    <div
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: content trusted from DB
+      dangerouslySetInnerHTML={{ __html: displayText }}
+      onClick={handleClick}
+      className="article-content"
+    />
   );
 };
 

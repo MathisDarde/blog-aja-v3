@@ -13,7 +13,7 @@ export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
 
 export async function createMethodeMatch(
   data: MethodeMatchSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const {
@@ -68,7 +68,7 @@ export async function createMethodeMatch(
 }
 
 export async function getMethodeById(
-  methodeId: string
+  methodeId: string,
 ): Promise<SelectMatchMethode[]> {
   const results = await db
     .select()
@@ -87,7 +87,7 @@ export async function getMethodeById(
 export async function updateMethodeMatch(
   id_methode: string,
   data: MethodeMatchSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const {
@@ -109,7 +109,7 @@ export async function updateMethodeMatch(
       remplacantsequipe2,
     } = data;
 
-    const updateData: any = {
+    const updateData: Partial<typeof methodeExpertMatchTable.$inferInsert> = {
       titrematch,
       couleur1equipe1,
       couleur2equipe1,
