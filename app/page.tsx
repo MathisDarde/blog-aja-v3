@@ -1,5 +1,3 @@
-"use server";
-
 import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
 import DisplayCategories from "@/components/DisplayCategories";
@@ -14,6 +12,10 @@ import Timeline from "@/components/timeline/Timeline";
 import { TimelineItems } from "@/components/timeline/TimelineItems";
 import CitationSlider from "@/components/slidercitations/CitationSlider";
 import PagesTilt from "@/components/PagesTest";
+
+// Régénérée au plus toutes les 60 s (et immédiatement après une action admin
+// sur les articles, cf. revalidateArticlePages) au lieu d'être figée au build.
+export const revalidate = 60;
 
 export default async function Page() {
   const articles = await getArticles();

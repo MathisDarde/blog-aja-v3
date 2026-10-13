@@ -14,6 +14,14 @@ import { Article, GetURLParams } from "@/contexts/Interfaces";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { sendNewsletter } from "@/actions/article/send-new-article-mail";
 import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
+import { revalidatePath } from "next/cache";
+
+// Pages listant les articles publiés : à invalider après chaque modification
+function revalidateArticlePages() {
+  revalidatePath("/");
+  revalidatePath("/articles");
+  revalidatePath("/sitemap.xml");
+}
 
 export async function getAllArticles(): Promise<SelectArticle[]> {
   await requireAdmin();
@@ -69,6 +77,8 @@ export async function createArticle(data: ArticleSchemaType, _userId: string) {
       state: "published",
       userId,
     });
+
+    revalidateArticlePages();
 
     if (process.env.NODE_ENV === "production") {
       console.log("📨 Déclenchement de la newsletter en arrière-plan...");
@@ -153,10 +163,13 @@ export async function updateArticle(
       imageUrl,
     };
 
-    return await db
+    const result = await db
       .update(articlesTable)
       .set(updateData)
       .where(eq(articlesTable.id_article, articleId));
+
+    revalidateArticlePages();
+    return result;
   } catch (err) {
     console.error(err);
     throw new Error("Erreur lors de la modification de l'article");
@@ -172,6 +185,8 @@ export async function updateStatus(
     .update(articlesTable)
     .set({ state })
     .where(eq(articlesTable.id_article, articleId));
+
+  revalidateArticlePages();
 }
 
 export async function deleteArticle(articleId: SelectPost["id_article"]) {
@@ -180,6 +195,8 @@ export async function deleteArticle(articleId: SelectPost["id_article"]) {
   await db.delete(likedArticles).where(eq(likedArticles.articleId, articleId));
   // Then delete the article
   await db.delete(articlesTable).where(eq(articlesTable.id_article, articleId));
+
+  revalidateArticlePages();
 }
 
 export async function getLastPublished() {
