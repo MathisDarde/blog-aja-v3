@@ -5,15 +5,20 @@ import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { DraftArticleSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function getBrouillons(): Promise<SelectDraft[]> {
+  await requireAdmin();
   return db.select().from(draftTable).where(eq(draftTable.state, "pending"));
 }
 
 export async function storeBrouillon(
   data: Partial<DraftArticleSchemaType>,
-  userId: string
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const imageUrl = data.imageUrl
       ? ensureCloudinaryUrl(data.imageUrl)
@@ -44,6 +49,8 @@ export async function updateBrouillon(
   draftId: string,
   data: Partial<DraftArticleSchemaType>
 ) {
+  await requireAdmin();
+
   try {
     const imageUrl = data.imageUrl
       ? ensureCloudinaryUrl(data.imageUrl)

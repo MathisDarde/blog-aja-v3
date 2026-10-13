@@ -1,5 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
+import { getSessionUser } from "@/lib/auth-guard";
+
+const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50 Mo
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -8,12 +11,25 @@ cloudinary.config({
 });
 
 export async function POST(request: NextRequest) {
+  const currentUser = await getSessionUser();
+  if (!currentUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
-    const file = formData.get("file") as File;
+    const file = formData.get("file");
 
-    if (!file) {
+    if (!(file instanceof File)) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      return NextResponse.json({ error: "Unsupported file type" }, { status: 415 });
+    }
+
+    if (file.size > MAX_UPLOAD_SIZE) {
+      return NextResponse.json({ error: "File too large" }, { status: 413 });
     }
 
     const bytes = await file.arrayBuffer();

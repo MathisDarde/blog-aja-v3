@@ -13,8 +13,10 @@ import { v4 as uuidv4 } from "uuid";
 import { Article, GetURLParams } from "@/contexts/Interfaces";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { sendNewsletter } from "@/actions/article/send-new-article-mail";
+import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
 
 export async function getAllArticles(): Promise<SelectArticle[]> {
+  await requireAdmin();
   return db
     .select()
     .from(articlesTable)
@@ -45,7 +47,10 @@ export async function getArticles(): Promise<SelectArticle[]> {
     );
 }
 
-export async function createArticle(data: ArticleSchemaType, userId: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function createArticle(data: ArticleSchemaType, _userId: string) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const imageUrl = ensureCloudinaryUrl(data.imageUrl);
 
@@ -130,6 +135,8 @@ export async function updateArticle(
   articleId: SelectPost["id_article"],
   data: Partial<Omit<SelectPost, "id_article">>,
 ) {
+  await requireAdmin();
+
   try {
     if (!data.imageUrl) {
       throw new Error("L'image est requise pour modifier l'article.");
@@ -160,6 +167,7 @@ export async function updateStatus(
   articleId: SelectPost["id_article"],
   state: "pending" | "published" | "archived",
 ) {
+  await requireAdmin();
   await db
     .update(articlesTable)
     .set({ state })
@@ -167,6 +175,7 @@ export async function updateStatus(
 }
 
 export async function deleteArticle(articleId: SelectPost["id_article"]) {
+  await requireAdmin();
   // Delete related likes first (in case cascade delete hasn't been applied yet)
   await db.delete(likedArticles).where(eq(likedArticles.articleId, articleId));
   // Then delete the article
@@ -227,6 +236,8 @@ export async function getArticlesbyKeywords({
 }
 
 export async function getUserLikedArticles(userId: string) {
+  await requireSelfOrAdmin(userId);
+
   try {
     const result = await db
       .select({

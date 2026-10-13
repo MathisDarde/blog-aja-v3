@@ -33,6 +33,8 @@ export const auth = betterAuth({
         type: "boolean",
         required: true,
         defaultValue: false,
+        // Empêche un client de s'auto-attribuer le rôle via sign-up / update-user
+        input: false,
       },
     },
   },
