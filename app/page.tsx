@@ -12,6 +12,7 @@ import Timeline from "@/components/timeline/Timeline";
 import { TimelineItems } from "@/components/timeline/TimelineItems";
 import CitationSlider from "@/components/slidercitations/CitationSlider";
 import PagesTilt from "@/components/PagesTest";
+import { jsonLd, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 // Régénérée au plus toutes les 60 s (et immédiatement après une action admin
 // sur les articles, cf. revalidateArticlePages) au lieu d'être figée au build.
@@ -32,8 +33,35 @@ export default async function Page() {
   const randomCategories = getRandomElements(categories, 7);
   const randomArticles = getRandomElements(articles, 3);
 
+  const siteJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: SITE_NAME,
+        url: SITE_URL,
+        inLanguage: "fr-FR",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${SITE_URL}/articles?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: `${SITE_URL}/favicon.svg`,
+      },
+    ],
+  };
+
   return (
     <div className="bg-gray-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }}
+      />
       <Header />
 
       <div className="pb-3 max-w-[1300px] mx-auto">

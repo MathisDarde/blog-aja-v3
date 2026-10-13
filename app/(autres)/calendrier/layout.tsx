@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Calendrier",
   description:
     "Consultez le calendrier complet des matchs de l'AJ Auxerre, incluant les dates, horaires et scores des rencontres à venir et passées.",
-};
+});
 
 export default async function RootLayout({
   children,

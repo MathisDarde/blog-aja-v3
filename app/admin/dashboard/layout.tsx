@@ -1,12 +1,14 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Dashboard Admin",
   description:
     "Bienvenue sur le tableau de bord administrateur de Mémoire d'Auxerrois, votre centre de gestion pour tout le contenu et les fonctionnalités liées à l'application.",
-};
+  noIndex: true,
+});
 
 export default async function RootLayout({
   children,

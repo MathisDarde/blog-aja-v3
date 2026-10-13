@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Articles",
   description:
     "Plongez dans une collection captivante d'articles dédiés à l'histoire de l'AJ Auxerre sur Mémoire d'Auxerrois. Explorez des récits fascinants, des analyses approfondies et des perspectives uniques sur le club bourguignon.",
-};
+});
 
 export default async function RootLayout({
   children,

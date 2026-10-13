@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Classement & Statistiques",
   description:
     "Consultez le classement actuel de l'AJ Auxerre ainsi que des statistiques détaillées sur les performances de l'équipe et des joueurs tout au long de la saison.",
-};
+});
 
 export default async function RootLayout({
   children,

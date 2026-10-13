@@ -10,6 +10,13 @@ import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
 import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
+import {
+  jsonLd,
+  SITE_NAME,
+  SITE_URL,
+  socialImageUrl,
+  tagLabels,
+} from "@/lib/seo";
 
 export default async function ArticleClient({ slug }: { slug: string }) {
   const auth = await isAuthenticated();
@@ -51,7 +58,33 @@ export default async function ArticleClient({ slug }: { slug: string }) {
     return <p>Chargement de l&apos;article</p>;
   }
 
+  // Données structurées schema.org (résultats enrichis Google)
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.teaser,
+    image: [socialImageUrl(article.imageUrl)],
+    datePublished: new Date(article.createdAt).toISOString(),
+    dateModified: new Date(article.updatedAt ?? article.createdAt).toISOString(),
+    author: { "@type": "Person", name: article.author },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` },
+    },
+    mainEntityOfPage: `${SITE_URL}/articles/${article.slug}`,
+    keywords: tagLabels(article.tags).join(", "),
+    inLanguage: "fr-FR",
+  };
+
   return (
+    <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: jsonLd(articleJsonLd) }}
+    />
     <ArticleDisplay
       article={article}
       articles={articles}
@@ -61,5 +94,6 @@ export default async function ArticleClient({ slug }: { slug: string }) {
       articleLikes={articleLikes}
       user={user}
     />
+    </>
   );
 }

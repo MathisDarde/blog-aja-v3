@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Boutique",
   description:
     "Accédez à la boutique de Mémoire d'Auxerrois pour découvrir et acheter des produits exclusifs.",
-};
+});
 
 export default async function RootLayout({
   children,

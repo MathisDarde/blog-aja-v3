@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Chants",
   description:
     "Découvrez les chants emblématiques de l'AJ Auxerre, portés par les supporters passionnés du club. Plongez dans l'ambiance unique des matchs avec ces hymnes qui résonnent dans le stade.",
-};
+});
 
 export default async function RootLayout({
   children,

@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Effectif actuel",
   description:
     "Découvrez l'effectif actuel de l'AJ Auxerre, avec les profils détaillés des joueurs et membres du staff.",
-};
+});
 
 export default async function RootLayout({
   children,
