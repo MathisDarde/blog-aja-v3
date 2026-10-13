@@ -5,6 +5,7 @@ import { SelectSaisonMethode, methodeExpertSaisonTable } from "@/db/schema";
 import { MethodeSaisonSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function getSaisonMethodes(): Promise<SelectSaisonMethode[]> {
   return await db.select().from(methodeExpertSaisonTable);
@@ -12,8 +13,11 @@ export async function getSaisonMethodes(): Promise<SelectSaisonMethode[]> {
 
 export async function createMethodeSaison(
   data: MethodeSaisonSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
 
@@ -57,8 +61,11 @@ export async function getMethodeById(
 export async function updateMethodeSaison(
   id_methode: string,
   data: MethodeSaisonSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
 
@@ -89,6 +96,7 @@ export async function updateMethodeSaison(
 }
 
 export async function deleteMethodeSaison(methodeId: string) {
+  await requireAdmin();
   await db
     .delete(methodeExpertSaisonTable)
     .where(eq(methodeExpertSaisonTable.id_methode, methodeId));

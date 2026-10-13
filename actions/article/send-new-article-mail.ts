@@ -4,6 +4,7 @@ import { db } from "@/db/db";
 import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Resend } from "resend";
+import { requireAdmin } from "@/lib/auth-guard";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -15,6 +16,8 @@ interface ArticleData {
 }
 
 export async function sendNewsletter(article: ArticleData) {
+  await requireAdmin();
+
   try {
     const subscribers = await db
       .select({ email: user.email })

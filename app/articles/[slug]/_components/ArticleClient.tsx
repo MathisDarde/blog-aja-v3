@@ -3,7 +3,7 @@
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import ArticleDisplay from "./ArticleDisplay";
 import {
-  getAllArticles,
+  getArticles,
   getArticleBySlug,
 } from "@/controllers/ArticlesController";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
@@ -24,7 +24,7 @@ export default async function ArticleClient({ slug }: { slug: string }) {
 
   if (!slug) return <p>Aucun article trouvé.</p>;
 
-  const articles = await getAllArticles();
+  const articles = await getArticles();
 
   const article = await getArticleBySlug(slug);
 

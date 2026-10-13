@@ -4,8 +4,10 @@ import { db } from "@/db/db";
 import { likedArticles, SelectLikedArticles } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
 
 export async function storeLike(userId: string, articleId: string) {
+    await requireSelfOrAdmin(userId);
     const id_like = uuidv4();
   
     await db.insert(likedArticles).values({
@@ -22,11 +24,13 @@ export async function updateLike(
   id_like: string,
   data: Partial<Omit<SelectLikedArticles, "id">>
 ) {
+  await requireAdmin();
   // Met à jour un like (ex: un champ "rating" ou "active")
   await db.update(likedArticles).set(data).where(eq(likedArticles.id, id_like));
 }
 
 export async function deleteLike(userId: string, articleId: string) {
+    await requireSelfOrAdmin(userId);
     await db
       .delete(likedArticles)
       .where(
@@ -61,6 +65,7 @@ export async function getLikesByUser(userId: string): Promise<
     likedAt: Date;
   }>
 > {
+  await requireSelfOrAdmin(userId);
   return db
     .select({
       id_like: likedArticles.id,

@@ -5,6 +5,7 @@ import { SelectMatchMethode, methodeExpertMatchTable } from "@/db/schema";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { requireAdmin } from "@/lib/auth-guard";
 import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
 
 export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
@@ -13,8 +14,11 @@ export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
 
 export async function createMethodeMatch(
   data: MethodeMatchSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const {
       titrematch,
@@ -87,8 +91,11 @@ export async function getMethodeById(
 export async function updateMethodeMatch(
   id_methode: string,
   data: MethodeMatchSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const {
       titrematch,
@@ -145,6 +152,7 @@ export async function updateMethodeMatch(
 }
 
 export async function deleteMethodeMatch(methodeId: string) {
+  await requireAdmin();
   await db
     .delete(methodeExpertMatchTable)
     .where(eq(methodeExpertMatchTable.id_methode, methodeId));

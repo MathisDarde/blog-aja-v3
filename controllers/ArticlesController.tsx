@@ -13,8 +13,18 @@ import { v4 as uuidv4 } from "uuid";
 import { Article, GetURLParams } from "@/contexts/Interfaces";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { sendNewsletter } from "@/actions/article/send-new-article-mail";
+import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
+import { revalidatePath } from "next/cache";
+
+// Pages listant les articles publiés : à invalider après chaque modification
+function revalidateArticlePages() {
+  revalidatePath("/");
+  revalidatePath("/articles");
+  revalidatePath("/sitemap.xml");
+}
 
 export async function getAllArticles(): Promise<SelectArticle[]> {
+  await requireAdmin();
   return db
     .select()
     .from(articlesTable)
@@ -45,7 +55,10 @@ export async function getArticles(): Promise<SelectArticle[]> {
     );
 }
 
-export async function createArticle(data: ArticleSchemaType, userId: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function createArticle(data: ArticleSchemaType, _userId: string) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const imageUrl = ensureCloudinaryUrl(data.imageUrl);
 
@@ -64,6 +77,8 @@ export async function createArticle(data: ArticleSchemaType, userId: string) {
       state: "published",
       userId,
     });
+
+    revalidateArticlePages();
 
     if (process.env.NODE_ENV === "production") {
       console.log("📨 Déclenchement de la newsletter en arrière-plan...");
@@ -130,6 +145,8 @@ export async function updateArticle(
   articleId: SelectPost["id_article"],
   data: Partial<Omit<SelectPost, "id_article">>,
 ) {
+  await requireAdmin();
+
   try {
     if (!data.imageUrl) {
       throw new Error("L'image est requise pour modifier l'article.");
@@ -146,10 +163,13 @@ export async function updateArticle(
       imageUrl,
     };
 
-    return await db
+    const result = await db
       .update(articlesTable)
       .set(updateData)
       .where(eq(articlesTable.id_article, articleId));
+
+    revalidateArticlePages();
+    return result;
   } catch (err) {
     console.error(err);
     throw new Error("Erreur lors de la modification de l'article");
@@ -160,17 +180,23 @@ export async function updateStatus(
   articleId: SelectPost["id_article"],
   state: "pending" | "published" | "archived",
 ) {
+  await requireAdmin();
   await db
     .update(articlesTable)
     .set({ state })
     .where(eq(articlesTable.id_article, articleId));
+
+  revalidateArticlePages();
 }
 
 export async function deleteArticle(articleId: SelectPost["id_article"]) {
+  await requireAdmin();
   // Delete related likes first (in case cascade delete hasn't been applied yet)
   await db.delete(likedArticles).where(eq(likedArticles.articleId, articleId));
   // Then delete the article
   await db.delete(articlesTable).where(eq(articlesTable.id_article, articleId));
+
+  revalidateArticlePages();
 }
 
 export async function getLastPublished() {
@@ -227,6 +253,8 @@ export async function getArticlesbyKeywords({
 }
 
 export async function getUserLikedArticles(userId: string) {
+  await requireSelfOrAdmin(userId);
+
   try {
     const result = await db
       .select({

@@ -5,6 +5,7 @@ import { SelectCoachMethode, methodeExpertCoachTable } from "@/db/schema";
 import { MethodeCoachSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { requireAdmin } from "@/lib/auth-guard";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 
 export async function getCoachMethodes(): Promise<SelectCoachMethode[]> {
@@ -13,8 +14,11 @@ export async function getCoachMethodes(): Promise<SelectCoachMethode[]> {
 
 export async function createMethodeCoach(
   data: MethodeCoachSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagecoach);
 
@@ -62,8 +66,11 @@ export async function getMethodeById(
 export async function updateMethodeCoach(
   id_methode: string,
   data: MethodeCoachSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagecoach);
 
@@ -102,6 +109,7 @@ export async function updateMethodeCoach(
 }
 
 export async function deleteMethodeCoach(methodeId: string) {
+  await requireAdmin();
   await db
     .delete(methodeExpertCoachTable)
     .where(eq(methodeExpertCoachTable.id_methode, methodeId));

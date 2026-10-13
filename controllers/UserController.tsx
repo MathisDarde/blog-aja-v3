@@ -6,12 +6,15 @@ import { InscSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
+import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
 
 export async function getUserbyId(id: SelectUser["id"]): Promise<SelectUser[]> {
+  await requireSelfOrAdmin(id);
   return db.select().from(user).where(eq(user.id, id));
 }
 
 export async function getAllUsers(): Promise<SelectUser[]> {
+  await requireAdmin();
   return db.select().from(user);
 }
 
@@ -33,11 +36,17 @@ export async function updateUser(
   userId: SelectUser["id"],
   data: Partial<Omit<SelectUser, "id">>
 ) {
+  await requireSelfOrAdmin(userId);
+
   try {
     const imageUrl = ensureCloudinaryUrl(data.image);
 
+    // Champs sensibles jamais modifiables via ce endpoint
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { admin, emailVerified, createdAt, ...safeData } = data;
+
     const updateData = {
-      ...data,
+      ...safeData,
       imageUrl,
     };
 
@@ -55,10 +64,12 @@ export async function updateUser(
 }
 
 export async function deleteUser(id: SelectUser["id"]) {
+  await requireSelfOrAdmin(id);
   await db.delete(user).where(eq(user.id, id));
 }
 
 export async function getUserPicName(id: SelectUser["id"]) {
+  await requireSelfOrAdmin(id);
   const users = await db
     .select({
       image: user.image,
@@ -72,6 +83,7 @@ export async function getUserPicName(id: SelectUser["id"]) {
 }
 
 export async function deleteUserPic(id: SelectUser["id"]) {
+  await requireSelfOrAdmin(id);
   const userPic = await getUserPicName(id);
   if (userPic && userPic.image) {
     await db.update(user).set({ image: null }).where(eq(user.id, id));
@@ -82,6 +94,7 @@ export async function deleteUserPic(id: SelectUser["id"]) {
 }
 
 export async function setUserAdmin(id: SelectUser["id"]) {
+  await requireAdmin();
   const result = await db
     .update(user)
     .set({ admin: true })
@@ -91,6 +104,7 @@ export async function setUserAdmin(id: SelectUser["id"]) {
 }
 
 export async function removeUserAdmin(id: SelectUser["id"]) {
+  await requireAdmin();
   const result = await db
     .update(user)
     .set({ admin: false })
@@ -104,6 +118,8 @@ export async function toggleNewsletterSubscription(userId: string, shouldEnable:
     if (!userId) {
       return { success: false, error: "Utilisateur non identifié." };
     }
+
+    await requireSelfOrAdmin(userId);
 
     await db.update(user).set({ mailArticle: shouldEnable }).where(eq(user.id, userId));
 

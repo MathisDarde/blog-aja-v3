@@ -5,6 +5,7 @@ import { SelectJoueurMethode, methodeExpertJoueurTable } from "@/db/schema";
 import { MethodeJoueurSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { requireAdmin } from "@/lib/auth-guard";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 
 export async function getJoueurMethodes(): Promise<SelectJoueurMethode[]> {
@@ -13,8 +14,11 @@ export async function getJoueurMethodes(): Promise<SelectJoueurMethode[]> {
 
 export async function createMethodeJoueur(
   data: MethodeJoueurSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagejoueur);
 
@@ -75,8 +79,11 @@ export async function getMethodeById(
 export async function updateMethodeJoueur(
   id_methode: string,
   data: MethodeJoueurSchemaType,
-  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _userId: string,
 ) {
+  const { id: userId } = await requireAdmin();
+
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagejoueur);
 
@@ -129,6 +136,7 @@ export async function updateMethodeJoueur(
 }
 
 export async function deleteMethodeJoueur(methodeId: string) {
+  await requireAdmin();
   await db
     .delete(methodeExpertJoueurTable)
     .where(eq(methodeExpertJoueurTable.id_methode, methodeId));

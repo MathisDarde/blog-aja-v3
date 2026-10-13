@@ -1,6 +1,10 @@
 import { MetadataRoute } from "next";
 import { getArticles } from "@/controllers/ArticlesController";
 
+// Régénérée au plus toutes les 60 s (et immédiatement après une action admin
+// sur les articles, cf. revalidateArticlePages) au lieu d'être figée au build.
+export const revalidate = 60;
+
 // 1. Définition de l'URL de base propre
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.fr";
