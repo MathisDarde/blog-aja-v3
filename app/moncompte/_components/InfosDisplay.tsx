@@ -64,7 +64,9 @@ export default function InfosDisplay({ user }: { user: User }) {
   const [userComments, setUserComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
 
-const [newsletterEnabled, setNewsletterEnabled] = useState(user.mailArticle || false);
+  const [newsletterEnabled, setNewsletterEnabled] = useState(
+    user.mailArticle || false
+  );
   const [loadingNewsletter, setLoadingNewsletter] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -312,8 +314,9 @@ const [newsletterEnabled, setNewsletterEnabled] = useState(user.mailArticle || f
                   {activeTab === "settings" && "Paramètres"}
                 </span>
                 <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
-                    }`}
+                  className={`w-5 h-5 transition-transform duration-200 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
                 />
               </button>
 
@@ -332,10 +335,11 @@ const [newsletterEnabled, setNewsletterEnabled] = useState(user.mailArticle || f
                         );
                         setIsOpen(false);
                       }}
-                      className={`px-4 py-3 cursor-pointer text-sm sm:text-base hover:bg-gray-50 transition-colors ${activeTab === item.key
+                      className={`px-4 py-3 cursor-pointer text-sm sm:text-base hover:bg-gray-50 transition-colors ${
+                        activeTab === item.key
                           ? "font-bold text-aja-blue bg-blue-50/50"
                           : "text-gray-600"
-                        }`}
+                      }`}
                     >
                       {item.label}
                     </div>
@@ -425,7 +429,7 @@ const [newsletterEnabled, setNewsletterEnabled] = useState(user.mailArticle || f
                   ) : userComments.length > 0 ? (
                     <>
                       {userComments.map((comment) => (
-                        <React.Fragment key={comment.id_comment} >
+                        <React.Fragment key={comment.id_comment}>
                           <CommentComponent comment={comment} />
                         </React.Fragment>
                       ))}
@@ -462,9 +466,7 @@ const [newsletterEnabled, setNewsletterEnabled] = useState(user.mailArticle || f
                         Notifications
                       </h3>
                     </div>
-                    <div
-                      className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100"
-                    >
+                    <div className="bg-gray-50 rounded-xl p-5 flex items-center justify-between border border-gray-100">
                       <div>
                         <p className="font-semibold text-gray-800">
                           Nouveaux articles

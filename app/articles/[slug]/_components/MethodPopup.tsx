@@ -9,15 +9,15 @@ import { useEffect, useMemo } from "react";
 
 export default function MethodPopup({
   onClose,
-  activeMethode,
-  setActiveMethode,
+  activeMethodes,
+  setActiveMethodes,
   methodes,
   id_article,
   articles,
 }: {
   onClose: () => void;
-  activeMethode: Methodes[];
-  setActiveMethode: React.Dispatch<React.SetStateAction<Methodes[]>>;
+  activeMethodes: Methodes[];
+  setActiveMethodes: React.Dispatch<React.SetStateAction<Methodes[]>>;
   methodes: Methodes[];
   id_article: string;
   articles: Article[];
@@ -51,7 +51,7 @@ export default function MethodPopup({
     <div
       onClick={() => {
         onClose();
-        setActiveMethode([]);
+        setActiveMethodes([]);
       }}
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-Montserrat"
     >
@@ -62,14 +62,14 @@ export default function MethodPopup({
         <button
           onClick={() => {
             onClose();
-            setActiveMethode([]);
+            setActiveMethodes([]);
           }}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors"
         >
           <X />
         </button>
 
-        {activeMethode.length === 0 ? (
+        {activeMethodes.length === 0 ? (
           <>
             <h2 className="uppercase font-Bai_Jamjuree font-bold text-xl sm:text-2xl mt-4 sm:mt-0">
               Méthodes expert
@@ -88,12 +88,14 @@ export default function MethodPopup({
                     className="flex items-center gap-3 justify-center"
                   >
                     <p
-                      onClick={() => setActiveMethode([methode])}
+                      onClick={() => setActiveMethodes([methode])}
                       className="text-orange-third cursor-pointer underline text-sm sm:text-base"
                     >
                       {methode.keywords[0]}
                     </p>
-                    <p className="capitalize text-sm sm:text-base">({methode.typemethode})</p>
+                    <p className="capitalize text-sm sm:text-base">
+                      ({methode.typemethode})
+                    </p>
                   </div>
                 ))
               ) : (
@@ -106,13 +108,13 @@ export default function MethodPopup({
         ) : (
           <>
             <button
-              onClick={() => setActiveMethode([])}
+              onClick={() => setActiveMethodes([])}
               className="absolute top-4 right-16 text-gray-500 hover:text-gray-800 transition-colors"
             >
               <ChevronLeft />
             </button>
 
-            <MethodInfo methode={activeMethode} />
+            <MethodInfo methode={activeMethodes} />
           </>
         )}
       </div>

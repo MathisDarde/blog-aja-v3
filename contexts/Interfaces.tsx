@@ -53,7 +53,6 @@ export interface Keyword {
 
 export interface KeywordProps {
   text: string;
-  keywords: Keyword[];
   onKeywordClick: (id: string, type: string) => void;
 }
 
@@ -168,10 +167,22 @@ export interface UpdateMethodeJoueurFromProps {
 export interface MethodeSaison extends BaseMethodeData {
   typemethode: "saison";
   saison: string;
-  imgterrain: string;
   coach: string;
-  systeme: string;
-  remplacants: [string, string, string][];
+  systeme:
+    | "4-3-3 Offensif"
+    | "4-3-3 Défensif"
+    | "4-2-3-1"
+    | "4-4-2"
+    | "5-4-1"
+    | "3-5-2"
+    | "4-1-4-1"
+    | "4-5-1"
+    | "4-4-1-1"
+    | "5-3-2"
+    | "3-4-3"
+    | "4-2-4";
+  titulaires: LightTituPlayerType[];
+  remplacants: LightRempPlayerType[];
 }
 
 export interface UpdateMethodeSaisonFromProps {
@@ -179,11 +190,55 @@ export interface UpdateMethodeSaisonFromProps {
     id_methode: string;
     keywords: string[];
     saison: string;
-    imgterrain: string | null;
     coach: string;
-    systeme: string;
-    remplacants: [string, string, string][];
+    systeme:
+      | "4-3-3 Offensif"
+      | "4-3-3 Défensif"
+      | "4-2-3-1"
+      | "4-4-2"
+      | "5-4-1"
+      | "3-5-2"
+      | "4-1-4-1"
+      | "4-5-1"
+      | "4-4-1-1"
+      | "5-3-2"
+      | "3-4-3"
+      | "4-2-4";
+    titulaires: LightTituPlayerType[];
+    remplacants: LightRempPlayerType[];
   };
+}
+
+export interface TituPlayerType {
+  nom: string;
+  poste: string;
+  numero: string;
+  sortie?: string;
+  buts?: string;
+  cartonJaune?: boolean;
+  cartonRouge?: boolean;
+}
+
+export interface LightTituPlayerType {
+  nom: string;
+  poste: string;
+  numero: string;
+}
+
+export interface RempPlayerType {
+  nom: string;
+  poste: string;
+  drapeau: string;
+  entree?: string;
+  buts?: string;
+  cartonJaune?: boolean;
+  cartonRouge?: boolean;
+}
+
+export interface LightRempPlayerType {
+  nom: string;
+  poste: string;
+  drapeau: string;
 }
 
 export interface MethodeMatch extends BaseMethodeData {
@@ -192,15 +247,39 @@ export interface MethodeMatch extends BaseMethodeData {
   couleur1equipe1: string;
   couleur2equipe1: string;
   nomequipe1: string;
-  systemeequipe1: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
+  systemeequipe1:
+    | "4-3-3 Offensif"
+    | "4-3-3 Défensif"
+    | "4-2-3-1"
+    | "4-4-2"
+    | "5-4-1"
+    | "3-5-2"
+    | "4-1-4-1"
+    | "4-5-1"
+    | "4-4-1-1"
+    | "5-3-2"
+    | "3-4-3"
+    | "4-2-4";
   couleur1equipe2: string;
   couleur2equipe2: string;
   nomequipe2: string;
-  systemeequipe2: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
-  titulairesequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
-  titulairesequipe2: [string, string, string, string?, string?, boolean?, boolean?][];
-  remplacantsequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
-  remplacantsequipe2: [string, string, string, string?, string?, boolean?, boolean?][];
+  systemeequipe2:
+    | "4-3-3 Offensif"
+    | "4-3-3 Défensif"
+    | "4-2-3-1"
+    | "4-4-2"
+    | "5-4-1"
+    | "3-5-2"
+    | "4-1-4-1"
+    | "4-5-1"
+    | "4-4-1-1"
+    | "5-3-2"
+    | "3-4-3"
+    | "4-2-4";
+  titulairesequipe1: TituPlayerType[];
+  titulairesequipe2: TituPlayerType[];
+  remplacantsequipe1: RempPlayerType[];
+  remplacantsequipe2: RempPlayerType[];
   stade: string;
   date: string;
 }
@@ -213,15 +292,39 @@ export interface UpdateMethodeMatchFromProps {
     couleur1equipe1: string;
     couleur2equipe1: string;
     nomequipe1: string;
-    systemeequipe1: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
+    systemeequipe1:
+      | "4-3-3 Offensif"
+      | "4-3-3 Défensif"
+      | "4-2-3-1"
+      | "4-4-2"
+      | "5-4-1"
+      | "3-5-2"
+      | "4-1-4-1"
+      | "4-5-1"
+      | "4-4-1-1"
+      | "5-3-2"
+      | "3-4-3"
+      | "4-2-4";
     couleur1equipe2: string;
     couleur2equipe2: string;
     nomequipe2: string;
-    systemeequipe2: "4-3-3 Offensif" | "4-3-3 Défensif" | "4-2-3-1" | "4-4-2" | "5-4-1" | "3-5-2" | "4-1-4-1" | "4-5-1" | "4-4-1-1" | "5-3-2" | "3-4-3" | "4-2-4";
-    titulairesequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
-    titulairesequipe2: [string, string, string, string?, string?, boolean?, boolean?][];
-    remplacantsequipe1: [string, string, string, string?, string?, boolean?, boolean?][];
-    remplacantsequipe2: [string, string, string, string?, string?, boolean?, boolean?,][];
+    systemeequipe2:
+      | "4-3-3 Offensif"
+      | "4-3-3 Défensif"
+      | "4-2-3-1"
+      | "4-4-2"
+      | "5-4-1"
+      | "3-5-2"
+      | "4-1-4-1"
+      | "4-5-1"
+      | "4-4-1-1"
+      | "5-3-2"
+      | "3-4-3"
+      | "4-2-4";
+    titulairesequipe1: TituPlayerType[];
+    titulairesequipe2: TituPlayerType[];
+    remplacantsequipe1: RempPlayerType[];
+    remplacantsequipe2: RempPlayerType[];
     stade: string;
     date: string;
   };

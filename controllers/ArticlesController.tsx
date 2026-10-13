@@ -1,7 +1,12 @@
 "use server";
 
 import { db } from "@/db/db";
-import { articlesTable, likedArticles, SelectArticle, SelectPost } from "@/db/schema";
+import {
+  articlesTable,
+  likedArticles,
+  SelectArticle,
+  SelectPost,
+} from "@/db/schema";
 import { ArticleSchemaType } from "@/types/forms";
 import { and, desc, eq, ilike, like, or, sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
@@ -20,7 +25,7 @@ export async function getAllArticles(): Promise<SelectArticle[]> {
           | "pending"
           | "published"
           | "archived",
-      }))
+      })),
     );
 }
 
@@ -36,7 +41,7 @@ export async function getArticles(): Promise<SelectArticle[]> {
           | "pending"
           | "published"
           | "archived",
-      }))
+      })),
     );
 }
 
@@ -59,32 +64,32 @@ export async function createArticle(data: ArticleSchemaType, userId: string) {
       state: "published",
       userId,
     });
-    
-    console.log("📨 Déclenchement de la newsletter en arrière-plan...");
-    
-    sendNewsletter({
-        title: title,
-        teaser: teaser,
-        slug: slug,
-        imageUrl: imageUrl
-    }).catch(err => {
-        console.error("❌ Erreur lors de l'envoi de la newsletter (Background):", err);
-    });
+
+    if (process.env.NODE_ENV === "production") {
+      console.log("📨 Déclenchement de la newsletter en arrière-plan...");
+      sendNewsletter({ title, teaser, slug, imageUrl }).catch((err) => {
+        console.error(
+          "❌ Erreur lors de l'envoi de la newsletter (Background):",
+          err,
+        );
+      });
+    } else {
+      console.log("📭 Newsletter ignorée (environnement de développement).");
+    }
 
     return result;
-
   } catch (err) {
     console.error(err);
     throw new Error(
       `Erreur lors de la création de l'article: ${
         err instanceof Error ? err.message : "Erreur inconnue"
-      }`
+      }`,
     );
   }
 }
 
 export async function getArticlebyId(
-  articleId: SelectPost["id_article"]
+  articleId: SelectPost["id_article"],
 ): Promise<SelectArticle | null> {
   const articles = await db
     .select()
@@ -103,7 +108,7 @@ export async function getArticlebyId(
 }
 
 export async function getArticleBySlug(
-  slug: SelectPost["slug"]
+  slug: SelectPost["slug"],
 ): Promise<SelectArticle | null> {
   const articles = await db
     .select()
@@ -123,7 +128,7 @@ export async function getArticleBySlug(
 
 export async function updateArticle(
   articleId: SelectPost["id_article"],
-  data: Partial<Omit<SelectPost, "id_article">>
+  data: Partial<Omit<SelectPost, "id_article">>,
 ) {
   try {
     if (!data.imageUrl) {
@@ -153,7 +158,7 @@ export async function updateArticle(
 
 export async function updateStatus(
   articleId: SelectPost["id_article"],
-  state: "pending" | "published" | "archived"
+  state: "pending" | "published" | "archived",
 ) {
   await db
     .update(articlesTable)
@@ -162,6 +167,9 @@ export async function updateStatus(
 }
 
 export async function deleteArticle(articleId: SelectPost["id_article"]) {
+  // Delete related likes first (in case cascade delete hasn't been applied yet)
+  await db.delete(likedArticles).where(eq(likedArticles.articleId, articleId));
+  // Then delete the article
   await db.delete(articlesTable).where(eq(articlesTable.id_article, articleId));
 }
 
@@ -194,8 +202,8 @@ export async function getArticlesbyKeywords({
         or(
           like(articlesTable.title, `%${term.toLowerCase()}%`),
           like(articlesTable.teaser, `%${term.toLowerCase()}%`),
-          ilike(articlesTable.content, `%${term}%`)
-        )
+          ilike(articlesTable.content, `%${term}%`),
+        ),
       );
       conditions.push(or(...searchConditions));
     }
@@ -234,10 +242,13 @@ export async function getUserLikedArticles(userId: string) {
         updatedAt: articlesTable.updatedAt,
         tags: articlesTable.tags,
         author: articlesTable.author,
-        likedAt: likedArticles.likedAt, 
+        likedAt: likedArticles.likedAt,
       })
       .from(articlesTable)
-      .innerJoin(likedArticles, eq(articlesTable.id_article, likedArticles.articleId))
+      .innerJoin(
+        likedArticles,
+        eq(articlesTable.id_article, likedArticles.articleId),
+      )
       .where(eq(likedArticles.userId, userId))
       .orderBy(desc(likedArticles.likedAt));
 

@@ -34,7 +34,7 @@ interface GlobalContextType {
   getArticleKeywords: (
     id_article: string,
     articles: Article[],
-    methodes: Methodes[]
+    methodes: Methodes[],
   ) => {
     id_methode: string;
     typemethode: string;
@@ -72,8 +72,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     sortOrder,
   }: SortParams<T>): T[] {
     return [...elements].sort((a, b) => {
-      let aValue: any = a[sortKey];
-      let bValue: any = b[sortKey];
+      let aValue: unknown = a[sortKey];
+      let bValue: unknown = b[sortKey];
 
       // Cas spécial pour Date
       if (aValue instanceof Date && bValue instanceof Date) {
@@ -144,7 +144,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   function getRandomCategories(
     categories: Category[],
-    amount: number
+    amount: number,
   ): Category[] {
     if (!Array.isArray(categories)) return [];
     if (amount >= categories.length) return [...categories];
@@ -159,7 +159,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   function getArticleKeywords(
     id_article: string,
     articles: Article[],
-    methodes: Methodes[]
+    methodes: Methodes[],
   ) {
     const article = getArticleById(articles, id_article);
 
@@ -168,7 +168,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const articleText = article.content.toLowerCase();
 
     const relatedMethodes = methodes.filter((methode) =>
-      methode.keywords.some((kw) => articleText.includes(kw.toLowerCase()))
+      methode.keywords.some((kw) => articleText.includes(kw.toLowerCase())),
     );
 
     const keywordsWithMeta = relatedMethodes.flatMap((methode) =>
@@ -176,7 +176,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         id_methode: methode.id_methode,
         typemethode: methode.typemethode,
         keywords: kw,
-      }))
+      })),
     );
 
     const uniqueMap = new Map<
@@ -196,7 +196,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         id_methode,
         typemethode,
         keywordsList: [keywords],
-      })
+      }),
     );
   }
 

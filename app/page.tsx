@@ -1,6 +1,5 @@
 "use server";
 
-import "./globals.css";
 import LastArticle from "@/components/LastPublished";
 import DisplayRandom from "@/components/DisplayThreeRandomArticles";
 import DisplayCategories from "@/components/DisplayCategories";
@@ -9,7 +8,6 @@ import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
 import { getArticles } from "@/controllers/ArticlesController";
 import categories from "@/public/data/articletags.json";
-import { Category } from "@/contexts/Interfaces";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer";
 import Timeline from "@/components/timeline/Timeline";
@@ -21,25 +19,23 @@ export default async function Page() {
   const articles = await getArticles();
   if (!articles) return;
 
-  function getRandomCategories(
-    categories: Category[],
-    amount: number
-  ): Category[] {
-    if (!Array.isArray(categories)) return [];
-    if (amount >= categories.length) return [...categories];
+  function getRandomElements<T>(items: T[], amount: number): T[] {
+    if (!Array.isArray(items)) return [];
+    if (amount >= items.length) return [...items];
 
-    const shuffled = [...categories].sort(() => 0.5 - Math.random());
+    const shuffled = [...items].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, amount);
   }
 
-  const randomCategories = getRandomCategories(categories, 7);
+  const randomCategories = getRandomElements(categories, 7);
+  const randomArticles = getRandomElements(articles, 3);
 
   return (
     <div className="bg-gray-100">
       <Header />
 
       <div className="pb-3 max-w-[1300px] mx-auto">
-        <Carousel articles={articles} />
+        <Carousel articles={randomArticles} />
       </div>
 
       <div className="text-center min-h-screen w-screen box-border p-4 sm:p-10 pt-0">

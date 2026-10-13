@@ -1,5 +1,9 @@
+import Button from "@/components/BlueButton";
 import { MethodeJoueur } from "@/contexts/Interfaces";
+import { authClient } from "@/lib/auth-client";
+import { PenBox } from "lucide-react";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 interface PlayerMethodeExpertProps {
   methode: MethodeJoueur;
@@ -8,6 +12,9 @@ interface PlayerMethodeExpertProps {
 export default function PlayerMethodeExpert({
   methode,
 }: PlayerMethodeExpertProps) {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   return (
     <div className="flex flex-col pt-8">
       {/* Image du joueur */}
@@ -66,6 +73,20 @@ export default function PlayerMethodeExpert({
           {methode.passesd} passes décisives
         </p>
       </div>
+
+      {user?.admin && (
+        <Button
+          onClick={() =>
+            redirect(`/admin/dashboard/updateelement/${methode.id_methode}`)
+          }
+          size="slim"
+          type="button"
+          className="flex items-center gap-2 w-fit mx-auto mt-4"
+        >
+          <PenBox />
+          Modifier cette méthode
+        </Button>
+      )}
     </div>
   );
 }

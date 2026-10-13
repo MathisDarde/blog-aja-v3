@@ -5,6 +5,7 @@ import { SelectMatchMethode, methodeExpertMatchTable } from "@/db/schema";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
 
 export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
   return await db.select().from(methodeExpertMatchTable);
@@ -12,10 +13,9 @@ export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
 
 export async function createMethodeMatch(
   data: MethodeMatchSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
-        // Créer la méthode dans la base de données avec Drizzle
     const {
       titrematch,
       couleur1equipe1,
@@ -62,14 +62,13 @@ export async function createMethodeMatch(
     console.error(err);
     return {
       success: false,
-      message:
-        "Erreur lors de la création de la méthode.",
+      message: "Erreur lors de la création de la méthode.",
     };
   }
 }
 
 export async function getMethodeById(
-  methodeId: string
+  methodeId: string,
 ): Promise<SelectMatchMethode[]> {
   const results = await db
     .select()
@@ -78,15 +77,17 @@ export async function getMethodeById(
 
   return results.map((item) => ({
     ...item,
-    remplacantsequipe1: item.remplacantsequipe1 as string[][],
-    remplacantsequipe2: item.remplacantsequipe2 as string[][],
+    titulairesequipe1: item.titulairesequipe1 as unknown as TituPlayerType[],
+    titulairesequipe2: item.titulairesequipe2 as unknown as TituPlayerType[],
+    remplacantsequipe1: item.remplacantsequipe1 as unknown as RempPlayerType[],
+    remplacantsequipe2: item.remplacantsequipe2 as unknown as RempPlayerType[],
   }));
 }
 
 export async function updateMethodeMatch(
   id_methode: string,
   data: MethodeMatchSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const {
@@ -102,11 +103,13 @@ export async function updateMethodeMatch(
       stade,
       date,
       keywords,
+      titulairesequipe1,
+      titulairesequipe2,
       remplacantsequipe1,
       remplacantsequipe2,
     } = data;
 
-    const updateData: any = {
+    const updateData: Partial<typeof methodeExpertMatchTable.$inferInsert> = {
       titrematch,
       couleur1equipe1,
       couleur2equipe1,
@@ -116,6 +119,8 @@ export async function updateMethodeMatch(
       couleur2equipe2,
       nomequipe2,
       systemeequipe2,
+      titulairesequipe1,
+      titulairesequipe2,
       remplacantsequipe1,
       remplacantsequipe2,
       stade,

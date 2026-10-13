@@ -5,7 +5,6 @@ import { SelectSaisonMethode, methodeExpertSaisonTable } from "@/db/schema";
 import { MethodeSaisonSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 
 export async function getSaisonMethodes(): Promise<SelectSaisonMethode[]> {
   return await db.select().from(methodeExpertSaisonTable);
@@ -13,22 +12,19 @@ export async function getSaisonMethodes(): Promise<SelectSaisonMethode[]> {
 
 export async function createMethodeSaison(
   data: MethodeSaisonSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
-    const imageUrl = ensureCloudinaryUrl(data.imgterrain);
-
-    // Créer la méthode dans la base de données avec Drizzle
-    const { saison, coach, systeme, keywords, remplacants } = data;
+    const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
 
     const result = await db.insert(methodeExpertSaisonTable).values({
       id_methode: uuidv4(),
       saison,
       coach,
       systeme,
-      imgterrain: imageUrl,
       typemethode: "saison",
       keywords: keywords.map((keyword) => keyword.value),
+      titulaires: titulaires,
       remplacants: remplacants,
       userId,
     });
@@ -45,7 +41,7 @@ export async function createMethodeSaison(
 }
 
 export async function getMethodeById(
-  methodeId: string
+  methodeId: string,
 ): Promise<SelectSaisonMethode[]> {
   const results = await db
     .select()
@@ -61,25 +57,20 @@ export async function getMethodeById(
 export async function updateMethodeSaison(
   id_methode: string,
   data: MethodeSaisonSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
-    const imageUrl = ensureCloudinaryUrl(data.imgterrain);
+    const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
 
-    const { saison, coach, systeme, keywords, remplacants } = data;
-
-    const updateData: any = {
+    const updateData: Partial<typeof methodeExpertSaisonTable.$inferInsert> = {
       saison,
       coach,
       systeme,
       keywords: keywords.map((k) => k.value),
+      titulaires,
       remplacants,
       userId,
     };
-
-    if (imageUrl) {
-      updateData.imgterrain = imageUrl;
-    }
 
     const result = await db
       .update(methodeExpertSaisonTable)

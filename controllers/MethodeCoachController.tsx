@@ -13,7 +13,7 @@ export async function getCoachMethodes(): Promise<SelectCoachMethode[]> {
 
 export async function createMethodeCoach(
   data: MethodeCoachSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagecoach);
@@ -45,7 +45,7 @@ export async function createMethodeCoach(
 }
 
 export async function getMethodeById(
-  methodeId: string
+  methodeId: string,
 ): Promise<SelectCoachMethode[]> {
   const results = await db
     .select()
@@ -62,7 +62,7 @@ export async function getMethodeById(
 export async function updateMethodeCoach(
   id_methode: string,
   data: MethodeCoachSchemaType,
-  userId: string
+  userId: string,
 ) {
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagecoach);
@@ -70,14 +70,15 @@ export async function updateMethodeCoach(
     const { nomcoach, palmares, statistiques, keywords, clubscoach } = data;
 
     // Préparer les champs à mettre à jour
-    const updatedFields: any = {
-      nomcoach,
-      palmares,
-      statistiques,
-      keywords: keywords.map((keyword) => keyword.value),
-      clubscoach,
-      userId,
-    };
+    const updatedFields: Partial<typeof methodeExpertCoachTable.$inferInsert> =
+      {
+        nomcoach,
+        palmares,
+        statistiques,
+        keywords: keywords.map((keyword) => keyword.value),
+        clubscoach,
+        userId,
+      };
 
     if (imageUrl) {
       updatedFields.imagecoach = imageUrl;
