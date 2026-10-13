@@ -3,9 +3,18 @@
 import { InscSchema } from "@/app/schema";
 import { signUp } from "@/controllers/UserController";
 import { FormResponse, InscSchemaType } from "@/types/forms";
+import { headers } from "next/headers";
+import { getClientIp, isRateLimited } from "@/lib/rate-limit";
 
 const submitInscForm = async (data: InscSchemaType): Promise<FormResponse> => {
   try {
+    if (await isRateLimited("auth", getClientIp(await headers()))) {
+      return {
+        success: false,
+        message: "Trop de tentatives, réessayez dans quelques minutes.",
+      };
+    }
+
     const parsedData = InscSchema.safeParse(data);
 
     if (!parsedData.success) {

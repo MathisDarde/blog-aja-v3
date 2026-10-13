@@ -3,11 +3,20 @@
 import { LoginSchema } from "@/app/schema";
 import { signIn } from "@/controllers/AuthentificationController";
 import { FormResponse, LoginSchemaType } from "@/types/forms";
+import { headers } from "next/headers";
+import { getClientIp, isRateLimited } from "@/lib/rate-limit";
 
 const submitLoginForm = async (
   data: LoginSchemaType
 ): Promise<FormResponse> => {
   try {
+    if (await isRateLimited("auth", getClientIp(await headers()))) {
+      return {
+        success: false,
+        message: "Trop de tentatives, réessayez dans quelques minutes.",
+      };
+    }
+
     const parsedData = LoginSchema.safeParse(data);
 
     if (!parsedData.success) {

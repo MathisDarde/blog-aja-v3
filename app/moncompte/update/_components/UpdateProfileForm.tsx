@@ -15,6 +15,7 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import ActionPopup from "@/components/ActionPopup";
 import Button from "@/components/BlueButton";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export default function UpdateProfileForm({ user }: { user: User | null }) {
   // Initialisation de l'aperçu
@@ -144,6 +145,23 @@ export default function UpdateProfileForm({ user }: { user: User | null }) {
       const response = await updateProfileForm(user.id, finalData);
 
       if (response.success) {
+        // L'email n'est jamais modifié directement : better-auth envoie un lien
+        // de confirmation à la nouvelle adresse.
+        const newEmail = data.email.trim().toLowerCase();
+        if (newEmail !== user.email.toLowerCase()) {
+          const { error } = await authClient.changeEmail({
+            newEmail,
+            callbackURL: "/moncompte",
+          });
+          if (error) {
+            toast.error("Impossible de modifier l'adresse mail.");
+            return;
+          }
+          toast.info(
+            `Un lien de confirmation a été envoyé à ${newEmail}. L'adresse sera modifiée après validation.`
+          );
+        }
+
         toast.success(response.message);
         router.push("/moncompte");
       } else {

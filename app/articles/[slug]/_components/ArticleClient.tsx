@@ -1,5 +1,3 @@
-"use server";
-
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import ArticleDisplay from "./ArticleDisplay";
 import {
@@ -11,6 +9,7 @@ import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
 import { getLikesByArticle } from "@/controllers/LikedArticlesController";
+import { notFound } from "next/navigation";
 
 export default async function ArticleClient({ slug }: { slug: string }) {
   const auth = await isAuthenticated();
@@ -22,13 +21,14 @@ export default async function ArticleClient({ slug }: { slug: string }) {
     user = users?.[0] ?? null;
   }
 
-  if (!slug) return <p>Aucun article trouvé.</p>;
+  if (!slug) notFound();
 
   const articles = await getArticles();
 
   const article = await getArticleBySlug(slug);
 
-  if (!article) return;
+  // null aussi pour un article non publié si l'utilisateur n'est pas admin
+  if (!article) notFound();
   const methodes = await getAllMethodes();
 
   const articleComments = await getCommentsbyArticle(article?.id_article);
