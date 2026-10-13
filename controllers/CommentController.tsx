@@ -6,6 +6,7 @@ import { CommentSchemaType } from "@/types/forms";
 import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin, requireUser } from "@/lib/auth-guard";
+import { isRateLimited } from "@/lib/rate-limit";
 
 async function requireCommentOwnerOrAdmin(commentId: string) {
   const currentUser = await requireUser();
@@ -61,6 +62,10 @@ export async function createComment(
   articleId: string
 ) {
   const { id: userId } = await requireUser();
+  if (await isRateLimited("comment", userId)) {
+    throw new Error("Trop de commentaires, réessayez dans une minute.");
+  }
+
   const { title, stars, content } = data;
 
   const result = await db.insert(commentsTable).values({

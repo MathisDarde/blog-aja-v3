@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth-guard";
+import { isRateLimited } from "@/lib/rate-limit";
 
 const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50 Mo
 
@@ -14,6 +15,10 @@ export async function POST(request: NextRequest) {
   const currentUser = await getSessionUser();
   if (!currentUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (await isRateLimited("upload", currentUser.id)) {
+    return NextResponse.json({ error: "Too many uploads" }, { status: 429 });
   }
 
   try {

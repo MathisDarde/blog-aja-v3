@@ -13,9 +13,40 @@ interface ResendWebhookPayload {
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(request: NextRequest) {
+  const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("❌ RESEND_WEBHOOK_SECRET manquant : webhook refusé.");
+    return NextResponse.json({ status: "error" }, { status: 500 });
+  }
+
+  // Le corps brut est nécessaire pour vérifier la signature (svix)
+  const rawBody = await request.text();
+  let payload: ResendWebhookPayload;
   try {
-    const payload = (await request.json()) as ResendWebhookPayload;
+    payload = resend.webhooks.verify({
+      payload: rawBody,
+      headers: {
+        id: request.headers.get("svix-id") ?? "",
+        timestamp: request.headers.get("svix-timestamp") ?? "",
+        signature: request.headers.get("svix-signature") ?? "",
+      },
+      webhookSecret,
+    }) as unknown as ResendWebhookPayload;
+  } catch {
+    return NextResponse.json({ status: "invalid signature" }, { status: 401 });
+  }
+
+  try {
 
     // Vérification de sécurité
     if (payload.type !== 'email.received') {
@@ -35,7 +66,7 @@ export async function POST(request: NextRequest) {
     const fetchedHtml = emailContent?.html;
     const fetchedText = emailContent?.text;
 
-    const finalHtml = fetchedHtml || (fetchedText ? `<p>${fetchedText.replace(/\n/g, "<br>")}</p>` : "<p><em>Contenu vide ou non récupérable.</em></p>");
+    const finalHtml = fetchedHtml || (fetchedText ? `<p>${escapeHtml(fetchedText).replace(/\n/g, "<br>")}</p>` : "<p><em>Contenu vide ou non récupérable.</em></p>");
     const finalText = fetchedText || "Contenu vide";
 
     console.log("✅ Contenu récupéré. Transfert en cours...");
@@ -51,8 +82,8 @@ export async function POST(request: NextRequest) {
           <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
             <div style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
                 <h3 style="margin:0; color:#333;">Message transféré</h3>
-                <p style="margin: 5px 0 0; color: #666; font-size: 14px;"><strong>De :</strong> ${from}</p>
-                <p style="margin: 0; color: #666; font-size: 14px;"><strong>Sujet :</strong> ${subject}</p>
+                <p style="margin: 5px 0 0; color: #666; font-size: 14px;"><strong>De :</strong> ${escapeHtml(from)}</p>
+                <p style="margin: 0; color: #666; font-size: 14px;"><strong>Sujet :</strong> ${escapeHtml(subject)}</p>
             </div>
             
             <div style="color: #111;">

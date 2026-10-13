@@ -42,8 +42,9 @@ export async function updateUser(
     const imageUrl = ensureCloudinaryUrl(data.image);
 
     // Champs sensibles jamais modifiables via ce endpoint
+    // (l'email passe par authClient.changeEmail, avec vérification)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { admin, emailVerified, createdAt, ...safeData } = data;
+    const { admin, email, emailVerified, createdAt, ...safeData } = data;
 
     const updateData = {
       ...safeData,

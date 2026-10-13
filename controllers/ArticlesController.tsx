@@ -13,7 +13,11 @@ import { v4 as uuidv4 } from "uuid";
 import { Article, GetURLParams } from "@/contexts/Interfaces";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { sendNewsletter } from "@/actions/article/send-new-article-mail";
-import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
+import {
+  getSessionUser,
+  requireAdmin,
+  requireSelfOrAdmin,
+} from "@/lib/auth-guard";
 import { revalidatePath } from "next/cache";
 
 // Pages listant les articles publiés : à invalider après chaque modification
@@ -106,6 +110,7 @@ export async function createArticle(data: ArticleSchemaType, _userId: string) {
 export async function getArticlebyId(
   articleId: SelectPost["id_article"],
 ): Promise<SelectArticle | null> {
+  await requireAdmin();
   const articles = await db
     .select()
     .from(articlesTable)
@@ -131,6 +136,12 @@ export async function getArticleBySlug(
     .where(eq(articlesTable.slug, slug));
 
   if (articles.length === 0) return null;
+
+  // Brouillons / archives : réservés aux admins
+  if (articles[0].state !== "published") {
+    const currentUser = await getSessionUser();
+    if (currentUser?.admin !== true) return null;
+  }
 
   return {
     ...articles[0],

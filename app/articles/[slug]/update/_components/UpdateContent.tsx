@@ -1,5 +1,3 @@
-"use server";
-
 import { getArticlebyId } from "@/controllers/ArticlesController";
 import UpdateArticleForm from "./UpdateArticleForm";
 import UpdateArticleGuard from "./UpdateArticleGuard";
