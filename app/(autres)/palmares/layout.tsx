@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Palmarès et records",
   description:
     "Explorez le prestigieux palmarès de l'AJ Auxerre et découvrez les nombreux records établis par le club et ses membres au fil des années.",
-};
+});
 
 export default async function RootLayout({
   children,

@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Quiz",
   description:
     "Testez vos connaissances sur l'AJ Auxerre avec notre quiz interactif.",
-};
+});
 
 export default async function RootLayout({
   children,

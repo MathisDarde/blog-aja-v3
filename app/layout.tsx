@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { AppProvider } from "@/contexts/GlobalContext";
 import type { Metadata, Viewport } from "next";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/seo";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -16,9 +17,6 @@ const baijamjuree = Bai_Jamjuree({
   weight: ["400", "700"],
   preload: true,
 });
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.fr";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -143,14 +141,7 @@ export const metadata: Metadata = {
     description: "L'histoire complète et immersive de l'AJ Auxerre.",
     url: SITE_URL,
     siteName: "Mémoire d'Auxerrois",
-    images: [
-      {
-        url: "/_assets/img/opengraphimage.avif",
-        width: 1200,
-        height: 630,
-        alt: "Image bannière - Mémoire d'Auxerrois",
-      },
-    ],
+    images: [DEFAULT_OG_IMAGE],
     locale: "fr_FR",
     type: "website",
   },
@@ -159,7 +150,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mémoire d'Auxerrois",
     description: "Retracez l'histoire de l'AJ Auxerre.",
-    images: ["/_assets/img/opengraphimage.avif"],
+    images: [DEFAULT_OG_IMAGE.url],
   },
 
   alternates: {

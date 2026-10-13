@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Catégories",
   description:
     "Explorez les différentes catégories de contenu sur Mémoire d'Auxerrois, couvrant divers aspects de l'histoire et des actualités de l'AJ Auxerre.",
-};
+});
 
 export default async function RootLayout({
   children,

@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Charte graphique",
   description:
     "Découvrez la charte graphique officielle de Mémoire d'Auxerrois, reflétant en majeure partie l'identité visuelle de l'AJ Auxerre.",
-};
+});
 
 export default async function RootLayout({
   children,

@@ -1,12 +1,14 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Créer une méthode Expert",
   description:
     "Accédez à la création de méthodes Expert. Les méthodes Expert sont conçues pour les utilisateurs avancés souhaitant approfondir leur expérience sur Mémoire d'Auxerrois, ainsi que leurs connaissances personnelles sur l'histoire de l'AJA.",
-};
+  noIndex: true,
+});
 
 export default async function RootLayout({
   children,
