@@ -1,9 +1,6 @@
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import ArticleDisplay from "./ArticleDisplay";
-import {
-  getArticles,
-  getArticleBySlug,
-} from "@/controllers/ArticlesController";
+import { getArticleBySlug } from "@/controllers/ArticlesController";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
@@ -30,8 +27,6 @@ export default async function ArticleClient({ slug }: { slug: string }) {
 
   if (!slug) notFound();
 
-  const articles = await getArticles();
-
   const article = await getArticleBySlug(slug);
 
   // null aussi pour un article non publié si l'utilisateur n'est pas admin
@@ -45,14 +40,6 @@ export default async function ArticleClient({ slug }: { slug: string }) {
   if (!methodes) {
     return <p>Erreur lors du chargement des méthodes.</p>;
   }
-
-  const keywords = methodes.flatMap((item) =>
-    item.keywords.map((kw) => ({
-      id_methode: item.id_methode,
-      typemethode: item.typemethode,
-      keywordsList: [kw],
-    }))
-  );
 
   if (!article) {
     return <p>Chargement de l&apos;article</p>;
@@ -87,9 +74,7 @@ export default async function ArticleClient({ slug }: { slug: string }) {
     />
     <ArticleDisplay
       article={article}
-      articles={articles}
       methodes={methodes}
-      keywords={keywords}
       articleComments={articleComments}
       articleLikes={articleLikes}
       user={user}

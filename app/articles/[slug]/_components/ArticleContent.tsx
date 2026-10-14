@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useCallback } from "react";
-import { KeywordProps } from "@/contexts/Interfaces";
+import { ArticleContentProps } from "@/contexts/Interfaces";
 
-const KeywordHighlighter: React.FC<KeywordProps> = ({
+const ArticleContent: React.FC<ArticleContentProps> = ({
   text,
-  onKeywordClick,
+  onMethodClick,
 }) => {
   const displayText = text?.trim()
     ? text
@@ -19,11 +19,11 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
         const type = target.getAttribute("data-type");
         if (id && type) {
           e.stopPropagation();
-          onKeywordClick(id, type);
+          onMethodClick(id, type);
         }
       }
     },
-    [onKeywordClick],
+    [onMethodClick],
   );
 
   return (
@@ -36,4 +36,4 @@ const KeywordHighlighter: React.FC<KeywordProps> = ({
   );
 };
 
-export default KeywordHighlighter;
+export default ArticleContent;

@@ -15,7 +15,6 @@ import {
   Sword,
   Trash,
   Volleyball,
-  WholeWord,
 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { UpdateMethodeJoueurSchemaType } from "@/types/forms";
@@ -57,7 +56,6 @@ export default function JoueurForm({
     defaultValues: async () => {
       if (!selectedMethode) {
         return {
-          keywords: [],
           joueurnom: "",
           imagejoueur: "",
           clubs: [["", "", ""]],
@@ -71,7 +69,6 @@ export default function JoueurForm({
       }
 
       return {
-        keywords: selectedMethode.keywords?.map((k) => ({ value: k })) || [],
         joueurnom: selectedMethode.joueurnom || "",
         imagejoueur: selectedMethode.imagejoueur || "",
         clubs: selectedMethode.clubs || [["", "", ""]],
@@ -93,14 +90,6 @@ export default function JoueurForm({
   const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const {
-    fields: keywordsfield,
-    append: appendkeywords,
-    remove: removekeywords,
-  } = useFieldArray<UpdateMethodeJoueurSchemaType, "keywords">({
-    control,
-    name: "keywords",
-  });
   const {
     fields: clubsfield,
     append: appendclubs,
@@ -337,41 +326,6 @@ export default function JoueurForm({
               </label>
             </>
           )}
-        </div>
-        <div className="relative w-full my-4">
-          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-            <WholeWord className="mr-4" />
-            Mots-clés :
-          </span>
-
-          {keywordsfield.map((field, index) => (
-            <div key={field.id} className="flex items-center mb-2 gap-2">
-              <input
-                type="text"
-                placeholder={`Mot clé ${index + 1} (ex: Djibril Cissé)`}
-                {...register(`keywords.${index}.value`)}
-                className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-              />
-              {keywordsfield.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removekeywords(index)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash size={18} />
-                </button>
-              )}
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 text-aja-blue text-sm sm:text-base font-Montserrat"
-          >
-            <Plus size={18} />
-            Ajouter un mot-clé
-          </button>
         </div>
 
         <div className="relative w-full my-4">

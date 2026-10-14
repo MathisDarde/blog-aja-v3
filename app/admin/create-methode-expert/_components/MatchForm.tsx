@@ -5,16 +5,13 @@ import submitMethodeMatchForm from "@/actions/method/methode-match-form";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  WholeWord,
-  Plus,
-  Trash,
   AArrowUp,
   Dumbbell,
   Clock,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { getFlags } from "@/actions/method/get-flags-files";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -66,7 +63,6 @@ export default function MatchForm() {
     resolver: zodResolver(MethodeMatchSchema),
     // IMPORTANT : Initialisation avec des Objets et des références uniques
     defaultValues: {
-      keywords: [{ value: "" }],
       titrematch: "",
       couleur1equipe1: "#000000",
       couleur2equipe1: "#000000",
@@ -108,14 +104,6 @@ export default function MatchForm() {
     equipe2: [],
   });
 
-  const {
-    fields: keywordsfield,
-    append: appendkeywords,
-    remove: removekeywords,
-  } = useFieldArray<MethodeMatchSchemaType, "keywords">({
-    control,
-    name: "keywords",
-  });
 
   const fetchFiles = async () => {
     setLoading(true);
@@ -261,41 +249,6 @@ export default function MatchForm() {
         className="max-w-[700px] mx-auto flex flex-col items-center justify-center"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
-        <div className="relative w-full">
-          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-            <WholeWord className="mr-4" />
-            Mots-clés :
-          </span>
-
-          {keywordsfield.map((field, index) => (
-            <div key={field.id} className="flex items-center mb-2 gap-2">
-              <input
-                type="text"
-                placeholder={`Mot clé ${index + 1} (ex: dimanche 16 mai 2022)`}
-                {...register(`keywords.${index}.value`)}
-                className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-              />
-              {keywordsfield.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removekeywords(index)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash size={18} />
-                </button>
-              )}
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => appendkeywords({ value: "" })}
-            className="mx-auto flex items-center justify-center gap-2 font-Montserrat text-aja-blue text-sm sm:text-base hover:text-orange-third hover:underline"
-          >
-            <Plus size={18} />
-            Ajouter un mot-clé
-          </button>
-        </div>
 
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">

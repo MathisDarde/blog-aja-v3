@@ -19,7 +19,7 @@ export async function createMethodeSaison(
   const { id: userId } = await requireAdmin();
 
   try {
-    const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
+    const { saison, coach, systeme, titulaires, remplacants } = data;
 
     const result = await db.insert(methodeExpertSaisonTable).values({
       id_methode: uuidv4(),
@@ -27,7 +27,6 @@ export async function createMethodeSaison(
       coach,
       systeme,
       typemethode: "saison",
-      keywords: keywords.map((keyword) => keyword.value),
       titulaires: titulaires,
       remplacants: remplacants,
       userId,
@@ -67,13 +66,12 @@ export async function updateMethodeSaison(
   const { id: userId } = await requireAdmin();
 
   try {
-    const { saison, coach, systeme, keywords, titulaires, remplacants } = data;
+    const { saison, coach, systeme, titulaires, remplacants } = data;
 
     const updateData: Partial<typeof methodeExpertSaisonTable.$inferInsert> = {
       saison,
       coach,
       systeme,
-      keywords: keywords.map((k) => k.value),
       titulaires,
       remplacants,
       userId,
