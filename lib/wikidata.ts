@@ -13,7 +13,6 @@ import {
 const USER_AGENT = "blog-aja/1.0 (https://github.com/MathisDarde/blog-aja-v3)";
 const API_URL = "https://www.wikidata.org/w/api.php";
 const FRWIKI_API_URL = "https://fr.wikipedia.org/w/api.php";
-const COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
 
 // Métiers acceptés dans la recherche : footballeur, entraîneur de football
 const FOOTBALL_OCCUPATIONS = ["Q937857", "Q628099"];
@@ -36,7 +35,9 @@ export interface WikidataCareerEntry {
   clubName: string;
   start: number | null;
   end: number | null;
+  // Logo Wikidata (P154) ; à défaut on regarde l'infobox de la page Wikipédia du club
   logoFile: string | null;
+  clubPage: string | null;
 }
 
 export interface WikidataFootballer {
@@ -133,6 +134,7 @@ function careerEntry(team: Entity, claim: Claim): WikidataCareerEntry {
     start: year(claim.qualifiers?.P580?.[0]),
     end: year(claim.qualifiers?.P582?.[0]),
     logoFile: typeof logo === "string" ? logo : null,
+    clubPage: team.sitelinks?.frwiki?.title ?? null,
   };
 }
 
@@ -287,7 +289,7 @@ export async function getFootballer(id: string): Promise<WikidataFootballer> {
   const positionIds = claimsOf(person, "P413").map((c) => itemId(c.mainsnak)!);
   const teamIds = teamClaims.map((c) => itemId(c.mainsnak)!).filter(Boolean);
 
-  const linked = await getEntities([...teamIds, ...positionIds], "labels|claims");
+  const linked = await getEntities([...teamIds, ...positionIds], "labels|claims|sitelinks");
   const nationalClasses = await findNationalTeamClasses(
     teamIds.flatMap((teamId) =>
       claimsOf(linked[teamId], "P31").map((c) => itemId(c.mainsnak)!),
@@ -385,6 +387,7 @@ async function getInfoboxCareer(
         start: row.start,
         end: row.end,
         logoFile: typeof logo === "string" ? logo : null,
+        clubPage: row.clubTitle,
       };
     })
     .sort(chronological);
@@ -458,7 +461,7 @@ async function getCoachCareerFromWikidata(id: string): Promise<WikidataCareerEnt
   const personClaims = claimsOf(person, "P6087");
   const teams = await getEntities(
     [...personClaims.map((c) => itemId(c.mainsnak)!), ...coachedClubs],
-    "labels|claims",
+    "labels|claims|sitelinks",
   );
 
   const entries = [
@@ -490,7 +493,29 @@ async function getCoachCareerFromWikidata(id: string): Promise<WikidataCareerEnt
     .sort(chronological);
 }
 
-/** Télécharge un fichier Commons en PNG (les SVG sont rastérisés par Wikimedia). */
+/** Fichier du paramètre « logo » de l'infobox d'une page Wikipédia FR (club). */
+export async function getWikipediaLogoFile(pageTitle: string): Promise<string | null> {
+  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
+    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&section=0&redirects=1&page=${encodeURIComponent(pageTitle)}`,
+  );
+  const infobox = findTemplate(page.parse?.wikitext["*"] ?? "", ["Infobox[^|}]*"]);
+  const logo = infobox ? templateParam(infobox, ["logo"]) : null;
+  if (!logo) return null;
+
+  // « JS Saint-Pierroise.jpeg », « [[Fichier:X.svg|120px]] » ou « Fichier:X.svg »
+  const file = logo
+    .replace(/^\[\[/, "")
+    .replace(/^(?:Fichier|File|Image)\s*:/i, "")
+    .split("|")[0]
+    .replace(/\]\]$/, "")
+    .trim();
+  return /\.(svg|png|jpe?g|gif|webp)$/i.test(file) ? file : null;
+}
+
+/**
+ * Télécharge une image de Wikimedia en PNG (les SVG sont rastérisés).
+ * L'API de Wikipédia FR sert aussi bien ses propres fichiers que ceux de Commons.
+ */
 export async function downloadCommonsImage(
   file: string,
   width = 512,
@@ -498,7 +523,7 @@ export async function downloadCommonsImage(
   const info = await getJson<{
     query: { pages: Record<string, { imageinfo?: { thumburl?: string; url: string }[] }> };
   }>(
-    `${COMMONS_API_URL}?action=query&format=json&prop=imageinfo&iiprop=url&iiurlwidth=${width}&titles=${encodeURIComponent(`File:${file}`)}`,
+    `${FRWIKI_API_URL}?action=query&format=json&prop=imageinfo&iiprop=url&iiurlwidth=${width}&titles=${encodeURIComponent(`File:${file}`)}`,
   );
   const image = Object.values(info.query.pages)[0]?.imageinfo?.[0];
   const url = image?.thumburl ?? image?.url;

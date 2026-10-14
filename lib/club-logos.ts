@@ -5,6 +5,7 @@ import logosList from "@/lib/image-assets/clubs-list.json";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import {
   downloadCommonsImage,
+  getWikipediaLogoFile,
   isWikidataId,
   WikidataCareerEntry,
 } from "@/lib/wikidata";
@@ -50,22 +51,24 @@ const localLogoStems = new Map(
 
 /** Cherche un logo déjà présent dans public/_assets/teamlogos à partir du nom du club. */
 export function findLocalLogo(clubName: string): string | null {
-  const words = normalize(clubName)
+  const raw = normalize(clubName)
     .split(" ")
-    .filter((w) => w && !/^\d+$/.test(w)) // « Stade brestois 29 », « -19 ans »
-    .map((w) => ALIASES[w] ?? w);
-  const withoutType = words.filter((w) => !CLUB_TYPE_WORDS.has(w));
-  const significant = withoutType.filter((w) => !ARTICLES.has(w));
+    .filter((w) => w && !/^\d+$/.test(w)); // « Stade brestois 29 », « -19 ans »
 
-  const candidates = [
-    FULL_NAME_ALIASES[significant.join("")] ?? "",
-    words.join(""), // « Stade de Reims » → stadedereims
-    withoutType.join(""), // « Le Havre AC » → lehavre
-    significant.join(""), // « AS Saint-Étienne » → stetienne
-    // Premier mot seulement (« Lille OSC » → lille) : jamais le dernier, pour ne pas
-    // confondre « Kouban Krasnodar » avec le FK Krasnodar
-    significant[0] ?? "",
-  ];
+  // Avec et sans alias : « stetienne » mais « jssaintpierroise »
+  const candidates = [raw.map((w) => ALIASES[w] ?? w), raw].flatMap((words) => {
+    const withoutType = words.filter((w) => !CLUB_TYPE_WORDS.has(w));
+    const significant = withoutType.filter((w) => !ARTICLES.has(w));
+    return [
+      FULL_NAME_ALIASES[significant.join("")] ?? "",
+      words.join(""), // « Stade de Reims » → stadedereims
+      withoutType.join(""), // « Le Havre AC » → lehavre
+      significant.join(""), // « AS Saint-Étienne » → stetienne
+      // Premier mot seulement (« Lille OSC » → lille) : jamais le dernier, pour ne pas
+      // confondre « Kouban Krasnodar » avec le FK Krasnodar
+      significant[0] ?? "",
+    ];
+  });
 
   const stem = candidates.find((candidate) => candidate.length >= 3 && localLogoStems.has(candidate));
   return stem ? `${LOCAL_LOGOS_PATH}${localLogoStems.get(stem)}` : null;
@@ -77,7 +80,8 @@ export const clubLogoKey = (entry: WikidataCareerEntry) =>
 
 /**
  * Logo de chaque club de la carrière, par ordre de préférence :
- * bibliothèque (clubs_table) → logo local du même nom → logo Wikidata copié sur Cloudinary.
+ * bibliothèque (clubs_table) → logo local du même nom → logo Wikidata, à défaut celui
+ * de l'infobox Wikipédia du club, copié sur Cloudinary.
  * Renvoie une map clubLogoKey → URL du logo (absente si aucun logo trouvé).
  */
 export async function resolveClubLogos(
@@ -112,19 +116,24 @@ export async function resolveClubLogos(
           logos.set(key, local);
           return;
         }
-        if (!club.logoFile || !club.clubId) return;
-
         try {
-          const image = await downloadCommonsImage(club.logoFile);
+          const logoFile =
+            club.logoFile ??
+            (club.clubPage ? await getWikipediaLogoFile(club.clubPage) : null);
+          if (!logoFile) return;
+
+          const image = await downloadCommonsImage(logoFile);
           const { secure_url } = await uploadBufferToCloudinary(image, {
             folder: "clubs",
             resource_type: "image",
           });
           logos.set(key, secure_url);
-          await rememberClubLogos([[secure_url, club.clubName, "", club.clubId]]);
+          if (club.clubId) {
+            await rememberClubLogos([[secure_url, club.clubName, "", club.clubId]]);
+          }
         } catch (error) {
           // Un logo manquant ne doit pas bloquer l'import
-          console.error(`Logo Wikidata indisponible pour ${club.clubName}`, error);
+          console.error(`Logo indisponible pour ${club.clubName}`, error);
         }
       }),
   );
