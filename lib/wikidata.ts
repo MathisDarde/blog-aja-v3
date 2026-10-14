@@ -546,6 +546,47 @@ async function getCoachCareerFromWikidata(id: string): Promise<WikidataCareerEnt
     .sort(chronological);
 }
 
+/** Wikitext complet d'une page Wikipédia FR, ou null si elle n'existe pas. */
+export async function getWikipediaWikitext(pageTitle: string): Promise<string | null> {
+  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
+    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&redirects=1&page=${encodeURIComponent(pageTitle)}`,
+  );
+  return page.parse?.wikitext["*"] ?? null;
+}
+
+/** Contenu texte d'un fichier Wikimedia (ex. un SVG), tel qu'il a été déposé. */
+export async function downloadWikimediaText(file: string): Promise<string | null> {
+  const info = await getJson<{
+    query: { pages: Record<string, { imageinfo?: { url: string }[] }> };
+  }>(
+    `${FRWIKI_API_URL}?action=query&format=json&prop=imageinfo&iiprop=url&titles=${encodeURIComponent(`File:${file}`)}`,
+  );
+  const url = Object.values(info.query.pages)[0]?.imageinfo?.[0]?.url;
+  if (!url) return null;
+  const response = await fetch(url, {
+    headers: { "User-Agent": USER_AGENT },
+    next: { revalidate: CACHE_SECONDS },
+  });
+  return response.ok ? response.text() : null;
+}
+
+/** Entraîneur principal (P286) d'un club pendant une période, d'après Wikidata. */
+export async function getClubCoachDuring(
+  clubId: string,
+  from: number,
+  to: number,
+): Promise<string | null> {
+  const club = (await getEntities([clubId], "claims"))[clubId];
+  const claim = claimsOf(club, "P286").find((c) => {
+    const start = year(c.qualifiers?.P580?.[0]);
+    const end = year(c.qualifiers?.P582?.[0]);
+    return start !== null && start <= to && (end ?? Number.POSITIVE_INFINITY) >= from;
+  });
+  const coachId = itemId(claim?.mainsnak);
+  if (!coachId) return null;
+  return label((await getEntities([coachId], "labels"))[coachId]) || null;
+}
+
 /** Infobox d'une page Wikipédia FR (section d'introduction), ou null. */
 async function getInfobox(pageTitle: string): Promise<string | null> {
   const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(

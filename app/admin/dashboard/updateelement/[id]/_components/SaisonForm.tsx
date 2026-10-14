@@ -8,6 +8,7 @@ import { Dispositifs } from "@/components/Dispositifs";
 import FlagSelectorModal from "@/components/FlagSelector";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { usePlayerAutofill } from "@/components/usePlayerAutofill";
+import { useSeasonAutofill } from "@/components/useSeasonAutofill";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { UpdateMethodeSaisonFromProps } from "@/contexts/Interfaces";
 import { UpdateMethodeSaisonSchemaType } from "@/types/forms";
@@ -110,6 +111,8 @@ export default function SaisonForm({
     control,
     name: "remplacants",
   });
+
+  const season = useSeasonAutofill({ getValues, setValue });
 
   const { autofill, isPending } = usePlayerAutofill({
     getValues,
@@ -237,12 +240,20 @@ export default function SaisonForm({
             <Clock4 className="mr-4" />
             Saison :
           </span>
-          <input
-            type="text"
-            {...register("saison")}
-            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-            placeholder="Saison (ex: 2020-2021)"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              {...register("saison", { onBlur: season.onSeasonBlur })}
+              className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
+              placeholder="Saison (ex: 2020-2021)"
+            />
+            {season.loading && (
+              <Loader2
+                size={16}
+                className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
+              />
+            )}
+          </div>
         </div>
 
         <div className="relative w-full my-4">
@@ -289,7 +300,9 @@ export default function SaisonForm({
                     </label>
                     <input
                       type="text"
-                      {...register(`titulaires.${index}.nom`)}
+                      {...register(`titulaires.${index}.nom`, {
+                        onBlur: () => season.onTitulaireBlur(index),
+                      })}
                       placeholder="Nom (ex: Gaëtan Perrin)"
                       className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
                     />

@@ -3,6 +3,7 @@
 import { requireAdmin } from "@/lib/auth-guard";
 import { clubLogoKey, resolveClubLogos } from "@/lib/club-logos";
 import { resolveFlag } from "@/lib/flags";
+import { type AjaSeason, getAjaSeason } from "@/lib/saison-aja";
 import {
   findPlayerCard,
   getClubColors,
@@ -229,5 +230,18 @@ export async function lookupClubColors(
     return { success: true, data: await getClubColors(trimmed) };
   } catch (error) {
     return failure(error, `Couleurs introuvables pour ${trimmed}.`);
+  }
+}
+
+/** Coach, équipe type et effectif d'une saison de l'AJ Auxerre (méthodes saison). */
+export async function importAjaSeason(
+  saison: string,
+): Promise<ActionResult<AjaSeason | null>> {
+  await requireAdmin();
+
+  try {
+    return { success: true, data: await getAjaSeason(saison) };
+  } catch (error) {
+    return failure(error, `Impossible de compléter la saison ${saison}.`);
   }
 }

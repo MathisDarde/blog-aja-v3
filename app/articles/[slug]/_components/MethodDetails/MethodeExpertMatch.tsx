@@ -105,6 +105,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
         playerData: playerToPlace,
         positionDom: posteConfig.positionDom,
         positionExt: posteConfig.positionExt,
+        largeur: posteConfig.largeur,
       };
     });
   };
@@ -123,6 +124,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
       playerData: TituPlayerType;
       positionDom: string;
       positionExt: string;
+      largeur: number;
     } | null,
     index: number,
     isDomicile: boolean,
@@ -131,7 +133,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
   ) => {
     if (!mappedData) return null;
 
-    const { playerData, positionDom, positionExt } = mappedData;
+    const { playerData, positionDom, positionExt, largeur } = mappedData;
     const positionString = isDomicile ? positionDom : positionExt;
     const [left, top] = positionString.split(",");
 
@@ -140,8 +142,9 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
     return (
       <div
         key={`${isDomicile ? "dom" : "ext"}-${index}`}
-        className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2 z-10 w-20 transition-all hover:scale-110 cursor-default group animate-in fade-in duration-500"
-        style={{ left, top }}
+        className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all hover:scale-110 cursor-default group animate-in fade-in duration-500"
+        // Largeur calculée par ligne (Dispositifs) : les étiquettes voisines ne se touchent pas
+        style={{ left, top, width: `${largeur}%` }}
       >
         <div className="relative">
           {/* Cercle Numéro */}
@@ -202,7 +205,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
         </div>
 
         {/* Nom du joueur */}
-        <span className="mt-1 text-[9px] sm:text-xs text-white bg-black/60 px-2 py-0.5 rounded-full shadow-sm backdrop-blur-[2px] whitespace-nowrap max-w-[100px] overflow-hidden text-ellipsis flex items-center gap-1">
+        <span className="mt-1 block max-w-full truncate text-[9px] sm:text-xs text-white bg-black/60 px-2 py-0.5 rounded-full shadow-sm backdrop-blur-[2px]">
           {getLastName(nom)}
         </span>
       </div>
