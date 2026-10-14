@@ -45,15 +45,9 @@ export interface GetURLParams {
   league?: string;
 }
 
-export interface Keyword {
-  id_methode: string;
-  typemethode: string;
-  keywordsList: string[];
-}
-
-export interface KeywordProps {
+export interface ArticleContentProps {
   text: string;
-  onKeywordClick: (id: string, type: string) => void;
+  onMethodClick: (id: string, type: string) => void;
 }
 
 export interface Tags {
@@ -113,7 +107,6 @@ export type Methodes =
 export interface Methode {
   id_methode: string;
   typemethode: BaseMethodeData["typemethode"];
-  keywords: string[];
   nomcoach: string | null;
   joueurnom: string | null;
   titrematch: string | null;
@@ -130,7 +123,6 @@ export type MethodeSortKey = keyof Pick<
 export interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
   id_methode: string;
-  keywords: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -151,7 +143,6 @@ export interface MethodeJoueur extends BaseMethodeData {
 export interface UpdateMethodeJoueurFromProps {
   selectedMethode: {
     id_methode: string;
-    keywords: string[];
     imagejoueur: string | null;
     joueurnom: string;
     poste: string;
@@ -188,7 +179,6 @@ export interface MethodeSaison extends BaseMethodeData {
 export interface UpdateMethodeSaisonFromProps {
   selectedMethode: {
     id_methode: string;
-    keywords: string[];
     saison: string;
     coach: string;
     systeme:
@@ -287,7 +277,6 @@ export interface MethodeMatch extends BaseMethodeData {
 export interface UpdateMethodeMatchFromProps {
   selectedMethode: {
     id_methode: string;
-    keywords: string[];
     titrematch: string;
     couleur1equipe1: string;
     couleur2equipe1: string;
@@ -342,7 +331,6 @@ export interface MethodeCoach extends BaseMethodeData {
 export interface UpdateMethodeCoachFromProps {
   selectedMethode: {
     id_methode: string;
-    keywords: string[];
     nomcoach: string;
     imagecoach: string | null;
     clubscoach: string[][];

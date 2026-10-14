@@ -1,9 +1,8 @@
 "use client";
 
-import { Article, Methodes } from "@/contexts/Interfaces";
+import { Methodes } from "@/contexts/Interfaces";
 import MethodInfo from "./MethodInfo";
 import { ChevronLeft, X } from "lucide-react";
-import { useGlobalContext } from "@/contexts/GlobalContext";
 import { createPortal } from "react-dom";
 import { useEffect, useMemo } from "react";
 
@@ -12,23 +11,26 @@ export default function MethodPopup({
   activeMethodes,
   setActiveMethodes,
   methodes,
-  id_article,
-  articles,
+  content,
 }: {
   onClose: () => void;
   activeMethodes: Methodes[];
   setActiveMethodes: React.Dispatch<React.SetStateAction<Methodes[]>>;
   methodes: Methodes[];
-  id_article: string;
-  articles: Article[];
+  content: string;
 }) {
-  const { getArticleKeywords } = useGlobalContext();
-
-  const keywords = getArticleKeywords(id_article, articles, methodes);
-  const keywordsList = keywords.flatMap((k) => k.keywordsList);
-  const filteredMethodes = methodes.filter((methode) =>
-    methode.keywords.some((kw) => keywordsList.includes(kw))
-  );
+  // Méthodes mentionnées dans l'article (spans insérés par l'éditeur)
+  const filteredMethodes = useMemo(() => {
+    const doc = new DOMParser().parseFromString(content ?? "", "text/html");
+    const mentions = new Set(
+      Array.from(doc.querySelectorAll("span.methode-expert")).map(
+        (el) => `${el.getAttribute("data-type")}:${el.getAttribute("data-id")}`,
+      ),
+    );
+    return methodes.filter((m) =>
+      mentions.has(`${m.typemethode}:${m.id_methode}`),
+    );
+  }, [content, methodes]);
 
   // Création du container pour le portal
   const portalContainer = useMemo(() => {
@@ -91,7 +93,7 @@ export default function MethodPopup({
                       onClick={() => setActiveMethodes([methode])}
                       className="text-orange-third cursor-pointer underline text-sm sm:text-base"
                     >
-                      {methode.keywords[0]}
+                      {getMethodName(methode)}
                     </p>
                     <p className="capitalize text-sm sm:text-base">
                       ({methode.typemethode})
@@ -122,4 +124,17 @@ export default function MethodPopup({
   );
 
   return createPortal(popupContent, portalContainer);
+}
+
+function getMethodName(methode: Methodes) {
+  switch (methode.typemethode) {
+    case "joueur":
+      return methode.joueurnom;
+    case "coach":
+      return methode.nomcoach;
+    case "match":
+      return methode.titrematch;
+    case "saison":
+      return methode.saison;
+  }
 }

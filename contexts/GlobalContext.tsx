@@ -31,15 +31,6 @@ interface GlobalContextType {
   getRandomCategories: (categories: Category[], amount: number) => Category[];
   getArticleById: (articles: Article[], id: string) => Article | null;
   getMethodeById: (methodes: Methodes[], id: string) => Methodes | null;
-  getArticleKeywords: (
-    id_article: string,
-    articles: Article[],
-    methodes: Methodes[],
-  ) => {
-    id_methode: string;
-    typemethode: string;
-    keywordsList: string[];
-  }[];
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -153,53 +144,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return shuffled.slice(0, amount);
   }
 
-  {
-    /* get article keywords*/
-  }
-  function getArticleKeywords(
-    id_article: string,
-    articles: Article[],
-    methodes: Methodes[],
-  ) {
-    const article = getArticleById(articles, id_article);
-
-    if (!article || !article.content) return [];
-
-    const articleText = article.content.toLowerCase();
-
-    const relatedMethodes = methodes.filter((methode) =>
-      methode.keywords.some((kw) => articleText.includes(kw.toLowerCase())),
-    );
-
-    const keywordsWithMeta = relatedMethodes.flatMap((methode) =>
-      methode.keywords.map((kw) => ({
-        id_methode: methode.id_methode,
-        typemethode: methode.typemethode,
-        keywords: kw,
-      })),
-    );
-
-    const uniqueMap = new Map<
-      string,
-      { id_methode: string; typemethode: string; keywords: string }
-    >();
-
-    for (const kwObj of keywordsWithMeta) {
-      const key = kwObj.keywords.toLowerCase();
-      if (!uniqueMap.has(key)) {
-        uniqueMap.set(key, kwObj);
-      }
-    }
-
-    return Array.from(uniqueMap.values()).map(
-      ({ id_methode, typemethode, keywords }) => ({
-        id_methode,
-        typemethode,
-        keywordsList: [keywords],
-      }),
-    );
-  }
-
   function getArticleById(articles: Article[], id: string) {
     const article = articles.find((a) => a.id_article === id);
     return article || null;
@@ -227,7 +171,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         loadSession,
         getRandomArticles,
         getRandomCategories,
-        getArticleKeywords,
         getArticleById,
         getMethodeById,
       }}

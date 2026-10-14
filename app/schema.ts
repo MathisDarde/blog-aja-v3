@@ -146,13 +146,6 @@ export const SaisonRemplacantSchema = z.object({
 });
 
 export const MethodeSaisonSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   saison: z.string().nonempty({ message: "La saison doit être renseignée." }),
   coach: z
     .string()
@@ -165,13 +158,6 @@ export const MethodeSaisonSchema = z.object({
   remplacants: z.array(SaisonRemplacantSchema),
 });
 export const UpdateMethodeSaisonSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   saison: z.string().nonempty({ message: "La saison doit être renseignée." }),
   coach: z
     .string()
@@ -203,13 +189,6 @@ export const MatchRemplacantSchema = z.object({
 });
 
 export const MethodeMatchSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   titrematch: z
     .string()
     .nonempty({ message: "Le titre du match doit être renseigné." }),
@@ -249,13 +228,6 @@ export const MethodeMatchSchema = z.object({
   }),
 });
 export const UpdateMethodeMatchSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   titrematch: z
     .string()
     .nonempty({ message: "Le titre du match doit être renseigné." }),
@@ -296,13 +268,6 @@ export const UpdateMethodeMatchSchema = z.object({
 });
 
 export const MethodeJoueurSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   joueurnom: z
     .string()
     .nonempty({ message: "Le nom du joueur doit être renseigné." }),
@@ -335,13 +300,6 @@ export const MethodeJoueurSchema = z.object({
 });
 
 export const UpdateMethodeJoueurSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   joueurnom: z
     .string()
     .nonempty({ message: "Le nom du joueur doit être renseigné." }),
@@ -374,13 +332,6 @@ export const UpdateMethodeJoueurSchema = z.object({
 });
 
 export const MethodeCoachSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   nomcoach: z
     .string()
     .nonempty({ message: "Le nom du coach doit être renseigné." }),
@@ -404,13 +355,6 @@ export const MethodeCoachSchema = z.object({
   imagecoach: z.union([z.string().url(), z.instanceof(File)]),
 });
 export const UpdateMethodeCoachSchema = z.object({
-  keywords: z
-    .array(
-      z.object({
-        value: z.string().min(1, "Un mot-clé ne peut pas être vide"),
-      })
-    )
-    .min(1, "Ajoute au moins un mot-clé"),
   nomcoach: z
     .string()
     .nonempty({ message: "Le nom du coach doit être renseigné." }),

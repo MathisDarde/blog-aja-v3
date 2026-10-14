@@ -23,7 +23,7 @@ export async function createMethodeCoach(
     const imageUrl = ensureCloudinaryUrl(data.imagecoach);
 
     // Créer la méthode dans la base de données avec Drizzle
-    const { nomcoach, palmares, statistiques, keywords, clubscoach } = data;
+    const { nomcoach, palmares, statistiques, clubscoach } = data;
 
     const result = await db.insert(methodeExpertCoachTable).values({
       id_methode: uuidv4(),
@@ -31,7 +31,6 @@ export async function createMethodeCoach(
       statistiques,
       imagecoach: imageUrl,
       typemethode: "coach",
-      keywords: keywords.map((keyword) => keyword.value),
       clubscoach: clubscoach,
       palmares: palmares,
       userId,
@@ -74,7 +73,7 @@ export async function updateMethodeCoach(
   try {
     const imageUrl = ensureCloudinaryUrl(data.imagecoach);
 
-    const { nomcoach, palmares, statistiques, keywords, clubscoach } = data;
+    const { nomcoach, palmares, statistiques, clubscoach } = data;
 
     // Préparer les champs à mettre à jour
     const updatedFields: Partial<typeof methodeExpertCoachTable.$inferInsert> =
@@ -82,7 +81,6 @@ export async function updateMethodeCoach(
         nomcoach,
         palmares,
         statistiques,
-        keywords: keywords.map((keyword) => keyword.value),
         clubscoach,
         userId,
       };

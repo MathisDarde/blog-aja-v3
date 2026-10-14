@@ -11,13 +11,12 @@ import {
   Share2Icon,
   Trash,
 } from "lucide-react";
-import KeywordHighlighter from "./HighlightKeywords";
+import ArticleContent from "./ArticleContent";
 import deleteArticleSA from "@/actions/article/delete-article";
 import {
   Article,
   ArticleLikes,
   Comment,
-  Keyword,
   Methodes,
   User,
 } from "@/contexts/Interfaces";
@@ -31,16 +30,13 @@ import { toast } from "sonner";
 
 export default function ArticleDisplay({
   article,
-  articles,
   methodes,
   articleComments,
   articleLikes,
   user,
 }: {
   article: Article;
-  articles: Article[];
   methodes: Methodes[];
-  keywords: Keyword[];
   articleComments: Comment[];
   articleLikes: ArticleLikes[];
   user: User | null;
@@ -110,7 +106,7 @@ export default function ArticleDisplay({
     }
   }, []);
 
-  const handleKeywordClick = (id_methode: string, typemethode: string) => {
+  const handleMethodClick = (id_methode: string, typemethode: string) => {
     const selectedMethodes = methodes.filter(
       (m) => m.id_methode === id_methode && m.typemethode === typemethode,
     );
@@ -322,9 +318,9 @@ export default function ArticleDisplay({
           />
 
           <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-5 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base ">
-            <KeywordHighlighter
+            <ArticleContent
               text={article.content}
-              onKeywordClick={handleKeywordClick}
+              onMethodClick={handleMethodClick}
             />
           </div>
 
@@ -344,8 +340,7 @@ export default function ArticleDisplay({
           activeMethodes={activeMethodes}
           setActiveMethodes={setActiveMethodes}
           methodes={methodes}
-          id_article={article.id_article}
-          articles={articles}
+          content={article.content}
         />
       )}
 

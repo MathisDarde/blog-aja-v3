@@ -32,7 +32,6 @@ export async function createMethodeMatch(
       systemeequipe2,
       stade,
       date,
-      keywords,
       titulairesequipe1,
       titulairesequipe2,
       remplacantsequipe1,
@@ -57,7 +56,6 @@ export async function createMethodeMatch(
       stade,
       date,
       typemethode: "match",
-      keywords: keywords.map((keyword) => keyword.value),
       userId,
     });
 
@@ -109,7 +107,6 @@ export async function updateMethodeMatch(
       systemeequipe2,
       stade,
       date,
-      keywords,
       titulairesequipe1,
       titulairesequipe2,
       remplacantsequipe1,
@@ -132,7 +129,6 @@ export async function updateMethodeMatch(
       remplacantsequipe2,
       stade,
       date,
-      keywords: keywords.map((keyword) => keyword.value),
       userId,
     };
 

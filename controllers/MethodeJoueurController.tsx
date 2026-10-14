@@ -31,7 +31,6 @@ export async function createMethodeJoueur(
       matchs,
       buts,
       passesd,
-      keywords,
       clubs,
     } = data;
 
@@ -46,7 +45,6 @@ export async function createMethodeJoueur(
       passesd,
       imagejoueur: imageUrl,
       typemethode: "joueur",
-      keywords: keywords.map((keyword) => keyword.value),
       clubs: clubs,
       userId,
     });
@@ -95,7 +93,6 @@ export async function updateMethodeJoueur(
       matchs,
       buts,
       passesd,
-      keywords,
       clubs,
     } = data;
 
@@ -109,7 +106,6 @@ export async function updateMethodeJoueur(
         matchs,
         buts,
         passesd,
-        keywords: keywords.map((keyword) => keyword.value),
         clubs,
         userId,
       };

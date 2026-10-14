@@ -143,7 +143,6 @@ export const commentsTable = pgTable("comments_table", {
 export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
   id_methode: text("id_methode").primaryKey(),
   typemethode: text("typemethode").notNull().default("saison"),
-  keywords: varchar("keywords", { length: 255 }).array().notNull(),
   saison: text("saison").notNull(),
   coach: text("coach").notNull(),
   systeme: composEnum().notNull().default("4-2-3-1"),
@@ -161,7 +160,6 @@ export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
 export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
   id_methode: text("id_methode").primaryKey(),
   typemethode: text("typemethode").notNull().default("match"),
-  keywords: varchar("keywords", { length: 255 }).array().notNull(),
   titrematch: text("titrematch").notNull(),
   couleur1equipe1: text("couleur1equipe1").notNull(),
   couleur2equipe1: text("couleur2equipe1").notNull(),
@@ -189,7 +187,6 @@ export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
 export const methodeExpertJoueurTable = pgTable("methode_expert_joueur_table", {
   id_methode: text("id_methode").primaryKey(),
   typemethode: text("typemethode").notNull().default("joueur"),
-  keywords: varchar("keywords", { length: 255 }).array().notNull(),
   imagejoueur: text("imagejoueur").notNull(),
   joueurnom: text("joueurnom").notNull(),
   poste: text("poste").notNull(),
@@ -211,7 +208,6 @@ export const methodeExpertJoueurTable = pgTable("methode_expert_joueur_table", {
 export const methodeExpertCoachTable = pgTable("methode_expert_coach_table", {
   id_methode: text("id_methode").primaryKey(),
   typemethode: text("typemethode").notNull().default("coach"),
-  keywords: varchar("keywords", { length: 255 }).array().notNull(),
   imagecoach: text("imagecoach").notNull(),
   nomcoach: text("nomcoach").notNull(),
   clubscoach: json("clubscoach").notNull(),
