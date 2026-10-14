@@ -2,7 +2,9 @@
 
 import { requireAdmin } from "@/lib/auth-guard";
 import { clubLogoKey, resolveClubLogos } from "@/lib/club-logos";
+import { resolveFlag } from "@/lib/flags";
 import {
+  findPlayerCard,
   getCoach,
   getFootballer,
   isWikidataId,
@@ -31,6 +33,36 @@ export interface ImportedJoueur extends ImportedClubs {
 export interface ImportedCoach extends ImportedClubs {
   nomcoach: string;
 }
+
+export interface PlayerCard {
+  poste: string;
+  drapeau: string;
+}
+
+// Postes Wikidata (« arrière gauche », « milieu offensif »…) → postes des feuilles de match
+const POSTE_RULES: [RegExp, string][] = [
+  [/gardien/i, "Gardien"],
+  [/défenseur|arrière|latéral|libéro|stoppeur/i, "Défenseur"],
+  [/milieu|meneur/i, "Milieu"],
+  [/attaquant|ailier|avant|buteur/i, "Attaquant"],
+];
+
+const toPoste = (positions: string[], coachedDuring: boolean) => {
+  if (coachedDuring) return "Coach";
+  for (const position of positions) {
+    const rule = POSTE_RULES.find(([pattern]) => pattern.test(position));
+    if (rule) return rule[1];
+  }
+  return "";
+};
+
+// « 2021-2022 » → 2021..2022 ; « dimanche 16 mai 2022 » → 2022..2022
+const periodFromText = (text?: string) => {
+  const years = (text?.match(/\b(19|20)\d{2}\b/g) ?? []).map(Number);
+  return years.length > 0
+    ? { from: Math.min(...years), to: Math.max(...years) }
+    : undefined;
+};
 
 // Sans parenthèses : l'affichage des méthodes les ajoute
 const formatYears = (start: number | null, end: number | null) => {
@@ -139,5 +171,34 @@ export async function importCoachFromWikidata(
     };
   } catch (error) {
     return failure(error, "L'import depuis Wikidata a échoué.");
+  }
+}
+
+/**
+ * Poste et drapeau d'un joueur à partir de son nom (remplaçants des méthodes match / saison).
+ * `periodText` : la saison ou la date du match, pour reconnaître le coach de l'époque.
+ */
+export async function lookupPlayerCard(
+  name: string,
+  periodText?: string,
+): Promise<ActionResult<PlayerCard | null>> {
+  await requireAdmin();
+
+  const trimmed = name.trim();
+  if (trimmed.length < 3) return { success: true, data: null };
+
+  try {
+    const card = await findPlayerCard(trimmed, periodFromText(periodText));
+    if (!card) return { success: true, data: null };
+
+    return {
+      success: true,
+      data: {
+        poste: toPoste(card.positions, card.coachedDuring),
+        drapeau: card.country ? ((await resolveFlag(card.country)) ?? "") : "",
+      },
+    };
+  } catch (error) {
+    return failure(error, `Impossible de compléter ${trimmed}.`);
   }
 }

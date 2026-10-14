@@ -7,6 +7,7 @@ import Button from "@/components/BlueButton";
 import { Dispositifs } from "@/components/Dispositifs";
 import FlagSelectorModal from "@/components/FlagSelector";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import { usePlayerAutofill } from "@/components/usePlayerAutofill";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { UpdateMethodeSaisonFromProps } from "@/contexts/Interfaces";
 import { UpdateMethodeSaisonSchemaType } from "@/types/forms";
@@ -17,6 +18,7 @@ import {
   ChartBarBig,
   Clock4,
   FileQuestion,
+  Loader2,
   Plus,
   Trash,
 } from "lucide-react";
@@ -63,6 +65,7 @@ export default function SaisonForm({
     handleSubmit,
     control,
     setValue,
+    getValues,
     watch,
     formState: { errors },
   } = useForm<UpdateMethodeSaisonSchemaType>({
@@ -106,6 +109,12 @@ export default function SaisonForm({
   } = useFieldArray<UpdateMethodeSaisonSchemaType, "remplacants">({
     control,
     name: "remplacants",
+  });
+
+  const { autofill, isPending } = usePlayerAutofill({
+    getValues,
+    setValue,
+    periodField: "saison",
   });
 
   const selectedSystem = watch("systeme") as string;
@@ -335,12 +344,23 @@ export default function SaisonForm({
               key={field.id}
               className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
             >
-              <input
-                type="text"
-                {...register(`remplacants.${index}.nom`)}
-                placeholder="Nom (ex: Gaëtan Perrin)"
-                className="py-2 px-4 border rounded w-full md:w-2/5 text-xs sm:text-sm"
-              />
+              <div className="relative w-full md:w-2/5">
+                <input
+                  type="text"
+                  {...register(`remplacants.${index}.nom`, {
+                    // Drapeau et poste complétés dès que le nom est saisi
+                    onBlur: () => autofill(`remplacants.${index}`),
+                  })}
+                  placeholder="Nom (ex: Gaëtan Perrin)"
+                  className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                />
+                {isPending(`remplacants.${index}`) && (
+                  <Loader2
+                    size={16}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
+                  />
+                )}
+              </div>
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"

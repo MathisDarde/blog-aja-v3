@@ -8,7 +8,11 @@ cloudinary.config({
 
 export function uploadBufferToCloudinary(
   buffer: Buffer,
-  options: { folder: string; resource_type?: "image" | "video" | "auto" },
+  options: {
+    folder?: string;
+    public_id?: string;
+    resource_type?: "image" | "video" | "auto";
+  },
 ): Promise<{ secure_url: string }> {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(

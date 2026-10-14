@@ -4,6 +4,7 @@ import {
   UseFormRegister,
   UseFormWatch,
   UseFormSetValue,
+  UseFormGetValues,
   useFieldArray,
   FieldErrors,
   Path,
@@ -16,6 +17,7 @@ import {
   ChevronRight,
   FileQuestion,
   FolderPen,
+  Loader2,
   PaintbrushVertical,
   Plus,
   Trash,
@@ -25,12 +27,14 @@ import { MethodeMatchSchemaType } from "@/types/forms";
 import { GameSystems } from "@/components/GameSystems";
 import { Dispositifs } from "@/components/Dispositifs";
 import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
+import { usePlayerAutofill } from "@/components/usePlayerAutofill";
 
 interface TeamInfosSectionProps {
   control: Control<MethodeMatchSchemaType>;
   register: UseFormRegister<MethodeMatchSchemaType>;
   watch: UseFormWatch<MethodeMatchSchemaType>;
   setValue: UseFormSetValue<MethodeMatchSchemaType>;
+  getValues: UseFormGetValues<MethodeMatchSchemaType>;
   errors: FieldErrors<MethodeMatchSchemaType>;
   teamIndex: 1 | 2;
   expandedIndices: number[];
@@ -43,6 +47,7 @@ export default function TeamInfosSection({
   register,
   watch,
   setValue,
+  getValues,
   errors,
   teamIndex,
   expandedIndices,
@@ -50,6 +55,13 @@ export default function TeamInfosSection({
   onOpenModal,
 }: TeamInfosSectionProps) {
   const isDom = teamIndex === 1;
+
+  // Drapeau et poste des remplaçants complétés dès que le nom est saisi
+  const { autofill, isPending } = usePlayerAutofill({
+    getValues,
+    setValue,
+    periodField: "date",
+  });
   const domExtLabel = isDom ? "domicile" : "l'extérieur";
 
   // Construction des noms de champs dynamiques
@@ -429,14 +441,23 @@ export default function TeamInfosSection({
                 )}
 
                 {/* NOM REMPLACANT */}
-                <input
-                  type="text"
-                  {...register(
-                    `${fieldArrayNameRemplacants}.${index}.nom` as Path<MethodeMatchSchemaType>
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    {...register(
+                      `${fieldArrayNameRemplacants}.${index}.nom` as Path<MethodeMatchSchemaType>,
+                      { onBlur: () => autofill(`${fieldArrayNameRemplacants}.${index}`) },
+                    )}
+                    placeholder="Nom (ex: Gaëtan Perrin)"
+                    className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                  />
+                  {isPending(`${fieldArrayNameRemplacants}.${index}`) && (
+                    <Loader2
+                      size={16}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
+                    />
                   )}
-                  placeholder="Nom (ex: Gaëtan Perrin)"
-                  className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
-                />
+                </div>
               </div>
 
               {/* DRAPEAU */}

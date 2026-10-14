@@ -58,6 +58,7 @@ export default function MatchForm() {
     control,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<MethodeMatchSchemaType>({
     resolver: zodResolver(MethodeMatchSchema),
@@ -294,6 +295,7 @@ export default function MatchForm() {
           register={register}
           watch={watch}
           setValue={setValue}
+          getValues={getValues}
           errors={errors}
           teamIndex={1}
           expandedIndices={expandedIndices.equipe1}
@@ -306,6 +308,7 @@ export default function MatchForm() {
           register={register}
           watch={watch}
           setValue={setValue}
+          getValues={getValues}
           errors={errors}
           teamIndex={2}
           expandedIndices={expandedIndices.equipe2}

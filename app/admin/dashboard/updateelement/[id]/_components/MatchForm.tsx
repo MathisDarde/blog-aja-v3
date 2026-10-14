@@ -98,6 +98,7 @@ export default function MatchForm({
     handleSubmit,
     control,
     setValue,
+    getValues,
     watch,
     formState: { errors },
   } = useForm<UpdateMethodeMatchSchemaType>({
@@ -368,6 +369,7 @@ export default function MatchForm({
           register={register}
           watch={watch}
           setValue={setValue}
+          getValues={getValues}
           errors={errors}
           teamIndex={1}
           expandedIndices={expandedIndices.equipe1}
@@ -380,6 +382,7 @@ export default function MatchForm({
           register={register}
           watch={watch}
           setValue={setValue}
+          getValues={getValues}
           errors={errors}
           teamIndex={2}
           expandedIndices={expandedIndices.equipe2}

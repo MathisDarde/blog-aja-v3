@@ -172,6 +172,13 @@ async function findNationalTeamClasses(classIds: string[]): Promise<Set<string>>
 export async function searchFootballPeople(
   query: string,
 ): Promise<WikidataPerson[]> {
+  return (await searchFootballEntities(query)).map(({ person }) => person);
+}
+
+// Résultats de recherche limités aux personnes dont le métier est lié au football
+async function searchFootballEntities(
+  query: string,
+): Promise<{ person: WikidataPerson; entity: Entity }[]> {
   const search = await getJson<{
     search: { id: string; label: string; description?: string }[];
   }>(
@@ -179,10 +186,9 @@ export async function searchFootballPeople(
   );
   if (search.search.length === 0) return [];
 
-  // On ne garde que les personnes dont le métier est lié au football
   const entities = await getEntities(
     search.search.map((r) => r.id),
-    "claims",
+    "claims|sitelinks",
   );
   return search.search
     .filter((r) =>
@@ -190,7 +196,78 @@ export async function searchFootballPeople(
         FOOTBALL_OCCUPATIONS.includes(itemId(c.mainsnak) ?? ""),
       ),
     )
-    .map((r) => ({ id: r.id, label: r.label, description: r.description ?? "" }));
+    .map((r) => ({
+      person: { id: r.id, label: r.label, description: r.description ?? "" },
+      entity: entities[r.id],
+    }));
+}
+
+const AJ_AUXERRE = "Q182876";
+const FOOTBALL_MANAGER = "Q628099";
+
+export interface WikidataPlayerCard {
+  id: string;
+  positions: string[];
+  // Entraîneur pendant la période demandée (d'après sa carrière d'entraîneur Wikipédia)
+  coachedDuring: boolean;
+  country: { id: string; label: string; flagFile: string | null } | null;
+}
+
+/**
+ * Poste et nationalité sportive d'un joueur à partir de son seul nom.
+ * Entre homonymes, on privilégie celui qui est passé par l'AJ Auxerre.
+ * `period` (années de la saison ou du match) sert à savoir s'il était alors entraîneur.
+ */
+export async function findPlayerCard(
+  name: string,
+  period?: { from: number; to: number },
+): Promise<WikidataPlayerCard | null> {
+  const candidates = await searchFootballEntities(name);
+  const passedByAuxerre = (entity: Entity) =>
+    ["P54", "P6087"].some((property) =>
+      claimsOf(entity, property).some((c) => itemId(c.mainsnak) === AJ_AUXERRE),
+    );
+  const best = candidates.find(({ entity }) => passedByAuxerre(entity)) ?? candidates[0];
+  if (!best) return null;
+
+  const positionIds = claimsOf(best.entity, "P413").map((c) => itemId(c.mainsnak)!);
+  // Nationalité sportive en priorité (un Guadeloupéen joue pour la France), sinon citoyenneté
+  const countryId =
+    itemId(claimsOf(best.entity, "P1532")[0]?.mainsnak) ??
+    itemId(claimsOf(best.entity, "P27")[0]?.mainsnak);
+
+  const linked = await getEntities(
+    [...positionIds, ...(countryId ? [countryId] : [])],
+    "labels|claims",
+  );
+  const flag = countryId ? claimsOf(linked[countryId], "P41")[0]?.mainsnak.datavalue?.value : null;
+
+  const isManager = claimsOf(best.entity, "P106").some(
+    (c) => itemId(c.mainsnak) === FOOTBALL_MANAGER,
+  );
+  const frwikiTitle = best.entity.sitelinks?.frwiki?.title;
+  const coachingRows =
+    isManager && period && frwikiTitle
+      ? await getInfoboxRows(frwikiTitle, COACH_CAREER_PARAMS)
+      : [];
+
+  return {
+    id: best.person.id,
+    positions: positionIds.map((id) => label(linked[id])).filter(Boolean),
+    coachedDuring: coachingRows.some(
+      (row) =>
+        row.start !== null &&
+        row.start <= period!.to &&
+        (row.end ?? Number.POSITIVE_INFINITY) >= period!.from,
+    ),
+    country: countryId
+      ? {
+          id: countryId,
+          label: label(linked[countryId]),
+          flagFile: typeof flag === "string" ? flag : null,
+        }
+      : null,
+  };
 }
 
 /** Profil d'un joueur : poste, taille et carrière en club (sans les sélections). */
@@ -275,17 +352,7 @@ async function getInfoboxCareer(
   pageTitle: string,
   paramGroups: string[][],
 ): Promise<WikidataCareerEntry[]> {
-  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
-    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&section=0&redirects=1&page=${encodeURIComponent(pageTitle)}`,
-  );
-  const infobox = findTemplate(page.parse?.wikitext["*"] ?? "", ["Infobox[^|}]*"]);
-  if (!infobox) return [];
-
-  let rows: InfoboxCareerRow[] = [];
-  for (const params of paramGroups) {
-    rows = parseCareerColumns(templateParam(infobox, params) ?? "");
-    if (rows.length > 0) break;
-  }
+  const rows = await getInfoboxRows(pageTitle, paramGroups);
   if (rows.length === 0) return [];
 
   // Club écrit uniquement avec un modèle ({{FRA football}}…) : on le fait développer par Wikipédia
@@ -321,6 +388,24 @@ async function getInfoboxCareer(
       };
     })
     .sort(chronological);
+}
+
+/** Lignes brutes d'un parcours d'infobox, sans rattachement des clubs à Wikidata. */
+async function getInfoboxRows(
+  pageTitle: string,
+  paramGroups: string[][],
+): Promise<InfoboxCareerRow[]> {
+  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
+    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&section=0&redirects=1&page=${encodeURIComponent(pageTitle)}`,
+  );
+  const infobox = findTemplate(page.parse?.wikitext["*"] ?? "", ["Infobox[^|}]*"]);
+  if (!infobox) return [];
+
+  for (const params of paramGroups) {
+    const rows = parseCareerColumns(templateParam(infobox, params) ?? "");
+    if (rows.length > 0) return rows;
+  }
+  return [];
 }
 
 /** Titre d'article Wikipédia FR → identifiant Wikidata (redirections suivies). */

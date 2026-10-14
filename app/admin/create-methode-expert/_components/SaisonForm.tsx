@@ -10,6 +10,7 @@ import {
   Clock4,
   ArrowLeftRight,
   FileQuestion,
+  Loader2,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useState, useEffect } from "react"; // Ajout de useEffect
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 import { getFlags } from "@/actions/method/get-flags-files";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
+import { usePlayerAutofill } from "@/components/usePlayerAutofill";
 import FlagSelectorModal from "@/components/FlagSelector";
 import Button from "@/components/BlueButton";
 import { MethodeSaisonSchemaType } from "@/types/forms";
@@ -51,6 +53,7 @@ export default function SaisonForm() {
     handleSubmit,
     control,
     setValue,
+    getValues,
     watch, // On récupère watch pour surveiller les changements
     formState: { errors },
   } = useForm<MethodeSaisonSchemaType>({
@@ -80,6 +83,12 @@ export default function SaisonForm() {
     append: appendremplacants,
     remove: removeremplacants,
   } = useFieldArray({ control, name: "remplacants" });
+
+  const { autofill, isPending } = usePlayerAutofill({
+    getValues,
+    setValue,
+    periodField: "saison",
+  });
 
   const { fields: titulairesFields } = useFieldArray({
     control,
@@ -339,12 +348,23 @@ export default function SaisonForm() {
               key={field.id}
               className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
             >
-              <input
-                type="text"
-                {...register(`remplacants.${index}.nom`)}
-                placeholder="Nom (ex: Gaëtan Perrin)"
-                className="py-2 px-4 border rounded w-full md:w-2/5 text-xs sm:text-sm"
-              />
+              <div className="relative w-full md:w-2/5">
+                <input
+                  type="text"
+                  {...register(`remplacants.${index}.nom`, {
+                    // Drapeau et poste complétés dès que le nom est saisi
+                    onBlur: () => autofill(`remplacants.${index}`),
+                  })}
+                  placeholder="Nom (ex: Gaëtan Perrin)"
+                  className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+                />
+                {isPending(`remplacants.${index}`) && (
+                  <Loader2
+                    size={16}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
+                  />
+                )}
+              </div>
               <div className="relative w-full md:w-2/5 flex">
                 <input
                   type="text"
