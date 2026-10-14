@@ -233,6 +233,19 @@ export const likedArticles = pgTable("likedArticles", {
   likedAt: timestamp("likedAt").notNull().defaultNow(),
 });
 
+// Bibliothèque de logos : un club Wikidata → son logo (local ou Cloudinary).
+// Alimentée à l'import Wikidata et à l'enregistrement des méthodes.
+export const clubsTable = pgTable("clubs_table", {
+  wikidataId: text("wikidataId").primaryKey(),
+  nom: text("nom").notNull(),
+  logoUrl: text("logoUrl").notNull(),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
 export const schema = {
   user,
   session,
@@ -245,6 +258,7 @@ export const schema = {
   methodeExpertMatchTable,
   methodeExpertJoueurTable,
   methodeExpertCoachTable,
+  clubsTable,
 };
 
 export type SelectUser = typeof user.$inferSelect;
@@ -266,3 +280,4 @@ export type SelectSaisonMethode = typeof methodeExpertSaisonTable.$inferSelect;
 export type SelectMatchMethode = typeof methodeExpertMatchTable.$inferSelect;
 
 export type SelectLikedArticles = typeof likedArticles.$inferSelect;
+export type SelectClub = typeof clubsTable.$inferSelect;

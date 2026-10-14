@@ -7,6 +7,16 @@ import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
+import { rememberClubLogos } from "@/lib/club-logos";
+
+// La méthode est enregistrée : un échec ici ne doit pas la faire échouer
+async function rememberClubLogosSafely(clubs: string[][]) {
+  try {
+    await rememberClubLogos(clubs);
+  } catch (err) {
+    console.error("Impossible de mémoriser les logos des clubs", err);
+  }
+}
 
 export async function getJoueurMethodes(): Promise<SelectJoueurMethode[]> {
   return await db.select().from(methodeExpertJoueurTable);
@@ -48,6 +58,8 @@ export async function createMethodeJoueur(
       clubs: clubs,
       userId,
     });
+
+    await rememberClubLogosSafely(clubs);
 
     return { success: true, result };
   } catch (err) {
@@ -120,6 +132,8 @@ export async function updateMethodeJoueur(
       .update(methodeExpertJoueurTable)
       .set(updatedFields)
       .where(eq(methodeExpertJoueurTable.id_methode, id_methode));
+
+    await rememberClubLogosSafely(clubs);
 
     return { success: true, result };
   } catch (err) {

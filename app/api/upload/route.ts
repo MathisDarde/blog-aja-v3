@@ -1,15 +1,9 @@
-import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth-guard";
 import { isRateLimited } from "@/lib/rate-limit";
+import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 
 const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50 Mo
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 export async function POST(request: NextRequest) {
   const currentUser = await getSessionUser();
@@ -41,19 +35,8 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Upload vers Cloudinary
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: "articles", // Organisez vos images dans un dossier
-          resource_type: "auto",
-        },
-        (error: unknown, result: unknown) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-
-      uploadStream.end(buffer);
+    const result = await uploadBufferToCloudinary(buffer, {
+      folder: "articles", // Organisez vos images dans un dossier
     });
 
     return NextResponse.json(result);
