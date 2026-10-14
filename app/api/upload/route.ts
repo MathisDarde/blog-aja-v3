@@ -4,6 +4,8 @@ import { isRateLimited } from "@/lib/rate-limit";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 
 const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50 Mo
+// Dossiers Cloudinary autorisés (les logos de clubs sont rangés à part)
+const FOLDERS = ["articles", "clubs"];
 
 export async function POST(request: NextRequest) {
   const currentUser = await getSessionUser();
@@ -34,9 +36,11 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    const folder = String(formData.get("folder") ?? "articles");
+
     // Upload vers Cloudinary
     const result = await uploadBufferToCloudinary(buffer, {
-      folder: "articles", // Organisez vos images dans un dossier
+      folder: FOLDERS.includes(folder) ? folder : "articles",
     });
 
     return NextResponse.json(result);

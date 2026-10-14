@@ -1,21 +1,20 @@
 "use client";
 
-import React from "react";
-import { X, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+import { X, Loader2, Upload } from "lucide-react";
 import Image from "next/image";
-
-const IMAGE_PATHS = {
-  clubs: "/_assets/teamlogos/",
-};
+import { toast } from "sonner";
+import type { LogoOption } from "@/actions/method/get-logos-files";
 
 interface LogoSelectorModalProps {
   open: boolean;
   onClose: () => void;
-  files: string[];
+  files: LogoOption[];
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   loading: boolean;
-  onSelect: (filename: string) => void;
+  // Chemin local ou URL Cloudinary du logo choisi
+  onSelect: (src: string) => void;
 }
 
 export default function LogoSelectorModal({
@@ -27,11 +26,43 @@ export default function LogoSelectorModal({
   loading,
   onSelect,
 }: LogoSelectorModalProps) {
+  const [uploading, setUploading] = useState(false);
+
   if (!open) return null;
 
   const filteredFiles = files.filter((file) =>
-    file.toLowerCase().includes(searchTerm.toLowerCase())
+    file.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Logo absent de la liste : envoyé sur Cloudinary, utilisable aussitôt.
+  // Il rejoint la bibliothèque à l'enregistrement de la méthode.
+  const uploadLogo = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", "clubs");
+
+    setUploading(true);
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) throw new Error(`Upload refusé (${response.status})`);
+
+      const { secure_url } = await response.json();
+      onSelect(secure_url);
+      toast.success("Logo importé !");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors de l'import du logo");
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
+  };
 
   return (
     <div
@@ -54,7 +85,7 @@ export default function LogoSelectorModal({
           </button>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             placeholder="Rechercher un logo..."
@@ -62,6 +93,25 @@ export default function LogoSelectorModal({
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-2 border rounded text-sm sm:text-base"
           />
+          <label
+            className={`shrink-0 flex items-center justify-center gap-2 px-3 py-2 rounded bg-aja-blue text-white text-sm cursor-pointer ${
+              uploading ? "opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            {uploading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Upload size={16} />
+            )}
+            Importer un logo
+            <input
+              type="file"
+              accept="image/*"
+              onChange={uploadLogo}
+              className="hidden"
+              disabled={uploading}
+            />
+          </label>
         </div>
 
         {loading ? (
@@ -70,27 +120,27 @@ export default function LogoSelectorModal({
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {filteredFiles.map((file, index) => (
+            {filteredFiles.map((file) => (
               <div
-                key={index}
+                key={file.src}
                 className="border rounded p-2 cursor-pointer hover:bg-gray-100 flex flex-col items-center"
-                onClick={() => onSelect(file)}
+                onClick={() => onSelect(file.src)}
               >
                 <Image
                   width={100}
                   height={100}
-                  src={`${IMAGE_PATHS.clubs}${file}`}
-                  alt={file}
+                  src={file.src}
+                  alt={file.label}
                   className="h-12 object-contain mb-2"
                 />
                 <span className="text-xs text-center truncate w-full">
-                  {file.split(".")[0]}
+                  {file.label}
                 </span>
               </div>
             ))}
             {filteredFiles.length === 0 && (
               <div className="col-span-3 text-center py-4 text-gray-500">
-                Aucun fichier trouvé
+                Aucun logo trouvé : importe-le avec le bouton ci-dessus
               </div>
             )}
           </div>

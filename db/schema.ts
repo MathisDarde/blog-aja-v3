@@ -233,9 +233,10 @@ export const likedArticles = pgTable("likedArticles", {
   likedAt: timestamp("likedAt").notNull().defaultNow(),
 });
 
-// Bibliothèque de logos : un club Wikidata → son logo (local ou Cloudinary).
+// Bibliothèque de logos : un club → son logo (local ou Cloudinary).
 // Alimentée à l'import Wikidata et à l'enregistrement des méthodes.
 export const clubsTable = pgTable("clubs_table", {
+  // Identifiant Wikidata du club, ou « nom:<nom-normalisé> » pour un club qui n'en a pas
   wikidataId: text("wikidataId").primaryKey(),
   nom: text("nom").notNull(),
   logoUrl: text("logoUrl").notNull(),

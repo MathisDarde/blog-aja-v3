@@ -23,7 +23,7 @@ import { UpdateMethodeJoueurSchema } from "@/app/schema";
 import { toast } from "sonner";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import Image from "next/image";
-import { getTeamLogos } from "@/actions/method/get-logos-files";
+import { getTeamLogos, type LogoOption } from "@/actions/method/get-logos-files";
 import updateMethodeJoueurForm from "@/actions/method/update-joueur-form";
 import { UpdateMethodeJoueurFromProps } from "@/contexts/Interfaces";
 import { useRouter } from "next/navigation";
@@ -91,7 +91,7 @@ export default function JoueurForm({
   const [uploadedUrl, setUploadedUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [modal, setModal] = useState(false);
-  const [fileList, setFileList] = useState<string[]>([]);
+  const [fileList, setFileList] = useState<LogoOption[]>([]);
   const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 

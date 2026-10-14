@@ -1,6 +1,6 @@
 "use client";
 
-import { getTeamLogos } from "@/actions/method/get-logos-files";
+import { getTeamLogos, type LogoOption } from "@/actions/method/get-logos-files";
 import submitMethodeJoueurForm from "@/actions/method/methode-joueur-form";
 import { MethodeJoueurSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
@@ -69,7 +69,7 @@ export default function JoueurForm() {
   const [uploadedUrl, setUploadedUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [modal, setModal] = useState(false);
-  const [fileList, setFileList] = useState<string[]>([]);
+  const [fileList, setFileList] = useState<LogoOption[]>([]);
   const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 

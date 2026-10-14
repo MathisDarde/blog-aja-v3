@@ -1,6 +1,6 @@
 "use client";
 
-import { getTeamLogos } from "@/actions/method/get-logos-files";
+import { getTeamLogos, type LogoOption } from "@/actions/method/get-logos-files";
 import updateMethodeCoachForm from "@/actions/method/update-coach-form";
 import { UpdateMethodeCoachSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
@@ -80,7 +80,7 @@ export default function CoachForm({
   const [uploadedUrl, setUploadedUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [modal, setModal] = useState(false);
-  const [fileList, setFileList] = useState<string[]>([]);
+  const [fileList, setFileList] = useState<LogoOption[]>([]);
   const [activeClubIndex, setActiveClubIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
