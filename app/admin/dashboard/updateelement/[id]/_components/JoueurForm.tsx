@@ -16,7 +16,7 @@ import {
   Trash,
   Volleyball,
 } from "lucide-react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { UpdateMethodeJoueurSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateMethodeJoueurSchema } from "@/app/schema";
@@ -29,6 +29,8 @@ import { UpdateMethodeJoueurFromProps } from "@/contexts/Interfaces";
 import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
+import WikidataJoueurImport from "@/components/WikidataJoueurImport";
+import type { ImportedJoueur } from "@/actions/method/wikidata-joueur";
 import Button from "@/components/BlueButton";
 
 const IMAGE_PATHS = {
@@ -94,10 +96,27 @@ export default function JoueurForm({
     fields: clubsfield,
     append: appendclubs,
     remove: removeclubs,
+    replace: replaceclubs,
   } = useFieldArray<UpdateMethodeJoueurSchemaType, "clubs">({
     control,
     name: "clubs",
   });
+  const clubsValues = useWatch({ control, name: "clubs" });
+
+  // Préremplissage depuis Wikidata (les champs restent modifiables)
+  const handleWikidataImport = (joueur: ImportedJoueur) => {
+    setValue("joueurnom", joueur.joueurnom);
+    if (joueur.poste) setValue("poste", joueur.poste);
+    if (joueur.taille) setValue("taille", joueur.taille);
+    if (joueur.clubs.length > 0) replaceclubs(joueur.clubs);
+  };
+
+  const clubLogoSrc = (logo?: string) => {
+    if (!logo) return null;
+    return logo.startsWith("http") || logo.startsWith("/")
+      ? logo
+      : `${IMAGE_PATHS.clubs}${logo}`;
+  };
 
   useEffect(() => {
     if (selectedMethode?.imagejoueur) {
@@ -268,6 +287,8 @@ export default function JoueurForm({
         className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
+        <WikidataJoueurImport onImport={handleWikidataImport} />
+
         {/* Image coach */}
         <div className="relative w-full mx-auto">
           {/* SI PAS DE PHOTO → afficher l'input */}
@@ -391,7 +412,16 @@ export default function JoueurForm({
               key={field.id}
               className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat text-sm"
             >
-              <div className="relative w-full md:w-1/3 flex">
+              <div className="relative w-full md:w-1/3 flex items-center">
+                {clubLogoSrc(clubsValues?.[index]?.[0]) && (
+                  <Image
+                    src={clubLogoSrc(clubsValues?.[index]?.[0])!}
+                    width={24}
+                    height={24}
+                    alt=""
+                    className="w-6 h-6 object-contain mr-2 shrink-0"
+                  />
+                )}
                 <input
                   type="text"
                   {...register(`clubs.${index}.0`)}

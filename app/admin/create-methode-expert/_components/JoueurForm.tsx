@@ -5,6 +5,8 @@ import submitMethodeJoueurForm from "@/actions/method/methode-joueur-form";
 import { MethodeJoueurSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
+import WikidataJoueurImport from "@/components/WikidataJoueurImport";
+import type { ImportedJoueur } from "@/actions/method/wikidata-joueur";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { MethodeJoueurSchemaType } from "@/types/forms";
@@ -27,7 +29,7 @@ import {
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import React, { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 const IMAGE_PATHS = {
@@ -72,10 +74,27 @@ export default function JoueurForm() {
     fields: clubsfield,
     append: appendclubs,
     remove: removeclubs,
+    replace: replaceclubs,
   } = useFieldArray<MethodeJoueurSchemaType, "clubs">({
     control,
     name: "clubs",
   });
+  const clubsValues = useWatch({ control, name: "clubs" });
+
+  // Préremplissage depuis Wikidata (les champs restent modifiables)
+  const handleWikidataImport = (joueur: ImportedJoueur) => {
+    setValue("joueurnom", joueur.joueurnom);
+    if (joueur.poste) setValue("poste", joueur.poste);
+    if (joueur.taille) setValue("taille", joueur.taille);
+    if (joueur.clubs.length > 0) replaceclubs(joueur.clubs);
+  };
+
+  const clubLogoSrc = (logo?: string) => {
+    if (!logo) return null;
+    return logo.startsWith("http") || logo.startsWith("/")
+      ? logo
+      : `${IMAGE_PATHS.clubs}${logo}`;
+  };
 
   const fetchFiles = async () => {
     setLoading(true);
@@ -234,6 +253,7 @@ export default function JoueurForm() {
         className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
+        <WikidataJoueurImport onImport={handleWikidataImport} />
 
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
@@ -357,7 +377,16 @@ export default function JoueurForm() {
               key={field.id}
               className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
             >
-              <div className="relative w-full md:w-1/3 flex">
+              <div className="relative w-full md:w-1/3 flex items-center">
+                {clubLogoSrc(clubsValues?.[index]?.[0]) && (
+                  <Image
+                    src={clubLogoSrc(clubsValues?.[index]?.[0])!}
+                    width={24}
+                    height={24}
+                    alt=""
+                    className="w-6 h-6 object-contain mr-2 shrink-0"
+                  />
+                )}
                 <input
                   type="text"
                   {...register(`clubs.${index}.0`)}
