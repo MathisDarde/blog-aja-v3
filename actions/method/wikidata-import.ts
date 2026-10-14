@@ -32,10 +32,11 @@ export interface ImportedCoach extends ImportedClubs {
   nomcoach: string;
 }
 
+// Sans parenthèses : l'affichage des méthodes les ajoute
 const formatYears = (start: number | null, end: number | null) => {
-  if (!start) return end ? `(${end})` : "";
-  if (!end) return `(${start}-)`;
-  return start === end ? `(${start})` : `(${start}-${end})`;
+  if (!start) return end ? `${end}` : "";
+  if (!end) return `${start}-`;
+  return start === end ? `${start}` : `${start}-${end}`;
 };
 
 // 1.83 → "1m83"
@@ -54,10 +55,9 @@ async function buildClubRows(
   const logos = await resolveClubLogos(career);
 
   const clubs = career.map((entry) => {
-    const logo = logos.get(clubLogoKey(entry));
     const row = [
-      logo?.logoUrl ?? "",
-      logo?.nom ?? entry.clubName,
+      logos.get(clubLogoKey(entry)) ?? "",
+      entry.clubName,
       formatYears(entry.start, entry.end),
     ];
     return entry.clubId ? [...row, entry.clubId] : row;

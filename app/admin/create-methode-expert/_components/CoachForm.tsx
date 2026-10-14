@@ -378,7 +378,7 @@ export default function CoachForm() {
               <input
                 type="text"
                 {...register(`clubscoach.${index}.2`)}
-                placeholder="Années (ex: (1963-2006))"
+                placeholder="Années (ex: 1963-2006)"
                 className="py-2 px-4 border rounded w-full md:w-1/3 text-xs md:text-sm"
               />
               <button

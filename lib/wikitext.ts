@@ -6,7 +6,7 @@ export interface InfoboxCareerRow {
   // Cible du lien vers l'article du club, absente si le club n'a pas d'article
   clubTitle: string | null;
   clubName: string;
-  // Mention de la colonne statistiques quand ce n'en sont pas (« adjoint », « formation »…)
+  // « adjoint », « formation » (colonne statistiques), « prêt », « réserve » (modèles)
   note: string | null;
   // Cellule brute, quand le club n'est pas un lien mais un modèle à développer
   clubCell: string;
@@ -78,11 +78,20 @@ const FILE_LINK = /\[\[\s*(?:Fichier|File|Image|Catégorie|Category)\s*:[^\]]*\]
 /** Premier lien interne [[cible|texte]] d'une cellule. */
 export function firstLink(text: string): { title: string; label: string } | null {
   const match = /\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]+))?\]\]/.exec(
-    text.replace(FILE_LINK, ""),
+    // Sans les fichiers ni les liens vers d'autres langues ([[:en:…]])
+    text.replace(FILE_LINK, "").replace(/\[\[\s*:[^\]]*\]\]/g, ""),
   );
   if (!match) return null;
   const title = match[1].trim();
   return { title, label: (match[2] ?? title).trim() };
+}
+
+// {{lien|Titre}}, {{Lien|fr=Titre|lang=en|texte=Texte affiché}}
+function lienText(args: string): string {
+  const parts = args.split("|").map((part) => part.trim());
+  const named = (name: string) =>
+    parts.find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1).trim();
+  return named("texte") ?? named("fr") ?? parts.find((part) => !part.includes("=")) ?? "";
 }
 
 /** Texte lisible d'une cellule : liens réduits à leur texte, modèles et balises retirés. */
@@ -93,12 +102,14 @@ export function plainText(text: string): string {
     .replace(/<ref[\s\S]*?<\/ref>/gi, "")
     .replace(/\[\[(?:[^\]|]+\|)?([^\]]+)\]\]/g, "$1");
 
-  // {{nobr|…}}, {{small|…}} : on garde le contenu ; les autres modèles disparaissent
+  // {{nobr|…}}, {{small|…}} : on garde le contenu ; {{lien|…}} (article pas encore
+  // traduit) : on garde son texte ; les autres modèles disparaissent
   let previous;
   do {
     previous = result;
     result = result
       .replace(/\{\{\s*(?:nobr|nowrap|small|petit)\s*\|([^{}]*)\}\}/gi, "$1")
+      .replace(/\{\{\s*lien\s*\|([^{}]*)\}\}/gi, (_, args: string) => lienText(args))
       .replace(/\{\{[^{}]*\}\}/g, "");
   } while (result !== previous);
 
@@ -136,11 +147,18 @@ export function parseCareerColumns(value: string): InfoboxCareerRow[] {
   for (let i = 0; i + 1 < cells.length; i += width) {
     const [yearsCell, clubCell, statsCell = ""] = cells.slice(i, i + width);
     if (!plainText(yearsCell) && !plainText(clubCell)) continue;
+    // Ligne de bilan en bas du parcours
+    if (/^total$/i.test(plainText(clubCell))) continue;
 
     const link = firstLink(clubCell);
     const stats = plainText(statsCell).replace(/^\((.*)\)$/, "$1");
-    // Des lettres sans le motif « 12v 3n 4d » : c'est une mention, pas des stats
-    const note = stats && !/\d+\s*v\b/i.test(stats) ? stats : null;
+    const notes = [
+      // Du texte sans chiffres (« adjoint », « formation ») : une mention, pas des stats
+      stats && !/\d/.test(stats) ? stats : null,
+      /\{\{\s*équipe réserve\s*\}\}/i.test(clubCell) ? "réserve" : null,
+      /\{\{\s*prêt\s*\}\}/i.test(clubCell) ? "prêt" : null,
+    ].filter(Boolean);
+    const note = notes.length > 0 ? notes.join(", ") : null;
 
     rows.push({
       ...parseYears(yearsCell),

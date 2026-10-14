@@ -1,4 +1,5 @@
 import {
+  type InfoboxCareerRow,
   findTemplate,
   firstLink,
   parseCareerColumns,
@@ -196,10 +197,16 @@ export async function searchFootballPeople(
 export async function getFootballer(id: string): Promise<WikidataFootballer> {
   if (!isWikidataId(id)) throw new Error("Identifiant Wikidata invalide");
 
-  const person = (await getEntities([id], "labels|claims"))[id];
+  const person = (await getEntities([id], "labels|claims|sitelinks"))[id];
   if (!person) throw new Error(`Entité Wikidata introuvable : ${id}`);
 
-  const teamClaims = claimsOf(person, "P54");
+  const frwikiTitle = person.sitelinks?.frwiki?.title;
+  const infoboxCareer = frwikiTitle
+    ? await getInfoboxCareer(frwikiTitle, PLAYER_CAREER_PARAMS)
+    : [];
+
+  // Carrière Wikidata seulement en repli, quand l'infobox n'a pas de parcours
+  const teamClaims = infoboxCareer.length > 0 ? [] : claimsOf(person, "P54");
   const positionIds = claimsOf(person, "P413").map((c) => itemId(c.mainsnak)!);
   const teamIds = teamClaims.map((c) => itemId(c.mainsnak)!).filter(Boolean);
 
@@ -210,7 +217,7 @@ export async function getFootballer(id: string): Promise<WikidataFootballer> {
     ),
   );
 
-  const career = teamClaims
+  const wikidataCareer = teamClaims
     .map((claim) => {
       const team = linked[itemId(claim.mainsnak)!];
       const isNational = claimsOf(team, "P31").some((c) =>
@@ -234,7 +241,7 @@ export async function getFootballer(id: string): Promise<WikidataFootballer> {
       heightValue && height?.unit.endsWith(CENTIMETRE)
         ? heightValue / 100
         : heightValue,
-    career,
+    career: infoboxCareer.length > 0 ? infoboxCareer : wikidataCareer,
   };
 }
 
@@ -259,24 +266,30 @@ export async function getCoach(id: string): Promise<WikidataCoach> {
   };
 }
 
-const COACH_CAREER_PARAMS = ["carrière entraîneur", "parcours entraîneur"];
+// Paramètres d'infobox essayés dans l'ordre : le premier groupe qui donne un parcours l'emporte
+const COACH_CAREER_PARAMS = [["carrière entraîneur", "parcours entraîneur"]];
+const PLAYER_CAREER_PARAMS = [["parcours senior", "parcours pro"], ["parcours amateur"]];
 
 /** Parcours d'une infobox Wikipédia FR, avec les clubs rattachés à leur élément Wikidata. */
 async function getInfoboxCareer(
   pageTitle: string,
-  params: string[],
+  paramGroups: string[][],
 ): Promise<WikidataCareerEntry[]> {
   const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
     `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&section=0&redirects=1&page=${encodeURIComponent(pageTitle)}`,
   );
   const infobox = findTemplate(page.parse?.wikitext["*"] ?? "", ["Infobox[^|}]*"]);
-  const value = infobox ? templateParam(infobox, params) : null;
-  if (!value) return [];
+  if (!infobox) return [];
 
-  const rows = parseCareerColumns(value);
+  let rows: InfoboxCareerRow[] = [];
+  for (const params of paramGroups) {
+    rows = parseCareerColumns(templateParam(infobox, params) ?? "");
+    if (rows.length > 0) break;
+  }
+  if (rows.length === 0) return [];
 
-  // Club écrit avec un modèle ({{FRA football}}…) : on le fait développer par Wikipédia
-  const unlinked = rows.filter((row) => !row.clubTitle && /\{\{/.test(row.clubCell));
+  // Club écrit uniquement avec un modèle ({{FRA football}}…) : on le fait développer par Wikipédia
+  const unlinked = rows.filter((row) => !row.clubTitle && !row.clubName && /\{\{/.test(row.clubCell));
   if (unlinked.length > 0) {
     const separator = "\n@@@\n";
     const expanded = await getJson<{ expandtemplates: { wikitext: string } }>(
@@ -306,7 +319,8 @@ async function getInfoboxCareer(
         end: row.end,
         logoFile: typeof logo === "string" ? logo : null,
       };
-    });
+    })
+    .sort(chronological);
 }
 
 /** Titre d'article Wikipédia FR → identifiant Wikidata (redirections suivies). */

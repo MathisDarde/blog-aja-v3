@@ -78,14 +78,13 @@ export const clubLogoKey = (entry: WikidataCareerEntry) =>
 /**
  * Logo de chaque club de la carrière, par ordre de préférence :
  * bibliothèque (clubs_table) → logo local du même nom → logo Wikidata copié sur Cloudinary.
- * Renvoie une map clubLogoKey → logo (absente si aucun logo trouvé), avec le nom
- * mémorisé dans la bibliothèque s'il a été corrigé lors d'un enregistrement.
+ * Renvoie une map clubLogoKey → URL du logo (absente si aucun logo trouvé).
  */
 export async function resolveClubLogos(
   career: WikidataCareerEntry[],
-): Promise<Map<string, { logoUrl: string; nom?: string }>> {
+): Promise<Map<string, string>> {
   const clubs = new Map(career.map((entry) => [clubLogoKey(entry), entry]));
-  const logos = new Map<string, { logoUrl: string; nom?: string }>();
+  const logos = new Map<string, string>();
   if (clubs.size === 0) return logos;
 
   const wikidataIds = career.map((entry) => entry.clubId).filter((id): id is string => Boolean(id));
@@ -96,7 +95,7 @@ export async function resolveClubLogos(
       .from(clubsTable)
       .where(inArray(clubsTable.wikidataId, wikidataIds));
     for (const club of known) {
-      logos.set(club.wikidataId, { logoUrl: club.logoUrl, nom: club.nom });
+      logos.set(club.wikidataId, club.logoUrl);
     }
   } catch (error) {
     // Bibliothèque inaccessible (ex. table pas encore créée) : on continue sans
@@ -110,7 +109,7 @@ export async function resolveClubLogos(
         // « RC Lens (adjoint) » → « RC Lens »
         const local = findLocalLogo(club.clubName.replace(/\s*\([^)]*\)$/, ""));
         if (local) {
-          logos.set(key, { logoUrl: local });
+          logos.set(key, local);
           return;
         }
         if (!club.logoFile || !club.clubId) return;
@@ -121,7 +120,7 @@ export async function resolveClubLogos(
             folder: "clubs",
             resource_type: "image",
           });
-          logos.set(key, { logoUrl: secure_url });
+          logos.set(key, secure_url);
           await rememberClubLogos([[secure_url, club.clubName, "", club.clubId]]);
         } catch (error) {
           // Un logo manquant ne doit pas bloquer l'import

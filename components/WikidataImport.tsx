@@ -64,7 +64,7 @@ export default function WikidataImport<T extends { clubs: string[][]; clubsSansL
     <div className="relative w-full my-4 p-4 rounded-xl border border-dashed border-aja-blue font-Montserrat">
       <span className="font-semibold text-sm sm:text-base flex items-center text-gray-600 mb-2">
         <Globe className="mr-4" />
-        Préremplir depuis Wikidata :
+        Préremplir depuis Wikipédia :
       </span>
 
       <div className="flex gap-2">

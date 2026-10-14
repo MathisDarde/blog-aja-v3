@@ -418,7 +418,7 @@ export default function JoueurForm() {
               <input
                 type="text"
                 {...register(`clubs.${index}.2`)}
-                placeholder="Années (ex: (1999-2004))"
+                placeholder="Années (ex: 1999-2004)"
                 className="py-2 px-4 border rounded w-full md:w-1/3 text-xs sm:text-sm"
               />
               <button
