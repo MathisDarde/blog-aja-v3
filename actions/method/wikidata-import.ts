@@ -2,7 +2,7 @@
 
 import { requireAdmin } from "@/lib/auth-guard";
 import { clubLogoKey, resolveClubLogos } from "@/lib/club-logos";
-import { findLocalFlag, resolveFlag } from "@/lib/flags";
+import { countryName, findLocalFlag, resolveFlag } from "@/lib/flags";
 import { type AjaSeason, getAjaSeason, getTeamSquad, seasonFromDate } from "@/lib/saison-aja";
 import type { SquadPlayer } from "@/lib/squad";
 import {
@@ -267,7 +267,7 @@ export async function loadTeamSquad(
   try {
     const joueurs = (await getTeamSquad(team.trim(), saison)).map((joueur) => ({
       ...joueur,
-      drapeau: joueur.nationalite ? (findLocalFlag(joueur.nationalite) ?? "") : "",
+      drapeau: joueur.nationalite ? (findLocalFlag(countryName(joueur.nationalite)) ?? "") : "",
     }));
     return { success: true, data: { saison, joueurs } };
   } catch (error) {

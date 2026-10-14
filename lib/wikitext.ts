@@ -114,6 +114,8 @@ export function plainText(text: string): string {
       // {{1er}}, {{3e}} → 1er, 3e
       .replace(/\{\{\s*(\d+)\s*(er|re|e|ème)\s*\}\}/gi, "$1$2")
       .replace(/\{\{\s*lien\s*\|([^{}]*)\}\}/gi, (_, args: string) => lienText(args))
+      // {{sortname|Jens|Lehmann}} (Wikipédia EN) → « Jens Lehmann »
+      .replace(/\{\{\s*sortname\s*\|([^|{}]*)\|([^|{}]*)[^{}]*\}\}/gi, "$1 $2")
       .replace(/\{\{[^{}]*\}\}/g, "");
   } while (result !== previous);
 

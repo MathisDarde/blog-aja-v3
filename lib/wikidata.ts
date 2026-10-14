@@ -547,19 +547,43 @@ async function getCoachCareerFromWikidata(id: string): Promise<WikidataCareerEnt
 }
 
 /** Articles « Saison 2021-2022 … » d'un club sur Wikipédia FR, les plus pertinents d'abord. */
-export async function searchSeasonArticles(team: string, saison: string): Promise<string[]> {
+export type WikiLang = "fr" | "en";
+
+const wikiApi = (lang: WikiLang) => `https://${lang}.wikipedia.org/w/api.php`;
+
+/**
+ * Titre d'un article de saison selon la langue : « Saison 2002-2003 … » sur Wikipédia
+ * FR, « 2002–03 … season » sur Wikipédia EN.
+ */
+const seasonTitlePrefix = (saison: string, lang: WikiLang) => {
+  if (lang === "fr") return `Saison ${saison}`;
+  const [from, to] = saison.split("-");
+  return `${from}–${to.slice(2)}`;
+};
+
+/** Articles de saison d'un club (« Saison 2021-2022 … », « 2021–22 … season »). */
+export async function searchSeasonArticles(
+  team: string,
+  saison: string,
+  lang: WikiLang = "fr",
+): Promise<string[]> {
+  const prefix = seasonTitlePrefix(saison, lang);
+  const query = lang === "fr" ? `intitle:"${prefix}" ${team}` : `intitle:"${prefix}" ${team} season`;
   const search = await getJson<{ query?: { search: { title: string }[] } }>(
-    `${FRWIKI_API_URL}?action=query&format=json&list=search&srlimit=5&srsearch=${encodeURIComponent(`intitle:"Saison ${saison}" ${team}`)}`,
+    `${wikiApi(lang)}?action=query&format=json&list=search&srlimit=5&srsearch=${encodeURIComponent(query)}`,
   );
   return (search.query?.search ?? [])
     .map((result) => result.title)
-    .filter((title) => title.startsWith(`Saison ${saison}`));
+    .filter((title) => title.startsWith(prefix) && (lang === "fr" || / season$/.test(title)));
 }
 
-/** Wikitext complet d'une page Wikipédia FR, ou null si elle n'existe pas. */
-export async function getWikipediaWikitext(pageTitle: string): Promise<string | null> {
+/** Wikitext complet d'une page Wikipédia, ou null si elle n'existe pas. */
+export async function getWikipediaWikitext(
+  pageTitle: string,
+  lang: WikiLang = "fr",
+): Promise<string | null> {
   const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
-    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&redirects=1&page=${encodeURIComponent(pageTitle)}`,
+    `${wikiApi(lang)}?action=parse&format=json&prop=wikitext&redirects=1&page=${encodeURIComponent(pageTitle)}`,
   );
   return page.parse?.wikitext["*"] ?? null;
 }

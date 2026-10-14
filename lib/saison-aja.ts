@@ -3,6 +3,7 @@ import {
   downloadWikimediaText,
   getClubCoachDuring,
   searchSeasonArticles,
+  type WikiLang,
   getWikipediaWikitext,
 } from "@/lib/wikidata";
 import { findTemplate, firstLink, plainText, templateParam } from "@/lib/wikitext";
@@ -185,22 +186,90 @@ const POSTES: Record<string, string> = { G: "Gardien", D: "Défenseur", M: "Mili
  * autre club le premier article « Saison 2021-2022 … » trouvé qui contient un effectif.
  */
 export async function getTeamSquad(team: string, saison: string): Promise<SquadPlayer[]> {
-  if (isAuxerre(team)) {
+  // AJA : Wikipédia FR d'abord (noms et numéros à la française) ; adversaires :
+  // Wikipédia EN d'abord, qui a bien plus d'articles de saison
+  const langs: WikiLang[] = isAuxerre(team) ? ["fr", "en"] : ["en", "fr"];
+  for (const lang of langs) {
+    const effectif = await getTeamSquadIn(team, saison, lang);
+    if (effectif.length > 0) return effectif;
+  }
+  return [];
+}
+
+async function getTeamSquadIn(team: string, saison: string, lang: WikiLang): Promise<SquadPlayer[]> {
+  if (isAuxerre(team) && lang === "fr") {
     const page = await getWikipediaWikitext(`Saison ${saison} de l'AJ Auxerre`);
     return page ? squadFromPage(page) : [];
   }
 
   // Le titre doit nommer le club : la recherche renvoie aussi les saisons d'autres clubs
-  const words = clubWords(team);
-  const titles = (await searchSeasonArticles(team, saison)).filter((title) =>
-    clubWords(title).some((w) => words.includes(w)),
+  const words = clubWords(isAuxerre(team) ? "Auxerre" : team);
+  const titles = (await searchSeasonArticles(isAuxerre(team) ? "Auxerre" : team, saison, lang)).filter(
+    (title) => clubWords(title).some((w) => words.includes(w)),
   );
   for (const title of titles) {
-    const page = await getWikipediaWikitext(title);
-    const effectif = page ? await squadFromPage(page) : [];
+    const page = await getWikipediaWikitext(title, lang);
+    if (!page) continue;
+    const effectif = lang === "fr" ? await squadFromPage(page) : parseEnglishSquad(page);
     if (effectif.length > 0) return effectif;
   }
   return [];
+}
+
+const EN_POSTES: Record<string, string> = { GK: "Gardien", DF: "Défenseur", MF: "Milieu", FW: "Attaquant" };
+
+/**
+ * Effectif d'un article de saison de Wikipédia EN : modèles {{Fs player}} ou
+ * {{Football squad player}}, à défaut le tableau des statistiques des joueurs
+ * (« |1 |GK |{{Flag|ENG}} !scope="row"|[[David Seaman]] »).
+ */
+function parseEnglishSquad(page: string): SquadPlayer[] {
+  // Sections d'effectif seulement : les transferts et les prêts listent d'autres joueurs
+  const parts = page.split(/^(==+[^=\n]+==+)\s*$/m);
+  let wikitext = "";
+  for (let i = 1; i < parts.length; i += 2) {
+    const heading = parts[i].replace(/=/g, "").trim();
+    if (/squad|players|statistics|appearances/i.test(heading) && !/transfer|loan|youth|reserve/i.test(heading)) {
+      wikitext += `\n${parts[i + 1] ?? ""}`;
+    }
+  }
+
+  const players = new Map<string, SquadPlayer>();
+  const add = (nom: string, numero: string, pos: string, nationalite: string) => {
+    if (!nom || players.has(nom)) return;
+    players.set(nom, { nom, numero, poste: EN_POSTES[pos.toUpperCase()] ?? "", nationalite });
+  };
+
+  let rest = wikitext;
+  for (;;) {
+    const template = findTemplate(rest, ["Fs player", "Efs player", "Football squad player"]);
+    if (!template) break;
+    rest = rest.slice(rest.indexOf(template) + template.length);
+    const arg = (name: string) => plainText(templateParam(template, [name]) ?? "");
+    add(arg("name"), arg("no"), arg("pos"), arg("nat"));
+  }
+  if (players.size > 0) return [...players.values()];
+
+  // Une ligne de tableau par joueur, cellules sur une ou plusieurs lignes :
+  // « |1 |GK |{{Flag|ENG}} |[[David Seaman]] » ou « |{{nts|1}}||GK||{{sortname|Christian|Abbiati}} »
+  for (const row of wikitext.split(/\n\|-/)) {
+    const pos = /(?:^|\||!)\s*(?:\{\{\s*(?:abbr|tooltip)\s*\|\s*)?(GK|DF|MF|FW)\b/m.exec(row)?.[1];
+    if (!pos) continue;
+    // {{sortname||GK|…}} sert aussi à trier les postes : on prend celui qui n'en est pas un
+    const sortname = [...row.matchAll(/\{\{\s*sortname\s*\|([^|{}]*)\|([^|{}]*)/gi)].find(
+      (m) => !/^(GK|DF|MF|FW)$/.test(m[2].trim()),
+    );
+    const nom = sortname ? `${sortname[1]} ${sortname[2]}`.trim() : (firstLink(row)?.label ?? "");
+    if (nom.length < 3) continue; // « c » du capitaine, cellules vides
+    const numero =
+      /\{\{\s*nts\s*\|\s*(\d{1,2})\s*\}\}/i.exec(row)?.[1] ??
+      /^\s*\|\s*(\d{1,2})\s*$/m.exec(row)?.[1] ??
+      /^\s*\|[^|\n]*\|\s*(\d{1,2})\s*(?:\|\||$)/m.exec(row)?.[1] ??
+      "";
+    const nationalite = /\{\{\s*(?:flag|flagicon|fb|flagathlete)\s*\|\s*([A-Z]{3})\b/i.exec(row)?.[1] ?? "";
+    add(nom, numero, pos, nationalite.toUpperCase());
+  }
+  return [...players.values()];
 }
 
 /** Coach, équipe type et effectif d'une saison de l'AJ Auxerre, d'après Wikipédia. */
