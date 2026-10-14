@@ -208,55 +208,106 @@ export function parseRecord(stats: string): { v: number; n: number; d: number } 
 export function parsePalmares(section: string, part?: RegExp): string[][] {
   let text = section;
   if (part) {
-    const headings = [...section.matchAll(/^(={3,})\s*(.*?)\s*\1\s*$/gm)];
+    // Sous-partie « … entraîneur » jusqu'au prochain intertitre de même niveau ou plus haut
+    const headings = [...section.matchAll(/^(={2,})\s*(.*?)\s*\1\s*$/gm)];
     const index = headings.findIndex((h) => part.test(h[2]));
     if (index !== -1) {
-      const start = headings[index].index! + headings[index][0].length;
-      text = section.slice(start, headings[index + 1]?.index ?? section.length);
+      const level = headings[index][1].length;
+      const next = headings.slice(index + 1).find((h) => h[1].length <= level);
+      text = section.slice(
+        headings[index].index! + headings[index][0].length,
+        next?.index ?? section.length,
+      );
     }
   }
 
   const lines = text.split("\n").map((line) => line.trim());
   const counts = new Map<string, number>();
+  // Texte de la puce en cours à chaque niveau (club, compétition…) et dernier intertitre
+  const parents: string[] = [];
   let heading = "";
 
   lines.forEach((raw, i) => {
     const headingMatch = /^={3,}\s*(.*?)\s*=+$/.exec(raw);
     if (headingMatch) {
       heading = plainText(headingMatch[1]);
+      parents.length = 0;
       return;
     }
-    // « * AJ Auxerre » suivi de « ** Champion de France en 1996 » : le club n'est qu'un
-    // regroupement, les titres sont les sous-puces
-    const isItem =
-      /^\*\*/.test(raw) || (/^\*[^*]/.test(raw) && !/^\*\*/.test(lines[i + 1] ?? ""));
-    if (!isItem) return;
+    const bullet = /^(\*+)\s*(.*)$/.exec(raw);
+    if (!bullet) return;
+
+    const depth = bullet[1].length;
+    // « Trophée des champions (5) » : le nombre est recompté depuis les années
+    const content = plainText(bullet[2]).replace(/\s*\(\d+\)\s*$/, "");
+    parents.length = depth - 1;
+    parents[depth - 1] = content;
+
+    // Une puce qui a des sous-puces n'est qu'un regroupement (club, compétition)
+    const nextDepth = /^(\*+)/.exec(lines[i + 1] ?? "")?.[1].length ?? 0;
+    if (nextDepth > depth) return;
 
     // Première phrase seulement, sans les places d'honneur (« , finaliste en 1979 »)
-    const line = plainText(raw.replace(/^\*+\s*/, ""))
+    const line = content
       .split(/\.\s/)[0]
+      .replace(/\.$/, "")
       .split(/,\s*(?:finaliste|vice-champion|demi-finaliste)/i)[0];
     if (!line) return;
 
-    let title: string;
-    let years: Set<string>;
-    // « 2020 : Champion (promu) avec le FC Lorient » sous l'intertitre « Ligue 2 »
-    const dated = /^((?:(?:19|20)\d{2}[\s,et]*)+):\s*(.+)$/.exec(line);
-    if (dated) {
-      const result = dated[2].split(/\s+avec\s+/)[0].replace(/\s*\([^)]*\)/g, "").trim();
-      title = heading ? `${result} de ${heading}` : result;
-      years = new Set(dated[1].match(/\b(19|20)\d{2}\b/g) ?? []);
-    } else {
-      // L'intitulé s'arrête aux années (« en 2015 ») ou au club (« avec … »)
-      title = line
-        .split(/\s+(?:en|avec|à)\s+(?=\d{4}|[A-ZÉ]|l'|le |la |les )/)[0]
-        .replace(/[\s:,]+$/, "");
-      years = new Set(line.match(/\b(19|20)\d{2}\b/g) ?? []);
+    // « Vainqueur : 1998, 2002 » / « 2020 : Champion (promu) avec le FC Lorient »
+    const [left, right = ""] = line.split(/\s*:\s*/, 2);
+    const leftIsYears = /^[\d\s,et-]+$/.test(left);
+    const label = (leftIsYears ? right : left)
+      .split(/\s+avec\s+/)[0]
+      .replace(/\s*\([^)]*\)/g, "")
+      .trim();
+    const yearsText = right && !leftIsYears ? right : line;
+
+    // L'intitulé s'arrête aux années (« en 2015 ») ou au club (« avec … »)
+    let title = label
+      .split(/\s+(?:en|à)\s+(?=\d{4}|[A-ZÉ]|l'|le |la |les )/)[0]
+      .replace(/[\s:,]+$/, "");
+    const competition = parents[depth - 2] ?? heading;
+    if (RESULT_ONLY.test(title) && competition) {
+      // Résultat seul (« Vainqueur ») : on y ajoute la compétition (puce parente ou
+      // intertitre), sauf pour une distinction (« Entraîneur de l'année ») qui se suffit
+      title = DISTINCTION.test(competition) ? competition : withCompetition(title, competition);
+    } else if (COMPETITION.test(title)) {
+      // Compétition seule (« Championnat de France en 2009 », « Coupe de France : 2015 ») :
+      // le titre est sous-entendu
+      title = title.replace(/\s+(19|20)\d{2}$/, ""); // « Coupe de la Ligue 2009 »
+      title = withCompetition(/^championnat\s/i.test(title) ? "Champion" : "Vainqueur", title);
     }
 
+    const years = new Set(yearsText.match(/\b(19|20)\d{2}\b/g) ?? []);
     // Même distinction sur plusieurs lignes (1re et 2e division) : on additionne
     counts.set(title, (counts.get(title) ?? 0) + Math.max(years.size, 1));
   });
 
   return [...counts].map(([title, count]) => [title, String(count)]);
+}
+
+// Intitulé réduit à un résultat, sans la compétition
+const RESULT_ONLY =
+  /^(vainqueur|champion|vice-champion|finaliste|demi-finaliste|troisième|\d+e|promu|lauréat)$/i;
+// Nom de compétition sans résultat (« Coupe de France »)
+const COMPETITION = /^(championnat|coupe|supercoupe|trophée des champions|ligue des champions|ligue europa)\b/i;
+// Distinction individuelle, qui n'a pas besoin de « Vainqueur de … »
+const DISTINCTION = /^(entraîneur|meilleur|élu|onze|trophée unfp|ballon|prix)\b/i;
+
+/** « Vainqueur » + « Coupe d'Angleterre » → « Vainqueur de la Coupe d'Angleterre ». */
+function withCompetition(result: string, competition: string): string {
+  // « Champion » + « Championnat d'Angleterre » → « Champion d'Angleterre »
+  if (/^championnat\s/i.test(competition) && /champion/i.test(result)) {
+    return `${result} ${competition.replace(/^championnat\s+/i, "")}`;
+  }
+  if (/^[aeiouyéèêh]/i.test(competition)) return `${result} de l'${competition}`;
+  // « de Ligue 2 », mais « de la Ligue des champions »
+  if (/^(coupe|supercoupe|ligue(?!\s*\d)|copa|super ligue)\b/i.test(competition)) {
+    return `${result} de la ${competition}`;
+  }
+  if (/^(trophée|tournoi|challenge|championnat)\b/i.test(competition)) {
+    return `${result} du ${competition}`;
+  }
+  return `${result} de ${competition}`;
 }
