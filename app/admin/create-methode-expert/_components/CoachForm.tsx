@@ -46,6 +46,7 @@ export default function CoachForm() {
     handleSubmit,
     control,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<MethodeCoachSchemaType>({
     resolver: zodResolver(MethodeCoachSchema),
@@ -80,6 +81,12 @@ export default function CoachForm() {
   const handleWikidataImport = (coach: ImportedCoach) => {
     setValue("nomcoach", coach.nomcoach);
     if (coach.clubs.length > 0) replaceclubs(coach.clubs);
+    // Bilan et palmarès : seulement si ces champs sont encore vides
+    if (coach.statistiques && !getValues("statistiques")) {
+      setValue("statistiques", coach.statistiques);
+    }
+    const palmaresVide = getValues("palmares").every((ligne) => !ligne.join(""));
+    if (coach.palmares.length > 0 && palmaresVide) replacepalmares(coach.palmares);
   };
 
   const clubLogoSrc = (logo?: string) => {
@@ -92,6 +99,7 @@ export default function CoachForm() {
     fields: palmaresfield,
     append: appendpalmares,
     remove: removepalmares,
+    replace: replacepalmares,
   } = useFieldArray<MethodeCoachSchemaType, "palmares">({
     control,
     name: "palmares",
@@ -258,7 +266,7 @@ export default function CoachForm() {
           importer={importCoachFromWikidata}
           onImport={handleWikidataImport}
           placeholder="Nom de l'entraîneur (ex: Guy Roux)"
-          hint="Remplit le nom et les clubs entraînés. Vérifie les données avant de publier : le palmarès et les statistiques restent à saisir."
+          hint="Remplit le nom, les clubs entraînés, le bilan et le palmarès d'après Wikipédia. Vérifie avant de publier : le bilan additionne les clubs de l'infobox."
         />
 
 

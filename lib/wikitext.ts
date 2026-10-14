@@ -10,6 +10,8 @@ export interface InfoboxCareerRow {
   note: string | null;
   // Cellule brute, quand le club n'est pas un lien mais un modèle à développer
   clubCell: string;
+  // Colonne statistiques en texte (« 169 (90) », « 64v 52n 54d »)
+  stats: string;
 }
 
 /** Découpe sur les « | » de premier niveau, en ignorant ceux des modèles et des liens. */
@@ -109,6 +111,8 @@ export function plainText(text: string): string {
     previous = result;
     result = result
       .replace(/\{\{\s*(?:nobr|nowrap|small|petit)\s*\|([^{}]*)\}\}/gi, "$1")
+      // {{1er}}, {{3e}} → 1er, 3e
+      .replace(/\{\{\s*(\d+)\s*(er|re|e|ème)\s*\}\}/gi, "$1$2")
       .replace(/\{\{\s*lien\s*\|([^{}]*)\}\}/gi, (_, args: string) => lienText(args))
       .replace(/\{\{[^{}]*\}\}/g, "");
   } while (result !== previous);
@@ -147,7 +151,7 @@ export function parseCareerColumns(value: string): InfoboxCareerRow[] {
   for (let i = 0; i + 1 < cells.length; i += width) {
     const [yearsCell, clubCell, statsCell = ""] = cells.slice(i, i + width);
     if (!plainText(yearsCell) && !plainText(clubCell)) continue;
-    // Ligne de bilan en bas du parcours
+    // Ligne de bilan en bas du parcours : voir parseCareerTotal
     if (/^total$/i.test(plainText(clubCell))) continue;
 
     const link = firstLink(clubCell);
@@ -167,7 +171,92 @@ export function parseCareerColumns(value: string): InfoboxCareerRow[] {
       clubName: plainText(clubCell) || link?.label || "",
       note,
       clubCell,
+      stats,
     });
   }
   return rows;
+}
+
+/** Statistiques de la ligne « Total » d'un parcours, s'il y en a une. */
+export function parseCareerTotal(value: string): string | null {
+  const template = findTemplate(value, ["trois colonnes"]);
+  if (!template) return null;
+  const cells = splitTopLevel(template).slice(1);
+  for (let i = 0; i + 2 < cells.length; i += 3) {
+    if (/^total$/i.test(plainText(cells[i + 1]))) return plainText(cells[i + 2]);
+  }
+  return null;
+}
+
+/** « 169 (90) » → 169 matchs, 90 buts. */
+export function parseAppearances(stats: string): { matchs: number; buts: number } | null {
+  const match = /(\d+)\s*\((\d+)\)/.exec(stats);
+  return match ? { matchs: Number(match[1]), buts: Number(match[2]) } : null;
+}
+
+/** « 64v 52n 54d » → victoires, nuls, défaites. */
+export function parseRecord(stats: string): { v: number; n: number; d: number } | null {
+  const match = /(\d+)\s*v\b\D*(\d+)\s*n\b\D*(\d+)\s*d\b/i.exec(stats);
+  return match ? { v: Number(match[1]), n: Number(match[2]), d: Number(match[3]) } : null;
+}
+
+/**
+ * Lignes d'une section « Palmarès » (« * Champion de France de Ligue 2 en 2015 avec
+ * l'ES Troyes AC ») → [intitulé, nombre de titres]. Si la section a une sous-partie
+ * correspondant à `part` (ex. « Entraîneur »), seule celle-ci est lue.
+ */
+export function parsePalmares(section: string, part?: RegExp): string[][] {
+  let text = section;
+  if (part) {
+    const headings = [...section.matchAll(/^(={3,})\s*(.*?)\s*\1\s*$/gm)];
+    const index = headings.findIndex((h) => part.test(h[2]));
+    if (index !== -1) {
+      const start = headings[index].index! + headings[index][0].length;
+      text = section.slice(start, headings[index + 1]?.index ?? section.length);
+    }
+  }
+
+  const lines = text.split("\n").map((line) => line.trim());
+  const counts = new Map<string, number>();
+  let heading = "";
+
+  lines.forEach((raw, i) => {
+    const headingMatch = /^={3,}\s*(.*?)\s*=+$/.exec(raw);
+    if (headingMatch) {
+      heading = plainText(headingMatch[1]);
+      return;
+    }
+    // « * AJ Auxerre » suivi de « ** Champion de France en 1996 » : le club n'est qu'un
+    // regroupement, les titres sont les sous-puces
+    const isItem =
+      /^\*\*/.test(raw) || (/^\*[^*]/.test(raw) && !/^\*\*/.test(lines[i + 1] ?? ""));
+    if (!isItem) return;
+
+    // Première phrase seulement, sans les places d'honneur (« , finaliste en 1979 »)
+    const line = plainText(raw.replace(/^\*+\s*/, ""))
+      .split(/\.\s/)[0]
+      .split(/,\s*(?:finaliste|vice-champion|demi-finaliste)/i)[0];
+    if (!line) return;
+
+    let title: string;
+    let years: Set<string>;
+    // « 2020 : Champion (promu) avec le FC Lorient » sous l'intertitre « Ligue 2 »
+    const dated = /^((?:(?:19|20)\d{2}[\s,et]*)+):\s*(.+)$/.exec(line);
+    if (dated) {
+      const result = dated[2].split(/\s+avec\s+/)[0].replace(/\s*\([^)]*\)/g, "").trim();
+      title = heading ? `${result} de ${heading}` : result;
+      years = new Set(dated[1].match(/\b(19|20)\d{2}\b/g) ?? []);
+    } else {
+      // L'intitulé s'arrête aux années (« en 2015 ») ou au club (« avec … »)
+      title = line
+        .split(/\s+(?:en|avec|à)\s+(?=\d{4}|[A-ZÉ]|l'|le |la |les )/)[0]
+        .replace(/[\s:,]+$/, "");
+      years = new Set(line.match(/\b(19|20)\d{2}\b/g) ?? []);
+    }
+
+    // Même distinction sur plusieurs lignes (1re et 2e division) : on additionne
+    counts.set(title, (counts.get(title) ?? 0) + Math.max(years.size, 1));
+  });
+
+  return [...counts].map(([title, count]) => [title, String(count)]);
 }

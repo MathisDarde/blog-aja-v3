@@ -52,7 +52,7 @@ export default function CoachMethodeExpert({
                 width={512}
                 src={club.logo || "/_assets/img/defaultlogoimage.png"}
                 alt={`Logo de ${club.name}`}
-                className="w-5 sm:w-6 h-5 sm:h-6"
+                className="w-5 sm:w-6 h-5 sm:h-6 object-contain shrink-0"
               />
               <span className="text-gray-700 text-sm sm:text-base text-left">
                 <span className="font-semibold font-Montserrat">

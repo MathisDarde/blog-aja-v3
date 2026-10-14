@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Control,
   UseFormRegister,
@@ -28,6 +28,7 @@ import { GameSystems } from "@/components/GameSystems";
 import { Dispositifs } from "@/components/Dispositifs";
 import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
 import { usePlayerAutofill } from "@/components/usePlayerAutofill";
+import { lookupClubColors } from "@/actions/method/wikidata-import";
 
 interface TeamInfosSectionProps {
   control: Control<MethodeMatchSchemaType>;
@@ -55,6 +56,30 @@ export default function TeamInfosSection({
   onOpenModal,
 }: TeamInfosSectionProps) {
   const isDom = teamIndex === 1;
+
+  // Couleurs complétées d'après le nom de l'équipe, sauf si elles ont été choisies à la main
+  const autoColors = useRef<Record<string, string>>({});
+  const lastTeamLookup = useRef("");
+  const [loadingColors, setLoadingColors] = useState(false);
+  const autofillColors = async () => {
+    const name = String(getValues(teamNameField) ?? "").trim();
+    if (name.length < 2 || name === lastTeamLookup.current) return;
+    lastTeamLookup.current = name;
+
+    setLoadingColors(true);
+    const response = await lookupClubColors(name);
+    setLoadingColors(false);
+    if (!response.success || !response.data) return;
+
+    const colors = { [color1Field]: response.data.primary, [color2Field]: response.data.secondary };
+    for (const [field, color] of Object.entries(colors)) {
+      const current = String(getValues(field as Path<MethodeMatchSchemaType>) ?? "");
+      const untouched = !current || current === "#000000" || current === autoColors.current[field];
+      if (!untouched) continue;
+      setValue(field as Path<MethodeMatchSchemaType>, color, { shouldDirty: true });
+      autoColors.current[field] = color;
+    }
+  };
 
   // Drapeau et poste des remplaçants complétés dès que le nom est saisi
   const { autofill, isPending } = usePlayerAutofill({
@@ -225,12 +250,20 @@ export default function TeamInfosSection({
           <FolderPen className="mr-4" />
           Nom de l&apos;équipe à {domExtLabel} :
         </span>
-        <input
-          type="text"
-          {...register(teamNameField)}
-          className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-          placeholder={`Nom de l'équipe (ex: ${isDom ? "AJ Auxerre" : "RC Lens"})`}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            {...register(teamNameField, { onBlur: autofillColors })}
+            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
+            placeholder={`Nom de l'équipe (ex: ${isDom ? "AJ Auxerre" : "RC Lens"})`}
+          />
+          {loadingColors && (
+            <Loader2
+              size={16}
+              className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
+            />
+          )}
+        </div>
       </div>
 
       {/* --- SYSTEME DE JEU --- */}

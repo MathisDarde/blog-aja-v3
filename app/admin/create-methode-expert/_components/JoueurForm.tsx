@@ -50,6 +50,7 @@ export default function JoueurForm() {
     handleSubmit,
     control,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<MethodeJoueurSchemaType>({
     resolver: zodResolver(MethodeJoueurSchema),
@@ -90,6 +91,9 @@ export default function JoueurForm() {
     if (joueur.poste) setValue("poste", joueur.poste);
     if (joueur.taille) setValue("taille", joueur.taille);
     if (joueur.clubs.length > 0) replaceclubs(joueur.clubs);
+    // Statistiques : seulement si le champ est encore vide
+    if (joueur.matchs && !getValues("matchs")) setValue("matchs", joueur.matchs);
+    if (joueur.buts && !getValues("buts")) setValue("buts", joueur.buts);
   };
 
   const clubLogoSrc = (logo?: string) => {
@@ -260,7 +264,7 @@ export default function JoueurForm() {
           importer={importJoueurFromWikidata}
           onImport={handleWikidataImport}
           placeholder="Nom du joueur (ex: Djibril Cissé)"
-          hint="Remplit le nom, le poste, la taille et les clubs. Vérifie les données avant de publier : le pied fort et les statistiques restent à saisir."
+          hint="Remplit le nom, le poste, la taille, les clubs, les matchs et les buts (totaux de l'infobox Wikipédia, souvent le championnat seulement). Vérifie avant de publier : le pied fort et les passes décisives restent à saisir."
         />
 
         <div className="relative w-full my-4">

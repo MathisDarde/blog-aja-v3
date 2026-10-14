@@ -2,7 +2,11 @@ import {
   type InfoboxCareerRow,
   findTemplate,
   firstLink,
+  parseAppearances,
   parseCareerColumns,
+  parseCareerTotal,
+  parsePalmares,
+  parseRecord,
   plainText,
   templateParam,
 } from "@/lib/wikitext";
@@ -46,6 +50,8 @@ export interface WikidataFootballer {
   positions: string[];
   heightMeters: number | null;
   career: WikidataCareerEntry[];
+  // Totaux de l'infobox Wikipédia (souvent le championnat seulement)
+  totals: { matchs: number; buts: number } | null;
 }
 
 interface Snak {
@@ -67,6 +73,10 @@ export interface WikidataCoach {
   id: string;
   name: string;
   career: WikidataCareerEntry[];
+  // Bilan victoires / nuls / défaites additionné depuis l'infobox
+  record: { v: number; n: number; d: number } | null;
+  // [intitulé, nombre de titres] de la section « Palmarès »
+  palmares: string[][];
 }
 
 export class WikidataRateLimitError extends Error {}
@@ -250,7 +260,7 @@ export async function findPlayerCard(
   const frwikiTitle = best.entity.sitelinks?.frwiki?.title;
   const coachingRows =
     isManager && period && frwikiTitle
-      ? await getInfoboxRows(frwikiTitle, COACH_CAREER_PARAMS)
+      ? (await getInfoboxRows(frwikiTitle, COACH_CAREER_PARAMS)).rows
       : [];
 
   return {
@@ -280,9 +290,20 @@ export async function getFootballer(id: string): Promise<WikidataFootballer> {
   if (!person) throw new Error(`Entité Wikidata introuvable : ${id}`);
 
   const frwikiTitle = person.sitelinks?.frwiki?.title;
-  const infoboxCareer = frwikiTitle
-    ? await getInfoboxCareer(frwikiTitle, PLAYER_CAREER_PARAMS)
-    : [];
+  const infobox = frwikiTitle
+    ? await getInfoboxRows(frwikiTitle, PLAYER_CAREER_PARAMS)
+    : { rows: [], total: null };
+  const infoboxCareer = await toCareerEntries(infobox.rows);
+
+  // Matchs et buts : ligne « Total » de l'infobox, sinon somme des « 169 (90) » des clubs
+  const appearances = infobox.total
+    ? [parseAppearances(infobox.total)]
+    : infobox.rows.map((row) => parseAppearances(row.stats));
+  const counted = appearances.filter((a) => a !== null);
+  const totals =
+    counted.length > 0
+      ? counted.reduce((sum, a) => ({ matchs: sum.matchs + a.matchs, buts: sum.buts + a.buts }))
+      : null;
 
   // Carrière Wikidata seulement en repli, quand l'infobox n'a pas de parcours
   const teamClaims = infoboxCareer.length > 0 ? [] : claimsOf(person, "P54");
@@ -321,6 +342,7 @@ export async function getFootballer(id: string): Promise<WikidataFootballer> {
         ? heightValue / 100
         : heightValue,
     career: infoboxCareer.length > 0 ? infoboxCareer : wikidataCareer,
+    totals,
   };
 }
 
@@ -336,12 +358,27 @@ export async function getCoach(id: string): Promise<WikidataCoach> {
   if (!person) throw new Error(`Entité Wikidata introuvable : ${id}`);
 
   const frwikiTitle = person.sitelinks?.frwiki?.title;
-  const career = frwikiTitle ? await getInfoboxCareer(frwikiTitle, COACH_CAREER_PARAMS) : [];
+  const [infobox, palmares] = frwikiTitle
+    ? await Promise.all([
+        getInfoboxRows(frwikiTitle, COACH_CAREER_PARAMS),
+        getPalmares(frwikiTitle, /entra[iî]neur/i),
+      ])
+    : [{ rows: [], total: null }, []];
+  const career = await toCareerEntries(infobox.rows);
+
+  // Bilan : somme des « 64v 52n 54d » de chaque passage
+  const records = infobox.rows.map((row) => parseRecord(row.stats)).filter((r) => r !== null);
+  const record =
+    records.length > 0
+      ? records.reduce((sum, r) => ({ v: sum.v + r.v, n: sum.n + r.n, d: sum.d + r.d }))
+      : null;
 
   return {
     id,
     name: label(person),
     career: career.length > 0 ? career : await getCoachCareerFromWikidata(id),
+    record,
+    palmares,
   };
 }
 
@@ -349,12 +386,8 @@ export async function getCoach(id: string): Promise<WikidataCoach> {
 const COACH_CAREER_PARAMS = [["carrière entraîneur", "parcours entraîneur"]];
 const PLAYER_CAREER_PARAMS = [["parcours senior", "parcours pro"], ["parcours amateur"]];
 
-/** Parcours d'une infobox Wikipédia FR, avec les clubs rattachés à leur élément Wikidata. */
-async function getInfoboxCareer(
-  pageTitle: string,
-  paramGroups: string[][],
-): Promise<WikidataCareerEntry[]> {
-  const rows = await getInfoboxRows(pageTitle, paramGroups);
+/** Lignes d'un parcours d'infobox → passages en club rattachés à leur élément Wikidata. */
+async function toCareerEntries(rows: InfoboxCareerRow[]): Promise<WikidataCareerEntry[]> {
   if (rows.length === 0) return [];
 
   // Club écrit uniquement avec un modèle ({{FRA football}}…) : on le fait développer par Wikipédia
@@ -393,22 +426,42 @@ async function getInfoboxCareer(
     .sort(chronological);
 }
 
-/** Lignes brutes d'un parcours d'infobox, sans rattachement des clubs à Wikidata. */
+/**
+ * Lignes brutes d'un parcours d'infobox, sans rattachement des clubs à Wikidata,
+ * et statistiques de sa ligne « Total » s'il y en a une.
+ */
 async function getInfoboxRows(
   pageTitle: string,
   paramGroups: string[][],
-): Promise<InfoboxCareerRow[]> {
-  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
-    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&section=0&redirects=1&page=${encodeURIComponent(pageTitle)}`,
-  );
-  const infobox = findTemplate(page.parse?.wikitext["*"] ?? "", ["Infobox[^|}]*"]);
-  if (!infobox) return [];
+): Promise<{ rows: InfoboxCareerRow[]; total: string | null }> {
+  const infobox = await getInfobox(pageTitle);
+  if (!infobox) return { rows: [], total: null };
 
   for (const params of paramGroups) {
-    const rows = parseCareerColumns(templateParam(infobox, params) ?? "");
-    if (rows.length > 0) return rows;
+    const value = templateParam(infobox, params) ?? "";
+    const rows = parseCareerColumns(value);
+    if (rows.length > 0) return { rows, total: parseCareerTotal(value) };
   }
-  return [];
+  return { rows: [], total: null };
+}
+
+/** Palmarès de la section « Palmarès » d'un article (sous-partie `part` si elle existe). */
+async function getPalmares(pageTitle: string, part?: RegExp): Promise<string[][]> {
+  const sections = await getJson<{ parse?: { sections: { line: string; index: string }[] } }>(
+    `${FRWIKI_API_URL}?action=parse&format=json&prop=sections&redirects=1&page=${encodeURIComponent(pageTitle)}`,
+  );
+  // « Palmarès entraîneur » en priorité ; jamais une section « Palmarès joueur »
+  const candidates = (sections.parse?.sections ?? []).filter(
+    (s) => /^palmar[eè]s/i.test(plainText(s.line)) && !/joueur/i.test(s.line),
+  );
+  const section =
+    candidates.find((s) => part && part.test(s.line)) ?? candidates[0];
+  if (!section) return [];
+
+  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
+    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&redirects=1&section=${section.index}&page=${encodeURIComponent(pageTitle)}`,
+  );
+  return parsePalmares(page.parse?.wikitext["*"] ?? "", part);
 }
 
 /** Titre d'article Wikipédia FR → identifiant Wikidata (redirections suivies). */
@@ -491,6 +544,42 @@ async function getCoachCareerFromWikidata(id: string): Promise<WikidataCareerEnt
         !all.some((other) => other.clubId === entry.clubId && (other.start || other.end)),
     )
     .sort(chronological);
+}
+
+/** Infobox d'une page Wikipédia FR (section d'introduction), ou null. */
+async function getInfobox(pageTitle: string): Promise<string | null> {
+  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
+    `${FRWIKI_API_URL}?action=parse&format=json&prop=wikitext&section=0&redirects=1&page=${encodeURIComponent(pageTitle)}`,
+  );
+  return findTemplate(page.parse?.wikitext["*"] ?? "", ["Infobox[^|}]*"]);
+}
+
+const toHexColor = (value: string | null) => {
+  const hex = value?.replace(/^#/, "").trim();
+  return hex && /^[0-9a-f]{6}$/i.test(hex) ? `#${hex.toUpperCase()}` : null;
+};
+
+/**
+ * Couleurs d'un club à partir du nom tapé (« AJ Auxerre », « Lens ») : paramètres
+ * « couleur cadre » et « couleur écriture » de son infobox Wikipédia.
+ */
+export async function getClubColors(
+  name: string,
+): Promise<{ primary: string; secondary: string } | null> {
+  // Titre exact (souvent une redirection, « AJ Auxerre »), sinon recherche
+  const search = await getJson<{ query?: { search: { title: string }[] } }>(
+    `${FRWIKI_API_URL}?action=query&format=json&list=search&srlimit=3&srsearch=${encodeURIComponent(`${name} football club`)}`,
+  );
+  const titles = [name, ...(search.query?.search.map((r) => r.title) ?? [])];
+
+  for (const title of titles) {
+    const infobox = await getInfobox(title);
+    if (!infobox) continue;
+    const primary = toHexColor(templateParam(infobox, ["couleur cadre"]));
+    const secondary = toHexColor(templateParam(infobox, ["couleur écriture"]));
+    if (primary) return { primary, secondary: secondary ?? primary };
+  }
+  return null;
 }
 
 /** Fichier du paramètre « logo » de l'infobox d'une page Wikipédia FR (club). */

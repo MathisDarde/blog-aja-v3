@@ -5,6 +5,7 @@ import { clubLogoKey, resolveClubLogos } from "@/lib/club-logos";
 import { resolveFlag } from "@/lib/flags";
 import {
   findPlayerCard,
+  getClubColors,
   getCoach,
   getFootballer,
   isWikidataId,
@@ -28,10 +29,16 @@ export interface ImportedJoueur extends ImportedClubs {
   joueurnom: string;
   poste: string;
   taille: string;
+  // Totaux de l'infobox Wikipédia, vides s'ils n'y figurent pas
+  matchs: string;
+  buts: string;
 }
 
 export interface ImportedCoach extends ImportedClubs {
   nomcoach: string;
+  // « 597 matchs (231v - 165n - 201d) »
+  statistiques: string;
+  palmares: string[][];
 }
 
 export interface PlayerCard {
@@ -142,6 +149,8 @@ export async function importJoueurFromWikidata(
         joueurnom: joueur.name,
         poste: joueur.positions.map(capitalize).join(" / "),
         taille: formatHeight(joueur.heightMeters),
+        matchs: joueur.totals ? String(joueur.totals.matchs) : "",
+        buts: joueur.totals ? String(joueur.totals.buts) : "",
         ...(await buildClubRows(joueur.career)),
       },
     };
@@ -166,6 +175,10 @@ export async function importCoachFromWikidata(
       success: true,
       data: {
         nomcoach: coach.name,
+        statistiques: coach.record
+          ? `${coach.record.v + coach.record.n + coach.record.d} matchs (${coach.record.v}v - ${coach.record.n}n - ${coach.record.d}d)`
+          : "",
+        palmares: coach.palmares,
         ...(await buildClubRows(coach.career)),
       },
     };
@@ -200,5 +213,21 @@ export async function lookupPlayerCard(
     };
   } catch (error) {
     return failure(error, `Impossible de compléter ${trimmed}.`);
+  }
+}
+
+/** Couleurs principale et secondaire d'une équipe à partir de son nom (méthodes match). */
+export async function lookupClubColors(
+  name: string,
+): Promise<ActionResult<{ primary: string; secondary: string } | null>> {
+  await requireAdmin();
+
+  const trimmed = name.trim();
+  if (trimmed.length < 2) return { success: true, data: null };
+
+  try {
+    return { success: true, data: await getClubColors(trimmed) };
+  } catch (error) {
+    return failure(error, `Couleurs introuvables pour ${trimmed}.`);
   }
 }

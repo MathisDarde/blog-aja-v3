@@ -7,6 +7,43 @@ import Button from "@/components/BlueButton";
 import { Editor } from "@tiptap/react";
 import { Trash2, Search, Check } from "lucide-react";
 
+const normalizeText = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+const methodName = (m: Methode) =>
+  m.joueurnom || m.nomcoach || m.saison || m.titrematch || `Méthode #${m.id_methode}`;
+
+/**
+ * Méthode la plus proche du texte sélectionné dans l'article : nom identique ou contenu
+ * (« Cissé » → Djibril Cissé), sinon mots ou années en commun (« la saison 2021-2022 »).
+ */
+function findMethodForText(methods: Methode[], text: string): Methode | null {
+  const query = normalizeText(text);
+  if (!query) return null;
+  const queryWords = new Set(query.split(" ").filter((w) => w.length >= 3));
+
+  let best: Methode | null = null;
+  let bestScore = 0;
+  for (const method of methods) {
+    const name = normalizeText(methodName(method));
+    let score = 0;
+    if (name === query) score = 100;
+    else if (name.includes(query) || query.includes(name)) score = 80;
+    else score = name.split(" ").filter((w) => queryWords.has(w)).length * 10;
+
+    if (score > bestScore) {
+      best = method;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
 interface EditMentionData {
   pos: number;
   id: string;
@@ -48,7 +85,9 @@ export const MethodSelect = ({
             // Filtrer par le type de la méthode éditée
             if (found) setTypeFilter(found.typemethode);
           } else {
-            setSelectedMethod(data[0] as BaseMethodeData);
+            // Méthode correspondant au texte sélectionné, à défaut la première
+            const match = findMethodForText(data as unknown as Methode[], initialLabel);
+            setSelectedMethod((match ?? data[0]) as BaseMethodeData);
           }
         } else {
           setMethods([]);
@@ -60,7 +99,7 @@ export const MethodSelect = ({
       }
     };
     fetchData();
-  }, [editMention]);
+  }, [editMention, initialLabel]);
 
   const handleInsert = () => {
     if (!editor) return;
@@ -124,8 +163,7 @@ export const MethodSelect = ({
     onSuccess();
   };
 
-  const getMethodName = (m: Methode) =>
-    m.joueurnom || m.nomcoach || m.saison || m.titrematch || `Méthode #${m.id_methode}`;
+  const getMethodName = methodName;
 
   const typeLabels: Record<string, string> = {
     all: "Tous",
