@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAdmin } from "@/lib/auth-guard";
-import { resolveClubLogos } from "@/lib/club-logos";
+import { clubLogoKey, resolveClubLogos } from "@/lib/club-logos";
 import {
   getCoach,
   getFootballer,
@@ -17,7 +17,7 @@ export type ActionResult<T> =
   | { success: false; message: string };
 
 interface ImportedClubs {
-  // [logo, nom, années, wikidataId du club]
+  // [logo, nom, années, wikidataId du club s'il est connu]
   clubs: string[][];
   clubsSansLogo: number;
 }
@@ -54,13 +54,13 @@ async function buildClubRows(
   const logos = await resolveClubLogos(career);
 
   const clubs = career.map((entry) => {
-    const logo = logos.get(entry.clubId);
-    return [
+    const logo = logos.get(clubLogoKey(entry));
+    const row = [
       logo?.logoUrl ?? "",
       logo?.nom ?? entry.clubName,
       formatYears(entry.start, entry.end),
-      entry.clubId,
     ];
+    return entry.clubId ? [...row, entry.clubId] : row;
   });
 
   return { clubs, clubsSansLogo: clubs.filter(([logo]) => !logo).length };
