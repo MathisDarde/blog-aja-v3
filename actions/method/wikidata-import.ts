@@ -2,8 +2,9 @@
 
 import { requireAdmin } from "@/lib/auth-guard";
 import { clubLogoKey, resolveClubLogos } from "@/lib/club-logos";
-import { resolveFlag } from "@/lib/flags";
-import { type AjaSeason, getAjaSeason } from "@/lib/saison-aja";
+import { findLocalFlag, resolveFlag } from "@/lib/flags";
+import { type AjaSeason, getAjaSeason, getTeamSquad, seasonFromDate } from "@/lib/saison-aja";
+import type { SquadPlayer } from "@/lib/squad";
 import {
   findPlayerCard,
   getClubColors,
@@ -243,5 +244,33 @@ export async function importAjaSeason(
     return { success: true, data: await getAjaSeason(saison) };
   } catch (error) {
     return failure(error, `Impossible de compléter la saison ${saison}.`);
+  }
+}
+
+export interface MatchSquadPlayer extends SquadPlayer {
+  drapeau: string;
+}
+
+/**
+ * Effectif d'une équipe pour la saison d'un match (d'après sa date), avec le drapeau
+ * local de chaque joueur : alimente les listes déroulantes des compositions.
+ */
+export async function loadTeamSquad(
+  date: string,
+  team: string,
+): Promise<ActionResult<{ saison: string; joueurs: MatchSquadPlayer[] } | null>> {
+  await requireAdmin();
+
+  const saison = seasonFromDate(date);
+  if (!saison || team.trim().length < 2) return { success: true, data: null };
+
+  try {
+    const joueurs = (await getTeamSquad(team.trim(), saison)).map((joueur) => ({
+      ...joueur,
+      drapeau: joueur.nationalite ? (findLocalFlag(joueur.nationalite) ?? "") : "",
+    }));
+    return { success: true, data: { saison, joueurs } };
+  } catch (error) {
+    return failure(error, `Effectif introuvable pour ${team} (${saison}).`);
   }
 }

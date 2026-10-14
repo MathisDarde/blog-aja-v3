@@ -28,6 +28,7 @@ import { GameSystems } from "@/components/GameSystems";
 import { Dispositifs } from "@/components/Dispositifs";
 import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
 import { usePlayerAutofill } from "@/components/usePlayerAutofill";
+import { useTeamSquad } from "@/components/useTeamSquad";
 import { lookupClubColors } from "@/actions/method/wikidata-import";
 
 interface TeamInfosSectionProps {
@@ -88,6 +89,14 @@ export default function TeamInfosSection({
     periodField: "date",
   });
   const domExtLabel = isDom ? "domicile" : "l'extérieur";
+
+  // Effectif de l'équipe pour la saison du match : listes déroulantes des noms
+  const squad = useTeamSquad({
+    getValues,
+    setValue,
+    teamField: `nomequipe${teamIndex}` as Path<MethodeMatchSchemaType>,
+  });
+  const squadListId = `effectif-equipe${teamIndex}`;
 
   // Construction des noms de champs dynamiques
   const teamNameField = `nomequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
@@ -253,17 +262,33 @@ export default function TeamInfosSection({
         <div className="relative">
           <input
             type="text"
-            {...register(teamNameField, { onBlur: autofillColors })}
+            {...register(teamNameField, {
+              onBlur: () => {
+                autofillColors();
+                squad.ensureSquad();
+              },
+            })}
             className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder={`Nom de l'équipe (ex: ${isDom ? "AJ Auxerre" : "RC Lens"})`}
           />
-          {loadingColors && (
+          {(loadingColors || squad.loading) && (
             <Loader2
               size={16}
               className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
             />
           )}
         </div>
+        {squad.status && (
+          <p className="mt-1 ml-4 text-[11px] text-left text-gray-500">{squad.status}</p>
+        )}
+        {/* Joueurs proposés dans les champs de nom (titulaires et remplaçants) */}
+        <datalist id={squadListId}>
+          {squad.joueurs.map((joueur) => (
+            <option key={`${joueur.nom}-${joueur.numero}`} value={joueur.nom}>
+              {[joueur.numero && `n°${joueur.numero}`, joueur.poste].filter(Boolean).join(" · ")}
+            </option>
+          ))}
+        </datalist>
       </div>
 
       {/* --- SYSTEME DE JEU --- */}
@@ -313,8 +338,20 @@ export default function TeamInfosSection({
                   </label>
                   <input
                     type="text"
+                    list={squadListId}
+                    onFocus={squad.ensureSquad}
                     {...register(
-                      `${fieldArrayNameTitulaires}.${index}.nom` as Path<MethodeMatchSchemaType>
+                      `${fieldArrayNameTitulaires}.${index}.nom` as Path<MethodeMatchSchemaType>,
+                      {
+                        // Choix dans la liste : numéro complété aussitôt
+                        onChange: (e) => {
+                          if (squad.isSquadName(e.target.value)) {
+                            squad.fillFromSquad(`${fieldArrayNameTitulaires}.${index}`, ["numero"]);
+                          }
+                        },
+                        onBlur: () =>
+                          squad.fillFromSquad(`${fieldArrayNameTitulaires}.${index}`, ["numero"]),
+                      },
                     )}
                     placeholder="Nom (ex: Gaëtan Perrin)"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
@@ -477,9 +514,22 @@ export default function TeamInfosSection({
                 <div className="relative w-full">
                   <input
                     type="text"
+                    list={squadListId}
+                    onFocus={squad.ensureSquad}
                     {...register(
                       `${fieldArrayNameRemplacants}.${index}.nom` as Path<MethodeMatchSchemaType>,
-                      { onBlur: () => autofill(`${fieldArrayNameRemplacants}.${index}`) },
+                      {
+                        onChange: (e) => {
+                          if (squad.isSquadName(e.target.value)) {
+                            squad.fillFromSquad(`${fieldArrayNameRemplacants}.${index}`, ["poste", "drapeau"]);
+                          }
+                        },
+                        // Effectif d'abord, puis Wikidata pour ce qui reste vide
+                        onBlur: () => {
+                          squad.fillFromSquad(`${fieldArrayNameRemplacants}.${index}`, ["poste", "drapeau"]);
+                          autofill(`${fieldArrayNameRemplacants}.${index}`);
+                        },
+                      },
                     )}
                     placeholder="Nom (ex: Gaëtan Perrin)"
                     className="py-2 px-4 border rounded w-full text-xs sm:text-sm"

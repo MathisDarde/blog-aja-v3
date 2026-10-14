@@ -2,6 +2,7 @@ import { Dispositifs } from "@/components/Dispositifs";
 import {
   downloadWikimediaText,
   getClubCoachDuring,
+  searchSeasonArticles,
   getWikipediaWikitext,
 } from "@/lib/wikidata";
 import { findTemplate, firstLink, plainText, templateParam } from "@/lib/wikitext";
@@ -44,7 +45,10 @@ function parseSquad(wikitext: string): SquadPlayer[] {
 
     const arg = (name: string) => plainText(templateParam(template, [name]) ?? "");
     const nom = [arg("prénom"), arg("nom")].filter(Boolean).join(" ");
-    if (nom) players.push({ nom, numero: arg("num") });
+    if (nom) {
+      const poste = arg("pos");
+      players.push({ nom, numero: arg("num"), poste: POSTES[poste] ?? poste, nationalite: arg("nat") });
+    }
   }
   return players;
 }
@@ -134,6 +138,71 @@ function matchFormation(players: { name: string; x: number; y: number }[]) {
   return best;
 }
 
+/** Effectif d'un article de saison : dans l'article, ou dans son modèle {{Effectif de …}}. */
+async function squadFromPage(page: string): Promise<SquadPlayer[]> {
+  const effectif = parseSquad(page);
+  if (effectif.length > 0) return effectif;
+  const squadTemplate = /\{\{\s*(Effectif d[eu'][^}|]*)\}\}/.exec(page)?.[1];
+  return squadTemplate
+    ? parseSquad((await getWikipediaWikitext(`Modèle:${squadTemplate.trim()}`)) ?? "")
+    : [];
+}
+
+const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+/**
+ * Saison d'un match d'après sa date (« samedi 16 mai 2022, 20h45 » → 2021-2022) :
+ * une saison commence en juillet.
+ */
+export function seasonFromDate(date: string): string | null {
+  const year = /\b((?:19|20)\d{2})\b/.exec(date)?.[1];
+  if (!year) return null;
+  const lower = date.toLowerCase();
+  const monthName = MOIS.findIndex((m) => lower.includes(m));
+  const numeric = /\b\d{1,2}[/.-](\d{1,2})[/.-](?:19|20)\d{2}\b/.exec(date)?.[1];
+  const month = monthName !== -1 ? monthName + 1 : numeric ? Number(numeric) : 8;
+  const from = month >= 7 ? Number(year) : Number(year) - 1;
+  return `${from}-${from + 1}`;
+}
+
+const isAuxerre = (team: string) => /auxerre|^aja$/i.test(team.trim());
+
+// Mots qui identifient un club (« Olympique de Marseille » → marseille)
+const GENERIC = new Set(["saison", "football", "club", "olympique", "sporting", "association", "united", "city", "real"]);
+const clubWords = (name: string) =>
+  name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .split(/[^a-z]+/)
+    .filter((w) => w.length >= 4 && !GENERIC.has(w));
+
+// Postes abrégés de certains effectifs
+const POSTES: Record<string, string> = { G: "Gardien", D: "Défenseur", M: "Milieu", A: "Attaquant" };
+
+/**
+ * Effectif d'une équipe pour une saison : l'article de saison de l'AJA, ou pour un
+ * autre club le premier article « Saison 2021-2022 … » trouvé qui contient un effectif.
+ */
+export async function getTeamSquad(team: string, saison: string): Promise<SquadPlayer[]> {
+  if (isAuxerre(team)) {
+    const page = await getWikipediaWikitext(`Saison ${saison} de l'AJ Auxerre`);
+    return page ? squadFromPage(page) : [];
+  }
+
+  // Le titre doit nommer le club : la recherche renvoie aussi les saisons d'autres clubs
+  const words = clubWords(team);
+  const titles = (await searchSeasonArticles(team, saison)).filter((title) =>
+    clubWords(title).some((w) => words.includes(w)),
+  );
+  for (const title of titles) {
+    const page = await getWikipediaWikitext(title);
+    const effectif = page ? await squadFromPage(page) : [];
+    if (effectif.length > 0) return effectif;
+  }
+  return [];
+}
+
 /** Coach, équipe type et effectif d'une saison de l'AJ Auxerre, d'après Wikipédia. */
 export async function getAjaSeason(text: string): Promise<AjaSeason | null> {
   const season = parseSeason(text);
@@ -151,12 +220,7 @@ export async function getAjaSeason(text: string): Promise<AjaSeason | null> {
     (await getClubCoachDuring(AJ_AUXERRE, season.from, season.to)) ||
     "";
 
-  // Effectif : dans l'article, ou dans son modèle {{Effectif de l'AJ Auxerre 2021-2022}}
-  let effectif = parseSquad(page);
-  const squadTemplate = /\{\{\s*(Effectif de l[^}|]*)\}\}/.exec(page)?.[1];
-  if (effectif.length === 0 && squadTemplate) {
-    effectif = parseSquad((await getWikipediaWikitext(`Modèle:${squadTemplate.trim()}`)) ?? "");
-  }
+  const effectif = await squadFromPage(page);
 
   // Équipe type : seulement un SVG, dont on peut lire les noms
   const lineupFile = /\[\[\s*(?:Fichier|File|Image)\s*:\s*([^|\]]*(?:quipe|compo)[^|\]]*\.svg)/i.exec(page)?.[1];

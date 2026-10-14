@@ -46,6 +46,13 @@ export function usePlayerAutofill<T extends FieldValues>({
     async (row: string) => {
       const name = String(getValues(`${row}.nom` as Path<T>) ?? "").trim();
       if (name.length < 3 || lastLookup.current.get(row) === name) return;
+      // Déjà complet (saisi à la main ou par l'effectif) : pas de recherche
+      const complete = AUTOFILLED_FIELDS.every((field) => {
+        const path = `${row}.${field}` as Path<T>;
+        const current = String(getValues(path) ?? "");
+        return current && current !== autofilled.current.get(path);
+      });
+      if (complete) return;
       lastLookup.current.set(row, name);
 
       setPending(row, true);

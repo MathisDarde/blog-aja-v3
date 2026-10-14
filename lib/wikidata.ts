@@ -546,6 +546,16 @@ async function getCoachCareerFromWikidata(id: string): Promise<WikidataCareerEnt
     .sort(chronological);
 }
 
+/** Articles « Saison 2021-2022 … » d'un club sur Wikipédia FR, les plus pertinents d'abord. */
+export async function searchSeasonArticles(team: string, saison: string): Promise<string[]> {
+  const search = await getJson<{ query?: { search: { title: string }[] } }>(
+    `${FRWIKI_API_URL}?action=query&format=json&list=search&srlimit=5&srsearch=${encodeURIComponent(`intitle:"Saison ${saison}" ${team}`)}`,
+  );
+  return (search.query?.search ?? [])
+    .map((result) => result.title)
+    .filter((title) => title.startsWith(`Saison ${saison}`));
+}
+
 /** Wikitext complet d'une page Wikipédia FR, ou null si elle n'existe pas. */
 export async function getWikipediaWikitext(pageTitle: string): Promise<string | null> {
   const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(

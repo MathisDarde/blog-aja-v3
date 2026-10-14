@@ -3,6 +3,9 @@
 export interface SquadPlayer {
   nom: string;
   numero: string;
+  // « Gardien », « Défenseur », « Milieu » ou « Attaquant » (effectifs Wikipédia)
+  poste?: string;
+  nationalite?: string;
 }
 
 const normalize = (value: string) =>
@@ -14,7 +17,7 @@ const normalize = (value: string) =>
     .trim();
 
 /** Joueur de l'effectif correspondant à un nom tapé ou lu (« Jubal » → « Jubal Jr »). */
-export function findSquadPlayer(effectif: SquadPlayer[], name: string): SquadPlayer | null {
+export function findSquadPlayer<P extends SquadPlayer>(effectif: P[], name: string): P | null {
   const wanted = normalize(name);
   if (!wanted) return null;
   return (
