@@ -54,12 +54,17 @@ export async function resolveClubLogos(
   const logos = new Map<string, { logoUrl: string; nom?: string }>();
   if (clubs.size === 0) return logos;
 
-  const known = await db
-    .select()
-    .from(clubsTable)
-    .where(inArray(clubsTable.wikidataId, [...clubs.keys()]));
-  for (const club of known) {
-    logos.set(club.wikidataId, { logoUrl: club.logoUrl, nom: club.nom });
+  try {
+    const known = await db
+      .select()
+      .from(clubsTable)
+      .where(inArray(clubsTable.wikidataId, [...clubs.keys()]));
+    for (const club of known) {
+      logos.set(club.wikidataId, { logoUrl: club.logoUrl, nom: club.nom });
+    }
+  } catch (error) {
+    // Bibliothèque inaccessible (ex. table pas encore créée) : on continue sans
+    console.error("Bibliothèque de logos inaccessible", error);
   }
 
   await Promise.all(
