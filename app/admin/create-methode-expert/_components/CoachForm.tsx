@@ -5,6 +5,11 @@ import submitMethodeCoachForm from "@/actions/method/methode-coach-form";
 import { MethodeCoachSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
+import WikidataImport from "@/components/WikidataImport";
+import {
+  type ImportedCoach,
+  importCoachFromWikidata,
+} from "@/actions/method/wikidata-import";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { MethodeCoachSchemaType } from "@/types/forms";
@@ -23,7 +28,7 @@ import {
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import React, { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 const IMAGE_PATHS = {
@@ -64,10 +69,25 @@ export default function CoachForm() {
     fields: clubsfield,
     append: appendclubs,
     remove: removeclubs,
+    replace: replaceclubs,
   } = useFieldArray<MethodeCoachSchemaType, "clubscoach">({
     control,
     name: "clubscoach",
   });
+  const clubsValues = useWatch({ control, name: "clubscoach" });
+
+  // Préremplissage depuis Wikidata (les champs restent modifiables)
+  const handleWikidataImport = (coach: ImportedCoach) => {
+    setValue("nomcoach", coach.nomcoach);
+    if (coach.clubs.length > 0) replaceclubs(coach.clubs);
+  };
+
+  const clubLogoSrc = (logo?: string) => {
+    if (!logo) return null;
+    return logo.startsWith("http") || logo.startsWith("/")
+      ? logo
+      : `${IMAGE_PATHS.clubs}${logo}`;
+  };
   const {
     fields: palmaresfield,
     append: appendpalmares,
@@ -234,6 +254,13 @@ export default function CoachForm() {
         className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
+        <WikidataImport
+          importer={importCoachFromWikidata}
+          onImport={handleWikidataImport}
+          placeholder="Nom de l'entraîneur (ex: Guy Roux)"
+          hint="Remplit le nom et les clubs entraînés. Vérifie les données avant de publier : le palmarès et les statistiques restent à saisir."
+        />
+
 
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
@@ -318,7 +345,16 @@ export default function CoachForm() {
               key={field.id}
               className="flex flex-col md:flex-row gap-2 mb-2 w-full font-Montserrat"
             >
-              <div className="relative w-full md:w-1/3 flex">
+              <div className="relative w-full md:w-1/3 flex items-center">
+                {clubLogoSrc(clubsValues?.[index]?.[0]) && (
+                  <Image
+                    src={clubLogoSrc(clubsValues?.[index]?.[0])!}
+                    width={24}
+                    height={24}
+                    alt=""
+                    className="w-6 h-6 object-contain mr-2 shrink-0"
+                  />
+                )}
                 <input
                   type="text"
                   {...register(`clubscoach.${index}.0`)}

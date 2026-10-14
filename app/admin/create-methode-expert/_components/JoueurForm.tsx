@@ -5,8 +5,11 @@ import submitMethodeJoueurForm from "@/actions/method/methode-joueur-form";
 import { MethodeJoueurSchema } from "@/app/schema";
 import Button from "@/components/BlueButton";
 import LogoSelectorModal from "@/components/ClubLogoSelector";
-import WikidataJoueurImport from "@/components/WikidataJoueurImport";
-import type { ImportedJoueur } from "@/actions/method/wikidata-joueur";
+import WikidataImport from "@/components/WikidataImport";
+import {
+  type ImportedJoueur,
+  importJoueurFromWikidata,
+} from "@/actions/method/wikidata-import";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { MethodeJoueurSchemaType } from "@/types/forms";
@@ -253,7 +256,12 @@ export default function JoueurForm() {
         className="max-w-[600px] mx-auto"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
-        <WikidataJoueurImport onImport={handleWikidataImport} />
+        <WikidataImport
+          importer={importJoueurFromWikidata}
+          onImport={handleWikidataImport}
+          placeholder="Nom du joueur (ex: Djibril Cissé)"
+          hint="Remplit le nom, le poste, la taille et les clubs. Vérifie les données avant de publier : le pied fort et les statistiques restent à saisir."
+        />
 
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">

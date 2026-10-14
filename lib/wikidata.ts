@@ -50,6 +50,14 @@ interface Entity {
   claims?: Record<string, Claim[]>;
 }
 
+export interface WikidataCoach {
+  id: string;
+  name: string;
+  career: WikidataCareerEntry[];
+}
+
+export class WikidataRateLimitError extends Error {}
+
 export const isWikidataId = (value: string) => /^Q\d+$/.test(value);
 
 async function getJson<T>(url: string): Promise<T> {
@@ -57,6 +65,9 @@ async function getJson<T>(url: string): Promise<T> {
     headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
     next: { revalidate: CACHE_SECONDS },
   });
+  if (response.status === 429) {
+    throw new WikidataRateLimitError("Trop de requêtes vers Wikimedia");
+  }
   if (!response.ok) {
     throw new Error(`Wikimedia a répondu ${response.status}`);
   }
@@ -100,6 +111,22 @@ const year = (snak?: Snak) => {
   const time = (snak?.datavalue?.value as { time?: string } | undefined)?.time;
   return time ? Number.parseInt(time.slice(1, 5), 10) : null;
 };
+
+// Passage dans une équipe, à partir d'une déclaration « membre de » / « entraîneur de »
+function careerEntry(team: Entity, claim: Claim): WikidataCareerEntry {
+  const logo = claimsOf(team, "P154")[0]?.mainsnak.datavalue?.value;
+  return {
+    clubId: team.id,
+    clubName: label(team),
+    start: year(claim.qualifiers?.P580?.[0]),
+    end: year(claim.qualifiers?.P582?.[0]),
+    logoFile: typeof logo === "string" ? logo : null,
+  };
+}
+
+// Ordre chronologique, les passages sans date à la fin
+const chronological = (a: WikidataCareerEntry, b: WikidataCareerEntry) =>
+  (a.start ?? Infinity) - (b.start ?? Infinity);
 
 /** Classes qui sont des équipes nationales (en remontant les sous-classes). */
 async function findNationalTeamClasses(classIds: string[]): Promise<Set<string>> {
@@ -178,20 +205,10 @@ export async function getFootballer(id: string): Promise<WikidataFootballer> {
       const isNational = claimsOf(team, "P31").some((c) =>
         nationalClasses.has(itemId(c.mainsnak)!),
       );
-      if (!team || isNational) return null;
-
-      const logo = claimsOf(team, "P154")[0]?.mainsnak.datavalue?.value;
-      return {
-        clubId: team.id,
-        clubName: label(team),
-        start: year(claim.qualifiers?.P580?.[0]),
-        end: year(claim.qualifiers?.P582?.[0]),
-        logoFile: typeof logo === "string" ? logo : null,
-      };
+      return !team || isNational ? null : careerEntry(team, claim);
     })
     .filter((entry): entry is WikidataCareerEntry => entry !== null)
-    // Ordre chronologique, les passages sans date à la fin
-    .sort((a, b) => (a.start ?? Infinity) - (b.start ?? Infinity));
+    .sort(chronological);
 
   const height = claimsOf(person, "P2048")[0]?.mainsnak.datavalue?.value as
     | { amount: string; unit: string }
@@ -210,6 +227,60 @@ export async function getFootballer(id: string): Promise<WikidataFootballer> {
   };
 }
 
+/**
+ * Carrière d'entraîneur. Wikidata la range à deux endroits, chacun souvent incomplet :
+ * « entraîneur de » (P6087) sur la personne, « entraîneur principal » (P286) sur les clubs.
+ * On fusionne les deux. Les sélections nationales sont gardées (sélectionneur).
+ */
+export async function getCoach(id: string): Promise<WikidataCoach> {
+  if (!isWikidataId(id)) throw new Error("Identifiant Wikidata invalide");
+
+  const [person, coachedClubs] = await Promise.all([
+    getEntities([id], "labels|claims").then((entities) => entities[id]),
+    // Clubs dont une déclaration P286 pointe vers cette personne
+    getJson<{ query: { search: { title: string }[] } }>(
+      `${API_URL}?action=query&format=json&list=search&srlimit=50&srsearch=${encodeURIComponent(`haswbstatement:P286=${id}`)}`,
+    ).then((r) => r.query.search.map((result) => result.title).filter(isWikidataId)),
+  ]);
+  if (!person) throw new Error(`Entité Wikidata introuvable : ${id}`);
+
+  const personClaims = claimsOf(person, "P6087");
+  const teams = await getEntities(
+    [...personClaims.map((c) => itemId(c.mainsnak)!), ...coachedClubs],
+    "labels|claims",
+  );
+
+  const entries = [
+    ...personClaims
+      .filter((claim) => teams[itemId(claim.mainsnak)!])
+      .map((claim) => careerEntry(teams[itemId(claim.mainsnak)!], claim)),
+    ...coachedClubs.flatMap((clubId) =>
+      claimsOf(teams[clubId], "P286")
+        .filter((claim) => itemId(claim.mainsnak) === id)
+        .map((claim) => careerEntry(teams[clubId], claim)),
+    ),
+  ];
+
+  // Doublons entre les deux sources, et passages sans date quand le même club est daté
+  const seen = new Set<string>();
+  const career = entries
+    .filter((entry) => {
+      const key = `${entry.clubId}:${entry.start}:${entry.end}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .filter(
+      (entry, _, all) =>
+        entry.start !== null ||
+        entry.end !== null ||
+        !all.some((other) => other.clubId === entry.clubId && (other.start || other.end)),
+    )
+    .sort(chronological);
+
+  return { id, name: label(person), career };
+}
+
 /** Télécharge un fichier Commons en PNG (les SVG sont rastérisés par Wikimedia). */
 export async function downloadCommonsImage(
   file: string,
@@ -225,6 +296,9 @@ export async function downloadCommonsImage(
   if (!url) throw new Error(`Fichier Commons introuvable : ${file}`);
 
   const response = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
+  if (response.status === 429) {
+    throw new WikidataRateLimitError("Trop de requêtes vers Wikimedia");
+  }
   if (!response.ok) throw new Error(`Téléchargement impossible : ${file}`);
   return Buffer.from(await response.arrayBuffer());
 }

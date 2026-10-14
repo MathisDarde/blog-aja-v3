@@ -118,3 +118,12 @@ export async function rememberClubLogos(clubs: string[][]) {
       },
     });
 }
+
+/** Variante pour l'enregistrement d'une méthode, qui ne doit pas échouer à cause des logos. */
+export async function rememberClubLogosSafely(clubs: string[][]) {
+  try {
+    await rememberClubLogos(clubs);
+  } catch (err) {
+    console.error("Impossible de mémoriser les logos des clubs", err);
+  }
+}

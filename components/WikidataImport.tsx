@@ -4,16 +4,22 @@ import React, { useState } from "react";
 import { Globe, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 import {
-  type ImportedJoueur,
-  importJoueurFromWikidata,
+  type ActionResult,
   searchWikidataPeople,
-} from "@/actions/method/wikidata-joueur";
+} from "@/actions/method/wikidata-import";
 import type { WikidataPerson } from "@/lib/wikidata";
 
-export default function WikidataJoueurImport({
+/** Recherche une personne sur Wikidata puis préremplit le formulaire de la méthode. */
+export default function WikidataImport<T extends { clubs: string[][]; clubsSansLogo: number }>({
+  importer,
   onImport,
+  placeholder,
+  hint,
 }: {
-  onImport: (joueur: ImportedJoueur) => void;
+  importer: (id: string) => Promise<ActionResult<T>>;
+  onImport: (data: T) => void;
+  placeholder: string;
+  hint: string;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<WikidataPerson[] | null>(null);
@@ -35,7 +41,7 @@ export default function WikidataJoueurImport({
 
   const importPerson = async (person: WikidataPerson) => {
     setImportingId(person.id);
-    const response = await importJoueurFromWikidata(person.id);
+    const response = await importer(person.id);
     setImportingId(null);
 
     if (!response.success) {
@@ -73,7 +79,7 @@ export default function WikidataJoueurImport({
               search();
             }
           }}
-          placeholder="Nom du joueur (ex: Djibril Cissé)"
+          placeholder={placeholder}
           className="w-full py-3 px-6 rounded-full border border-gray-600 text-xs sm:text-sm"
         />
         <button
@@ -121,10 +127,7 @@ export default function WikidataJoueurImport({
         </ul>
       )}
 
-      <p className="mt-2 text-[11px] text-gray-500">
-        Remplit le nom, le poste, la taille et les clubs. Vérifie les données
-        avant de publier : le pied fort et les statistiques restent à saisir.
-      </p>
+      <p className="mt-2 text-[11px] text-gray-500">{hint}</p>
     </div>
   );
 }

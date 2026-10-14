@@ -7,16 +7,7 @@ import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
-import { rememberClubLogos } from "@/lib/club-logos";
-
-// La méthode est enregistrée : un échec ici ne doit pas la faire échouer
-async function rememberClubLogosSafely(clubs: string[][]) {
-  try {
-    await rememberClubLogos(clubs);
-  } catch (err) {
-    console.error("Impossible de mémoriser les logos des clubs", err);
-  }
-}
+import { rememberClubLogosSafely } from "@/lib/club-logos";
 
 export async function getJoueurMethodes(): Promise<SelectJoueurMethode[]> {
   return await db.select().from(methodeExpertJoueurTable);

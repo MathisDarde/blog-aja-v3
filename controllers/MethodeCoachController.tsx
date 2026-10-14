@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
+import { rememberClubLogosSafely } from "@/lib/club-logos";
 
 export async function getCoachMethodes(): Promise<SelectCoachMethode[]> {
   return await db.select().from(methodeExpertCoachTable);
@@ -35,6 +36,8 @@ export async function createMethodeCoach(
       palmares: palmares,
       userId,
     });
+
+    await rememberClubLogosSafely(clubscoach);
 
     return { success: true, result };
   } catch (err) {
@@ -94,6 +97,8 @@ export async function updateMethodeCoach(
       .update(methodeExpertCoachTable)
       .set(updatedFields)
       .where(eq(methodeExpertCoachTable.id_methode, id_methode));
+
+    await rememberClubLogosSafely(clubscoach);
 
     return { success: true, result };
   } catch (err) {
