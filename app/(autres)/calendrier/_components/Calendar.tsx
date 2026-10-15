@@ -45,7 +45,18 @@ const formatDateTime = (date: dayjs.Dayjs, time?: string) => {
   return date.format(`DD/MM/YYYY, ${time}`);
 };
 
-export default function Calendar({ matches }: { matches: MatchAPI[] }) {
+export default function Calendar({
+  matches,
+  ajaLogo,
+}: {
+  matches: MatchAPI[];
+  // Logos de la saison affichée (lib/team-logos) ; à défaut, logos du site
+  ajaLogo?: string;
+}) {
+  const logoOf = (match: MatchAPI, isAja: boolean) =>
+    (isAja ? ajaLogo : match.logoSrc) ??
+    `/_assets/teamlogos/${getTeamInfo(isAja ? "AJA" : match.contre.split(" (")[0]).logo}`;
+
   // parser toutes les dates une fois
   const parsedMatches = useMemo(() => {
     const result = matches.map((m) => ({
@@ -168,13 +179,7 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
                     {/* Équipe 1 */}
                     <div className="flex items-center gap-2">
                       <Image
-                        src={`/_assets/teamlogos/${
-                          getTeamInfo(
-                            matchOfTheDay.dom_ext === "D"
-                              ? "AJA"
-                              : matchOfTheDay.contre.split(" (")[0]
-                          ).logo
-                        }`}
+                        src={logoOf(matchOfTheDay, matchOfTheDay.dom_ext === "D")}
                         alt="Logo équipe 1"
                         height={24}
                         width={24}
@@ -207,13 +212,7 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
                     {/* Équipe 2 */}
                     <div className="flex items-center gap-2 my-2">
                       <Image
-                        src={`/_assets/teamlogos/${
-                          getTeamInfo(
-                            matchOfTheDay.dom_ext === "E"
-                              ? "AJA"
-                              : matchOfTheDay.contre.split(" (")[0]
-                          ).logo
-                        }`}
+                        src={logoOf(matchOfTheDay, matchOfTheDay.dom_ext === "E")}
                         alt="Logo équipe 2"
                         height={24}
                         width={24}
@@ -284,7 +283,7 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
               {/* Équipe 1 */}
               <div className="flex items-center gap-2">
                 <Image
-                  src={`/_assets/teamlogos/${teamHome.logo}`}
+                  src={logoOf(match, match.dom_ext === "D")}
                   alt={"Logo Equipe 1"}
                   width={28}
                   height={28}
@@ -308,7 +307,7 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
               {/* Équipe 2 */}
               <div className="flex items-center gap-2 my-2">
                 <Image
-                  src={`/_assets/teamlogos/${teamAway.logo}`}
+                  src={logoOf(match, match.dom_ext === "E")}
                   alt={"Logo Equipe 2"}
                   width={28}
                   height={28}

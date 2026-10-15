@@ -167,7 +167,7 @@ export default function Classement({
 
               <div className="flex items-center gap-2 font-Montserrat font-semibold text-left max-w-[110px] sm:max-w-full">
                 <Image
-                  src={`/_assets/teamlogos/${logo}`}
+                  src={team.logoSrc ?? `/_assets/teamlogos/${logo}`}
                   width={20}
                   height={20}
                   alt={`${actualName} logo`}

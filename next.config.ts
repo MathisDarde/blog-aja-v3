@@ -24,6 +24,16 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/**",
       },
+      // Logos des clubs publiés par les scrapers (actuels et d'époque)
+      {
+        protocol: "https",
+        hostname: "mathisdarde.github.io",
+        pathname: "/AJA-Website-Scrapers/**",
+      },
+      // Mêmes données servies en local pour les tests (SCRAPERS_URL=http://localhost:8765)
+      ...(process.env.NODE_ENV === "development"
+        ? [{ protocol: "http" as const, hostname: "localhost", port: "8765" }]
+        : []),
     ],
   },
   async headers() {

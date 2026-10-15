@@ -68,7 +68,7 @@ export default function ClassementAuxerre({ teams }: { teams: Team[] }) {
                 {team.position}.
               </p>
               <Image
-                src={`/_assets/teamlogos/${teamInfo.logo}`}
+                src={team.logoSrc ?? `/_assets/teamlogos/${teamInfo.logo}`}
                 width={120}
                 height={120}
                 alt={`${teamInfo.actualName} logo`}

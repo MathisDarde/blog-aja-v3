@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import { getArticles } from "@/controllers/ArticlesController";
 import { Methodes } from "@/contexts/Interfaces";
-import { clubLogoLibraryFinder, findLocalLogo } from "@/lib/club-logos";
+import { clubLogoLibraryFinder } from "@/lib/club-logos";
+import { DEFAULT_TEAM_LOGO, getTeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
 import { normalizeText } from "@/lib/normalize-text";
 import { MethodeEntry, mentionedMethodes, methodeKey, methodeName } from "@/lib/methodes";
 import MethodesExplorer from "./_components/MethodesExplorer";
@@ -22,7 +23,7 @@ const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slic
 
 function describe(
   methode: Methodes,
-  clubLogo: (clubName: string) => string,
+  clubLogo: (clubName: string, season: number | null) => string,
 ): Omit<MethodeEntry, "methode" | "name" | "search" | "articles"> & {
   keywords: string[];
 } {
@@ -49,7 +50,11 @@ function describe(
       return {
         subtitle: capitalize(methode.date.replace(/\s+/g, " ").trim()),
         image: null,
-        logos: [clubLogo(methode.nomequipe1), clubLogo(methode.nomequipe2)],
+        // Logos des deux équipes à l'époque du match
+        logos: [
+          clubLogo(methode.nomequipe1, seasonOfFrenchDate(methode.date)),
+          clubLogo(methode.nomequipe2, seasonOfFrenchDate(methode.date)),
+        ],
         year: firstYear(methode.date),
         keywords: [methode.nomequipe1, methode.nomequipe2, methode.stade, methode.date],
       };
@@ -65,14 +70,17 @@ function describe(
 }
 
 export default async function MethodesExpertPage() {
-  const [methodes, articles, findLibraryLogo] = await Promise.all([
+  const [methodes, articles, findLibraryLogo, resolver] = await Promise.all([
     getAllMethodes(),
     getArticles(),
     clubLogoLibraryFinder(),
+    getTeamLogoResolver(),
   ]);
-  // Logos du dépôt d'abord, puis bibliothèque en base (logos importés depuis Wikidata)
-  const clubLogo = (clubName: string) =>
-    findLocalLogo(clubName) ?? findLibraryLogo(clubName) ?? DEFAULT_LOGO;
+  // Logo d'époque ou actuel (lib/team-logos), puis bibliothèque en base pour les clubs étrangers
+  const clubLogo = (clubName: string, season: number | null) => {
+    const logo = resolver.logo({ name: clubName, season });
+    return logo === DEFAULT_TEAM_LOGO ? (findLibraryLogo(clubName) ?? DEFAULT_LOGO) : logo;
+  };
 
   // Articles citant chaque méthode, du plus récent au plus ancien
   const citations = new Map<string, { slug: string; title: string }[]>();
@@ -82,7 +90,8 @@ export default async function MethodesExpertPage() {
     }
   }
 
-  const entries: MethodeEntry[] = ((methodes ?? []) as Methodes[]).map((methode) => {
+  const entries: MethodeEntry[] = ((methodes ?? []) as Methodes[]).map((raw) => {
+    const methode = withPeriodClubLogos(raw, resolver);
     const { keywords, ...details } = describe(methode, clubLogo);
     const name = methodeName(methode);
     return {

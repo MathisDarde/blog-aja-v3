@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fetchHistoriqueMatchs, fetchSaisonsIndex, SaisonIndexEntry } from "@/lib/scraped-data";
+import { getTeamLogoResolver } from "@/lib/team-logos";
 import Trajectoire from "./_components/Trajectoire";
 import Confrontations from "./_components/Confrontations";
 
@@ -29,7 +30,16 @@ function KeyFigures({ saisons }: { saisons: SaisonIndexEntry[] }) {
 }
 
 export default async function HistoriquePage() {
-  const [saisons, matchs] = await Promise.all([fetchSaisonsIndex(), fetchHistoriqueMatchs()]);
+  const [saisons, rawMatchs, resolver] = await Promise.all([
+    fetchSaisonsIndex(),
+    fetchHistoriqueMatchs(),
+    getTeamLogoResolver(),
+  ]);
+  // Logo de l'adversaire tel qu'il était à la saison de chaque match
+  const matchs = rawMatchs.map((m) => ({
+    ...m,
+    logo: resolver.logo({ id: m.adversaire_id, name: m.adversaire, season: m.seasonId }),
+  }));
   const oldest = saisons[saisons.length - 1]?.season;
 
   return (

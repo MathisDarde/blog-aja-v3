@@ -424,6 +424,9 @@ export interface MatchAPI {
   formation: string;
   spectateurs: string;
   resultat: string;
+  adversaire_id?: string | null;
+  // Logo de l'adversaire pour la saison du match, résolu côté serveur (lib/team-logos)
+  logoSrc?: string;
 }
 
 export interface Category {
@@ -453,6 +456,9 @@ export interface Team {
   difference: number;
   points: number;
   positionStatus: string;
+  club_id?: string | null;
+  // Logo du club pour la saison affichée, résolu côté serveur (lib/team-logos)
+  logoSrc?: string;
 }
 
 export interface SortParams<T> {

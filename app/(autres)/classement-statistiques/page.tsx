@@ -9,6 +9,7 @@ import {
   fetchSaisonsIndex,
   fetchStatistiques,
 } from "@/lib/scraped-data";
+import { getTeamLogoResolver, withTeamLogos } from "@/lib/team-logos";
 
 export default async function ClassementStatsPage({
   searchParams,
@@ -16,7 +17,12 @@ export default async function ClassementStatsPage({
   searchParams: Promise<{ saison?: string }>;
 }) {
   const { saison } = await searchParams;
-  const [index, meta, effectif] = await Promise.all([fetchSaisonsIndex(), fetchMeta(), fetchEffectif()]);
+  const [index, meta, effectif, resolver] = await Promise.all([
+    fetchSaisonsIndex(),
+    fetchMeta(),
+    fetchEffectif(),
+    getTeamLogoResolver(),
+  ]);
 
   // Saison archivée demandée (?saison=1995), sinon la saison en cours, mise à jour toutes les 2 h
   const requested = Number(saison);
@@ -41,7 +47,11 @@ export default async function ClassementStatsPage({
         />
       </div>
       <div className="mb-10">
-        <Classement key={selected} teams={classement} competitionId={competition.id} />
+        <Classement
+          key={selected}
+          teams={withTeamLogos(classement, archived?.seasonId ?? meta.seasonId, resolver)}
+          competitionId={competition.id}
+        />
       </div>
       <h2 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase mb-4 sm:mb-10">
         Statistiques

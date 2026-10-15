@@ -1,5 +1,6 @@
 import { fetchCalendrier, fetchMeta, fetchSaison, fetchSaisonsIndex } from "@/lib/scraped-data";
 import SeasonSelector from "@/components/SeasonSelector";
+import { ajaLogo, getTeamLogoResolver, withMatchLogos } from "@/lib/team-logos";
 import Calendar from "./_components/Calendar";
 
 export default async function CalendrierPage({
@@ -8,7 +9,7 @@ export default async function CalendrierPage({
   searchParams: Promise<{ saison?: string }>;
 }) {
   const { saison } = await searchParams;
-  const [index, meta] = await Promise.all([fetchSaisonsIndex(), fetchMeta()]);
+  const [index, meta, resolver] = await Promise.all([fetchSaisonsIndex(), fetchMeta(), getTeamLogoResolver()]);
 
   // Saison archivée demandée (?saison=1995), sinon la saison en cours, mise à jour toutes les 2 h
   const requested = Number(saison);
@@ -31,7 +32,11 @@ export default async function CalendrierPage({
           selected={selected}
         />
       </div>
-      <Calendar key={selected} matches={matches} />
+      <Calendar
+        key={selected}
+        matches={withMatchLogos(matches, archived?.seasonId ?? meta.seasonId, resolver)}
+        ajaLogo={ajaLogo(archived?.seasonId ?? meta.seasonId, resolver)}
+      />
     </div>
   );
 }

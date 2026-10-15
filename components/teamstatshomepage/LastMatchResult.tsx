@@ -8,8 +8,11 @@ import { getTeamInfo } from "@/utils/get-team-info";
 
 export default function LastMatchResult({
   lastMatch,
+  ajaLogo,
 }: {
   lastMatch: MatchAPI;
+  // Logos de la saison du match (lib/team-logos) ; à défaut, logos du site
+  ajaLogo?: string;
 }) {
   const auxerreTeam = "AJ Auxerre";
   let teamHomeName = "";
@@ -28,6 +31,9 @@ export default function LastMatchResult({
 
   const teamHomeInfo = getTeamInfo(teamHomeName);
   const teamAwayInfo = getTeamInfo(teamAwayName);
+  const isHome = lastMatch.dom_ext === "D";
+  const homeLogo = (isHome ? ajaLogo : lastMatch.logoSrc) ?? `/_assets/teamlogos/${teamHomeInfo.logo}`;
+  const awayLogo = (isHome ? lastMatch.logoSrc : ajaLogo) ?? `/_assets/teamlogos/${teamAwayInfo.logo}`;
 
   return (
     <div className="flex flex-col items-center">
@@ -41,7 +47,7 @@ export default function LastMatchResult({
           {/* Équipe à domicile */}
           <div className="flex flex-row sm:flex-col items-center gap-2">
             <Image
-              src={`/_assets/teamlogos/${teamHomeInfo.logo}`}
+              src={homeLogo}
               alt={`Logo de ${teamHomeInfo.actualName}`}
               width={100}
               height={100}
@@ -66,7 +72,7 @@ export default function LastMatchResult({
           </p>
           <div className="flex flex-row sm:flex-col items-center justify-center gap-2">
             <Image
-              src={`/_assets/teamlogos/${teamAwayInfo.logo}`}
+              src={awayLogo}
               alt={`Logo de ${teamAwayInfo.actualName}`}
               width={100}
               height={100}

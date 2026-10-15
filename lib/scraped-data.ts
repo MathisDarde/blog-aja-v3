@@ -4,7 +4,7 @@ import localEffectif from "@/public/data/players_data.json";
 import { MatchAPI, PlayerStats, Team } from "@/contexts/Interfaces";
 
 // SCRAPERS_URL permet de tester avec un dossier data/ servi en local
-const SCRAPERS_URL = process.env.SCRAPERS_URL ?? "https://mathisdarde.github.io/AJA-Website-Scrapers/data";
+export const SCRAPERS_URL = process.env.SCRAPERS_URL ?? "https://mathisdarde.github.io/AJA-Website-Scrapers/data";
 
 // Les scrapers tournent toutes les 2 h et GitHub Pages met 10 min en cache : 15 min de cache
 // ici gardent le délai entre la fin d'un match et son affichage sous les ~2 h 30.
@@ -13,7 +13,7 @@ const REVALIDATE_SECONDS = 900;
 export type EffectifMember = (typeof localEffectif)[number];
 
 /** JSON d'un scraper, ou `fallback` si GitHub Pages ne répond pas correctement. */
-async function fetchScrapedData<T>(file: string, fallback: T): Promise<T> {
+export async function fetchScrapedData<T>(file: string, fallback: T): Promise<T> {
   try {
     const res = await fetch(`${SCRAPERS_URL}/${file}`, {
       next: { revalidate: REVALIDATE_SECONDS },
@@ -28,6 +28,7 @@ async function fetchScrapedData<T>(file: string, fallback: T): Promise<T> {
 
 export interface ScrapedMeta {
   season?: string;
+  seasonId?: number;
   competition: { id: string; name: string };
 }
 
@@ -77,6 +78,9 @@ export interface HistoMatch {
   horaire: string;
   dom_ext: string;
   adversaire: string;
+  adversaire_id?: string | null;
+  // Logo de l'adversaire pour la saison du match, résolu côté serveur (lib/team-logos)
+  logo?: string;
   resultat: string;
   buts_aja: number | null;
   buts_adversaire: number | null;

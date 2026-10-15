@@ -1,4 +1,5 @@
 import getAllMethodes from "@/actions/method/get-all-methodes";
+import { getTeamLogoResolver, withPeriodClubLogos } from "@/lib/team-logos";
 import ArticleDisplay from "./ArticleDisplay";
 import { getArticleBySlug } from "@/controllers/ArticlesController";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
@@ -31,7 +32,9 @@ export default async function ArticleClient({ slug }: { slug: string }) {
 
   // null aussi pour un article non publié si l'utilisateur n'est pas admin
   if (!article) notFound();
-  const methodes = await getAllMethodes();
+  // Logos des clubs des parcours selon l'époque (lib/team-logos)
+  const [rawMethodes, resolver] = await Promise.all([getAllMethodes(), getTeamLogoResolver()]);
+  const methodes = rawMethodes?.map((m) => withPeriodClubLogos(m, resolver)) ?? null;
 
   const articleComments = await getCommentsbyArticle(article?.id_article);
 

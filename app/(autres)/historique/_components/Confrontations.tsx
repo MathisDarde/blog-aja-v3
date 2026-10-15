@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { HistoMatch } from "@/lib/scraped-data";
 import { normalizeText } from "@/lib/normalize-text";
@@ -32,6 +33,15 @@ function bilan(matchs: HistoMatch[]) {
 }
 
 export default function Confrontations({ matchs }: { matchs: HistoMatch[] }) {
+  // Logo le plus récent de chaque adversaire, pour la liste et le titre
+  const latestLogo = useMemo(() => {
+    const logos = new Map<string, string>();
+    for (const m of [...matchs].sort((a, b) => b.seasonId - a.seasonId)) {
+      if (m.logo && !logos.has(m.adversaire)) logos.set(m.adversaire, m.logo);
+    }
+    return logos;
+  }, [matchs]);
+
   // Adversaires du plus affronté au moins affronté
   const adversaires = useMemo(() => {
     const counts = new Map<string, number>();
@@ -100,7 +110,12 @@ export default function Confrontations({ matchs }: { matchs: HistoMatch[] }) {
                     name === selected ? "bg-aja-blue text-white" : "hover:bg-gray-100"
                   }`}
                 >
-                  <span className="truncate">{name}</span>
+                  <span className="flex items-center gap-2 truncate">
+                    {latestLogo.get(name) && (
+                      <Image src={latestLogo.get(name)!} alt="" width={20} height={20} className="w-5 h-5 object-contain shrink-0" />
+                    )}
+                    <span className="truncate">{name}</span>
+                  </span>
                   <span className={name === selected ? "text-white/80" : "text-gray-400"}>{count}</span>
                 </button>
               </li>
@@ -110,7 +125,12 @@ export default function Confrontations({ matchs }: { matchs: HistoMatch[] }) {
 
         {/* Bilan et matchs face à l'adversaire choisi */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-Bai_Jamjuree text-2xl font-bold">AJA – {selected}</h3>
+          <h3 className="font-Bai_Jamjuree text-2xl font-bold flex items-center gap-3">
+            {latestLogo.get(selected) && (
+              <Image src={latestLogo.get(selected)!} alt="" width={36} height={36} className="w-9 h-9 object-contain" />
+            )}
+            AJA – {selected}
+          </h3>
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-3">
             {[
               ["Matchs", b.joues],
@@ -146,7 +166,13 @@ export default function Confrontations({ matchs }: { matchs: HistoMatch[] }) {
                           {m.seasonId}-{String(m.seasonId + 1).slice(2)}
                         </Link>
                       </td>
-                      <td className="px-3 py-2 text-gray-600">{m.date}</td>
+                      <td className="px-3 py-2 text-gray-600">
+                        <span className="flex items-center gap-2">
+                          {/* Logo de l'adversaire à l'époque du match */}
+                          {m.logo && <Image src={m.logo} alt="" width={20} height={20} className="w-5 h-5 object-contain shrink-0" />}
+                          {m.date}
+                        </span>
+                      </td>
                       <td className="px-3 py-2">{m.dom_ext === "D" ? "Domicile" : "Extérieur"}</td>
                       <td className="px-3 py-2 text-right tabular-nums">
                         {o ? (
