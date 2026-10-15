@@ -121,7 +121,7 @@ export default function PlayerStatistics({
                   className="bg-white p-4 rounded-md flex flex-col items-center gap-2"
                 >
                   <Image
-                    src={info?.image_url || "/img/pdpdebase.png"}
+                    src={info?.image_url || "/_assets/img/pdpdebase.png"}
                     alt={player.nom}
                     width={240}
                     height={240}
@@ -131,7 +131,8 @@ export default function PlayerStatistics({
                     {player.nom}
                   </p>
                   <p className="font-Montserrat text-xs">
-                    {player?.position}, {info?.age} ans
+                    {player.position}
+                    {(info?.age ?? player.age) ? `, ${info?.age ?? player.age} ans` : ""}
                   </p>
                   <div className="text-center font-Montserrat text-sm">
                     <p>Nombre de matchs : {player.titularisations}</p>
@@ -156,7 +157,7 @@ export default function PlayerStatistics({
                   className="bg-white p-4 rounded-md flex flex-col items-center gap-2"
                 >
                   <Image
-                    src={info?.image_url || "/img/pdpdebase.png"}
+                    src={info?.image_url || "/_assets/img/pdpdebase.png"}
                     alt={player.nom}
                     width={240}
                     height={240}
@@ -166,7 +167,8 @@ export default function PlayerStatistics({
                     {player.nom}
                   </p>
                   <p className="font-Montserrat text-xs">
-                    {player?.position}, {info?.age} ans
+                    {player.position}
+                    {(info?.age ?? player.age) ? `, ${info?.age ?? player.age} ans` : ""}
                   </p>
                   <div className="text-center font-Montserrat text-sm">
                     <p>Nombre de matches : {player.titularisations}</p>

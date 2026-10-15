@@ -14,6 +14,7 @@ import {
   GlassesIcon,
   LayoutDashboard,
   FolderLock,
+  History,
 } from "lucide-react";
 
 export const SidebarData = [
@@ -92,11 +93,20 @@ export const AutresDropdownData = [
     dropdown: false,
   },
   {
+    title: "Historique",
+    icon: <History size={20} />,
+    image: "/_assets/img/ajaldc2010.webp",
+    description:
+      "Le parcours de l'AJA saison par saison depuis 1974, entre Ligue 1 et Ligue 2, et le bilan face à chaque adversaire.",
+    link: "/historique",
+    dropdown: false,
+  },
+  {
     title: "Classements & Stats",
     icon: <ChartBarBig size={20} />,
     image: "/_assets/img/ligue2.jpg",
     description:
-      "Visualisez le classement actuel de la Ligue 1 et consultez les statistiques de vos joueurs préférés.",
+      "Visualisez le classement du championnat, saison en cours ou passée, et les statistiques des joueurs.",
     link: "/classement-statistiques",
     dropdown: false,
   },

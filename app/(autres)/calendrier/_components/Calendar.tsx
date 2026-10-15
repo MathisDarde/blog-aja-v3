@@ -46,8 +46,6 @@ const formatDateTime = (date: dayjs.Dayjs, time?: string) => {
 };
 
 export default function Calendar({ matches }: { matches: MatchAPI[] }) {
-  const [currentMonth, setCurrentMonth] = useState(dayjs());
-
   // parser toutes les dates une fois
   const parsedMatches = useMemo(() => {
     const result = matches.map((m) => ({
@@ -56,6 +54,17 @@ export default function Calendar({ matches }: { matches: MatchAPI[] }) {
     }));
     return result;
   }, [matches]);
+
+  // Mois affiché au départ : aujourd'hui pendant la saison, sinon son premier ou dernier mois
+  // (saisons passées de l'archive, ou intersaison)
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const dates = parsedMatches.map((m) => m.parsedDate).sort((a, b) => a.valueOf() - b.valueOf());
+    const today = dayjs();
+    if (dates.length === 0) return today;
+    if (today.isBefore(dates[0], "month")) return dates[0];
+    if (today.isAfter(dates[dates.length - 1], "month")) return dates[dates.length - 1];
+    return today;
+  });
 
   // créer la grille des jours du mois
   const days = useMemo(() => {
