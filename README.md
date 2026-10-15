@@ -53,6 +53,17 @@ pnpm db:studio     # explorer la base
 
 Le calendrier, le classement, les statistiques et l'effectif viennent du dépôt [AJA-Website-Scrapers](https://github.com/mathisdarde/AJA-Website-Scrapers), qui publie des JSON sur GitHub Pages toutes les 2 heures (saison et championnat détectés automatiquement, cf. `meta.json`). Ils sont lus par `lib/scraped-data.ts`, avec 15 minutes de cache. `public/data/players_data.json` sert de copie de secours pour l'effectif.
 
+## Tests
+
+Les lecteurs fragiles (infobox et palmarès Wikipédia, effectifs de saison, recherche d'articles, méthodes citées, logos d'époque) sont testés sur de vraies pages enregistrées dans `tests/fixtures/` :
+
+```bash
+pnpm test                      # Vitest
+node tests/record-fixtures.mjs # réenregistre les pages Wikipédia
+```
+
+Ils tournent à chaque push avec TypeScript et le lint (`.github/workflows/tests.yml`).
+
 ## Déploiement
 
 Vercel déploie automatiquement chaque push sur `main`. Le `prebuild` (`generate-assets.js`) régénère la liste des drapeaux et logos de clubs à partir de `public/_assets`.

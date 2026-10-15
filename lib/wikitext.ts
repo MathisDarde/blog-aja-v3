@@ -208,9 +208,19 @@ export function parseRecord(stats: string): { v: number; n: number; d: number } 
  * correspondant à `part` (ex. « Entraîneur »), seule celle-ci est lue.
  */
 export function parsePalmares(section: string, part?: RegExp): string[][] {
-  let text = section;
   if (part) {
-    // Sous-partie « … entraîneur » jusqu'au prochain intertitre de même niveau ou plus haut
+    // Sous-partie sans aucun titre (« Statistiques d'entraîneur » chez Guy Roux, un tableau) :
+    // le palmarès est alors dans la section entière
+    const titles = parsePalmaresIn(palmaresPart(section, part));
+    return titles.length > 0 ? titles : parsePalmaresIn(section);
+  }
+  return parsePalmaresIn(section);
+}
+
+/** Sous-partie « … entraîneur » jusqu'au prochain intertitre de même niveau ou plus haut. */
+function palmaresPart(section: string, part: RegExp): string {
+  let text = section;
+  {
     const headings = [...section.matchAll(/^(={2,})\s*(.*?)\s*\1\s*$/gm)];
     const index = headings.findIndex((h) => part.test(h[2]));
     if (index !== -1) {
@@ -222,7 +232,10 @@ export function parsePalmares(section: string, part?: RegExp): string[][] {
       );
     }
   }
+  return text;
+}
 
+function parsePalmaresIn(text: string): string[][] {
   const lines = text.split("\n").map((line) => line.trim());
   const counts = new Map<string, number>();
   // Texte de la puce en cours à chaque niveau (club, compétition…) et dernier intertitre

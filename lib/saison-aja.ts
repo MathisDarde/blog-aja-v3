@@ -36,7 +36,7 @@ export function parseSeason(text: string): { from: number; to: number } | null {
 }
 
 /** {{Feff joueur |num=16 |prénom=Donovan |nom=Léon |pos=Gardien}} → joueurs de l'effectif. */
-function parseSquad(wikitext: string): SquadPlayer[] {
+export function parseSquad(wikitext: string): SquadPlayer[] {
   const players: SquadPlayer[] = [];
   let rest = wikitext;
   for (;;) {
@@ -140,13 +140,16 @@ function matchFormation(players: { name: string; x: number; y: number }[]) {
 }
 
 /** Effectif d'un article de saison : dans l'article, ou dans son modèle {{Effectif de …}}. */
+/** Modèle d'effectif inclus par une page de saison (« Effectif de l'AJ Auxerre 2021-2022 »). */
+export function squadTemplateName(page: string): string | null {
+  return /\{\{\s*(Effectif d[eu'][^}|]*)\}\}/.exec(page)?.[1].trim() ?? null;
+}
+
 async function squadFromPage(page: string): Promise<SquadPlayer[]> {
   const effectif = parseSquad(page);
   if (effectif.length > 0) return effectif;
-  const squadTemplate = /\{\{\s*(Effectif d[eu'][^}|]*)\}\}/.exec(page)?.[1];
-  return squadTemplate
-    ? parseSquad((await getWikipediaWikitext(`Modèle:${squadTemplate.trim()}`)) ?? "")
-    : [];
+  const squadTemplate = squadTemplateName(page);
+  return squadTemplate ? parseSquad((await getWikipediaWikitext(`Modèle:${squadTemplate}`)) ?? "") : [];
 }
 
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
@@ -223,7 +226,7 @@ const EN_POSTES: Record<string, string> = { GK: "Gardien", DF: "Défenseur", MF:
  * {{Football squad player}}, à défaut le tableau des statistiques des joueurs
  * (« |1 |GK |{{Flag|ENG}} !scope="row"|[[David Seaman]] »).
  */
-function parseEnglishSquad(page: string): SquadPlayer[] {
+export function parseEnglishSquad(page: string): SquadPlayer[] {
   // Sections d'effectif seulement : les transferts et les prêts listent d'autres joueurs
   const parts = page.split(/^(==+[^=\n]+==+)\s*$/m);
   let wikitext = "";
