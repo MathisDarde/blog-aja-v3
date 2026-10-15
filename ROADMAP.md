@@ -17,7 +17,7 @@
 
 ## 3. Admin
 
-- [ ] Modération des commentaires : signaler, masquer, supprimer
+- [x] Modération des commentaires : signalement avec motif, masquage auto à 3 signalements, masquer / réafficher / ignorer / supprimer dans le dashboard
 
 ## 4. Contenus
 

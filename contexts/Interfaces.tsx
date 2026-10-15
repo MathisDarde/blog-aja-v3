@@ -2,6 +2,7 @@
 
 import { CommentSchemaType, DraftArticleSchemaType } from "@/types/forms";
 import { ReactNode } from "react";
+import type { CommentReportReason } from "@/db/schema";
 
 export interface Article {
   id_article: string;
@@ -349,13 +350,17 @@ export interface Comment {
   pseudo: string;
   image: string | null;
   userId: string;
+  hidden: boolean;
+  // Renseignés uniquement pour le dashboard admin
+  reportsCount?: number;
+  reportReasons?: CommentReportReason[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 export type CommentSortKey = keyof Pick<
   Comment,
-  "title" | "stars" | "pseudo" | "createdAt" | "updatedAt"
+  "title" | "stars" | "pseudo" | "reportsCount" | "createdAt" | "updatedAt"
 >;
 
 //Interfaces User
@@ -394,6 +399,9 @@ export interface DashboardElementProps {
   type: string;
   state?: string;
   isAdmin?: boolean | null;
+  // Commentaires : état de modération
+  hidden?: boolean;
+  reportsCount?: number;
 }
 
 export interface TabContentContainerProps {

@@ -39,6 +39,7 @@ export default function Dashboard() {
   }, []);
 
   const isLoading = !users || !articles || !methodes || !comments;
+  const toModerate = comments?.filter((c) => (c.reportsCount ?? 0) > 0).length ?? 0;
 
   return (
     <div className="font-Montserrat flex gap-6 max-w-[1300px] h-full mx-auto flex-col p-10">
@@ -72,7 +73,12 @@ export default function Dashboard() {
           {isLoading ? (
             <Skeleton animated={true} height="50px" width="100px" />
           ) : (
-            <p className="text-5xl font-Bai_Jamjuree font-bold">{comments?.length ?? 0}</p>
+            <>
+              <p className="text-5xl font-Bai_Jamjuree font-bold">{comments?.length ?? 0}</p>
+              {toModerate > 0 && (
+                <p className="text-sm font-semibold text-red-600">{toModerate} à modérer</p>
+              )}
+            </>
           )}
         </div>
       </div>

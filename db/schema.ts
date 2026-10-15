@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -135,11 +136,37 @@ export const commentsTable = pgTable("comments_table", {
   articleId: text("articleId")
     .notNull()
     .references(() => articlesTable.id_article, { onDelete: "cascade" }),
+  // Masqué par un admin, ou automatiquement après COMMENT_REPORTS_AUTO_HIDE signalements
+  hidden: boolean("hidden").notNull().default(false),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+export const commentReportReasonEnum = pgEnum("comment_report_reason", [
+  "spam",
+  "insulte",
+  "hors-sujet",
+  "autre",
+]);
+
+// Un signalement par utilisateur et par commentaire ; supprimés quand un admin tranche
+export const commentReportsTable = pgTable(
+  "comment_reports_table",
+  {
+    id_report: text("id_report").primaryKey(),
+    commentId: text("commentId")
+      .notNull()
+      .references(() => commentsTable.id_comment, { onDelete: "cascade" }),
+    userId: text("userId")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    reason: commentReportReasonEnum("reason").notNull(),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
+  },
+  (table) => [unique("comment_report_unique").on(table.commentId, table.userId)],
+);
 
 export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
   id_methode: text("id_methode").primaryKey(),
@@ -256,6 +283,7 @@ export const schema = {
   articlesTable,
   draftTable,
   commentsTable,
+  commentReportsTable,
   methodeExpertSaisonTable,
   methodeExpertMatchTable,
   methodeExpertJoueurTable,
@@ -268,6 +296,8 @@ export type SelectUser = typeof user.$inferSelect;
 export type SelectPost = typeof articlesTable.$inferSelect;
 
 export type SelectComment = typeof commentsTable.$inferSelect;
+
+export type CommentReportReason = (typeof commentReportReasonEnum.enumValues)[number];
 
 export type SelectArticle = typeof articlesTable.$inferSelect;
 

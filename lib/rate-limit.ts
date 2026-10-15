@@ -27,6 +27,12 @@ const limiters = redis
         limiter: Ratelimit.slidingWindow(5, "1 m"),
         prefix: "rl:comment",
       }),
+      // signalement de commentaires (par utilisateur)
+      report: new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, "10 m"),
+        prefix: "rl:report",
+      }),
       // upload d'images / vidéos (par utilisateur)
       upload: new Ratelimit({
         redis,
@@ -36,7 +42,7 @@ const limiters = redis
     }
   : null;
 
-export type RateLimitBucket = "auth" | "comment" | "upload";
+export type RateLimitBucket = "auth" | "comment" | "report" | "upload";
 
 export function getClientIp(headers: Headers) {
   return (

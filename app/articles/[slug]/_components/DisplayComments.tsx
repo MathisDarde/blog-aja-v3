@@ -116,6 +116,7 @@ export default function DisplayArticleComments({
                                 comment={comment} 
                                 userId={user_id} 
                                 onEdit={handleEditComment}
+                                allowReport
                             />
                           </React.Fragment>
                         ))}

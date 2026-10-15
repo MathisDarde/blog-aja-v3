@@ -2,6 +2,9 @@
 
 import {
   ArchiveRestore,
+  Eye,
+  EyeOff,
+  FlagOff,
   Pencil,
   SquareArrowOutUpRight,
   Trash,
@@ -20,6 +23,10 @@ import deleteAccount from "@/actions/user/delete-account";
 import giveUserAdmin from "@/actions/user/set-user-admin";
 import removeUserAdminRole from "@/actions/user/remove-user-admin";
 import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
+import {
+  dismissCommentReportsAction,
+  setCommentHiddenAction,
+} from "@/actions/comment/moderate-comment";
 import { DashboardElementProps } from "@/contexts/Interfaces";
 
 export default function ContextPopup({
@@ -27,6 +34,8 @@ export default function ContextPopup({
   type,
   state,
   isAdmin,
+  hidden,
+  reportsCount,
 }: DashboardElementProps) {
   const router = useRouter();
 
@@ -101,6 +110,18 @@ export default function ContextPopup({
     }
   };
 
+  const moderateComment = async (
+    action: () => Promise<{ success: boolean; message: string }>
+  ) => {
+    const result = await action();
+    if (result.success) {
+      toast.success(result.message);
+      window.location.reload();
+    } else {
+      toast.error(result.message);
+    }
+  };
+
   const previewElement = async (id: string, type: string) => {
     switch (type) {
       case "user":
@@ -170,6 +191,25 @@ export default function ContextPopup({
             onClick={() => archiveElement(id)}
           >
             <ArchiveRestore size={20} /> Archiver
+          </div>
+        )}
+
+        {type == "comment" && (
+          <div
+            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
+            onClick={() => moderateComment(() => setCommentHiddenAction(id, !hidden))}
+          >
+            {hidden ? <Eye size={20} /> : <EyeOff size={20} />}{" "}
+            {hidden ? "Réafficher" : "Masquer"}
+          </div>
+        )}
+
+        {type == "comment" && !hidden && (reportsCount ?? 0) > 0 && (
+          <div
+            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
+            onClick={() => moderateComment(() => dismissCommentReportsAction(id))}
+          >
+            <FlagOff size={20} /> Ignorer les signalements
           </div>
         )}
 
