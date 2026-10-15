@@ -134,6 +134,22 @@ export const CommentSchema = z.object({
     .nonempty({ message: "Le contenu du message ne peut pas être vide." }),
 });
 
+export const QuizQuestionSchema = z
+  .object({
+    question: z.string().trim().min(5, { message: "La question est trop courte." }),
+    answers: z
+      .array(z.string().trim().min(1, { message: "Une réponse ne peut pas être vide." }))
+      .min(2, { message: "Il faut au moins deux réponses." })
+      .max(6, { message: "Six réponses au maximum." }),
+    correctIndex: z.number().int().min(0),
+    explanation: z.string().trim().optional(),
+    active: z.boolean(),
+  })
+  .refine((data) => data.correctIndex < data.answers.length, {
+    message: "Choisissez la bonne réponse.",
+    path: ["correctIndex"],
+  });
+
 export const SaisonTitulaireSchema = z.object({
   nom: z.string().default(""),
   numero: z.string().default(""),

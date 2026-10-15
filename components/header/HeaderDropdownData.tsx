@@ -146,6 +146,14 @@ export const AdminDropdownData = [
     dropdown: false,
   },
   {
+    title: "Questions du quiz",
+    icon: <MessageCircle size={20} />,
+    image: "/_assets/img/martins.webp",
+    description: "Ajouter, modifier ou désactiver les questions du quiz",
+    link: "/admin/quiz",
+    dropdown: false,
+  },
+  {
     title: "Dashboard Admin",
     icon: <LayoutDashboard size={20} />,
     image: "/_assets/img/adminicon.jpg",

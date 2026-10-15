@@ -433,16 +433,6 @@ export interface Category {
   type?: string;
 }
 
-export interface Answer {
-  text: string;
-  correct: boolean;
-}
-
-export interface Question {
-  question: string;
-  answers: Answer[];
-}
-
 export interface ButtonProps {
   children: ReactNode;
   onClick?: () => void;

@@ -33,6 +33,12 @@ const limiters = redis
         limiter: Ratelimit.slidingWindow(10, "10 m"),
         prefix: "rl:report",
       }),
+      // parties de quiz lancées (par utilisateur, ou par IP pour un visiteur)
+      quiz: new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(20, "10 m"),
+        prefix: "rl:quiz",
+      }),
       // upload d'images / vidéos (par utilisateur)
       upload: new Ratelimit({
         redis,
@@ -42,7 +48,7 @@ const limiters = redis
     }
   : null;
 
-export type RateLimitBucket = "auth" | "comment" | "report" | "upload";
+export type RateLimitBucket = "auth" | "comment" | "report" | "quiz" | "upload";
 
 export function getClientIp(headers: Headers) {
   return (

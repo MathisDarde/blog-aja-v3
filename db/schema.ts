@@ -250,6 +250,35 @@ export const methodeExpertCoachTable = pgTable("methode_expert_coach_table", {
     .$onUpdate(() => new Date()),
 });
 
+// Questions du quiz : la bonne réponse ne quitte jamais le serveur avant que le joueur ait répondu
+export const quizQuestionsTable = pgTable("quiz_questions_table", {
+  id_question: text("id_question").primaryKey(),
+  question: text("question").notNull(),
+  answers: text("answers").array().notNull(),
+  correctIndex: integer("correctIndex").notNull(),
+  // Affichée après la réponse
+  explanation: text("explanation"),
+  // Une question désactivée n'est plus tirée au sort
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+// Une partie : questions tirées au sort, réponses données dans l'ordre, score calculé côté serveur.
+// userId est vide pour un visiteur non connecté (partie jouable, mais hors classement).
+export const quizAttemptsTable = pgTable("quiz_attempts_table", {
+  id_attempt: text("id_attempt").primaryKey(),
+  userId: text("userId").references(() => user.id, { onDelete: "cascade" }),
+  questionIds: text("questionIds").array().notNull(),
+  answers: integer("answers").array().notNull().default([]),
+  score: integer("score").notNull().default(0),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  finishedAt: timestamp("finishedAt"),
+});
+
 export const likedArticles = pgTable("likedArticles", {
   id: text("id").primaryKey(),
   userId: text("userId")
@@ -289,6 +318,8 @@ export const schema = {
   methodeExpertJoueurTable,
   methodeExpertCoachTable,
   clubsTable,
+  quizQuestionsTable,
+  quizAttemptsTable,
 };
 
 export type SelectUser = typeof user.$inferSelect;
@@ -313,3 +344,4 @@ export type SelectMatchMethode = typeof methodeExpertMatchTable.$inferSelect;
 
 export type SelectLikedArticles = typeof likedArticles.$inferSelect;
 export type SelectClub = typeof clubsTable.$inferSelect;
+export type SelectQuizQuestion = typeof quizQuestionsTable.$inferSelect;

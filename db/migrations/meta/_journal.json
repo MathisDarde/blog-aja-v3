@@ -148,6 +148,13 @@
       "when": 1792059464124,
       "tag": "0020_kind_the_watchers",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792064683298,
+      "tag": "0021_flashy_jack_flag",
+      "breakpoints": true
     }
   ]
 }

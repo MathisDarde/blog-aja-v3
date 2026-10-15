@@ -1,108 +1,66 @@
-"use client";
+import Image from "next/image";
+import { Trophy } from "lucide-react";
+import { getQuizLeaderboard } from "@/controllers/QuizController";
+import QuizGame from "./_components/QuizGame";
 
-import { useState, useEffect } from "react";
-import { questions } from "./_components/Questions";
+// Classement régénéré au plus toutes les 60 s, et dès qu'un joueur connecté termine une partie
+export const revalidate = 60;
 
-export default function Home() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [score, setScore] = useState<number>(0);
-  const [showingQuestion, setShowingQuestion] = useState<boolean>(true);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+const formatDuration = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const rest = Math.round(seconds % 60);
+  return minutes > 0 ? `${minutes} min ${String(rest).padStart(2, "0")} s` : `${rest} s`;
+};
 
-  const startQuiz = (): void => {
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setShowingQuestion(true);
-    setSelectedAnswer(null);
-  };
+const MEDALS = ["text-yellow-500", "text-gray-400", "text-amber-700"];
 
-  useEffect(() => {
-    startQuiz();
-  }, []);
-
-  const handleAnswerClick = (isCorrect: boolean, index: number): void => {
-    if (selectedAnswer !== null) return;
-
-    setSelectedAnswer(index);
-
-    if (isCorrect) {
-      setScore((prevScore) => prevScore + 1);
-    }
-  };
-
-  const handleNextButton = (): void => {
-    setSelectedAnswer(null);
-
-    if (currentQuestionIndex + 1 < questions.length) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    } else {
-      setShowingQuestion(false);
-    }
-  };
-
-  const currentQuestion = questions[currentQuestionIndex];
+export default async function QuizPage() {
+  const leaderboard = await getQuizLeaderboard();
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">
-      <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase">
+      <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase mb-4 sm:mb-10">
         Quiz AJ Auxerre
       </h1>
-      <p className="my-4 font-Montserrat px-4 py-2 rounded-md bg-yellow-400 inline-flex">Nouvelle fonctionnalité bientôt disponible !</p>
-      <div className="bg-white max-w-[700px] p-6 rounded-md mx-auto">
-        <div className="quiz-container">
-          {showingQuestion ? (
-            <>
-              <div className="question-container mb-6">
-                <h2 className="text-sm sm:text-lg font-medium mb-4 font-Montserrat">
-                  {currentQuestionIndex + 1}. {currentQuestion.question}
-                </h2>
-                <div className="flex flex-col gap-3">
-                  {currentQuestion.answers.map((answer, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleAnswerClick(answer.correct, index)}
-                      className={`p-3 border rounded-md text-left transition-colors font-Montserrat text-sm sm:text-base ${
-                        selectedAnswer === null
-                          ? "hover:bg-gray-100"
-                          : selectedAnswer === index
-                          ? answer.correct
-                            ? "bg-green-200 border-green-500"
-                            : "bg-red-200 border-red-500"
-                          : answer.correct && selectedAnswer !== null
-                          ? "bg-green-200 border-green-500"
-                          : "opacity-70"
-                      }`}
-                      disabled={selectedAnswer !== null}
-                    >
-                      {answer.text}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {selectedAnswer !== null && (
-                <button
-                  onClick={handleNextButton}
-                  className="w-full p-3 bg-aja-blue border font-Montserrat text-sm sm:text-base text-white rounded-md transition-colors hover:bg-white hover:text-aja-blue hover: border-aja-blue"
-                >
-                  {currentQuestionIndex + 1 < questions.length
-                    ? "Suivant"
-                    : "Voir le résultat"}
-                </button>
-              )}
-            </>
+      <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
+        <div className="bg-white p-6 rounded-md">
+          <QuizGame />
+        </div>
+
+        <div className="bg-white p-6 rounded-md text-left font-Montserrat">
+          <h2 className="font-Bai_Jamjuree text-xl font-bold uppercase mb-4 flex items-center gap-2">
+            <Trophy className="text-aja-blue" size={22} /> Classement
+          </h2>
+          {leaderboard.length === 0 ? (
+            <p className="text-sm text-gray-600">
+              Personne n&apos;a encore terminé de partie en étant connecté : la première place est à
+              prendre !
+            </p>
           ) : (
-            <div className="score-container text-center">
-              <h2 className="text-sm sm:text-lg font-medium mb-4 font-Montserrat">
-                Tu as réussi {score} questions sur {questions.length} !
-              </h2>
-              <button
-                onClick={startQuiz}
-                className="w-full p-3 bg-aja-blue border font-Montserrat text-sm sm:text-base text-white rounded-md transition-colors hover:bg-white hover:text-aja-blue hover:border-aja-blue"
-              >
-                Relancer le quiz
-              </button>
-            </div>
+            <ol className="space-y-2">
+              {leaderboard.map((entry, index) => (
+                <li key={entry.userId} className="flex items-center gap-3 text-sm">
+                  <span className={`w-6 text-center font-bold ${MEDALS[index] ?? "text-gray-500"}`}>
+                    {index + 1}
+                  </span>
+                  <Image
+                    src={entry.image || "/_assets/img/pdpdebase.png"}
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <span className="flex-1 truncate font-semibold">{entry.pseudo}</span>
+                  <span className="text-right">
+                    <span className="font-bold text-aja-blue">
+                      {entry.score}/{entry.total}
+                    </span>
+                    <span className="block text-xs text-gray-500">{formatDuration(entry.seconds)}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
           )}
         </div>
       </div>

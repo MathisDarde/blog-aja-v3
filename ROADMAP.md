@@ -21,7 +21,7 @@
 
 ## 4. Contenus
 
-- [ ] Quiz en base, édité depuis l'admin, questions tirées au hasard, classement des scores
+- [x] Quiz en base : 10 questions tirées au hasard, correction côté serveur, classement des joueurs connectés, admin `/admin/quiz`
 - [x] Page `/methodes-expert` : toutes les méthodes par type, recherche, fiche en popup partageable (`?m=`), articles qui les citent
 - [ ] Boutique : la remplir (liens vers boutique.aja.fr) ou la retirer du menu
 

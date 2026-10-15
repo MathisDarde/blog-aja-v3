@@ -14,6 +14,7 @@ import {
   UpdateMethodeCoachSchema,
   UpdateMethodeMatchSchema,
   UpdateMethodeSaisonSchema,
+  QuizQuestionSchema,
 } from "@/app/schema";
 import { z, ZodIssue } from "zod";
 
@@ -24,6 +25,7 @@ export type ArticleSchemaType = z.infer<typeof ArticleSchema>;
 export type UpdateArticleSchemaType = z.infer<typeof UpdateArticleSchema>;
 export type DraftArticleSchemaType = z.infer<typeof DraftArticleSchema>;
 export type CommentSchemaType = z.infer<typeof CommentSchema>;
+export type QuizQuestionSchemaType = z.infer<typeof QuizQuestionSchema>;
 export type MethodeSaisonSchemaType = z.infer<typeof MethodeSaisonSchema>;
 export type UpdateMethodeSaisonSchemaType = z.infer<
   typeof UpdateMethodeSaisonSchema
