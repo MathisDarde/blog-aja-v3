@@ -171,7 +171,8 @@ export interface MethodeSaison extends BaseMethodeData {
     | "4-4-1-1"
     | "5-3-2"
     | "3-4-3"
-    | "4-2-4";
+    | "4-2-4"
+    | "4-3-1-2";
   titulaires: LightTituPlayerType[];
   remplacants: LightRempPlayerType[];
 }
@@ -193,7 +194,8 @@ export interface UpdateMethodeSaisonFromProps {
       | "4-4-1-1"
       | "5-3-2"
       | "3-4-3"
-      | "4-2-4";
+      | "4-2-4"
+      | "4-3-1-2";
     titulaires: LightTituPlayerType[];
     remplacants: LightRempPlayerType[];
   };
@@ -249,7 +251,8 @@ export interface MethodeMatch extends BaseMethodeData {
     | "4-4-1-1"
     | "5-3-2"
     | "3-4-3"
-    | "4-2-4";
+    | "4-2-4"
+    | "4-3-1-2";
   couleur1equipe2: string;
   couleur2equipe2: string;
   nomequipe2: string;
@@ -265,7 +268,8 @@ export interface MethodeMatch extends BaseMethodeData {
     | "4-4-1-1"
     | "5-3-2"
     | "3-4-3"
-    | "4-2-4";
+    | "4-2-4"
+    | "4-3-1-2";
   titulairesequipe1: TituPlayerType[];
   titulairesequipe2: TituPlayerType[];
   remplacantsequipe1: RempPlayerType[];
@@ -293,7 +297,8 @@ export interface UpdateMethodeMatchFromProps {
       | "4-4-1-1"
       | "5-3-2"
       | "3-4-3"
-      | "4-2-4";
+      | "4-2-4"
+      | "4-3-1-2";
     couleur1equipe2: string;
     couleur2equipe2: string;
     nomequipe2: string;
@@ -309,7 +314,8 @@ export interface UpdateMethodeMatchFromProps {
       | "4-4-1-1"
       | "5-3-2"
       | "3-4-3"
-      | "4-2-4";
+      | "4-2-4"
+      | "4-3-1-2";
     titulairesequipe1: TituPlayerType[];
     titulairesequipe2: TituPlayerType[];
     remplacantsequipe1: RempPlayerType[];

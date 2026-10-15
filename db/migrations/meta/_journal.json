@@ -134,6 +134,13 @@
       "when": 1791965542062,
       "tag": "0018_clubs_table",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1792053585978,
+      "tag": "0019_mute_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

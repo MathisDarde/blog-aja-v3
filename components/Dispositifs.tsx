@@ -108,6 +108,13 @@ const FORMATIONS: Formation[] = [
     postes: ["Gardien", ...DEF4, "Milieu Central Gauche", "Milieu Central Droit", "Ailier Gauche", "Buteur Gauche", "Buteur Droit", "Ailier Droit"],
     lignes: [DEF4, ["Milieu Central Gauche", "Milieu Central Droit"], ["Ailier Gauche", "Buteur Gauche", "Buteur Droit", "Ailier Droit"]],
   },
+  {
+    // Milieu en losange, comme le Milan d'Ancelotti en finale de Ligue des champions 2005
+    id: 14,
+    name: "4-3-1-2",
+    postes: ["Gardien", ...DEF4, "Milieu Relayeur Gauche", "Milieu Sentinelle", "Milieu Relayeur Droit", "Meneur de Jeu", "Buteur Gauche", "Buteur Droit"],
+    lignes: [DEF4, ["Milieu Sentinelle"], ["Milieu Relayeur Gauche", "Milieu Relayeur Droit"], ["Meneur de Jeu"], ["Buteur Gauche", "Buteur Droit"]],
+  },
 ];
 
 // Marge latérale selon le nombre de joueurs de la ligne (en %)

@@ -1,0 +1,1 @@
+ALTER TYPE "public"."compos" ADD VALUE '4-3-1-2';

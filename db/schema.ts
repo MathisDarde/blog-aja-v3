@@ -28,6 +28,7 @@ export const composEnum = pgEnum("compos", [
   "5-3-2",
   "3-4-3",
   "4-2-4",
+  "4-3-1-2",
 ]);
 
 export const user = pgTable("user", {

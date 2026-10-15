@@ -11,4 +11,5 @@ export const GameSystems = [
   "5-3-2",
   "3-4-3",
   "4-2-4",
+  "4-3-1-2",
 ] as const;
