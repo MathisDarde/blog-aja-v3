@@ -39,6 +39,10 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // Ancienne page boutique (retirée, elle était dans le sitemap)
+  async redirects() {
+    return [{ source: "/boutique", destination: "/", permanent: true }];
+  },
 };
 
 export default nextConfig;

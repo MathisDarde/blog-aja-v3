@@ -2,10 +2,7 @@
 
 import { Menu, X, ChevronDown, LogIn } from "lucide-react";
 import { useState } from "react";
-import SidebarData, {
-  AutresDropdownData,
-  AdminDropdownData,
-} from "./HeaderDropdownData";
+import SidebarData from "./HeaderDropdownData";
 import Link from "next/link";
 import Image from "next/image";
 import Button from "../BlueButton";
@@ -14,8 +11,8 @@ import Skeleton from "../CustomSkeleton";
 
 export default function RespHeader() {
   const [isOpen, setIsOpen] = useState(false);
-  const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
-  const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
+  // Titre du menu déroulant ouvert (un seul à la fois)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // On récupère isPending
   const { data: session, isPending } = authClient.useSession();
@@ -56,7 +53,7 @@ export default function RespHeader() {
               val.type === "admin" ? user?.admin : true
             ).map((element, idx) => (
               <div key={idx}>
-                {!element.dropdown ? (
+                {!element.items ? (
                   <Link href={element.link}>
                     <div
                       className="flex items-center gap-3 py-1  text-gray-600 hover:text-aja-blue"
@@ -70,15 +67,9 @@ export default function RespHeader() {
                   <>
                     <div
                       className="flex items-center justify-between py-1 cursor-pointer"
-                      onClick={() => {
-                        if (element.type === "vanilla") {
-                          setOpenOthersDropdown((prev) => !prev);
-                          setOpenAdminDropdown(false);
-                        } else if (element.type === "admin") {
-                          setOpenAdminDropdown((prev) => !prev);
-                          setOpenOthersDropdown(false);
-                        }
-                      }}
+                      onClick={() =>
+                        setOpenDropdown((prev) => (prev === element.title ? null : element.title))
+                      }
                     >
                       <div className="flex items-center gap-3 text-gray-600">
                         {element.icon}
@@ -87,20 +78,13 @@ export default function RespHeader() {
                         </p>
                       </div>
                       <ChevronDown
-                        className={`transition-transform text-gray-600 ${(element.type === "vanilla" && openOthersDropdown) ||
-                          (element.type === "admin" && openAdminDropdown)
-                          ? "rotate-180"
-                          : ""
-                          }`}
+                        className={`transition-transform text-gray-600 ${
+                          openDropdown === element.title ? "rotate-180" : ""
+                        }`}
                       />
                     </div>
 
-                    {(element.type === "vanilla" && openOthersDropdown
-                      ? AutresDropdownData
-                      : element.type === "admin" && openAdminDropdown
-                        ? AdminDropdownData
-                        : []
-                    ).map((sub, subIdx) => (
+                    {(openDropdown === element.title ? element.items : []).map((sub, subIdx) => (
                       <Link
                         href={sub.link}
                         key={subIdx}

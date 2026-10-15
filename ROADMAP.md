@@ -23,9 +23,13 @@
 
 - [x] Quiz en base : 10 questions tirées au hasard, correction côté serveur, classement des joueurs connectés, admin `/admin/quiz`
 - [x] Page `/methodes-expert` : toutes les méthodes par type, recherche, fiche en popup partageable (`?m=`), articles qui les citent
-- [ ] Boutique : la remplir (liens vers boutique.aja.fr) ou la retirer du menu
+- [x] Boutique retirée (redirigée vers l'accueil) ; menu « Divers » séparé en « Histoire » (historique, palmarès, méthodes expert) et « Divers » (effectif, calendrier, classement, quiz, chants)
+- [x] Effectif actuel : cartes par poste, 4 par ligne, infos toujours visibles
+- [x] Historique : saisons archivées depuis 1974-1975, sélecteur de saison sur le calendrier et le classement, page `/historique` (trajectoire L1/L2, confrontations, toutes les saisons)
+- [x] Logos des clubs selon la saison partout (Wikipédia FR + `logos-historiques-manuels.json` des scrapers)
 
 ## 5. Fiabilité
 
-- [ ] Tests des parseurs Wikipédia/Wikidata (`lib/wikitext.ts`, `lib/wikidata.ts`, `lib/squad.ts`)
+- [x] Scrapers automatiques : saison et championnat détectés, passage toutes les 2 h, défi anti-robot de Transfermarkt résolu, échecs signalés par mail
+- [x] Tests des parseurs sur pages réelles : 43 tests pytest (scrapers) + 28 tests Vitest (blog), à chaque push
 - [ ] Migrer `next lint` vers l'ESLint CLI (`npx @next/codemod@canary next-lint-to-eslint-cli .`) avant Next 16

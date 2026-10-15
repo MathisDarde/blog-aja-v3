@@ -2,7 +2,6 @@ import React from "react";
 import {
   House,
   Newspaper,
-  ShoppingCart,
   Ellipsis,
   Trophy,
   List,
@@ -15,47 +14,20 @@ import {
   LayoutDashboard,
   FolderLock,
   History,
+  Landmark,
 } from "lucide-react";
 
-export const SidebarData = [
+// Passé du club
+export const HistoireDropdownData = [
   {
-    title: "Accueil",
-    icon: <House size={20} />,
-    link: "/",
-    type: "vanilla",
+    title: "Historique",
+    icon: <History size={20} />,
+    image: "/_assets/img/ajaldc2010.webp",
+    description:
+      "Le parcours de l'AJA saison par saison depuis 1974, entre Ligue 1 et Ligue 2, et le bilan face à chaque adversaire.",
+    link: "/historique",
     dropdown: false,
   },
-  {
-    title: "Articles & Histoires",
-    icon: <Newspaper size={20} />,
-    link: "/articles",
-    type: "vanilla",
-    dropdown: false,
-  },
-  {
-    title: "Boutique",
-    icon: <ShoppingCart size={20} />,
-    link: "/boutique",
-    type: "vanilla",
-    dropdown: false,
-  },
-  {
-    title: "Divers",
-    icon: <Ellipsis size={20} />,
-    link: "/dropdowndivers",
-    type: "vanilla",
-    dropdown: true,
-  },
-  {
-    title: "Admin",
-    icon: <FolderLock size={20} />,
-    link: "/dropdownadmin",
-    type: "admin",
-    dropdown: true,
-  },
-];
-
-export const AutresDropdownData = [
   {
     title: "Palmarès & Records",
     icon: <Trophy size={20} />,
@@ -74,6 +46,10 @@ export const AutresDropdownData = [
     link: "/methodes-expert",
     dropdown: false,
   },
+];
+
+// Saison en cours, jeux et culture du club
+export const DiversDropdownData = [
   {
     title: "Effectif Actuel",
     icon: <List size={20} />,
@@ -90,15 +66,6 @@ export const AutresDropdownData = [
     description:
       "Accédez maintenant au calendrier complet des matchs de l'AJ Auxerre sur la saison en cours.",
     link: "/calendrier",
-    dropdown: false,
-  },
-  {
-    title: "Historique",
-    icon: <History size={20} />,
-    image: "/_assets/img/ajaldc2010.webp",
-    description:
-      "Le parcours de l'AJA saison par saison depuis 1974, entre Ligue 1 et Ligue 2, et le bilan face à chaque adversaire.",
-    link: "/historique",
     dropdown: false,
   },
   {
@@ -172,6 +139,24 @@ export const AdminDropdownData = [
     link: "/admin/dashboard",
     dropdown: false,
   },
+];
+
+export interface MenuEntry {
+  title: string;
+  icon: React.ReactNode;
+  link: string;
+  // « admin » : visible des administrateurs seulement
+  type: "vanilla" | "admin";
+  // Liens du menu déroulant ; absent pour un lien direct
+  items?: typeof DiversDropdownData;
+}
+
+export const SidebarData: MenuEntry[] = [
+  { title: "Accueil", icon: <House size={20} />, link: "/", type: "vanilla" },
+  { title: "Articles & Histoires", icon: <Newspaper size={20} />, link: "/articles", type: "vanilla" },
+  { title: "Histoire", icon: <Landmark size={20} />, link: "/historique", type: "vanilla", items: HistoireDropdownData },
+  { title: "Divers", icon: <Ellipsis size={20} />, link: "/calendrier", type: "vanilla", items: DiversDropdownData },
+  { title: "Admin", icon: <FolderLock size={20} />, link: "/admin/dashboard", type: "admin", items: AdminDropdownData },
 ];
 
 export default SidebarData;

@@ -3,18 +3,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, LogIn } from "lucide-react";
-import SidebarData, {
-  AdminDropdownData,
-  AutresDropdownData,
-} from "./HeaderDropdownData";
+import SidebarData from "./HeaderDropdownData";
 import Image from "next/image";
 import Button from "../BlueButton";
 import { authClient } from "@/lib/auth-client";
 import Skeleton from "../CustomSkeleton";
 
+// Une ligne par menu : 3 cartes pour Histoire, 5 pour Divers et Admin
+const GRID_COLUMNS: Record<number, string> = {
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-4",
+  5: "lg:grid-cols-5",
+};
+
 export default function HeaderLarge() {
-  const [openOthersDropdown, setOpenOthersDropdown] = useState(false);
-  const [openAdminDropdown, setOpenAdminDropdown] = useState(false);
+  // Titre du menu déroulant ouvert (un seul à la fois)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,8 +34,7 @@ export default function HeaderLarge() {
         !target.closest(".dropdown-toggle") &&
         !target.closest(".dropdown-menu")
       ) {
-        setOpenOthersDropdown(false);
-        setOpenAdminDropdown(false);
+        setOpenDropdown(null);
       }
     };
 
@@ -61,42 +64,32 @@ export default function HeaderLarge() {
                 <li
                   className="dropdown-toggle flex items-center font-Montserrat text-sm font-semibold text-gray-500 cursor-pointer hover:scale-105 transition-transform"
                   onClick={() => {
-                    if (val.dropdown) {
-                      if (val.type === "vanilla") {
-                        setOpenOthersDropdown((prev) => !prev);
-                        setOpenAdminDropdown(false);
-                      } else if (val.type === "admin") {
-                        setOpenAdminDropdown((prev) => !prev);
-                        setOpenOthersDropdown(false);
-                      }
+                    if (val.items) {
+                      setOpenDropdown((prev) => (prev === val.title ? null : val.title));
                     } else {
                       window.location.pathname = val.link;
                     }
                   }}
                 >
                   <span>{val.title}</span>
-                  {val.dropdown && (
+                  {val.items && (
                     <ChevronDown
-                      className={`ml-2 transition-transform ${(val.type === "vanilla" && openOthersDropdown) ||
-                          (val.type === "admin" && openAdminDropdown)
-                          ? "rotate-180"
-                          : ""
-                        }`}
+                      className={`ml-2 transition-transform ${openDropdown === val.title ? "rotate-180" : ""}`}
                     />
                   )}
                 </li>
 
-                {(val.type === "vanilla" && openOthersDropdown) ||
-                  (val.type === "admin" && openAdminDropdown) ? (
+                {val.items && openDropdown === val.title ? (
                   <div
                     ref={dropdownRef}
                     className="dropdown-menu absolute top-full left-0 w-full z-50 bg-white shadow-lg py-6"
                   >
-                    <div className="mx-auto max-w-[1000px] xl:max-w-[1250px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-6 px-6">
-                      {(val.type === "vanilla"
-                        ? AutresDropdownData
-                        : AdminDropdownData
-                      ).map((item, idx) => (
+                    <div
+                      className={`mx-auto max-w-[1000px] xl:max-w-[1250px] grid grid-cols-1 sm:grid-cols-2 ${
+                        GRID_COLUMNS[val.items.length] ?? "lg:grid-cols-4"
+                      } gap-3 xl:gap-6 px-6`}
+                    >
+                      {val.items.map((item, idx) => (
                         <div
                           key={idx}
                           className="group cursor-pointer hover:bg-gray-100 p-4 rounded-lg transition-colors"

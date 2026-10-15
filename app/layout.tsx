@@ -119,7 +119,6 @@ export const metadata: Metadata = {
     "Vidéos AJA",
     "Match AJA",
     "Billet AJA",
-    "Boutique AJA",
     "Maillot AJA",
     "Anciens joueurs AJA",
     "AJA Dortmund",

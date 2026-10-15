@@ -31,7 +31,6 @@ export default function Footer() {
         { label: "A propos", href: "/about" },
         { label: "Contactez-moi", href: "mailto:contact@memoiredauxerrois.fr" },
         { label: "Mon compte", href: "/moncompte" },
-        { label: "Boutique", href: "/boutique" },
         { label: "Règles générales d'utilisation", href: "/utilisation" },
         { label: "Charte graphique", href: "/charte-graphique" },
       ],
