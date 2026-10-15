@@ -2,6 +2,7 @@ import { inArray, sql } from "drizzle-orm";
 import { db } from "@/db/db";
 import { clubsTable } from "@/db/schema";
 import logosList from "@/lib/image-assets/clubs-list.json";
+import { normalizeText } from "@/lib/normalize-text";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import {
   downloadCommonsImage,
@@ -37,13 +38,7 @@ const FULL_NAME_ALIASES: Record<string, string> = {
   queensparkrangers: "qpr",
 };
 
-const normalize = (value: string) =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
+const normalize = normalizeText;
 
 const localLogoStems = new Map(
   logosList.map((file) => [file.replace(/^logo/, "").replace(/\.[a-z]+$/, ""), file]),
@@ -85,6 +80,30 @@ const nameKey = (name: string) =>
   `nom:${normalize(withoutNote(name)).replace(/ /g, "-")}`;
 
 /** Clé d'un club dans la map des logos : son identifiant Wikidata, à défaut son nom. */
+/**
+ * Recherche par nom dans la bibliothèque de logos (clubs_table) : nom exact, sinon le plus
+ * long nom connu qui commence le nom cherché (« Real Madrid » pour « Real Madrid CF »).
+ */
+export async function clubLogoLibraryFinder(): Promise<(clubName: string) => string | null> {
+  let library: { name: string; logoUrl: string }[] = [];
+  try {
+    library = (await db.select({ nom: clubsTable.nom, logoUrl: clubsTable.logoUrl }).from(clubsTable))
+      .map((club) => ({ name: normalize(club.nom), logoUrl: club.logoUrl }))
+      .sort((a, b) => b.name.length - a.name.length);
+  } catch (error) {
+    console.error("Bibliothèque de logos inaccessible", error);
+  }
+
+  return (clubName) => {
+    const wanted = normalize(clubName);
+    return (
+      library.find((club) => club.name === wanted)?.logoUrl ??
+      library.find((club) => wanted.startsWith(`${club.name} `))?.logoUrl ??
+      null
+    );
+  };
+}
+
 export const clubLogoKey = (entry: WikidataCareerEntry) =>
   entry.clubId ?? nameKey(entry.clubName);
 

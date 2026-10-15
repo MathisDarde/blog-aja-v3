@@ -1,7 +1,9 @@
 "use client";
 
 import { Methodes } from "@/contexts/Interfaces";
-import MethodInfo from "./MethodInfo";
+import MethodInfo from "@/components/methodes/MethodInfo";
+import { methodeName } from "@/lib/methodes";
+import Link from "next/link";
 import { ChevronLeft, X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useEffect, useMemo } from "react";
@@ -93,7 +95,7 @@ export default function MethodPopup({
                       onClick={() => setActiveMethodes([methode])}
                       className="text-orange-third cursor-pointer underline text-sm sm:text-base"
                     >
-                      {getMethodName(methode)}
+                      {methodeName(methode)}
                     </p>
                     <p className="capitalize text-sm sm:text-base">
                       ({methode.typemethode})
@@ -106,6 +108,13 @@ export default function MethodPopup({
                 </p>
               )}
             </div>
+
+            <Link
+              href="/methodes-expert"
+              className="inline-block mt-6 text-sm text-aja-blue underline hover:text-orange-third"
+            >
+              Voir toutes les méthodes expert
+            </Link>
           </>
         ) : (
           <>
@@ -124,17 +133,4 @@ export default function MethodPopup({
   );
 
   return createPortal(popupContent, portalContainer);
-}
-
-function getMethodName(methode: Methodes) {
-  switch (methode.typemethode) {
-    case "joueur":
-      return methode.joueurnom;
-    case "coach":
-      return methode.nomcoach;
-    case "match":
-      return methode.titrematch;
-    case "saison":
-      return methode.saison;
-  }
 }

@@ -65,6 +65,15 @@ export const AutresDropdownData = [
     dropdown: false,
   },
   {
+    title: "Méthodes expert",
+    icon: <GlassesIcon size={20} />,
+    image: "/_assets/img/methodeexpertpic.jpg",
+    description:
+      "Retrouvez toutes les fiches des joueurs et des coachs, et les compositions des grands matchs et des saisons de l'AJA.",
+    link: "/methodes-expert",
+    dropdown: false,
+  },
+  {
     title: "Effectif Actuel",
     icon: <List size={20} />,
     image: "/_assets/img/danois.webp",
@@ -78,7 +87,7 @@ export const AutresDropdownData = [
     icon: <Calendar1 size={20} />,
     image: "/_assets/img/calendrier.webp",
     description:
-      "Accédez maintenant au calendrier complet des matchs de l'AJ Auxerre sur la saison 2025-2026.",
+      "Accédez maintenant au calendrier complet des matchs de l'AJ Auxerre sur la saison en cours.",
     link: "/calendrier",
     dropdown: false,
   },

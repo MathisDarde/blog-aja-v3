@@ -22,7 +22,7 @@
 ## 4. Contenus
 
 - [ ] Quiz en base, édité depuis l'admin, questions tirées au hasard, classement des scores
-- [ ] Page listant toutes les méthodes expert (joueurs, coachs, matchs, saisons)
+- [x] Page `/methodes-expert` : toutes les méthodes par type, recherche, fiche en popup partageable (`?m=`), articles qui les citent
 - [ ] Boutique : la remplir (liens vers boutique.aja.fr) ou la retirer du menu
 
 ## 5. Fiabilité
