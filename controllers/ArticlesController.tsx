@@ -8,9 +8,8 @@ import {
   SelectPost,
 } from "@/db/schema";
 import { ArticleSchemaType } from "@/types/forms";
-import { and, desc, eq, ilike, like, or, sql } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { Article, GetURLParams } from "@/contexts/Interfaces";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { sendNewsletter } from "@/actions/article/send-new-article-mail";
 import {
@@ -217,50 +216,6 @@ export async function getLastPublished() {
     .where(eq(articlesTable.state, "published"))
     .orderBy(desc(articlesTable.createdAt))
     .then((results) => results[0]);
-}
-
-export async function getArticlesbyKeywords({
-  q,
-  year,
-  player,
-  league,
-}: GetURLParams = {}): Promise<SelectArticle[]> {
-  try {
-    const searchTerms =
-      q
-        ?.trim()
-        .split(/\s+/)
-        .filter((s) => s.length > 0) ?? [];
-
-    const conditions = [];
-
-    if (searchTerms.length > 0) {
-      const searchConditions = searchTerms.map((term) =>
-        or(
-          like(articlesTable.title, `%${term.toLowerCase()}%`),
-          like(articlesTable.teaser, `%${term.toLowerCase()}%`),
-          ilike(articlesTable.content, `%${term}%`),
-        ),
-      );
-      conditions.push(or(...searchConditions));
-    }
-
-    if (year) conditions.push(sql`${year} = ANY(${articlesTable.tags})`);
-    if (league) conditions.push(sql`${league} = ANY(${articlesTable.tags})`);
-    if (player) conditions.push(sql`${player} = ANY(${articlesTable.tags})`);
-
-    conditions.push(eq(articlesTable.state, "published"));
-
-    const results = await db
-      .select()
-      .from(articlesTable)
-      .where(and(...conditions));
-
-    return results as Article[];
-  } catch (error) {
-    console.error("❌ Erreur Drizzle:", error);
-    return [];
-  }
 }
 
 export async function getUserLikedArticles(userId: string) {

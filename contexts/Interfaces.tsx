@@ -38,13 +38,6 @@ export type ArticleSortKey = keyof Pick<
   "title" | "author" | "createdAt" | "updatedAt" | "state"
 >;
 
-export interface GetURLParams {
-  q?: string;
-  year?: string;
-  player?: string;
-  league?: string;
-}
-
 export interface ArticleContentProps {
   text: string;
   onMethodClick: (id: string, type: string) => void;

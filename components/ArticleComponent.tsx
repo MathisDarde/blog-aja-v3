@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface ArticleProps {
-    article: Article;
+    article: Omit<Article, "content">;
     displayPosition: "horizontal" | "vertical";
     size: "small" | "large";
     showTags?: boolean;

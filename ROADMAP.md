@@ -12,7 +12,7 @@
 
 ## 2. Articles
 
-- [ ] Recherche sur `/articles` (titre, catégorie, contenu)
+- [x] Recherche sur `/articles` : titre, tags, chapô, auteur et texte brut ; sans accents ni casse, tous les mots requis, classée par pertinence (`lib/article-search.ts`)
 - [ ] Pagination de `/articles`
 
 ## 3. Admin

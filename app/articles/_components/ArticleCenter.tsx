@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import SearchInput from "./SearchInput";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Article, Filter } from "@/contexts/Interfaces";
+import { Filter } from "@/contexts/Interfaces";
+import { SearchableArticle, searchArticles } from "@/lib/article-search";
 import FilterContent from "./FilterContent";
 import Button from "@/components/BlueButton";
 import ArticleShowcase from "@/components/ArticleComponent";
@@ -12,7 +13,7 @@ export default function ArticleCenter({
   articles,
   filters,
 }: {
-  articles: Article[];
+  articles: SearchableArticle[];
   filters: Filter[];
 }) {
   const searchParams = useSearchParams();
@@ -105,40 +106,13 @@ export default function ArticleCenter({
     router.push(`/articles?${params.toString()}`);
   };
 
-  // Filtrage local des articles selon filtres et recherche
+  // Filtres exacts sur les tags, puis recherche classée par pertinence (cf. lib/article-search)
   const filteredArticles = useMemo(() => {
-    const qLower = searchQuery.toLowerCase();
-
-    return articles.filter((article) => {
-      const tags = article.tags?.map((t) => t.toLowerCase()) || [];
-      const content = article.content?.toLowerCase() || "";
-      const teaser = article.teaser?.toLowerCase() || "";
-      const author = article.author?.toLowerCase() || "";
-
-      // Filtre exact sur les tags year, player, league
-      if (yearfilter && !tags.includes(yearfilter.toLowerCase())) return false;
-      if (playerfilter && !tags.includes(playerfilter.toLowerCase()))
-        return false;
-      if (leaguefilter && !tags.includes(leaguefilter.toLowerCase()))
-        return false;
-
-      // Recherche textuelle sur contenu, teaser, auteur ou tags
-      if (qLower) {
-        const inTags = tags.some((tag) => tag.includes(qLower));
-        if (
-          !(
-            content.includes(qLower) ||
-            teaser.includes(qLower) ||
-            author.includes(qLower) ||
-            inTags
-          )
-        ) {
-          return false;
-        }
-      }
-
-      return true;
-    });
+    const tagFilters = [yearfilter, playerfilter, leaguefilter].filter(Boolean);
+    const tagged = articles.filter((article) =>
+      tagFilters.every((filter) => article.tags.includes(filter))
+    );
+    return searchArticles(tagged, searchQuery);
   }, [articles, searchQuery, yearfilter, playerfilter, leaguefilter]);
 
   return (
@@ -175,7 +149,11 @@ export default function ArticleCenter({
 
       <div className="relative max-w-[1500px] mx-auto">
         <p className="text-base sm:text-lg md:text-xl font-Montserrat font-semibold text-center md:text-left ml-0 md:ml-12 py-3 md:py-6 ">
-          Résultats les plus pertinents :
+          {searchQuery
+            ? filteredArticles.length > 1
+              ? `${filteredArticles.length} résultats, du plus pertinent au moins pertinent :`
+              : `${filteredArticles.length} résultat :`
+            : "Derniers articles :"}
         </p>
 
         {(searchQuery || yearfilter || playerfilter || leaguefilter) && (
@@ -238,8 +216,8 @@ export default function ArticleCenter({
               Aucun article ne correspond à votre recherche.
             </p>
           ) : (
-            filteredArticles.map((article, index) => (
-              <div key={index} className="bg-white p-4">
+            filteredArticles.map((article) => (
+              <div key={article.id_article} className="bg-white p-4">
                 <ArticleShowcase
                   article={article}
                   displayPosition="vertical"
