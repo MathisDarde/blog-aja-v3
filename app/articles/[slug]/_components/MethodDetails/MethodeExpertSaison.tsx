@@ -17,6 +17,44 @@ const getLastName = (fullName: string) => {
   return parts.length > 1 ? parts.slice(1).join(" ") : parts[0];
 };
 
+type Dispositif = (typeof Dispositifs)[number];
+
+// Place les titulaires sur les postes du dispositif (poste exact d'abord, sinon le premier libre).
+const mapPlayersToSystem = (
+  rawPlayers: LightTituPlayerType[] | undefined,
+  systeme: Dispositif | undefined
+) => {
+  if (!rawPlayers || !systeme) return [];
+
+  const availablePlayers = [...rawPlayers];
+
+  return systeme.postes.map((posteConfig) => {
+    const exactMatchIndex = availablePlayers.findIndex(
+      (p) => p.poste === posteConfig.name
+    );
+
+    let playerToPlace: LightTituPlayerType | undefined;
+
+    if (exactMatchIndex !== -1) {
+      playerToPlace = availablePlayers[exactMatchIndex];
+      availablePlayers.splice(exactMatchIndex, 1);
+    } else {
+      playerToPlace = availablePlayers[0];
+      if (playerToPlace) availablePlayers.splice(0, 1);
+    }
+
+    if (!playerToPlace) return null;
+
+    return {
+      playerData: playerToPlace,
+      positionDom: posteConfig.positionDom,
+      positionExt: posteConfig.positionExt,
+      demiTerrain: posteConfig.demiTerrain,
+      largeur: posteConfig.largeur,
+    };
+  });
+};
+
 export default function SeasonMethodeExpert({
   methode,
 }: SeasonMethodeExpertProps) {
@@ -26,41 +64,6 @@ export default function SeasonMethodeExpert({
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const systemeDemi = Dispositifs.find((d) => d.name === methode.systeme);
-
-  const mapPlayersToSystem = (
-    rawPlayers: LightTituPlayerType[] | undefined,
-    systeme: typeof systemeDemi
-  ) => {
-    if (!rawPlayers || !systeme) return [];
-
-    const availablePlayers = [...rawPlayers];
-
-    return systeme.postes.map((posteConfig) => {
-      const exactMatchIndex = availablePlayers.findIndex(
-        (p) => p.poste === posteConfig.name
-      );
-
-      let playerToPlace: LightTituPlayerType | undefined;
-
-      if (exactMatchIndex !== -1) {
-        playerToPlace = availablePlayers[exactMatchIndex];
-        availablePlayers.splice(exactMatchIndex, 1);
-      } else {
-        playerToPlace = availablePlayers[0];
-        if (playerToPlace) availablePlayers.splice(0, 1);
-      }
-
-      if (!playerToPlace) return null;
-
-      return {
-        playerData: playerToPlace,
-        positionDom: posteConfig.positionDom,
-        positionExt: posteConfig.positionExt,
-        demiTerrain: posteConfig.demiTerrain,
-        largeur: posteConfig.largeur,
-      };
-    });
-  };
 
   const renderPlayerEntity = (
     mappedData: {

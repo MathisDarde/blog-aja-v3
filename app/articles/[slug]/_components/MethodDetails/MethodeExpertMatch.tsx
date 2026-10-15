@@ -62,6 +62,48 @@ const getLastName = (fullName: string) => {
   return parts.length > 1 ? parts.slice(1).join(" ") : parts[0];
 };
 
+type Dispositif = (typeof Dispositifs)[number];
+
+// --- LOGIQUE DE PLACEMENT ---
+// Place les titulaires sur les postes du dispositif (poste exact d'abord, sinon le premier libre).
+const mapPlayersToSystem = (
+  rawPlayers: TituPlayerType[] | undefined,
+  systeme: Dispositif | undefined
+) => {
+  if (!rawPlayers || !systeme) return [];
+
+  // On fait une copie pour pouvoir manipuler la liste sans muter les props
+  const availablePlayers = [...rawPlayers];
+
+  // Distribution sur le terrain
+  return systeme.postes.map((posteConfig) => {
+    // Cherche correspondance exacte du poste
+    const exactMatchIndex = availablePlayers.findIndex(
+      (p) => p.poste === posteConfig.name
+    );
+
+    let playerToPlace: TituPlayerType | undefined;
+
+    if (exactMatchIndex !== -1) {
+      playerToPlace = availablePlayers[exactMatchIndex];
+      availablePlayers.splice(exactMatchIndex, 1);
+    } else {
+      // Fallback : prend le premier dispo
+      playerToPlace = availablePlayers[0];
+      if (playerToPlace) availablePlayers.splice(0, 1);
+    }
+
+    if (!playerToPlace) return null;
+
+    return {
+      playerData: playerToPlace,
+      positionDom: posteConfig.positionDom,
+      positionExt: posteConfig.positionExt,
+      largeur: posteConfig.largeur,
+    };
+  });
+};
+
 export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -70,45 +112,6 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
   const systemeDom = Dispositifs.find((d) => d.name === methode.systemeequipe1);
   const systemeExt = Dispositifs.find((d) => d.name === methode.systemeequipe2);
-
-  // --- LOGIQUE DE PLACEMENT ---
-  const mapPlayersToSystem = (
-    rawPlayers: TituPlayerType[] | undefined,
-    systeme: typeof systemeDom
-  ) => {
-    if (!rawPlayers || !systeme) return [];
-
-    // On fait une copie pour pouvoir manipuler la liste sans muter les props
-    const availablePlayers = [...rawPlayers];
-
-    // Distribution sur le terrain
-    return systeme.postes.map((posteConfig) => {
-      // Cherche correspondance exacte du poste
-      const exactMatchIndex = availablePlayers.findIndex(
-        (p) => p.poste === posteConfig.name
-      );
-
-      let playerToPlace: TituPlayerType | undefined;
-
-      if (exactMatchIndex !== -1) {
-        playerToPlace = availablePlayers[exactMatchIndex];
-        availablePlayers.splice(exactMatchIndex, 1);
-      } else {
-        // Fallback : prend le premier dispo
-        playerToPlace = availablePlayers[0];
-        if (playerToPlace) availablePlayers.splice(0, 1);
-      }
-
-      if (!playerToPlace) return null;
-
-      return {
-        playerData: playerToPlace,
-        positionDom: posteConfig.positionDom,
-        positionExt: posteConfig.positionExt,
-        largeur: posteConfig.largeur,
-      };
-    });
-  };
 
   const mappedTeam1 = useMemo(
     () => mapPlayersToSystem(methode.titulairesequipe1, systemeDom),

@@ -78,6 +78,8 @@ export const CarouselContent = ({
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => nextSlide(), 8000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    // Le minuteur repart à chaque changement de slide, donc nextSlide n'est jamais périmé.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [internalIndex]);
 
   // Swipe Mobile

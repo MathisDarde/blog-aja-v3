@@ -43,7 +43,6 @@ export default function ActionPopup({
   };
 
   const handleActionClick = (action: Action) => {
-    console.log("=== HANDLER APPELÉ ===", action.label);
     action.onClick();
   };
 
@@ -51,7 +50,6 @@ export default function ActionPopup({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-hidden"
       onClick={(e) => {
-        console.log("Overlay cliqué");
         if (e.target === e.currentTarget) {
           onClose();
         }
@@ -60,13 +58,11 @@ export default function ActionPopup({
       <div
         className="bg-white rounded-2xl shadow-lg max-w-[400px] p-6 relative m-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => {
-          console.log("Popup cliquée");
           e.stopPropagation();
         }}
       >
         <button
           onClick={() => {
-            console.log("X cliqué");
             onClose();
           }}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer"

@@ -1,11 +1,8 @@
-import { fetchMatches } from "@/utils/matchsapi";
+import { fetchCalendrier } from "@/lib/scraped-data";
 import Calendar from "./_components/Calendar";
 
 export default async function CalendrierPage() {
-  const matches = await fetchMatches(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_calendrier.json?t=" +
-      new Date().getTime(),
-  );
+  const matches = await fetchCalendrier();
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">

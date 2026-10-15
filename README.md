@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mémoire d'Auxerrois
 
-## Getting Started
+Blog consacré à l'histoire de l'AJ Auxerre : articles, méthodes expert (fiches joueur, coach, match et saison), effectif, calendrier, classement, palmarès, chants et quiz.
 
-First, run the development server:
+## Stack
+
+- **Next.js 15** (App Router, Server Actions), React 19, Tailwind CSS
+- **Neon Postgres** + **Drizzle ORM**
+- **Better Auth** (email/mot de passe et Google)
+- **Tiptap** pour l'éditeur d'articles
+- **Cloudinary** (images), **Resend** (emails et newsletter), **Upstash Redis** (rate limiting), **PostHog** (analytics)
+
+## Démarrer
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Le site tourne sur [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables d'environnement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deux fichiers, non versionnés :
 
-## Learn More
+- `.env.local` : configuration complète (et base de **prod** pour drizzle-kit) ;
+- `.env.development.local` : `DATABASE_URL` de la base de **dev**, qui surcharge celle de `.env.local` en local.
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Rôle |
+| --- | --- |
+| `DATABASE_URL` | Chaîne de connexion Neon |
+| `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` | Better Auth |
+| `NEXT_PUBLIC_API_URL` | URL de base du client d'authentification |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Connexion Google |
+| `NEXT_PUBLIC_SITE_URL` | URL publique (SEO, sitemap, emails) |
+| `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` | Upload d'images |
+| `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET` | Emails et webhook entrant |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Rate limiting |
+| `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST` | Analytics |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Base de données
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Les bases dev et prod sont synchronisées avec **`db:push`**, pas `db:migrate` (l'historique des migrations en base n'est pas à jour).
 
-## Deploy on Vercel
+```bash
+pnpm db:generate   # génère la migration (pour l'historique)
+pnpm db:push       # applique le schéma sur la base de dev
+pnpm db:push:prod  # applique le schéma sur la base de prod
+pnpm db:studio     # explorer la base
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Données sportives
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Le calendrier, le classement, les statistiques et l'effectif viennent du dépôt [AJA-Website-Scrapers](https://github.com/mathisdarde/AJA-Website-Scrapers), qui publie chaque nuit des JSON sur GitHub Pages. Ils sont lus par `lib/scraped-data.ts`, avec une heure de cache. `public/data/players_data.json` sert de copie de secours pour l'effectif.
+
+## Déploiement
+
+Vercel déploie automatiquement chaque push sur `main`. Le `prebuild` (`generate-assets.js`) régénère la liste des drapeaux et logos de clubs à partir de `public/_assets`.

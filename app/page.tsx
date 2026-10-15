@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 import Timeline from "@/components/timeline/Timeline";
 import { TimelineItems } from "@/components/timeline/TimelineItems";
 import CitationSlider from "@/components/slidercitations/CitationSlider";
-import PagesTilt from "@/components/PagesTest";
+import PagesTilt from "@/components/PagesTilt";
 import { jsonLd, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 // Régénérée au plus toutes les 60 s (et immédiatement après une action admin

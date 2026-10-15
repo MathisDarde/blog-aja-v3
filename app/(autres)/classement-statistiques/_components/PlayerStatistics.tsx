@@ -2,10 +2,16 @@
 
 import { PlayerStats, StatsSortKey } from "@/contexts/Interfaces";
 import { useMemo, useState } from "react";
-import playersInfo from "@/public/data/players_data.json";
+import { EffectifMember } from "@/lib/scraped-data";
 import Image from "next/image";
 
-export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
+export default function PlayerStatistics({
+  stats,
+  effectif,
+}: {
+  stats: PlayerStats[];
+  effectif: EffectifMember[];
+}) {
   const [allStatsWindow, setAllStatsWindow] = useState("galerie");
   const [sortKey, setSortKey] = useState<StatsSortKey>("titularisations");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -72,7 +78,7 @@ export default function PlayerStatistics({ stats }: { stats: PlayerStats[] }) {
   }, [stats]);
 
   const getPlayerInfo = (name: string) => {
-    return playersInfo.find((p) => p.nom === name);
+    return effectif.find((p) => p.nom === name);
   };
 
   return (

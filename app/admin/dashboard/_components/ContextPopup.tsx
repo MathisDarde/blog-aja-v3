@@ -35,7 +35,6 @@ export default function ContextPopup({
   const [removeAdminPopupOpen, setRemoveAdminPopupOpen] = useState(false);
 
   const deleteElement = async (id: string, type: string) => {
-    console.log("Suppression démarrée pour:", id, type);
     if (!id) return toast.error("Element ID is missing.");
     try {
       let result;
@@ -53,7 +52,6 @@ export default function ContextPopup({
           result = await deleteMethode(id);
           break;
       }
-      console.log("Résultat de la suppression:", result);
       if (result?.success) {
         toast.success(`${type} supprimé avec succès`);
         // Attendre un peu avant de recharger
@@ -69,12 +67,10 @@ export default function ContextPopup({
   };
 
   const handleAdminRole = async (id: string) => {
-    console.log("Modification du rôle admin pour:", id, "isAdmin:", isAdmin);
     try {
       const update = !isAdmin
         ? await giveUserAdmin(id)
         : await removeUserAdminRole(id);
-      console.log("Résultat de la mise à jour:", update);
       if (update?.success) {
         toast.success(
           isAdmin
@@ -212,7 +208,6 @@ export default function ContextPopup({
             {
               label: "Confirmer",
               onClick: async () => {
-                console.log("Bouton Confirmer cliqué");
                 await handleAdminRole(id);
                 setGiveAdminPopupOpen(false);
               },
@@ -236,7 +231,6 @@ export default function ContextPopup({
             {
               label: "Supprimer",
               onClick: async () => {
-                console.log("Bouton Supprimer admin cliqué");
                 await handleAdminRole(id);
                 setRemoveAdminPopupOpen(false);
               },
@@ -260,7 +254,6 @@ export default function ContextPopup({
             {
               label: "Supprimer",
               onClick: async () => {
-                console.log("Bouton Supprimer élément cliqué");
                 await deleteElement(id, type);
                 setDeletePopupOpen(false);
               },

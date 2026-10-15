@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const url =
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json?t=" +
-    new Date().getTime();
-  const response = await fetch(url);
+  const response = await fetch(
+    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json",
+    { next: { revalidate: 3600 } },
+  );
 
   if (!response.ok) {
     return NextResponse.json(

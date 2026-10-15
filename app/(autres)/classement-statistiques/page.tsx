@@ -1,19 +1,13 @@
 import Classement from "./_components/Classement";
 import PlayerStatistics from "./_components/PlayerStatistics";
+import { fetchClassement, fetchEffectif, fetchStatistiques } from "@/lib/scraped-data";
 
 export default async function ClassementStatsPage() {
-  const res = await fetch(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json?t=" +
-      new Date().getTime(),
-  );
-  const classement = await res.json();
-
-  const statistics = await fetch(
-    "https://mathisdarde.github.io/AJA-Website-Scrapers/data/aja_statistics.json?t=" +
-      new Date().getTime(),
-  );
-
-  const stats = await statistics.json();
+  const [classement, stats, effectif] = await Promise.all([
+    fetchClassement(),
+    fetchStatistiques(),
+    fetchEffectif(),
+  ]);
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">
@@ -27,7 +21,7 @@ export default async function ClassementStatsPage() {
         Statistiques
       </h2>
       <div>
-        <PlayerStatistics stats={stats} />
+        <PlayerStatistics stats={stats} effectif={effectif} />
       </div>
     </div>
   );

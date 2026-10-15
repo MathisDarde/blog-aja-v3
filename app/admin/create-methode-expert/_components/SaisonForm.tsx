@@ -13,7 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { redirect } from "next/navigation";
-import React, { useState, useEffect } from "react"; // Ajout de useEffect
+import React, { useState, useEffect, useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { getFlags } from "@/actions/method/get-flags-files";
@@ -99,8 +99,10 @@ export default function SaisonForm() {
   });
 
   // Calcul des positions disponibles basé sur le système surveillé par watch
-  const currentDispositif = Dispositifs.find((d) => d.name === selectedSystem);
-  const positionsDisponibles = currentDispositif?.postes || [];
+  const positionsDisponibles = useMemo(
+    () => Dispositifs.find((d) => d.name === selectedSystem)?.postes || [],
+    [selectedSystem]
+  );
 
   // --- EFFET POUR REMPLIR AUTOMATIQUEMENT LES POSTES ---
   useEffect(() => {
@@ -116,7 +118,7 @@ export default function SaisonForm() {
         }
       });
     }
-  }, [selectedSystem, positionsDisponibles, setValue]);
+  }, [positionsDisponibles, setValue]);
   // -----------------------------------------------------
 
   const fetchFiles = async () => {
