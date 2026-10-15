@@ -51,7 +51,7 @@ pnpm db:studio     # explorer la base
 
 ## Données sportives
 
-Le calendrier, le classement, les statistiques et l'effectif viennent du dépôt [AJA-Website-Scrapers](https://github.com/mathisdarde/AJA-Website-Scrapers), qui publie chaque nuit des JSON sur GitHub Pages. Ils sont lus par `lib/scraped-data.ts`, avec une heure de cache. `public/data/players_data.json` sert de copie de secours pour l'effectif.
+Le calendrier, le classement, les statistiques et l'effectif viennent du dépôt [AJA-Website-Scrapers](https://github.com/mathisdarde/AJA-Website-Scrapers), qui publie des JSON sur GitHub Pages toutes les 2 heures (saison et championnat détectés automatiquement, cf. `meta.json`). Ils sont lus par `lib/scraped-data.ts`, avec 15 minutes de cache. `public/data/players_data.json` sert de copie de secours pour l'effectif.
 
 ## Déploiement
 

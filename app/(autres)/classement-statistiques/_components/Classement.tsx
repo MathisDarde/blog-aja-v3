@@ -13,6 +13,11 @@ const teamStyles: Record<string, string> = {
   "Barrages Conference League": "bg-yellow-600",
   "Barrages Ligue 2": "bg-red-300",
   "Ligue 2": "bg-red-600",
+  // Zones de la Ligue 2, si l'AJA y joue (cf. scraper : le championnat est détecté chaque saison)
+  "Ligue 1": "bg-green-600",
+  "Barrages Ligue 1": "bg-green-400",
+  "Barrages National": "bg-red-300",
+  National: "bg-red-600",
   "": "bg-gray-400",
 };
 
@@ -24,18 +29,30 @@ const icons: Record<string, string> = {
   "Barrages Conference League": "/_assets/img/logoconferenceleague.svg",
   "Barrages Ligue 2": "/_assets/img/logoligue2.svg",
   "Ligue 2": "/_assets/img/logoligue2.svg",
-  "": "/_assets/img/logoligue1.svg",
+  "Ligue 1": "/_assets/img/logoligue1.svg",
+  "Barrages Ligue 1": "/_assets/img/logoligue1.svg",
+};
+
+// Logo des lignes sans enjeu : celui du championnat affiché
+const COMPETITION_LOGOS: Record<string, string> = {
+  FR1: "/_assets/img/logoligue1.svg",
+  FR2: "/_assets/img/logoligue2.svg",
 };
 
 const getTeamClass = (description: string): string => {
   return teamStyles[description] ?? "";
 };
 
-const getIcon = (description: string): string => {
-  return icons[description] ?? "";
-};
+export default function Classement({
+  teams,
+  competitionId,
+}: {
+  teams: Team[];
+  competitionId: string;
+}) {
+  const getIcon = (description: string): string =>
+    icons[description] ?? (description === "" ? COMPETITION_LOGOS[competitionId] ?? "" : "");
 
-export default function Classement({ teams }: { teams: Team[] }) {
   const [sortKey, setSortKey] = useState<ClassementSortKey>("position");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 

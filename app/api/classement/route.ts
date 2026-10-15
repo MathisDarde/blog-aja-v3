@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const response = await fetch(
     "https://mathisdarde.github.io/AJA-Website-Scrapers/data/classementligue1.json",
-    { next: { revalidate: 3600 } },
+    { next: { revalidate: 900 } },
   );
 
   if (!response.ok) {
