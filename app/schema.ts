@@ -393,3 +393,29 @@ export const UpdateMethodeCoachSchema = z.object({
   }),
   imagecoach: z.union([z.string().url(), z.instanceof(File)]),
 });
+
+// Une version du logo d'un club (/admin/logos)
+const ClubLogoPeriodSchema = z
+  .object({
+    legende: z.string().trim().max(80, { message: "Nom de version trop long (80 caractères)." }),
+    de: z.number().int().min(1850).max(2100).nullable(),
+    a: z.number().int().min(1850).max(2100).nullable(),
+    logo: z
+      .string()
+      .trim()
+      .min(1, { message: "Chaque version doit avoir un logo." })
+      .refine((value) => /^https:\/\//.test(value) || value.startsWith("/"), {
+        message: "Le logo doit être une adresse https:// ou un fichier du site.",
+      }),
+  })
+  .refine((period) => period.de == null || period.a == null || period.de <= period.a, {
+    message: "La première saison d'une version doit précéder sa dernière saison.",
+  });
+
+export const ClubLogosSchema = z.object({
+  // Vide pour un nouveau club, rangé alors sous son nom
+  key: z.string().trim(),
+  nom: z.string().trim().min(2, { message: "Le nom du club est obligatoire." }).max(80),
+  noms: z.array(z.string().trim().min(1).max(80)).max(30),
+  periodes: z.array(ClubLogoPeriodSchema).max(40, { message: "40 versions au maximum." }),
+});

@@ -304,6 +304,24 @@ export const clubsTable = pgTable("clubs_table", {
     .$onUpdate(() => new Date()),
 });
 
+// Logos d'époque gérés depuis l'admin (/admin/logos) : pour un club, ils remplacent ceux
+// publiés par les scrapers. Un club absent du registre des scrapers (Zenit…) y est rangé
+// sous « nom:<nom-normalisé> ».
+export const clubLogoVersionsTable = pgTable("club_logo_versions_table", {
+  // Identifiant Transfermarkt du club (registre des scrapers), ou « nom:<nom-normalisé> »
+  clubKey: text("clubKey").primaryKey(),
+  nom: text("nom").notNull(),
+  // Autres noms sous lesquels le club est reconnu (méthodes, classements…)
+  noms: text("noms").array().notNull().default([]),
+  // [{ legende, de, a, logo }] : de / a = années de début de saison incluses, null = sans limite
+  periodes: json("periodes").notNull().default([]),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
 export const schema = {
   user,
   session,
@@ -318,6 +336,7 @@ export const schema = {
   methodeExpertJoueurTable,
   methodeExpertCoachTable,
   clubsTable,
+  clubLogoVersionsTable,
   quizQuestionsTable,
   quizAttemptsTable,
 };

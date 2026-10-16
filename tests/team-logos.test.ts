@@ -23,6 +23,10 @@ vi.mock("@/lib/scraped-data", () => ({
   fetchScrapedData: async (file: string, fallback: unknown) =>
     file === "clubs.json" ? registry : file === "logos-historiques.json" ? periods : fallback,
 }));
+// Logos repris dans l'admin : ils remplacent ceux des scrapers pour Marseille, et Zenit est
+// un club absent du registre
+let versions: Record<string, unknown> = {};
+vi.mock("@/lib/club-logo-versions", () => ({ getClubLogoVersions: async () => versions }));
 // cache() de React (mémoïsation par requête) est neutre hors du serveur Next
 vi.mock("react", () => ({ cache: <T,>(fn: T) => fn }));
 
@@ -77,6 +81,34 @@ describe("logo selon la saison", () => {
       "https://data.test/logos/historique/290-1992.png",
       "/logo-choisi.png",
     ]);
+  });
+});
+
+describe("logos repris dans l'admin", () => {
+  let resolver: Awaited<ReturnType<typeof getTeamLogoResolver>>;
+  beforeEach(async () => {
+    versions = {
+      "244": { nom: "Marseille", noms: [], periodes: [{ de: 1986, a: 1992, logo: "https://cdn.test/om-1986.png" }] },
+      "nom:zenit-saint-petersbourg": {
+        nom: "Zenit Saint-Pétersbourg",
+        noms: ["Zenit St. Pétersbourg"],
+        periodes: [
+          { de: null, a: null, logo: "https://cdn.test/zenit.png" },
+          { de: 2010, a: 2010, logo: "https://cdn.test/zenit-2010.png" },
+        ],
+      },
+    };
+    resolver = await getTeamLogoResolver();
+  });
+
+  it("remplacent les logos d'époque des scrapers", () => {
+    expect(resolver.logo({ id: "244", season: 1990 })).toBe("https://cdn.test/om-1986.png");
+    expect(resolver.periodLogo({ id: "244", season: 1998 })).toBeNull();
+  });
+
+  it("reconnaissent un club ajouté à la main par ses autres noms, même sans saison", () => {
+    expect(resolver.logo({ name: "Zenit St. Petersbourg", season: 2010 })).toBe("https://cdn.test/zenit-2010.png");
+    expect(resolver.logo({ name: "Zenit Saint-Pétersbourg" })).toBe("https://cdn.test/zenit.png");
   });
 });
 

@@ -15,6 +15,7 @@ import {
   FolderLock,
   History,
   Landmark,
+  Shield,
 } from "lucide-react";
 
 // Passé du club
@@ -128,6 +129,14 @@ export const AdminDropdownData = [
     image: "/_assets/img/martins.webp",
     description: "Ajouter, modifier ou désactiver les questions du quiz",
     link: "/admin/quiz",
+    dropdown: false,
+  },
+  {
+    title: "Logos des clubs",
+    icon: <Shield size={20} />,
+    image: "/_assets/img/ajaldc2010.webp",
+    description: "Gérer les logos de chaque club selon les époques",
+    link: "/admin/logos",
     dropdown: false,
   },
   {

@@ -1,5 +1,6 @@
 import {
   ArticleSchema,
+  ClubLogosSchema,
   CommentSchema,
   DraftArticleSchema,
   InscSchema,
@@ -48,3 +49,5 @@ export type FormResponse = {
   message?: string;
   token?: string;
 };
+
+export type ClubLogosSchemaType = z.infer<typeof ClubLogosSchema>;

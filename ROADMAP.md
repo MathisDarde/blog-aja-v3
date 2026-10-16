@@ -27,6 +27,7 @@
 - [x] Effectif actuel : cartes par poste, 4 par ligne, infos toujours visibles
 - [x] Historique : saisons archivées depuis 1974-1975, sélecteur de saison sur le calendrier et le classement, page `/historique` (trajectoire L1/L2, confrontations, toutes les saisons)
 - [x] Logos des clubs selon la saison partout (Wikipédia FR + `logos-historiques-manuels.json` des scrapers)
+- [x] Page admin `/admin/logos` : versions des logos par club (nom, période, image), clubs hors registre (Zenit…)
 
 ## 5. Fiabilité
 

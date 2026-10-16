@@ -155,6 +155,13 @@
       "when": 1792064683298,
       "tag": "0021_flashy_jack_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792146199461,
+      "tag": "0022_parched_stepford_cuckoos",
+      "breakpoints": true
     }
   ]
 }

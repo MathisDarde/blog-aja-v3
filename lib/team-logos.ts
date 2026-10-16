@@ -1,8 +1,9 @@
-// Logo d'un club pour une saison donnée, côté serveur : logo d'époque (Wikipédia FR ou liste
-// manuelle, publiés par les scrapers dans logos-historiques.json), sinon logo actuel du site,
-// sinon logo Transfermarkt, sinon écusson neutre.
+// Logo d'un club pour une saison donnée, côté serveur : logo d'époque (saisi dans l'admin, à
+// défaut Wikipédia FR ou liste manuelle publiés par les scrapers dans logos-historiques.json),
+// sinon logo actuel du site, sinon logo Transfermarkt, sinon écusson neutre.
 
 import { cache } from "react";
+import { getClubLogoVersions, LogoPeriod } from "@/lib/club-logo-versions";
 import { fetchScrapedData, SCRAPERS_URL } from "@/lib/scraped-data";
 import { normalizeText } from "@/lib/normalize-text";
 import { getTeamInfo } from "@/utils/get-team-info";
@@ -13,19 +14,13 @@ interface RegistryClub {
   logo: string | null;
 }
 
-interface LogoPeriod {
-  de: number | null;
-  a: number | null;
-  logo: string;
-}
-
 export const DEFAULT_TEAM_LOGO = "/_assets/teamlogos/logodefault.png";
 const LOCAL_LOGOS = "/_assets/teamlogos/";
 
 /** Année de début de la saison d'une date (la saison bascule au 1er juillet). */
 export const seasonOf = (date: Date) => (date.getMonth() >= 6 ? date.getFullYear() : date.getFullYear() - 1);
 
-const absolute = (path: string) => (/^https?:\/\//.test(path) || path.startsWith("/") ? path : `${SCRAPERS_URL}/${path}`);
+export const absolute = (path: string) => (/^https?:\/\//.test(path) || path.startsWith("/") ? path : `${SCRAPERS_URL}/${path}`);
 
 export interface TeamRef {
   // Identifiant Transfermarkt, si connu (classements, calendriers)
@@ -40,29 +35,56 @@ export interface TeamLogoResolver {
   logo(team: TeamRef): string;
   /** Logo d'époque seulement (null hors période connue) : pour les logos choisis à la main. */
   periodLogo(team: TeamRef): string | null;
+  /** Logo actuel (site, Transfermarkt, écusson neutre), sans les logos d'époque. */
+  currentLogo(team: TeamRef): string;
 }
 
-export const getTeamLogoResolver = cache(async (): Promise<TeamLogoResolver> => {
+export interface ScrapedClubLogos {
+  registry: Record<string, RegistryClub>;
+  periods: Record<string, LogoPeriod[]>;
+}
+
+/** Registre des clubs et logos d'époque publiés par les scrapers. */
+export const fetchScrapedClubLogos = cache(async (): Promise<ScrapedClubLogos> => {
   const [registry, periods] = await Promise.all([
     fetchScrapedData<Record<string, RegistryClub>>("clubs.json", {}),
     fetchScrapedData<Record<string, LogoPeriod[]>>("logos-historiques.json", {}),
   ]);
+  return { registry, periods };
+});
 
+export const getTeamLogoResolver = cache(async (): Promise<TeamLogoResolver> => {
+  const [{ registry, periods: scrapedPeriods }, versions] = await Promise.all([
+    fetchScrapedClubLogos(),
+    getClubLogoVersions(),
+  ]);
+
+  // Noms saisis dans l'admin d'abord : ils l'emportent sur ceux du registre
   const idByName = new Map<string, string>();
-  for (const [id, club] of Object.entries(registry)) {
-    for (const name of [club.nom, ...club.noms]) {
+  const namesOf = (id: string) => [
+    ...(versions[id] ? [versions[id].nom, ...versions[id].noms] : []),
+    ...(registry[id] ? [registry[id].nom, ...registry[id].noms] : []),
+  ];
+  for (const id of [...Object.keys(versions), ...Object.keys(registry)]) {
+    for (const name of namesOf(id)) {
       const key = normalizeText(name);
       if (key && !idByName.has(key)) idByName.set(key, id);
     }
   }
   const idOf = (team: TeamRef) => team.id ?? (team.name ? idByName.get(normalizeText(team.name)) : undefined);
 
+  // Un club repris dans l'admin n'a plus que ses versions saisies à la main
+  const periodsOf = (id: string) => versions[id]?.periodes ?? scrapedPeriods[id] ?? [];
+
   const periodLogo = (team: TeamRef) => {
     const id = idOf(team);
-    if (!id || team.season == null) return null;
-    const season = team.season;
+    if (!id) return null;
+    // Sans saison, le logo du jour : seules les versions de l'admin couvrent la saison en cours
+    // (les scrapers écartent la période actuelle, laissée au logo du site)
+    const season = team.season ?? (versions[id] ? seasonOf(new Date()) : null);
+    if (season == null) return null;
     // La période la plus précise l'emporte (un logo d'une saison sur un logo de vingt ans)
-    const match = (periods[id] ?? [])
+    const match = periodsOf(id)
       .filter((p) => (p.de ?? -Infinity) <= season && season <= (p.a ?? Infinity))
       .sort((a, b) => (a.a ?? 3000) - (a.de ?? 0) - ((b.a ?? 3000) - (b.de ?? 0)))[0];
     return match ? absolute(match.logo) : null;
@@ -70,7 +92,7 @@ export const getTeamLogoResolver = cache(async (): Promise<TeamLogoResolver> => 
 
   const currentLogo = (team: TeamRef) => {
     const id = idOf(team);
-    const names = [team.name, ...(id ? [registry[id]?.nom, ...(registry[id]?.noms ?? [])] : [])].filter(Boolean) as string[];
+    const names = [team.name, ...(id ? namesOf(id) : [])].filter(Boolean) as string[];
     // Logos du site (SVG soignés), reconnus par l'un des noms du club
     for (const name of names) {
       const local = getTeamInfo(name).logo;
@@ -83,6 +105,7 @@ export const getTeamLogoResolver = cache(async (): Promise<TeamLogoResolver> => 
   return {
     logo: (team) => periodLogo(team) ?? currentLogo(team),
     periodLogo,
+    currentLogo,
   };
 });
 
