@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import { getArticles } from "@/controllers/ArticlesController";
 import { Methodes } from "@/contexts/Interfaces";
-import { DEFAULT_TEAM_LOGO, getTeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
+import { ajaLogo, DEFAULT_TEAM_LOGO, getTeamLogoResolver, TeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
 import { normalizeText } from "@/lib/normalize-text";
 import { MethodeEntry, mentionedMethodes, methodeKey, methodeName } from "@/lib/methodes";
 import MethodesExplorer from "./_components/MethodesExplorer";
@@ -11,7 +11,6 @@ import MethodesExplorer from "./_components/MethodesExplorer";
 export const revalidate = 60;
 
 const DEFAULT_LOGO = "/_assets/img/defaultlogoimage.png";
-const AJA_LOGO = "/_assets/teamlogos/logoauxerre.svg";
 
 const firstYear = (value: string) => {
   const match = value.match(/\b(19|20)\d{2}\b/);
@@ -23,6 +22,7 @@ const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slic
 function describe(
   methode: Methodes,
   clubLogo: (clubName: string, season: number | null) => string,
+  resolver: TeamLogoResolver,
 ): Omit<MethodeEntry, "methode" | "name" | "search" | "articles"> & {
   keywords: string[];
 } {
@@ -60,7 +60,8 @@ function describe(
     case "saison":
       return {
         subtitle: `${methode.coach} · ${methode.systeme}`,
-        image: AJA_LOGO,
+        // Logo de l'AJA à l'époque de la saison
+        image: ajaLogo(firstYear(methode.saison), resolver),
         logos: null,
         year: firstYear(methode.saison),
         keywords: [methode.coach, methode.systeme],
@@ -86,7 +87,7 @@ export default async function MethodesExpertPage() {
 
   const entries: MethodeEntry[] = ((methodes ?? []) as Methodes[]).map((raw) => {
     const methode = withPeriodClubLogos(raw, resolver);
-    const { keywords, ...details } = describe(methode, clubLogo);
+    const { keywords, ...details } = describe(methode, clubLogo, resolver);
     const name = methodeName(methode);
     return {
       methode,
