@@ -83,18 +83,47 @@ export class WikidataRateLimitError extends Error {}
 
 export const isWikidataId = (value: string) => /^Q\d+$/.test(value);
 
+// Requêtes simultanées vers Wikimedia : au-delà, l'API répond 429 (imports de logos en parallèle)
+const MAX_IN_FLIGHT = 4;
+const RATE_LIMIT_RETRIES = 3;
+let inFlight = 0;
+const waiting: (() => void)[] = [];
+
+async function limited<T>(task: () => Promise<T>): Promise<T> {
+  if (inFlight >= MAX_IN_FLIGHT) await new Promise<void>((resolve) => waiting.push(resolve));
+  inFlight++;
+  try {
+    return await task();
+  } finally {
+    inFlight--;
+    waiting.shift()?.();
+  }
+}
+
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function getJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, {
-    headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
-    next: { revalidate: CACHE_SECONDS },
-  });
-  if (response.status === 429) {
-    throw new WikidataRateLimitError("Trop de requêtes vers Wikimedia");
+  for (let attempt = 0; ; attempt++) {
+    const response = await limited(() =>
+      fetch(url, {
+        headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
+        next: { revalidate: CACHE_SECONDS },
+        // Une requête bloquée ne doit pas immobiliser tout un import
+        signal: AbortSignal.timeout(15000),
+      }),
+    );
+    if (response.status === 429) {
+      if (attempt >= RATE_LIMIT_RETRIES) throw new WikidataRateLimitError("Trop de requêtes vers Wikimedia");
+      // Délai demandé par Wikimedia (Retry-After), sinon 2 s, 4 s, 8 s
+      const retryAfter = Number(response.headers.get("retry-after"));
+      await pause(Math.min(retryAfter > 0 ? retryAfter * 1000 : 2000 * 2 ** attempt, 15000));
+      continue;
+    }
+    if (!response.ok) {
+      throw new Error(`Wikimedia a répondu ${response.status}`);
+    }
+    return response.json();
   }
-  if (!response.ok) {
-    throw new Error(`Wikimedia a répondu ${response.status}`);
-  }
-  return response.json();
 }
 
 async function getEntities(
@@ -759,26 +788,24 @@ export async function findWikidataClub(name: string): Promise<WikidataClub | nul
   const variants = [...new Set([name, name.replace(/\bSt\.?\s+/g, "Saint-")])];
   const candidates: string[] = [];
 
-  for (const variant of variants) {
-    const pages = await getJson<{ query?: { pages: Record<string, { pageprops?: { wikibase_item?: string } }> } }>(
-      `${FRWIKI_API_URL}?action=query&format=json&prop=pageprops&redirects=1&titles=${encodeURIComponent(variant)}`,
-    );
-    candidates.push(
-      ...Object.values(pages.query?.pages ?? {}).flatMap((p) => p.pageprops?.wikibase_item ?? []),
-    );
-    const search = await getJson<{ search: { id: string }[] }>(
-      `${API_URL}?action=wbsearchentities&format=json&language=fr&uselang=fr&type=item&limit=5&search=${encodeURIComponent(variant)}`,
-    );
-    candidates.push(...search.search.map((r) => r.id));
-  }
-
-  const text = await getJson<{ query?: { search: { title: string }[] } }>(
-    `${FRWIKI_API_URL}?action=query&format=json&list=search&srlimit=3&srsearch=${encodeURIComponent(`${name} football`)}`,
-  );
-  const titles = text.query?.search.map((r) => r.title) ?? [];
-  if (titles.length > 0) {
-    candidates.push(...(await getWikidataIdsForPages(titles)).values());
-  }
+  // Toutes les recherches en même temps ; les candidats gardent cet ordre de préférence
+  const lookups = await Promise.all([
+    ...variants.flatMap((variant) => [
+      getJson<{ query?: { pages: Record<string, { pageprops?: { wikibase_item?: string } }> } }>(
+        `${FRWIKI_API_URL}?action=query&format=json&prop=pageprops&redirects=1&titles=${encodeURIComponent(variant)}`,
+      ).then((pages) => Object.values(pages.query?.pages ?? {}).flatMap((p) => p.pageprops?.wikibase_item ?? [])),
+      getJson<{ search: { id: string }[] }>(
+        `${API_URL}?action=wbsearchentities&format=json&language=fr&uselang=fr&type=item&limit=5&search=${encodeURIComponent(variant)}`,
+      ).then((search) => search.search.map((r) => r.id)),
+    ]),
+    getJson<{ query?: { search: { title: string }[] } }>(
+      `${FRWIKI_API_URL}?action=query&format=json&list=search&srlimit=3&srsearch=${encodeURIComponent(`${name} football`)}`,
+    ).then(async (text) => {
+      const titles = text.query?.search.map((r) => r.title) ?? [];
+      return titles.length > 0 ? [...(await getWikidataIdsForPages(titles)).values()] : [];
+    }),
+  ]);
+  candidates.push(...lookups.flat());
 
   const ids = [...new Set(candidates)];
   if (ids.length === 0) return null;

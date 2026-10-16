@@ -164,7 +164,8 @@ export async function resetClubLogos(key: string) {
 /** Une étape de la recherche des clubs et logos manquants (l'admin rappelle tant qu'il en reste). */
 export async function syncClubLogosStep() {
   await requireAdmin();
-  const result = await syncClubLogos({ budgetMs: 8000 });
+  // Marge sous maxDuration (60 s) : un dernier groupe de clubs peut déborder du budget
+  const result = await syncClubLogos({ budgetMs: 30000 });
   if (result.traites > 0) revalidatePath("/", "layout");
   return result;
 }

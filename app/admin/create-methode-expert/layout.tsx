@@ -3,6 +3,9 @@ import Header from "@/components/header/Header";
 import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
+// Recherche des logos des clubs cités, après l'enregistrement d'une méthode (lib/club-logo-sync)
+export const maxDuration = 60;
+
 export const metadata: Metadata = pageMetadata({
   title: "Créer une méthode Expert",
   description:

@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- logos de toutes origines (Cloudinary, scrapers, Wikimedia…) */
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ImageUp, Pencil, Plus, RefreshCw, RotateCcw, Search, Trash, X } from "lucide-react";
 import { toast } from "sonner";
@@ -92,6 +92,10 @@ function resetText(club: AdminClubLogos) {
   };
 }
 
+// Étapes de recherche ratées d'affilée avant d'abandonner, et pause entre deux essais
+const MAX_RETRIES = 4;
+const RETRY_DELAY_MS = 20000;
+
 const FILTERS: [Filter, string][] = [
   ["tous", "Tous"],
   ["sans-logo", "Sans logo"],
@@ -108,6 +112,7 @@ export default function LogosAdmin({ clubs, enAttente }: { clubs: AdminClubLogos
   const [toReset, setToReset] = useState<AdminClubLogos | null>(null);
   // Recherche Wikipédia en cours : nombre de clubs restants
   const [syncing, setSyncing] = useState<number | null>(null);
+  const syncingRef = useRef(false);
 
   const shown = useMemo(() => {
     const wanted = normalizeText(search);
@@ -136,34 +141,51 @@ export default function LogosAdmin({ clubs, enAttente }: { clubs: AdminClubLogos
   }
 
   // Recherche par étapes de quelques secondes, jusqu'à épuisement (ou tant que ça avance)
+  // Recherche par étapes (~30 s chacune) jusqu'à épuisement. Une étape qui échoue ou n'avance pas
+  // (Wikimedia demande de ralentir, délai dépassé) est retentée après une pause, MAX_RETRIES fois.
   async function syncAll() {
+    if (syncingRef.current) return;
+    syncingRef.current = true;
     setSyncing(enAttente);
     const introuvables: string[] = [];
+    let failures = 0;
     try {
-      for (;;) {
-        const step = await syncClubLogosStep();
-        introuvables.push(...step.introuvables);
-        setSyncing(step.restants);
-        if (step.restants === 0) {
-          toast.success("Recherche terminée.");
-          break;
+      while (failures < MAX_RETRIES) {
+        const step = await syncClubLogosStep().catch((error) => {
+          console.error(error);
+          return null;
+        });
+        if (step) {
+          introuvables.push(...step.introuvables);
+          setSyncing(step.restants);
+          if (step.restants === 0) break;
         }
-        if (step.traites === 0) {
-          toast.warning("Wikipédia demande de ralentir : relancez la recherche dans quelques minutes.");
-          break;
+        if (!step || step.traites === 0) {
+          failures++;
+          await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+        } else {
+          failures = 0;
+          // Logos déjà trouvés visibles sans attendre la fin
+          router.refresh();
         }
       }
+      if (failures >= MAX_RETRIES) toast.warning("Recherche interrompue : Wikipédia ne répond plus, réessayez plus tard.");
+      else toast.success("Recherche terminée.");
       if (introuvables.length > 0) {
         toast.info(`Introuvables sur Wikipédia, à compléter à la main : ${introuvables.join(", ")}`, { duration: 15000 });
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("La recherche s'est interrompue : relancez-la.");
     } finally {
+      syncingRef.current = false;
       setSyncing(null);
       router.refresh();
     }
   }
+
+  // Clubs en attente : la recherche démarre seule à l'ouverture de la page
+  useEffect(() => {
+    if (enAttente > 0) syncAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- une seule fois, à l'ouverture
+  }, []);
 
   const startNewClub = (name = "") => {
     setNewClubName(name);
@@ -197,7 +219,7 @@ export default function LogosAdmin({ clubs, enAttente }: { clubs: AdminClubLogos
           <p>
             {syncing !== null
               ? `Recherche sur Wikipédia… ${syncing} club${syncing > 1 ? "s" : ""} restant${syncing > 1 ? "s" : ""}.`
-              : `${enAttente} club${enAttente > 1 ? "s" : ""} des méthodes à chercher sur Wikipédia (logo actuel et logos d'époque).`}
+              : `${enAttente} club${enAttente > 1 ? "s" : ""} des méthodes à chercher sur Wikipédia (logo actuel et logos d'époque). La recherche reprend seule à l'ouverture de cette page.`}
           </p>
           <button
             type="button"

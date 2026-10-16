@@ -6,7 +6,7 @@
 // Les clubs du registre des scrapers sont laissés aux scrapers, et une saisie manuelle de
 // l'admin n'est jamais écrasée.
 
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db/db";
@@ -38,12 +38,26 @@ export interface ClubLogoSyncResult {
   introuvables: string[];
 }
 
+// Logos depuis 1970 à partir desquels une galerie française suffit
+const GOOD_GALLERY = 3;
+
 /** Galerie de logos la plus fournie (depuis 1970) parmi les articles du club, à égalité la première langue. */
 async function bestGallery(club: WikidataClub): Promise<{ lang: string; title: string; logos: WikiLogo[] } | null> {
+  const read = async ([lang, title]: [string, string]) => ({
+    lang,
+    title,
+    logos: sinceMinSeason(logosFromWikitext((await getWikitextIn(lang, title)) ?? "")),
+  });
+  const [first, ...others] = Object.entries(club.wikis);
+  if (!first) return null;
+  // Galerie française déjà fournie : inutile d'interroger les autres langues
+  const french = await read(first);
+  if (first[0] === "fr" && french.logos.length >= GOOD_GALLERY) return french;
+  // Sinon toutes les autres en même temps ; à égalité, l'ordre de LOGO_WIKIS (français d'abord)
+  const galleries = [french, ...(await Promise.all(others.map(read)))];
   let best: { lang: string; title: string; logos: WikiLogo[] } | null = null;
-  for (const [lang, title] of Object.entries(club.wikis)) {
-    const logos = sinceMinSeason(logosFromWikitext((await getWikitextIn(lang, title)) ?? ""));
-    if (logos.length > (best?.logos.length ?? 0)) best = { lang, title, logos };
+  for (const gallery of galleries) {
+    if (gallery.logos.length > (best?.logos.length ?? 0)) best = gallery;
   }
   return best;
 }
@@ -69,59 +83,64 @@ export async function pendingClubLogos(names: string[]) {
   return { unknownNames, toCheck, registry: scraped.registry, versions: blog.versions };
 }
 
+// Clubs examinés en même temps : bien plus rapide, sans dépasser ce que Wikimedia tolère
+const CONCURRENCY = 4;
+
 /**
- * Cherche les clubs inconnus et les logos d'époque manquants, dans la limite de `budgetMs`
- * (au moins un club par appel). Sans `names`, part des clubs de toutes les méthodes.
+ * Traite `items` par groupes de CONCURRENCY jusqu'à épuisement du temps. Renvoie les éléments
+ * traités ; une erreur sur un élément ne bloque pas les autres (il sera repris au prochain appel),
+ * sauf si Wikimedia demande de ralentir.
+ */
+async function inBatches<T>(items: T[], outOfTime: () => boolean, work: (item: T) => Promise<unknown>): Promise<T[]> {
+  const done: T[] = [];
+  for (let i = 0; i < items.length && !outOfTime(); i += CONCURRENCY) {
+    const batch = items.slice(i, i + CONCURRENCY);
+    const results = await Promise.allSettled(batch.map(work));
+    results.forEach((result, j) => {
+      if (result.status === "fulfilled") done.push(batch[j]);
+      else console.error("Logos des clubs :", batch[j], result.reason);
+    });
+    if (results.some((r) => r.status === "rejected" && r.reason instanceof WikidataRateLimitError)) break;
+  }
+  return done;
+}
+
+/**
+ * Cherche les clubs inconnus et les logos d'époque manquants, dans la limite de `budgetMs`.
+ * Sans `names`, part des clubs de toutes les méthodes.
  */
 export async function syncClubLogos({
   names,
-  budgetMs = 8000,
+  budgetMs = 40000,
 }: { names?: string[]; budgetMs?: number } = {}): Promise<ClubLogoSyncResult> {
   const started = Date.now();
   const outOfTime = () => Date.now() - started > budgetMs;
   const wanted = names ?? (await methodeClubNames());
-  let { unknownNames, toCheck, registry, versions } = await pendingClubLogos(wanted);
-  let traites = 0;
+  const { unknownNames } = await pendingClubLogos(wanted);
   const introuvables: string[] = [];
 
-  try {
-    // 1. Clubs cités sous un nom inconnu : retrouvés sur Wikidata et ajoutés à la bibliothèque
-    for (const name of [...unknownNames]) {
-      if (traites > 0 && outOfTime()) break;
-      traites++;
-      unknownNames = unknownNames.filter((n) => n !== name);
-      const club = await findWikidataClub(name);
-      if (club) {
-        await addToLibrary(club.id, club.label || name, name, club.frwiki, club.transfermarktId);
-      } else {
-        // Introuvable : dans la liste de l'admin quand même, sans logo, déjà examiné
-        introuvables.push(name);
-        await db
-          .insert(clubsTable)
-          .values({ wikidataId: customClubKey(name), nom: name, logoUrl: DEFAULT_TEAM_LOGO, logosVerifiesAt: new Date() })
-          .onConflictDoNothing();
-      }
+  // 1. Clubs cités sous un nom inconnu : retrouvés sur Wikidata et ajoutés à la bibliothèque
+  const found = await inBatches(unknownNames, outOfTime, async (name) => {
+    const club = await findWikidataClub(name);
+    if (club) {
+      await addToLibrary(club.id, club.label || name, name, club.frwiki, club.transfermarktId);
+    } else {
+      // Introuvable : dans la liste de l'admin quand même, sans logo, déjà examiné
+      introuvables.push(name);
+      await db
+        .insert(clubsTable)
+        .values({ wikidataId: customClubKey(name), nom: name, logoUrl: DEFAULT_TEAM_LOGO, logosVerifiesAt: new Date() })
+        .onConflictDoNothing();
     }
+  });
 
-    // Bibliothèque relue : les clubs ajoutés à l'étape 1 sont à examiner
-    ({ toCheck, registry, versions } = await pendingClubLogos([]));
-
-    // 2. Logos d'époque des clubs de la bibliothèque pas encore examinés
-    for (const club of toCheck) {
-      if (traites > 0 && outOfTime()) break;
-      traites++;
-      await readHistoricalLogos(club, registry, versions);
-      toCheck = toCheck.filter((c) => c.key !== club.key);
-    }
-  } catch (error) {
-    // Wikimedia limite le débit : on reprendra au prochain appel
-    if (!(error instanceof WikidataRateLimitError)) throw error;
-    console.error("Logos des clubs : Wikimedia demande de ralentir", error);
-  }
+  // 2. Logos d'époque des clubs de la bibliothèque pas encore examinés (dont ceux de l'étape 1)
+  const { toCheck, registry, versions } = await pendingClubLogos([]);
+  const checked = await inBatches(toCheck, outOfTime, (club) => readHistoricalLogos(club, registry, versions));
 
   return {
-    traites,
-    restants: unknownNames.length + toCheck.length,
+    traites: found.length + checked.length,
+    restants: unknownNames.length - found.length + toCheck.length - checked.length,
     introuvables,
   };
 }
@@ -143,13 +162,15 @@ async function addToLibrary(
   const logoFile = frwiki ? await getWikipediaLogoFile(frwiki) : null;
   // Sans logo actuel, le club reste dans la liste de l'admin avec l'écusson neutre
   const logoUrl = (logoFile && (await getWikimediaThumbs("fr", [logoFile])).get(logoFile)) || DEFAULT_TEAM_LOGO;
-  await db.insert(clubsTable).values({
-    wikidataId,
-    nom,
-    noms: normalizeText(alias) === normalizeText(nom) ? [] : [alias],
-    logoUrl,
-    transfermarktId,
-  });
+  // Deux noms du même club peuvent être traités en même temps : le second complète le premier
+  const noms = normalizeText(alias) === normalizeText(nom) ? [] : [alias];
+  await db
+    .insert(clubsTable)
+    .values({ wikidataId, nom, noms, logoUrl, transfermarktId })
+    .onConflictDoUpdate({
+      target: clubsTable.wikidataId,
+      set: { noms: sql`array(select distinct unnest(${clubsTable.noms} || ${noms}::text[]))` },
+    });
 }
 
 /** Logos d'époque d'un club de la bibliothèque, lus sur Wikipédia FR. */
@@ -206,7 +227,7 @@ export function syncClubLogosAfterSave(names: (string | undefined)[]) {
   if (wanted.length === 0) return;
   after(async () => {
     try {
-      await syncClubLogos({ names: wanted, budgetMs: 25000 });
+      await syncClubLogos({ names: wanted, budgetMs: 30000 });
       revalidatePath("/", "layout");
     } catch (error) {
       // Les clubs restants seront cherchés depuis /admin/logos
