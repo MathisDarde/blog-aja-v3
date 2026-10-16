@@ -700,3 +700,69 @@ export async function downloadCommonsImage(
   if (!response.ok) throw new Error(`Téléchargement impossible : ${file}`);
   return Buffer.from(await response.arrayBuffer());
 }
+
+// Natures d'un club ou d'une sélection (P31) ; un identifiant Transfermarkt (P7223) suffit aussi
+const FOOTBALL_CLUB_CLASSES = ["Q476028", "Q15944511", NATIONAL_TEAM, "Q103229495"];
+
+export interface WikidataClub {
+  id: string;
+  label: string;
+  // Article Wikipédia FR, ou null
+  frwiki: string | null;
+  transfermarktId: string | null;
+}
+
+const toClub = (entity: Entity): WikidataClub => ({
+  id: entity.id,
+  label: label(entity),
+  frwiki: entity.sitelinks?.frwiki?.title ?? null,
+  transfermarktId: (claimsOf(entity, "P7223")[0]?.mainsnak.datavalue?.value as string | undefined) ?? null,
+});
+
+const isFootballClub = (entity: Entity | undefined) =>
+  Boolean(entity) &&
+  (claimsOf(entity, "P7223").length > 0 ||
+    claimsOf(entity, "P31").some((c) => FOOTBALL_CLUB_CLASSES.includes(itemId(c.mainsnak) ?? "")));
+
+/** Club (élément Wikidata) : article Wikipédia FR et identifiant Transfermarkt. */
+export async function getWikidataClub(id: string): Promise<WikidataClub | null> {
+  const entity = (await getEntities([id], "labels|claims|sitelinks"))[id];
+  return entity ? toClub(entity) : null;
+}
+
+/**
+ * Club cherché par le nom tapé dans une méthode (« Zenit St. Pétersbourg ») : titre exact de
+ * Wikipédia FR (redirections comprises), libellés et alias Wikidata, puis recherche plein texte.
+ */
+export async function findWikidataClub(name: string): Promise<WikidataClub | null> {
+  // « St. » / « St » → « Saint- » : graphies courantes dans les méthodes
+  const variants = [...new Set([name, name.replace(/\bSt\.?\s+/g, "Saint-")])];
+  const candidates: string[] = [];
+
+  for (const variant of variants) {
+    const pages = await getJson<{ query?: { pages: Record<string, { pageprops?: { wikibase_item?: string } }> } }>(
+      `${FRWIKI_API_URL}?action=query&format=json&prop=pageprops&redirects=1&titles=${encodeURIComponent(variant)}`,
+    );
+    candidates.push(
+      ...Object.values(pages.query?.pages ?? {}).flatMap((p) => p.pageprops?.wikibase_item ?? []),
+    );
+    const search = await getJson<{ search: { id: string }[] }>(
+      `${API_URL}?action=wbsearchentities&format=json&language=fr&uselang=fr&type=item&limit=5&search=${encodeURIComponent(variant)}`,
+    );
+    candidates.push(...search.search.map((r) => r.id));
+  }
+
+  const text = await getJson<{ query?: { search: { title: string }[] } }>(
+    `${FRWIKI_API_URL}?action=query&format=json&list=search&srlimit=3&srsearch=${encodeURIComponent(`${name} football`)}`,
+  );
+  const titles = text.query?.search.map((r) => r.title) ?? [];
+  if (titles.length > 0) {
+    candidates.push(...(await getWikidataIdsForPages(titles)).values());
+  }
+
+  const ids = [...new Set(candidates)];
+  if (ids.length === 0) return null;
+  const entities = await getEntities(ids, "labels|claims|sitelinks");
+  const found = ids.map((id) => entities[id]).find(isFootballClub);
+  return found ? toClub(found) : null;
+}

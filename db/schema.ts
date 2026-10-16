@@ -297,6 +297,12 @@ export const clubsTable = pgTable("clubs_table", {
   wikidataId: text("wikidataId").primaryKey(),
   nom: text("nom").notNull(),
   logoUrl: text("logoUrl").notNull(),
+  // Autres noms du club (graphies des méthodes : « Zenit St. Pétersbourg »…)
+  noms: text("noms").array().notNull().default([]),
+  // Identifiant Transfermarkt (Wikidata P7223) : le même club que celui du registre des scrapers
+  transfermarktId: text("transfermarktId"),
+  // Logos d'époque cherchés sur Wikipédia (lib/club-logo-sync), même sans résultat
+  logosVerifiesAt: timestamp("logosVerifiesAt"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt")
     .notNull()
@@ -304,9 +310,10 @@ export const clubsTable = pgTable("clubs_table", {
     .$onUpdate(() => new Date()),
 });
 
-// Logos d'époque gérés depuis l'admin (/admin/logos) : pour un club, ils remplacent ceux
-// publiés par les scrapers. Un club absent du registre des scrapers (Zenit…) y est rangé
-// sous « nom:<nom-normalisé> ».
+// Logos d'époque des clubs gérés par le blog (/admin/logos) : saisis à la main, ou lus sur
+// Wikipédia pour les clubs absents du registre des scrapers. Pour un club du registre, ils
+// remplacent ceux des scrapers. Clé : identifiant Transfermarkt (registre), sinon celle de la
+// bibliothèque (clubs_table : Wikidata ou « nom:<nom-normalisé> »).
 export const clubLogoVersionsTable = pgTable("club_logo_versions_table", {
   // Identifiant Transfermarkt du club (registre des scrapers), ou « nom:<nom-normalisé> »
   clubKey: text("clubKey").primaryKey(),
@@ -315,6 +322,8 @@ export const clubLogoVersionsTable = pgTable("club_logo_versions_table", {
   noms: text("noms").array().notNull().default([]),
   // [{ legende, de, a, logo }] : de / a = années de début de saison incluses, null = sans limite
   periodes: json("periodes").notNull().default([]),
+  // « wikipedia » : lus automatiquement (relus si besoin) ; « manuel » : saisis dans l'admin, jamais écrasés
+  origine: text("origine").notNull().default("manuel"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt")
     .notNull()

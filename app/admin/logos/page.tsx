@@ -5,6 +5,6 @@ import LogosAdmin from "./_components/LogosAdmin";
 export const dynamic = "force-dynamic";
 
 export default async function LogosAdminPage() {
-  const { clubs, sansLogo } = await getClubLogosAdmin();
-  return <LogosAdmin clubs={clubs} sansLogo={sansLogo} />;
+  const { clubs, enAttente } = await getClubLogosAdmin();
+  return <LogosAdmin clubs={clubs} enAttente={enAttente} />;
 }

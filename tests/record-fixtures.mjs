@@ -11,6 +11,10 @@ const PAGES = {
   "fr-saison-2021-2022": ["fr", "Saison 2021-2022 de l'AJ Auxerre"],
   "fr-modele-effectif-2021-2022": ["fr", "Modèle:Effectif de l'AJ Auxerre 2021-2022"],
   "en-season-2021-22": ["en", "2021–22 AJ Auxerre season"],
+  // Galeries de logos d'époque
+  "fr-zenit": ["fr", "Zénith Saint-Pétersbourg"],
+  "fr-marseille": ["fr", "Olympique de Marseille"],
+  "fr-toulouse": ["fr", "Toulouse Football Club"],
 };
 
 mkdirSync("tests/fixtures", { recursive: true });

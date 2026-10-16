@@ -1,14 +1,15 @@
-// Logo d'un club pour une saison donnée, côté serveur : logo d'époque (saisi dans l'admin, à
-// défaut Wikipédia FR ou liste manuelle publiés par les scrapers dans logos-historiques.json),
-// sinon logo actuel du site, sinon logo Transfermarkt, sinon écusson neutre.
+// Logo d'un club pour une saison donnée, côté serveur : logo d'époque (saisi dans l'admin ou lu
+// sur Wikipédia par le blog, à défaut publié par les scrapers dans logos-historiques.json), sinon
+// logo actuel du site, Transfermarkt, de la bibliothèque des méthodes, sinon écusson neutre.
 
 import { cache } from "react";
-import { getClubLogoVersions, LogoPeriod } from "@/lib/club-logo-versions";
+import { BlogClubLogos, getBlogClubLogos, LogoPeriod } from "@/lib/club-logo-versions";
+import { sinceMinSeason } from "@/lib/historical-logos";
 import { fetchScrapedData, SCRAPERS_URL } from "@/lib/scraped-data";
 import { normalizeText } from "@/lib/normalize-text";
 import { getTeamInfo } from "@/utils/get-team-info";
 
-interface RegistryClub {
+export interface RegistryClub {
   nom: string;
   noms: string[];
   logo: string | null;
@@ -35,8 +36,14 @@ export interface TeamLogoResolver {
   logo(team: TeamRef): string;
   /** Logo d'époque seulement (null hors période connue) : pour les logos choisis à la main. */
   periodLogo(team: TeamRef): string | null;
-  /** Logo actuel (site, Transfermarkt, écusson neutre), sans les logos d'époque. */
+  /** Logo actuel (site, Transfermarkt, bibliothèque, écusson neutre), sans les logos d'époque. */
   currentLogo(team: TeamRef): string;
+  /** Clé du club (Transfermarkt, sinon bibliothèque), ou undefined pour un club inconnu. */
+  clubKey(team: TeamRef): string | undefined;
+  /** Versions d'époque du club depuis 1970 (blog, sinon scrapers). */
+  periodsOf(key: string): LogoPeriod[];
+  /** Tous les noms connus du club. */
+  namesOf(key: string): string[];
 }
 
 export interface ScrapedClubLogos {
@@ -53,33 +60,67 @@ export const fetchScrapedClubLogos = cache(async (): Promise<ScrapedClubLogos> =
   return { registry, periods };
 });
 
-export const getTeamLogoResolver = cache(async (): Promise<TeamLogoResolver> => {
-  const [{ registry, periods: scrapedPeriods }, versions] = await Promise.all([
-    fetchScrapedClubLogos(),
-    getClubLogoVersions(),
-  ]);
+/**
+ * Clé de chaque club de la bibliothèque : celle du registre quand c'est le même club
+ * (identifiant Transfermarkt, à défaut même nom), sinon la sienne.
+ */
+export function libraryKeys(registry: Record<string, RegistryClub>, library: BlogClubLogos["library"]) {
+  const registryByName = new Map<string, string>();
+  for (const [id, club] of Object.entries(registry)) {
+    for (const name of [club.nom, ...club.noms]) registryByName.set(normalizeText(name), id);
+  }
+  return new Map(
+    library.map((club) => {
+      if (club.transfermarktId && registry[club.transfermarktId]) return [club.key, club.transfermarktId];
+      const byName = [club.nom, ...club.noms].map((n) => registryByName.get(normalizeText(n))).find(Boolean);
+      return [club.key, byName ?? club.key];
+    }),
+  );
+}
 
-  // Noms saisis dans l'admin d'abord : ils l'emportent sur ceux du registre
-  const idByName = new Map<string, string>();
+export function buildTeamLogoResolver(
+  { registry, periods: scrapedPeriods }: ScrapedClubLogos,
+  { versions, library }: BlogClubLogos,
+): TeamLogoResolver {
+  const keyOfLibrary = libraryKeys(registry, library);
+  const libraryLogo = new Map<string, string>();
+  const libraryNames = new Map<string, string[]>();
+  for (const club of library) {
+    const key = keyOfLibrary.get(club.key)!;
+    if (!libraryLogo.has(key)) libraryLogo.set(key, club.logoUrl);
+    libraryNames.set(key, [...(libraryNames.get(key) ?? []), club.nom, ...club.noms]);
+  }
+
+  // Noms saisis dans l'admin d'abord, puis registre, puis bibliothèque
   const namesOf = (id: string) => [
     ...(versions[id] ? [versions[id].nom, ...versions[id].noms] : []),
     ...(registry[id] ? [registry[id].nom, ...registry[id].noms] : []),
+    ...(libraryNames.get(id) ?? []),
   ];
-  for (const id of [...Object.keys(versions), ...Object.keys(registry)]) {
+  const idByName = new Map<string, string>();
+  for (const id of new Set([...Object.keys(versions), ...Object.keys(registry), ...libraryNames.keys()])) {
     for (const name of namesOf(id)) {
       const key = normalizeText(name);
       if (key && !idByName.has(key)) idByName.set(key, id);
     }
   }
-  const idOf = (team: TeamRef) => team.id ?? (team.name ? idByName.get(normalizeText(team.name)) : undefined);
+  // « Real Madrid CF » → « Real Madrid » : le plus long nom de la bibliothèque qui commence le nom
+  const libraryPrefixes = [...libraryNames.entries()]
+    .flatMap(([id, names]) => names.map((name) => [normalizeText(name), id] as const))
+    .sort((a, b) => b[0].length - a[0].length);
+  const idOfName = (name: string) => {
+    const wanted = normalizeText(name);
+    return idByName.get(wanted) ?? libraryPrefixes.find(([known]) => known && wanted.startsWith(`${known} `))?.[1];
+  };
+  const idOf = (team: TeamRef) => team.id ?? (team.name ? idOfName(team.name) : undefined);
 
-  // Un club repris dans l'admin n'a plus que ses versions saisies à la main
-  const periodsOf = (id: string) => versions[id]?.periodes ?? scrapedPeriods[id] ?? [];
+  // Un club repris par le blog n'a plus que ses propres versions ; rien d'avant 1970
+  const periodsOf = (id: string) => sinceMinSeason(versions[id]?.periodes ?? scrapedPeriods[id] ?? []);
 
   const periodLogo = (team: TeamRef) => {
     const id = idOf(team);
     if (!id) return null;
-    // Sans saison, le logo du jour : seules les versions de l'admin couvrent la saison en cours
+    // Sans saison, le logo du jour : seules les versions du blog couvrent la saison en cours
     // (les scrapers écartent la période actuelle, laissée au logo du site)
     const season = team.season ?? (versions[id] ? seasonOf(new Date()) : null);
     if (season == null) return null;
@@ -99,14 +140,23 @@ export const getTeamLogoResolver = cache(async (): Promise<TeamLogoResolver> => 
       if (local !== "logodefault.png") return `${LOCAL_LOGOS}${local}`;
     }
     const tm = id ? registry[id]?.logo : null;
-    return tm ? absolute(tm) : DEFAULT_TEAM_LOGO;
+    if (tm) return absolute(tm);
+    return (id && libraryLogo.get(id)) || DEFAULT_TEAM_LOGO;
   };
 
   return {
     logo: (team) => periodLogo(team) ?? currentLogo(team),
     periodLogo,
     currentLogo,
+    clubKey: idOf,
+    periodsOf,
+    namesOf: (id) => [...new Set(namesOf(id))],
   };
+}
+
+export const getTeamLogoResolver = cache(async (): Promise<TeamLogoResolver> => {
+  const [scraped, blog] = await Promise.all([fetchScrapedClubLogos(), getBlogClubLogos()]);
+  return buildTeamLogoResolver(scraped, blog);
 });
 
 export const AJA_CLUB_ID = "290";

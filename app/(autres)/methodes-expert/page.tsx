@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import { getArticles } from "@/controllers/ArticlesController";
 import { Methodes } from "@/contexts/Interfaces";
-import { clubLogoLibraryFinder } from "@/lib/club-logos";
 import { DEFAULT_TEAM_LOGO, getTeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
 import { normalizeText } from "@/lib/normalize-text";
 import { MethodeEntry, mentionedMethodes, methodeKey, methodeName } from "@/lib/methodes";
@@ -70,16 +69,11 @@ function describe(
 }
 
 export default async function MethodesExpertPage() {
-  const [methodes, articles, findLibraryLogo, resolver] = await Promise.all([
-    getAllMethodes(),
-    getArticles(),
-    clubLogoLibraryFinder(),
-    getTeamLogoResolver(),
-  ]);
-  // Logo d'époque ou actuel (lib/team-logos), puis bibliothèque en base pour les clubs étrangers
+  const [methodes, articles, resolver] = await Promise.all([getAllMethodes(), getArticles(), getTeamLogoResolver()]);
+  // Logo d'époque ou actuel (lib/team-logos, bibliothèque des méthodes comprise)
   const clubLogo = (clubName: string, season: number | null) => {
     const logo = resolver.logo({ name: clubName, season });
-    return logo === DEFAULT_TEAM_LOGO ? (findLibraryLogo(clubName) ?? DEFAULT_LOGO) : logo;
+    return logo === DEFAULT_TEAM_LOGO ? DEFAULT_LOGO : logo;
   };
 
   // Articles citant chaque méthode, du plus récent au plus ancien

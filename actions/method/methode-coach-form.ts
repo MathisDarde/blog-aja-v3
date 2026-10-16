@@ -1,6 +1,7 @@
 "use server";
 
 import { MethodeCoachSchema } from "@/app/schema";
+import { syncClubLogosAfterSave } from "@/lib/club-logo-sync";
 import { createMethodeCoach } from "@/controllers/MethodeCoachController";
 import { FormResponse, MethodeCoachSchemaType } from "@/types/forms";
 
@@ -17,6 +18,8 @@ const submitMethodeCoachForm = async (
 
     try {
       await createMethodeCoach(parsedData.data, userId);
+      // Clubs cités : ajoutés à /admin/logos avec leurs logos (Wikipédia)
+      syncClubLogosAfterSave(parsedData.data.clubscoach.map((club) => club[1]));
       return { success: true, message: "Méthode enregistrée avec succès !" };
     } catch (error) {
       console.error(error);

@@ -26,7 +26,12 @@ vi.mock("@/lib/scraped-data", () => ({
 // Logos repris dans l'admin : ils remplacent ceux des scrapers pour Marseille, et Zenit est
 // un club absent du registre
 let versions: Record<string, unknown> = {};
-vi.mock("@/lib/club-logo-versions", () => ({ getClubLogoVersions: async () => versions }));
+// Bibliothèque des méthodes : Arsenal (club étranger), et l'OM sous son identifiant Wikidata
+const library = [
+  { key: "Q9617", nom: "Arsenal FC", noms: [], logoUrl: "https://cdn.test/arsenal.png", transfermarktId: "11" },
+  { key: "Q132885", nom: "OM", noms: [], logoUrl: "https://cdn.test/om.png", transfermarktId: "244" },
+];
+vi.mock("@/lib/club-logo-versions", () => ({ getBlogClubLogos: async () => ({ versions, library }) }));
 // cache() de React (mémoïsation par requête) est neutre hors du serveur Next
 vi.mock("react", () => ({ cache: <T,>(fn: T) => fn }));
 
@@ -109,6 +114,22 @@ describe("logos repris dans l'admin", () => {
   it("reconnaissent un club ajouté à la main par ses autres noms, même sans saison", () => {
     expect(resolver.logo({ name: "Zenit St. Petersbourg", season: 2010 })).toBe("https://cdn.test/zenit-2010.png");
     expect(resolver.logo({ name: "Zenit Saint-Pétersbourg" })).toBe("https://cdn.test/zenit.png");
+  });
+});
+
+describe("bibliothèque des méthodes", () => {
+  it("donne le logo d'un club hors registre, même sous un nom plus long", async () => {
+    versions = {};
+    const resolver = await getTeamLogoResolver();
+    expect(resolver.logo({ name: "Arsenal FC", season: 2002 })).toBe("https://cdn.test/arsenal.png");
+    expect(resolver.logo({ name: "Arsenal FC Londres" })).toBe("https://cdn.test/arsenal.png");
+  });
+
+  it("rattache un club déjà au registre par son identifiant Transfermarkt", async () => {
+    versions = {};
+    const resolver = await getTeamLogoResolver();
+    expect(resolver.clubKey({ name: "OM" })).toBe("244");
+    expect(resolver.logo({ name: "OM", season: 1995 })).toBe("https://data.test/logos/historique/244-1993.png");
   });
 });
 

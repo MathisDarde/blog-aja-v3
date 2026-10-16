@@ -1,6 +1,7 @@
 "use server";
 
 import { MethodeMatchSchema } from "@/app/schema";
+import { syncClubLogosAfterSave } from "@/lib/club-logo-sync";
 import { createMethodeMatch } from "@/controllers/MethodeMatchController";
 import { FormResponse, MethodeMatchSchemaType } from "@/types/forms";
 
@@ -17,6 +18,8 @@ const submitMethodeMatchForm = async (
 
     try {
       await createMethodeMatch(parsedData.data, userId);
+      // Clubs cités : ajoutés à /admin/logos avec leurs logos (Wikipédia)
+      syncClubLogosAfterSave([parsedData.data.nomequipe1, parsedData.data.nomequipe2]);
       return { success: true, message: "Méthode enregistrée avec succès !" };
     } catch (error) {
       console.error(error);
