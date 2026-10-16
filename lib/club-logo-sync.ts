@@ -218,6 +218,11 @@ export async function resetLibraryClub(key: string) {
   await db.update(clubsTable).set({ logosVerifiesAt: null }).where(eq(clubsTable.wikidataId, key));
 }
 
+/** Toute la bibliothèque à relire sur Wikipédia (les versions saisies à la main ne sont pas touchées). */
+export async function resetAllLibraryClubs() {
+  await db.update(clubsTable).set({ logosVerifiesAt: null });
+}
+
 /**
  * Après l'enregistrement d'une méthode, sans retarder la réponse : clubs cités ajoutés à la
  * liste des logos, avec leur logo actuel et leurs logos d'époque trouvés sur Wikipédia.

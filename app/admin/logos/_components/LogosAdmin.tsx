@@ -7,7 +7,13 @@ import { useRouter } from "next/navigation";
 import { Check, ImageUp, Pencil, Plus, RefreshCw, RotateCcw, Search, Trash, X } from "lucide-react";
 import { toast } from "sonner";
 import ActionPopup from "@/components/ActionPopup";
-import { AdminClubLogos, resetClubLogos, saveClubLogos, syncClubLogosStep } from "@/controllers/ClubLogosController";
+import {
+  AdminClubLogos,
+  rereadAllClubLogos,
+  resetClubLogos,
+  saveClubLogos,
+  syncClubLogosStep,
+} from "@/controllers/ClubLogosController";
 import { normalizeText } from "@/lib/normalize-text";
 import { ClubLogosSchemaType } from "@/types/forms";
 
@@ -143,10 +149,10 @@ export default function LogosAdmin({ clubs, enAttente }: { clubs: AdminClubLogos
   // Recherche par étapes de quelques secondes, jusqu'à épuisement (ou tant que ça avance)
   // Recherche par étapes (~30 s chacune) jusqu'à épuisement. Une étape qui échoue ou n'avance pas
   // (Wikimedia demande de ralentir, délai dépassé) est retentée après une pause, MAX_RETRIES fois.
-  async function syncAll() {
+  async function syncAll(total = enAttente) {
     if (syncingRef.current) return;
     syncingRef.current = true;
-    setSyncing(enAttente);
+    setSyncing(total);
     const introuvables: string[] = [];
     let failures = 0;
     try {
@@ -179,6 +185,12 @@ export default function LogosAdmin({ clubs, enAttente }: { clubs: AdminClubLogos
       setSyncing(null);
       router.refresh();
     }
+  }
+
+  // Relecture complète (logos corrigés sur Wikipédia entre-temps) : saisies manuelles conservées
+  async function rereadAll() {
+    if (syncingRef.current) return;
+    syncAll(await rereadAllClubLogos());
   }
 
   // Clubs en attente : la recherche démarre seule à l'ouverture de la page
@@ -223,13 +235,27 @@ export default function LogosAdmin({ clubs, enAttente }: { clubs: AdminClubLogos
           </p>
           <button
             type="button"
-            onClick={syncAll}
+            onClick={() => syncAll()}
             disabled={syncing !== null}
             className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-amber-300 hover:bg-amber-50 disabled:opacity-60"
           >
             <RefreshCw size={16} className={syncing !== null ? "animate-spin" : ""} /> Chercher maintenant
           </button>
         </div>
+      )}
+
+      {enAttente === 0 && syncing === null && (
+        <p className="mb-6 text-sm text-gray-600 flex flex-wrap items-center gap-2">
+          Tous les clubs des méthodes ont été cherchés sur Wikipédia.
+          <button
+            type="button"
+            onClick={rereadAll}
+            className="inline-flex items-center gap-1 text-aja-blue hover:underline"
+          >
+            <RefreshCw size={14} /> Tout relire sur Wikipédia
+          </button>
+          <span className="text-gray-400">(les versions saisies à la main ne sont pas touchées)</span>
+        </p>
       )}
 
       {editing === "new" && (

@@ -9,7 +9,13 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import { customClubKey, getBlogClubLogos, LogoOrigin } from "@/lib/club-logo-versions";
-import { methodeClubNames, pendingClubLogos, resetLibraryClub, syncClubLogos } from "@/lib/club-logo-sync";
+import {
+  methodeClubNames,
+  pendingClubLogos,
+  resetAllLibraryClubs,
+  resetLibraryClub,
+  syncClubLogos,
+} from "@/lib/club-logo-sync";
 import { normalizeText } from "@/lib/normalize-text";
 import { absolute, buildTeamLogoResolver, DEFAULT_TEAM_LOGO, fetchScrapedClubLogos, libraryKeys } from "@/lib/team-logos";
 
@@ -159,6 +165,14 @@ export async function resetClubLogos(key: string) {
   }
   revalidatePath("/", "layout");
   return { success: true, message };
+}
+
+/** Remet tous les clubs des méthodes en attente : la recherche les relira sur Wikipédia. */
+export async function rereadAllClubLogos() {
+  await requireAdmin();
+  await resetAllLibraryClubs();
+  const { toCheck, unknownNames } = await pendingClubLogos(await methodeClubNames());
+  return toCheck.length + unknownNames.length;
 }
 
 /** Une étape de la recherche des clubs et logos manquants (l'admin rappelle tant qu'il en reste). */
