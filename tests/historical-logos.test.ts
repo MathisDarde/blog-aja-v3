@@ -6,6 +6,24 @@ import { wikitext } from "./helpers";
 const periods = (name: string) => logosFromWikitext(wikitext(name)).map((l) => [l.de, l.a]);
 
 describe("logos d'époque Wikipédia", () => {
+  it("lit une galerie italienne et écarte le logo du centenaire (Milan)", () => {
+    const text = `== Simboli ==
+=== Stemma ===
+<gallery>
+Escudo ac milan 1946.svg|Stemma utilizzato dal 1946 fino al 1979
+AC Milan Diavoletto (1979-1986).svg|Stemma del ''Diavoletto'' usato dal 1979 al 1986
+AC Milan logo (1986-1998).png|Stemma del Milan utilizzato dal 1986 al 1997.
+100 Milan.png|Il logo per ''CentoMilan'', il centenario rossonero del 1999.
+Logo of AC Milan.svg|Stemma del Milan in uso dal 1997.
+</gallery>`;
+    expect(logosFromWikitext(text).map((l) => [l.de, l.a])).toEqual([
+      [1946, 1978],
+      [1979, 1985],
+      [1986, 1996],
+      [1997, null],
+    ]);
+  });
+
   it.each([
     ["{{Centrer|Avant 1992.}}", [null, 1991]],
     ["{{Centrer|1992-1997.}}", [1992, 1996]],
@@ -15,6 +33,15 @@ describe("logos d'époque Wikipédia", () => {
     ["<center>Jusqu'en 1967</center>", [null, 1966]],
     ["Logo actuel{{,}}(2026-)", [2026, null]],
     ["<center>1921 à 1934<ref>source</ref></center>", [1921, 1933]],
+    // Galeries des clubs étrangers, dans leur langue
+    ["Stemma utilizzato dal 1946 fino al 1979, con piccole variazioni", [1946, 1978]],
+    ["Stemma del Milan in uso dal 1997.", [1997, null]],
+    ["Milan logo used between 1936 and 1945", [1936, 1944]],
+    ["Milan logo used since 1998", [1998, null]],
+    ["seit 2026", [2026, null]],
+    ["1905–1952", [1905, 1951]],
+    ["Escudo desde 2001", [2001, null]],
+    ["Badge used in the 1970s", [1970, 1979]],
   ])("lit la période de « %s »", (caption, period) => {
     expect(parsePeriod(cleanCaption(caption))).toEqual(period);
   });

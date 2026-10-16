@@ -1,25 +1,28 @@
 // Logos des clubs cités dans les méthodes, cherchés automatiquement : club retrouvé sur Wikidata
-// (bibliothèque clubs_table), puis logos d'époque lus dans les galeries de son article Wikipédia FR
-// (club_logo_versions_table, origine « wikipedia »). Les clubs du registre des scrapers sont
-// laissés aux scrapers, et une saisie manuelle de l'admin n'est jamais écrasée.
+// (bibliothèque clubs_table), puis logos d'époque lus dans la galerie la plus complète de ses
+// articles Wikipédia (français, sinon anglais, italien, allemand… : les clubs étrangers ont souvent
+// la leur dans leur langue), rangés dans club_logo_versions_table (origine « wikipedia »).
+// Les images restent chez Wikimedia (adresses directes) : rien n'est copié sur Cloudinary.
+// Les clubs du registre des scrapers sont laissés aux scrapers, et une saisie manuelle de
+// l'admin n'est jamais écrasée.
 
 import { eq } from "drizzle-orm";
 import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db/db";
 import { clubLogoVersionsTable, clubsTable } from "@/db/schema";
-import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import { customClubKey, getBlogClubLogos, LibraryClub, LogoPeriod } from "@/lib/club-logo-versions";
-import { logosFromWikitext, sinceMinSeason } from "@/lib/historical-logos";
+import { logosFromWikitext, sinceMinSeason, WikiLogo } from "@/lib/historical-logos";
 import { normalizeText } from "@/lib/normalize-text";
 import { buildTeamLogoResolver, DEFAULT_TEAM_LOGO, fetchScrapedClubLogos } from "@/lib/team-logos";
 import {
-  downloadCommonsImage,
   findWikidataClub,
   getWikidataClub,
+  getWikimediaThumbs,
   getWikipediaLogoFile,
-  getWikipediaWikitext,
+  getWikitextIn,
   isWikidataId,
+  WikidataClub,
   WikidataRateLimitError,
 } from "@/lib/wikidata";
 import { getMatchMethodes } from "@/controllers/MethodeMatchController";
@@ -35,9 +38,15 @@ export interface ClubLogoSyncResult {
   introuvables: string[];
 }
 
-const uploadWikiImage = async (file: string) =>
-  (await uploadBufferToCloudinary(await downloadCommonsImage(file, 200), { folder: "clubs", resource_type: "image" }))
-    .secure_url;
+/** Galerie de logos la plus fournie (depuis 1970) parmi les articles du club, à égalité la première langue. */
+async function bestGallery(club: WikidataClub): Promise<{ lang: string; title: string; logos: WikiLogo[] } | null> {
+  let best: { lang: string; title: string; logos: WikiLogo[] } | null = null;
+  for (const [lang, title] of Object.entries(club.wikis)) {
+    const logos = sinceMinSeason(logosFromWikitext((await getWikitextIn(lang, title)) ?? ""));
+    if (logos.length > (best?.logos.length ?? 0)) best = { lang, title, logos };
+  }
+  return best;
+}
 
 /** Noms de clubs de toutes les méthodes (équipes des matchs, parcours des joueurs et coachs). */
 export async function methodeClubNames(): Promise<string[]> {
@@ -133,7 +142,7 @@ async function addToLibrary(
   }
   const logoFile = frwiki ? await getWikipediaLogoFile(frwiki) : null;
   // Sans logo actuel, le club reste dans la liste de l'admin avec l'écusson neutre
-  const logoUrl = (logoFile && (await uploadWikiImage(logoFile).catch(() => null))) || DEFAULT_TEAM_LOGO;
+  const logoUrl = (logoFile && (await getWikimediaThumbs("fr", [logoFile])).get(logoFile)) || DEFAULT_TEAM_LOGO;
   await db.insert(clubsTable).values({
     wikidataId,
     nom,
@@ -160,31 +169,25 @@ async function readHistoricalLogos(
   const info = await getWikidataClub(club.key);
   const transfermarktId = info?.transfermarktId ?? null;
   // Club du registre : ses logos d'époque viennent des scrapers ; saisie manuelle : on n'y touche pas
-  if ((transfermarktId && registry[transfermarktId]) || versions[club.key]?.origine === "manuel" || !info?.frwiki) {
+  if ((transfermarktId && registry[transfermarktId]) || versions[club.key]?.origine === "manuel" || !info) {
     return markChecked(transfermarktId);
   }
 
-  const wikitext = await getWikipediaWikitext(info.frwiki);
-  const logos = sinceMinSeason(logosFromWikitext(wikitext ?? ""));
-  if (logos.length > 0) {
-    const periodes: LogoPeriod[] = (
-      await Promise.all(
-        logos.map(async (logo) => {
-          try {
-            const url = await uploadWikiImage(logo.file);
-            return [{ de: logo.de, a: logo.a, logo: url, legende: logo.caption, source: `Wikipédia : ${info.frwiki}` }];
-          } catch (error) {
-            console.error(`Logo d'époque indisponible : ${logo.file}`, error);
-            return [];
-          }
-        }),
-      )
-    ).flat();
-    const values = { nom: club.nom, noms: club.noms, periodes, origine: "wikipedia" };
-    await db
-      .insert(clubLogoVersionsTable)
-      .values({ clubKey: club.key, ...values })
-      .onConflictDoUpdate({ target: clubLogoVersionsTable.clubKey, set: values });
+  const gallery = await bestGallery(info);
+  if (gallery) {
+    const thumbs = await getWikimediaThumbs(gallery.lang, gallery.logos.map((logo) => logo.file));
+    const source = `Wikipédia (${gallery.lang}) : ${gallery.title}`;
+    const periodes: LogoPeriod[] = gallery.logos.flatMap((logo) => {
+      const url = thumbs.get(logo.file);
+      return url ? [{ de: logo.de, a: logo.a, logo: url, legende: logo.caption, source }] : [];
+    });
+    if (periodes.length > 0) {
+      const values = { nom: club.nom, noms: club.noms, periodes, origine: "wikipedia" };
+      await db
+        .insert(clubLogoVersionsTable)
+        .values({ clubKey: club.key, ...values })
+        .onConflictDoUpdate({ target: clubLogoVersionsTable.clubKey, set: values });
+    }
   }
   return markChecked(transfermarktId);
 }

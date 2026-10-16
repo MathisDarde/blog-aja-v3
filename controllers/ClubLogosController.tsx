@@ -84,7 +84,7 @@ export async function getClubLogosAdmin(): Promise<{ clubs: AdminClubLogos[]; en
 }
 
 // Hôtes d'images autorisés par next/image (next.config.ts) ; les autres sont copiés sur Cloudinary
-const SERVED_HOSTS = ["res.cloudinary.com", "mathisdarde.github.io"];
+const SERVED_HOSTS = ["res.cloudinary.com", "mathisdarde.github.io", "upload.wikimedia.org", "thumb.wikimedia.org"];
 const MAX_LOGO_SIZE = 5 * 1024 * 1024;
 
 /** Logo affichable par next/image : chemin du site, Cloudinary, scrapers, sinon copie sur Cloudinary. */

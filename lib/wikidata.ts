@@ -704,11 +704,16 @@ export async function downloadCommonsImage(
 // Natures d'un club ou d'une sélection (P31) ; un identifiant Transfermarkt (P7223) suffit aussi
 const FOOTBALL_CLUB_CLASSES = ["Q476028", "Q15944511", NATIONAL_TEAM, "Q103229495"];
 
+// Wikipédias où chercher les galeries de logos d'un club, dans cet ordre
+export const LOGO_WIKIS = ["fr", "en", "it", "de", "es", "nl", "pt", "pl", "ru"] as const;
+
 export interface WikidataClub {
   id: string;
   label: string;
   // Article Wikipédia FR, ou null
   frwiki: string | null;
+  // Article du club dans chaque Wikipédia de LOGO_WIKIS (langue → titre)
+  wikis: Record<string, string>;
   transfermarktId: string | null;
 }
 
@@ -716,8 +721,23 @@ const toClub = (entity: Entity): WikidataClub => ({
   id: entity.id,
   label: label(entity),
   frwiki: entity.sitelinks?.frwiki?.title ?? null,
+  wikis: Object.fromEntries(
+    LOGO_WIKIS.flatMap((lang) => {
+      const title = entity.sitelinks?.[`${lang}wiki`]?.title;
+      return title ? [[lang, title]] : [];
+    }),
+  ),
   transfermarktId: (claimsOf(entity, "P7223")[0]?.mainsnak.datavalue?.value as string | undefined) ?? null,
 });
+
+/** Éléments avec leurs articles dans toutes les Wikipédias de LOGO_WIKIS. */
+async function getClubEntities(ids: string[]): Promise<Record<string, Entity>> {
+  const sites = LOGO_WIKIS.map((lang) => `${lang}wiki`).join("|");
+  const data = await getJson<{ entities: Record<string, Entity> }>(
+    `${API_URL}?action=wbgetentities&format=json&languages=fr|en&props=labels|claims|sitelinks&sitefilter=${sites}&ids=${ids.join("|")}`,
+  );
+  return data.entities;
+}
 
 const isFootballClub = (entity: Entity | undefined) =>
   Boolean(entity) &&
@@ -726,7 +746,7 @@ const isFootballClub = (entity: Entity | undefined) =>
 
 /** Club (élément Wikidata) : article Wikipédia FR et identifiant Transfermarkt. */
 export async function getWikidataClub(id: string): Promise<WikidataClub | null> {
-  const entity = (await getEntities([id], "labels|claims|sitelinks"))[id];
+  const entity = (await getClubEntities([id]))[id];
   return entity ? toClub(entity) : null;
 }
 
@@ -762,7 +782,49 @@ export async function findWikidataClub(name: string): Promise<WikidataClub | nul
 
   const ids = [...new Set(candidates)];
   if (ids.length === 0) return null;
-  const entities = await getEntities(ids, "labels|claims|sitelinks");
+  const entities = await getClubEntities(ids.slice(0, MAX_IDS_PER_REQUEST));
   const found = ids.map((id) => entities[id]).find(isFootballClub);
   return found ? toClub(found) : null;
+}
+
+/** Wikitexte d'un article dans la Wikipédia d'une langue, ou null. */
+export async function getWikitextIn(lang: string, title: string): Promise<string | null> {
+  const page = await getJson<{ parse?: { wikitext: { "*": string } } }>(
+    `https://${lang}.wikipedia.org/w/api.php?action=parse&format=json&prop=wikitext&redirects=1&page=${encodeURIComponent(title)}`,
+  );
+  return page.parse?.wikitext["*"] ?? null;
+}
+
+/**
+ * Adresses directes des vignettes (PNG de ~200 px) de fichiers d'une Wikipédia, servies par
+ * Wikimedia : rien n'est copié, le site affiche l'image depuis upload/thumb.wikimedia.org.
+ */
+export async function getWikimediaThumbs(lang: string, files: string[], width = 200): Promise<Map<string, string>> {
+  const thumbs = new Map<string, string>();
+  for (let i = 0; i < files.length; i += MAX_IDS_PER_REQUEST) {
+    const chunk = files.slice(i, i + MAX_IDS_PER_REQUEST);
+    const data = await getJson<{
+      query?: {
+        normalized?: { from: string; to: string }[];
+        pages?: Record<string, { title: string; imageinfo?: { thumburl?: string; url: string }[] }>;
+      };
+    }>(
+      `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url&iiurlwidth=${width}&titles=${encodeURIComponent(chunk.map((f) => `File:${f}`).join("|"))}`,
+    );
+    const urlByTitle = new Map(
+      Object.values(data.query?.pages ?? {}).flatMap((page) => {
+        const info = page.imageinfo?.[0];
+        const url = info?.thumburl ?? info?.url;
+        // Sans les paramètres de suivi (?utm_source=…)
+        return url ? [[page.title, url.split("?")[0]] as const] : [];
+      }),
+    );
+    for (const file of chunk) {
+      const asked = `File:${file}`;
+      const title = data.query?.normalized?.find((n) => n.from === asked)?.to ?? asked;
+      const url = urlByTitle.get(title);
+      if (url) thumbs.set(file, url);
+    }
+  }
+  return thumbs;
 }

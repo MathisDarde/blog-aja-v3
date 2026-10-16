@@ -30,6 +30,9 @@ const nextConfig: NextConfig = {
         hostname: "mathisdarde.github.io",
         pathname: "/AJA-Website-Scrapers/**",
       },
+      // Logos d'époque des clubs lus sur Wikipédia, affichés depuis Wikimedia (lib/club-logo-sync)
+      { protocol: "https", hostname: "upload.wikimedia.org", pathname: "/**" },
+      { protocol: "https", hostname: "thumb.wikimedia.org", pathname: "/**" },
       // Mêmes données servies en local pour les tests (SCRAPERS_URL=http://localhost:8765)
       ...(process.env.NODE_ENV === "development"
         ? [{ protocol: "http" as const, hostname: "localhost", port: "8765" }]

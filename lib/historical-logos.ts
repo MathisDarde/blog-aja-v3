@@ -13,11 +13,18 @@ export interface WikiLogo {
 }
 
 const YEAR = "(1[89]\\d\\d|20\\d\\d)";
-// Section dont toutes les images de galerie sont des logos (« Logos », « Historique du logo »…)
-const LOGO_SECTION = /logo|blason|[ée]cusson|embl[èe]me|armoiries/i;
-const LOGO_WORD = /logo|blason|[ée]cusson/i;
+// Les clubs étrangers ont souvent leur galerie dans une autre langue : mots en français, anglais,
+// italien, allemand, espagnol, néerlandais, portugais, polonais et russe.
+// Section dont toutes les images de galerie sont des logos (« Logos », « Stemma », « Crest »…)
+const LOGO_SECTION = /logo|blason|[ée]cusson|embl[èe]m|armoiries|crest|badge|stemm|escudo|wappen|herb|simbol|symbol|герб|эмбл|логотип/i;
+const LOGO_WORD = /logo|blason|[ée]cusson|crest|badge|stemma|escudo|wappen|emblem/i;
 // Logos d'anniversaire ou spéciaux d'une saison : on garde le logo d'identité du club
-const SPECIAL = /anniversaire|centenaire|sp[ée]cial|commémorati/i;
+const SPECIAL =
+  /anniversaire|centenaire|sp[ée]cial|commémorati|anniversary|centenary|anniversario|centenario|aniversario|hundertjahr|jubil|юбил/i;
+// « 1990 à 1993 », « dal 1946 fino al 1979 », « between 1949 and 2002 », « 1905–1952 »
+const RANGE = `${YEAR}\\s*(?:[-–—/]|\\s(?:à|au|a|al|et|e|y|and|to|until|bis|und|hasta|tot|en|do|до|по|fino al|fino a)\\s)\\s*${YEAR}`;
+const SINCE = "(?:depuis|à partir de|dès|since|from|seit|ab|dal|dall'|desde|sinds|vanaf|od|с)";
+const UNTIL = "(?:avant|jusqu'en|jusqu’en|jusqu'à|until|till|before|bis|fino al|hasta|tot|do|до)";
 
 /** Légende lisible : sans paramètres d'image (alt=…), balises, modèles ni références. */
 export function cleanCaption(raw: string) {
@@ -35,13 +42,15 @@ export function cleanCaption(raw: string) {
 /** [de, a] d'après la légende ; une date de changement Y ouvre la saison Y-(Y+1). */
 export function parsePeriod(caption: string): [number | null, number | null] | null {
   const c = caption.toLowerCase();
-  let m = c.match(new RegExp(`ann[ée]es\\s+${YEAR}`));
+  // « Années 1970 », « 1970s »
+  let m = c.match(new RegExp(`ann[ée]es\\s+${YEAR}`)) ?? c.match(new RegExp(`${YEAR}s\\b`));
   if (m) return [Number(m[1]), Number(m[1]) + 9];
-  m = c.match(new RegExp(`${YEAR}\\s*(?:-|–|à|au|et)\\s*${YEAR}`));
+  m = c.match(new RegExp(RANGE));
   if (m) return [Number(m[1]), Math.max(Number(m[1]), Number(m[2]) - 1)];
-  m = c.match(new RegExp(`(?:depuis|à partir de|dès)\\s+${YEAR}`)) ?? c.match(new RegExp(`${YEAR}\\s*[-–](?!\\s*\\d)`));
-  if (m) return [Number(m[1]), null]; // « depuis 1997 », « (2026-) »
-  m = c.match(new RegExp(`(?:avant|jusqu'en|jusqu’en|jusqu'à)\\s+${YEAR}`));
+  // Mots entiers seulement (« ab », « od », « с » ne doivent pas finir un autre mot)
+  m = c.match(new RegExp(`(?<!\\p{L})${SINCE}\\s+${YEAR}`, "u")) ??c.match(new RegExp(`${YEAR}\\s*[-–](?!\\s*\\d)`));
+  if (m) return [Number(m[1]), null]; // « depuis 1997 », « seit 2026 », « (2026-) »
+  m = c.match(new RegExp(`(?<!\\p{L})${UNTIL}\\s+${YEAR}`, "u"));
   if (m) return [null, Number(m[1]) - 1];
   m = c.match(new RegExp(YEAR));
   if (m) return [Number(m[1]), null]; // année seule : bornée plus bas par le logo suivant
