@@ -58,9 +58,12 @@ export default function TeamInfosSection({
 }: TeamInfosSectionProps) {
   const isDom = teamIndex === 1;
 
-  // Couleurs complétées d'après le nom de l'équipe, sauf si elles ont été choisies à la main
-  const autoColors = useRef<Record<string, string>>({});
-  const lastTeamLookup = useRef("");
+  // Couleurs remplacées par celles du club dès que le nom de l'équipe change.
+  // Le nom déjà présent à l'ouverture (méthode modifiée ou reprise) ne compte pas
+  // comme un changement : ses couleurs restent telles quelles.
+  const lastTeamLookup = useRef(
+    String(getValues(`nomequipe${teamIndex}` as Path<MethodeMatchSchemaType>) ?? "").trim(),
+  );
   const [loadingColors, setLoadingColors] = useState(false);
   const autofillColors = async () => {
     const name = String(getValues(teamNameField) ?? "").trim();
@@ -70,16 +73,11 @@ export default function TeamInfosSection({
     setLoadingColors(true);
     const response = await lookupClubColors(name);
     setLoadingColors(false);
-    if (!response.success || !response.data) return;
+    // Nom modifié entre-temps : ces couleurs ne sont plus les bonnes
+    if (!response.success || !response.data || lastTeamLookup.current !== name) return;
 
-    const colors = { [color1Field]: response.data.primary, [color2Field]: response.data.secondary };
-    for (const [field, color] of Object.entries(colors)) {
-      const current = String(getValues(field as Path<MethodeMatchSchemaType>) ?? "");
-      const untouched = !current || current === "#000000" || current === autoColors.current[field];
-      if (!untouched) continue;
-      setValue(field as Path<MethodeMatchSchemaType>, color, { shouldDirty: true });
-      autoColors.current[field] = color;
-    }
+    setValue(color1Field, response.data.primary, { shouldDirty: true });
+    setValue(color2Field, response.data.secondary, { shouldDirty: true });
   };
 
   // Drapeau et poste des remplaçants complétés dès que le nom est saisi
