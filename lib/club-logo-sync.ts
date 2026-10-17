@@ -164,12 +164,14 @@ async function addToLibrary(
   const logoUrl = (logoFile && (await getWikimediaThumbs("fr", [logoFile])).get(logoFile)) || DEFAULT_TEAM_LOGO;
   // Deux noms du même club peuvent être traités en même temps : le second complète le premier
   const noms = normalizeText(alias) === normalizeText(nom) ? [] : [alias];
+  // ARRAY[$1, …] explicite : un tableau JS passé tel quel n'arrive pas en text[] dans Postgres
+  const nomsSql = sql`ARRAY[${sql.join(noms.map((n) => sql`${n}`), sql`, `)}]::text[]`;
   await db
     .insert(clubsTable)
     .values({ wikidataId, nom, noms, logoUrl, transfermarktId })
     .onConflictDoUpdate({
       target: clubsTable.wikidataId,
-      set: { noms: sql`array(select distinct unnest(${clubsTable.noms} || ${noms}::text[]))` },
+      set: { noms: sql`array(select distinct unnest(${clubsTable.noms} || ${nomsSql}))` },
     });
 }
 
