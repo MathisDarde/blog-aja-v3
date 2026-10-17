@@ -21,6 +21,9 @@ import Button from "@/components/BlueButton";
 import TeamInfosSection from "./TeamInfosSection";
 import { RempPlayerType } from "@/contexts/Interfaces";
 import { MethodeMatchSchema } from "@/app/schema";
+import { emptyMatchFormValues, swapMatchTeams } from "@/lib/methode-match-form";
+import MatchTemplatePicker from "./MatchTemplatePicker";
+import SwapTeamsButton from "./SwapTeamsButton";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
@@ -32,26 +35,6 @@ export default function MatchForm() {
 
   const [loading, setLoading] = useState(false);
 
-  // Modèles d'objets vides pour l'initialisation
-  const emptyTitulaire = {
-    nom: "",
-    numero: "",
-    poste: "",
-    sortie: "",
-    buts: "",
-    cartonJaune: false,
-    cartonRouge: false,
-  };
-  const emptyRemplacant = {
-    nom: "",
-    drapeau: "",
-    poste: "",
-    entree: "",
-    buts: "",
-    cartonJaune: false,
-    cartonRouge: false,
-  };
-
   const {
     register,
     handleSubmit,
@@ -59,37 +42,11 @@ export default function MatchForm() {
     watch,
     setValue,
     getValues,
+    reset,
     formState: { errors },
   } = useForm<MethodeMatchSchemaType>({
     resolver: zodResolver(MethodeMatchSchema),
-    // IMPORTANT : Initialisation avec des Objets et des références uniques
-    defaultValues: {
-      titrematch: "",
-      couleur1equipe1: "#000000",
-      couleur2equipe1: "#000000",
-      nomequipe1: "",
-      systemeequipe1: "4-3-3 Offensif",
-
-      // Initialisation correcte des titulaires (11 objets distincts)
-      titulairesequipe1: Array.from({ length: 11 }).map(() => ({
-        ...emptyTitulaire,
-      })),
-      remplacantsequipe1: [{ ...emptyRemplacant }],
-
-      couleur1equipe2: "#000000",
-      couleur2equipe2: "#000000",
-      nomequipe2: "",
-      systemeequipe2: "4-3-3 Offensif",
-
-      // Initialisation correcte des titulaires (11 objets distincts)
-      titulairesequipe2: Array.from({ length: 11 }).map(() => ({
-        ...emptyTitulaire,
-      })),
-      remplacantsequipe2: [{ ...emptyRemplacant }],
-
-      stade: "",
-      date: "",
-    },
+    defaultValues: emptyMatchFormValues(),
   });
 
   const [modal, setModal] = useState<
@@ -104,6 +61,18 @@ export default function MatchForm() {
     equipe1: [],
     equipe2: [],
   });
+  // Changé à chaque remplissage complet : les sections d'équipe repartent de zéro
+  const [teamsKey, setTeamsKey] = useState(0);
+
+  const replaceAllValues = (values: MethodeMatchSchemaType) => {
+    reset(values, { keepDefaultValues: true });
+    setTeamsKey((key) => key + 1);
+  };
+
+  const swapTeams = () => {
+    replaceAllValues(swapMatchTeams(getValues()));
+    setExpandedIndices((prev) => ({ equipe1: prev.equipe2, equipe2: prev.equipe1 }));
+  };
 
 
   const fetchFiles = async () => {
@@ -250,6 +219,12 @@ export default function MatchForm() {
         className="max-w-[700px] mx-auto flex flex-col items-center justify-center"
         onSubmit={handleSubmit(handleSubmitForm)}
       >
+        <MatchTemplatePicker
+          onApply={(values) => {
+            replaceAllValues(values);
+            setExpandedIndices({ equipe1: [], equipe2: [] });
+          }}
+        />
 
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
@@ -291,6 +266,7 @@ export default function MatchForm() {
         </div>
 
         <TeamInfosSection
+          key={`equipe1-${teamsKey}`}
           control={control}
           register={register}
           watch={watch}
@@ -303,7 +279,10 @@ export default function MatchForm() {
           onOpenModal={openModalTeam1}
         />
 
+        <SwapTeamsButton onSwap={swapTeams} />
+
         <TeamInfosSection
+          key={`equipe2-${teamsKey}`}
           control={control}
           register={register}
           watch={watch}

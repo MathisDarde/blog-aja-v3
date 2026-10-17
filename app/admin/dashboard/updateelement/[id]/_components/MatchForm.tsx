@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import {
   RempPlayerType,
-  TituPlayerType,
   UpdateMethodeMatchFromProps,
 } from "@/contexts/Interfaces";
 import { getFlags } from "@/actions/method/get-flags-files";
@@ -25,65 +24,16 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
 import Button from "@/components/BlueButton";
 import TeamInfosSection from "@/app/admin/create-methode-expert/_components/TeamInfosSection";
+import SwapTeamsButton from "@/app/admin/create-methode-expert/_components/SwapTeamsButton";
+import {
+  emptyMatchFormValues,
+  methodeMatchToFormValues,
+  swapMatchTeams,
+} from "@/lib/methode-match-form";
 
 const IMAGE_PATHS = {
   clubs: "/_assets/teamlogos/",
   drapeaux: "/_assets/flags/",
-};
-
-// --- MODÈLES VIDES POUR INITIALISATION ---
-const emptyTitulaire = {
-  nom: "",
-  numero: "",
-  poste: "",
-  sortie: "",
-  buts: "",
-  cartonJaune: false,
-  cartonRouge: false,
-};
-const emptyRemplacant = {
-  nom: "",
-  drapeau: "",
-  poste: "",
-  entree: "",
-  buts: "",
-  cartonJaune: false,
-  cartonRouge: false,
-};
-
-// Ces fonctions permettent de lire les anciennes données (Tableaux) et de les convertir en Objets
-const mapToTitulaire = (data: TituPlayerType) => {
-  if (Array.isArray(data)) {
-    return {
-      nom: data[0] || "",
-      numero: data[1] || "",
-      poste: data[2] || "",
-      sortie: data[3] || "",
-      buts: data[4] || "",
-      cartonJaune: data[5] === "true" || data[5] === true,
-      cartonRouge: data[6] === "true" || data[6] === true,
-    };
-  }
-  // Si c'est déjà un objet (ou null), on retourne l'objet ou le vide
-  return data ? { ...data } : { ...emptyTitulaire };
-};
-
-const mapToRemplacant = (data: RempPlayerType) => {
-  if (Array.isArray(data)) {
-    // Mapping depuis l'ancien format Tuple [nom, drapeau, poste, entree, buts, jaune, rouge]
-    return {
-      nom: data[0] || "",
-      drapeau: data[1] || "",
-      poste: data[2] || "",
-      entree: data[3] || "",
-      buts: data[4] || "",
-      cartonJaune:
-        (data.length > 5 && (data[5] === "true" || data[5] === true)) || false,
-      cartonRouge:
-        (data.length > 6 && (data[6] === "true" || data[6] === true)) || false,
-    };
-  }
-  return data ? { ...data } : { ...emptyRemplacant };
 };
 
 export default function MatchForm({
@@ -100,68 +50,14 @@ export default function MatchForm({
     setValue,
     getValues,
     watch,
+    reset,
     formState: { errors },
   } = useForm<UpdateMethodeMatchSchemaType>({
     resolver: zodResolver(UpdateMethodeMatchSchema),
-    defaultValues: async () => {
-      if (!selectedMethode) {
-        // Initialisation vide propre (Objets)
-        return {
-          nomequipe1: "",
-          couleur1equipe1: "",
-          couleur1equipe2: "",
-          couleur2equipe1: "",
-          couleur2equipe2: "",
-          date: "",
-          nomequipe2: "",
-          titulairesequipe1: Array.from({ length: 11 }).map(() => ({
-            ...emptyTitulaire,
-          })),
-          titulairesequipe2: Array.from({ length: 11 }).map(() => ({
-            ...emptyTitulaire,
-          })),
-          remplacantsequipe1: [{ ...emptyRemplacant }],
-          remplacantsequipe2: [{ ...emptyRemplacant }],
-          stade: "",
-          systemeequipe1: "4-3-3 Offensif",
-          systemeequipe2: "4-3-3 Offensif",
-          titrematch: "",
-        } as unknown as UpdateMethodeMatchSchemaType;
-      }
-
-      // Initialisation avec données existantes + CONVERSION (DB -> Objets)
-      const loadedData = {
-        nomequipe1: selectedMethode.nomequipe1 || "",
-        couleur1equipe1: selectedMethode.couleur1equipe1 || "",
-        couleur1equipe2: selectedMethode.couleur1equipe2 || "",
-        couleur2equipe1: selectedMethode.couleur2equipe1 || "",
-        couleur2equipe2: selectedMethode.couleur2equipe2 || "",
-        date: selectedMethode.date || "",
-        nomequipe2: selectedMethode.nomequipe2 || "",
-
-        // On utilise les mappers pour convertir les tuples potentiels en objets
-        titulairesequipe1:
-          selectedMethode.titulairesequipe1?.map(mapToTitulaire) ||
-          Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
-        titulairesequipe2:
-          selectedMethode.titulairesequipe2?.map(mapToTitulaire) ||
-          Array.from({ length: 11 }).map(() => ({ ...emptyTitulaire })),
-
-        remplacantsequipe1: selectedMethode.remplacantsequipe1?.map(
-          mapToRemplacant
-        ) || [{ ...emptyRemplacant }],
-        remplacantsequipe2: selectedMethode.remplacantsequipe2?.map(
-          mapToRemplacant
-        ) || [{ ...emptyRemplacant }],
-
-        stade: selectedMethode.stade || "",
-        systemeequipe1: selectedMethode.systemeequipe1 || "4-3-3 Offensif",
-        systemeequipe2: selectedMethode.systemeequipe2 || "4-3-3 Offensif",
-        titrematch: selectedMethode.titrematch || "",
-      };
-
-      return loadedData as unknown as UpdateMethodeMatchSchemaType;
-    },
+    // Anciennes méthodes (joueurs en tableaux) converties en objets
+    defaultValues: (selectedMethode
+      ? methodeMatchToFormValues(selectedMethode)
+      : emptyMatchFormValues()) as UpdateMethodeMatchSchemaType,
   });
 
   const [modal, setModal] = useState<
@@ -176,6 +72,14 @@ export default function MatchForm({
     equipe1: [],
     equipe2: [],
   });
+  // Changé à chaque inversion : les sections d'équipe repartent de zéro
+  const [teamsKey, setTeamsKey] = useState(0);
+
+  const swapTeams = () => {
+    reset(swapMatchTeams(getValues()), { keepDefaultValues: true });
+    setTeamsKey((key) => key + 1);
+    setExpandedIndices((prev) => ({ equipe1: prev.equipe2, equipe2: prev.equipe1 }));
+  };
 
 
   const fetchFiles = async () => {
@@ -365,6 +269,7 @@ export default function MatchForm({
         {/* --- SECTIONS ÉQUIPES --- */}
         {/* On passe toujours les mêmes props, mais TeamInfosSection gère maintenant des Objets */}
         <TeamInfosSection
+          key={`equipe1-${teamsKey}`}
           control={control}
           register={register}
           watch={watch}
@@ -377,7 +282,10 @@ export default function MatchForm({
           onOpenModal={openModalTeam1}
         />
 
+        <SwapTeamsButton onSwap={swapTeams} />
+
         <TeamInfosSection
+          key={`equipe2-${teamsKey}`}
           control={control}
           register={register}
           watch={watch}
