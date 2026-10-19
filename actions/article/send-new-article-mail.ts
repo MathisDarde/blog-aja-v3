@@ -5,17 +5,11 @@ import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Resend } from "resend";
 import { requireAdmin } from "@/lib/auth-guard";
+import { NewArticleEmailData, newArticleEmail } from "@/lib/new-article-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-interface ArticleData {
-  title: string;
-  teaser: string;
-  slug: string;
-  imageUrl: string;
-}
-
-export async function sendNewsletter(article: ArticleData) {
+export async function sendNewsletter(article: NewArticleEmailData) {
   await requireAdmin();
 
   try {
@@ -32,39 +26,14 @@ export async function sendNewsletter(article: ArticleData) {
       `🚀 Préparation de l'envoi pour ${subscribers.length} abonnés...`
     );
 
-    const articleLink = `https://memoiredauxerrois.fr/articles/${article.slug}`;
-
-    const emailHtml = `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="color: #333;">Nouvel article publié ! 📢</h1>
-        
-        ${article.imageUrl ? `<img src="${article.imageUrl}" alt="${article.title}" style="width: 100%; border-radius: 8px; margin: 20px 0;" />` : ""}
-        
-        <h2 style="color: #111;">${article.title}</h2>
-        
-        <p style="color: #555; font-size: 16px; line-height: 1.6;">
-          ${article.teaser}
-        </p>
-        
-        <div style="margin-top: 30px; text-align: center;">
-          <a href="${articleLink}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-            Lire l'article complet
-          </a>
-        </div>
-        
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 40px 0;">
-        <p style="text-align: center; color: #999; font-size: 12px;">
-          Vous recevez cet email car vous êtes abonné à Mémoire d'Auxerrois.
-        </p>
-      </div>
-    `;
+    const { subject, html, text } = newArticleEmail(article);
 
     const emailBatch = subscribers.map((sub) => ({
       from: "Mémoire d'Auxerrois <contact@memoiredauxerrois.fr>",
       to: sub.email,
-      subject: `Nouveau : ${article.title}`,
-      html: emailHtml,
-      text: `Nouvel article : ${article.title}\n\n${article.teaser}\n\nLire la suite : ${articleLink}`,
+      subject,
+      html,
+      text,
     }));
 
     const data = await resend.batch.send(emailBatch);
