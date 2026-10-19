@@ -1,5 +1,5 @@
 import displayBrouillons from "@/actions/article/display-brouillons";
-import UpdateBrouillonForm from "../_components/UpdateBrouillonForm";
+import ArticleForm from "@/app/admin/publish-article/_components/ArticleForm";
 import UpdateBrouillonGuard from "../_components/UpdateBrouillonGuard";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
@@ -31,22 +31,27 @@ export default async function BrouillonEditPage({
   }
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10 flex flex-col items-center">
       <UpdateBrouillonGuard />
 
-      <UpdateBrouillonForm
-        articleData={{
-          ...brouillon,
-          tags: brouillon.tags ?? [],
-          slug: brouillon.slug ?? undefined,
-          imageUrl: brouillon.imageUrl ?? undefined,
-          title: brouillon.title ?? undefined,
-          teaser: brouillon.teaser ?? undefined,
-          content: brouillon.content ?? undefined,
-          author: brouillon.author ?? undefined,
-        }}
-        id_article={brouillon.id_draft}
+      <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase mb-6 sm:mb-10">
+        Modifier un brouillon
+      </h1>
+
+      <ArticleForm
         user={user}
+        draft={{
+          id_draft: brouillon.id_draft,
+          data: {
+            tags: brouillon.tags ?? [],
+            slug: brouillon.slug ?? undefined,
+            imageUrl: brouillon.imageUrl ?? undefined,
+            title: brouillon.title ?? undefined,
+            teaser: brouillon.teaser ?? undefined,
+            content: brouillon.content ?? undefined,
+            author: brouillon.author ?? undefined,
+          },
+        }}
       />
     </div>
   );

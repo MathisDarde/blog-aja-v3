@@ -79,3 +79,8 @@ export async function updateBrouillon(
     throw new Error(`Erreur lors de la mise à jour du brouillon`);
   }
 }
+
+export async function deleteBrouillon(draftId: string) {
+  await requireAdmin();
+  return db.delete(draftTable).where(eq(draftTable.id_draft, draftId));
+}

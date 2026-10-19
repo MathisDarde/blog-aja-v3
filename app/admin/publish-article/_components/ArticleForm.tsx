@@ -18,18 +18,31 @@ import { ArticleSchema } from "@/app/schema";
 import submitArticleForm from "@/actions/article/article-form";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
-import { User } from "@/contexts/Interfaces";
+import { ArticleFormDraft, User } from "@/contexts/Interfaces";
 import tags from "@/public/data/articletags.json";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Image from "next/image";
 import storeDraftArticle from "@/actions/article/store-draft";
+import updateBrouillonForm from "@/actions/article/update-brouillon-form";
 import { ArticleEditor } from "./ArticleEditor";
 import { Controller } from "react-hook-form";
 
-export default function MultiStepArticleForm({ user }: { user: User | null }) {
+export default function MultiStepArticleForm({
+  user,
+  draft,
+}: {
+  user: User | null;
+  // Brouillon repris : le formulaire est pré-rempli et la sauvegarde le met à jour
+  draft?: ArticleFormDraft;
+}) {
+  const draftImage =
+    typeof draft?.data.imageUrl === "string" ? draft.data.imageUrl : "";
+
   const [step, setStep] = useState(1);
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
-  const [uploadedUrl, setUploadedUrl] = useState<string>("");
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(
+    draftImage || null,
+  );
+  const [uploadedUrl, setUploadedUrl] = useState<string>(draftImage);
   const [isUploading, setIsUploading] = useState(false);
   const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
 
@@ -46,7 +59,17 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
     getValues,
   } = useForm<ArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
-    defaultValues: { tags: [], content: "" },
+    defaultValues: {
+      title: draft?.data.title ?? "",
+      slug: draft?.data.slug ?? "",
+      teaser: draft?.data.teaser ?? "",
+      author: draft?.data.author ?? "",
+      content: draft?.data.content ?? "",
+      tags: (draft?.data.tags ?? []).filter(
+        (t): t is string => typeof t === "string",
+      ),
+      ...(draftImage && { imageUrl: draftImage }),
+    },
   });
 
   const selectedTags = watch("tags") || [];
@@ -135,8 +158,18 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
     const response = await submitArticleForm(
       { ...data, imageUrl: uploadedUrl },
       user_id!,
+      draft?.id_draft,
     );
     if (response.success) redirect("/");
+    toast.error(response.message ?? response.errors?.[0]?.message);
+  };
+
+  const handleSaveDraft = async () => {
+    const response = draft
+      ? await updateBrouillonForm(draft.id_draft, getValues())
+      : await storeDraftArticle(getValues(), user_id!);
+    if (response.success) redirect("/admin/brouillons");
+    toast.error(response.message ?? response.errors?.[0]?.message);
   };
 
   useFormErrorToasts(errors);
@@ -182,10 +215,7 @@ export default function MultiStepArticleForm({ user }: { user: User | null }) {
           <div className="flex items-center gap-1 sm:gap-2">
             <button
               type="button"
-              onClick={() => {
-                storeDraftArticle(getValues(), user_id!);
-                redirect("/admin/brouillons");
-              }}
+              onClick={handleSaveDraft}
               className="p-2.5 sm:px-5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-all font-Bai_Jamjuree flex items-center gap-2"
             >
               <Save size={18} />

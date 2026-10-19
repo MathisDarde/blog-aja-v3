@@ -2,11 +2,14 @@
 
 import { ArticleSchema } from "@/app/schema";
 import { createArticle } from "@/controllers/ArticlesController";
+import { deleteBrouillon } from "@/controllers/DraftController";
 import { ArticleSchemaType, FormResponse } from "@/types/forms";
 
 const submitArticleForm = async (
   data: ArticleSchemaType,
-  userId: string
+  userId: string,
+  // Brouillon d'origine, supprimé une fois l'article publié
+  draftId?: string
 ): Promise<FormResponse> => {
   try {
     const parsedData = ArticleSchema.safeParse(data);
@@ -23,6 +26,8 @@ const submitArticleForm = async (
         message: "Erreur lors de la création de l'article",
       };
     }
+
+    if (draftId) await deleteBrouillon(draftId);
 
     return { success: true, message: "Article créé avec succès" };
   } catch (err) {

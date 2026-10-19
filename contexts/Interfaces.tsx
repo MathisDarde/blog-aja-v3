@@ -65,10 +65,9 @@ export interface UpdateArticleFormProps {
   };
 }
 
-export interface UpdateBrouillonFormProps {
-  articleData: DraftArticleSchemaType;
-  id_article: string;
-  user: User | null;
+export interface ArticleFormDraft {
+  id_draft: string;
+  data: DraftArticleSchemaType;
 }
 
 export interface UpdateCommentFormProps {
