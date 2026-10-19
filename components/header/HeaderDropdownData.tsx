@@ -16,6 +16,7 @@ import {
   History,
   Landmark,
   Shield,
+  Mail,
 } from "lucide-react";
 
 // Passé du club
@@ -137,6 +138,14 @@ export const AdminDropdownData = [
     image: "/_assets/img/ajaldc2010.webp",
     description: "Gérer les logos de chaque club selon les époques",
     link: "/admin/logos",
+    dropdown: false,
+  },
+  {
+    title: "Tester le mail d'article",
+    icon: <Mail size={20} />,
+    image: "/_assets/img/public.webp",
+    description: "Recevoir le mail de nouvel article pour vérifier son rendu",
+    link: "/admin/newsletter",
     dropdown: false,
   },
   {
