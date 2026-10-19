@@ -56,6 +56,24 @@ interface GameMethodeExpertProps {
 
 // --- UTILITAIRES ---
 
+// Ballon des buteurs, avec le nombre de buts s'il y en a plusieurs (terrain et banc)
+const GoalBadge = ({ buts }: { buts: number }) => (
+  <div className="relative bg-white rounded-full shadow-sm border border-gray-200 w-[14px] h-[14px] flex items-center justify-center">
+    <Image
+      src={"/_assets/img/iconeballon.png"}
+      alt="But"
+      width={12}
+      height={12}
+      className="object-contain"
+    />
+    {buts > 1 && (
+      <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[8px] font-bold w-[11px] h-[11px] flex items-center justify-center rounded-full border border-white shadow-sm">
+        {buts}
+      </div>
+    )}
+  </div>
+);
+
 const getLastName = (fullName: string) => {
   if (!fullName) return "";
   const parts = fullName.trim().split(" ");
@@ -189,20 +207,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
           {/* Ballon Buts */}
           {Number(buts) > 0 && (
             <div className="absolute -bottom-0 -right-1 z-20">
-              <div className="relative bg-white rounded-full shadow-sm border border-gray-200 w-[14px] h-[14px] flex items-center justify-center">
-                <Image
-                  src={"/_assets/img/iconeballon.png"}
-                  alt="But"
-                  width={12}
-                  height={12}
-                  className="object-contain"
-                />
-                {Number(buts) > 1 && (
-                  <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[8px] font-bold w-[11px] h-[11px] flex items-center justify-center rounded-full border border-white shadow-sm">
-                    {buts}
-                  </div>
-                )}
-              </div>
+              <GoalBadge buts={Number(buts)} />
             </div>
           )}
         </div>
@@ -255,7 +260,7 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
                   </p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  {nbButs > 0 && <span className="text-xs">⚽ x{nbButs}</span>}
+                  {nbButs > 0 && <GoalBadge buts={nbButs} />}
                   {remp.entree && (
                     <span className="text-xs font-bold text-green-600 flex items-center gap-1">
                       <ArrowBigUp fill="#16a34a" size={14} /> {remp.entree}
