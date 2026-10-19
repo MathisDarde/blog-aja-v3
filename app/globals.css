@@ -75,6 +75,12 @@
   line-height: 1.8 !important;
 }
 
+/* Les lignes vides de l'éditeur sont enregistrées en <p></p> : sans contenu
+   elles n'ont aucune hauteur, on leur donne celle d'une ligne de texte */
+.article-content p:empty::before {
+  content: "\00a0";
+}
+
 .tiptap h2,
 .article-content h2 {
   @apply text-2xl sm:text-3xl font-bold mt-8 mb-4 font-Bai_Jamjuree;
