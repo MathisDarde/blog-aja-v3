@@ -159,5 +159,124 @@
     "value": "olivierkapo",
     "img": "/_assets/tagsbg/olivierkapo.webp",
     "type": "player"
+  },
+  {
+    "id": 24,
+    "tag": "Joël Bats",
+    "value": "joelbats",
+    "img": "/_assets/tagsbg/joel-bats.avif",
+    "type": "player"
+  },
+  {
+    "id": 25,
+    "tag": "Basile Boli",
+    "value": "basileboli",
+    "img": "/_assets/tagsbg/basileboli.jpg",
+    "type": "player"
+  },
+  {
+    "id": 26,
+    "tag": "Pascal Vahirua",
+    "value": "pascalvahirua",
+    "img": "/_assets/tagsbg/pascalvahirua.webp",
+    "type": "player"
+  },
+  {
+    "id": 27,
+    "tag": "Philippe Mexès",
+    "value": "philippemexes",
+    "img": "/_assets/tagsbg/philippemexes.jpg",
+    "type": "player"
+  },
+  {
+    "id": 28,
+    "tag": "Jean-Alain Boumsong",
+    "value": "jeanalainboumsong",
+    "img": "/_assets/tagsbg/jeanalainboumsong.jpg",
+    "type": "player"
+  },
+  {
+    "id": 29,
+    "tag": "Benjani Mwaruwari",
+    "value": "benjanimwaruwari",
+    "img": "/_assets/tagsbg/benjani.jpg",
+    "type": "player"
+  },
+  {
+    "id": 30,
+    "tag": "Ireneusz Jeleń",
+    "value": "ireneuszjelen",
+    "img": "/_assets/tagsbg/ireneuszjelen.jpg",
+    "type": "player"
+  },
+  {
+    "id": 31,
+    "tag": "Donovan Léon",
+    "value": "donovanleon",
+    "img": "/_assets/tagsbg/donovanleon.webp",
+    "type": "player"
+  },
+  {
+    "id": 32,
+    "tag": "Olivier Sorin",
+    "value": "oliviersorin",
+    "img": "/_assets/tagsbg/oliviersorin.webp",
+    "type": "player"
+  },
+  {
+    "id": 33,
+    "tag": "Willy Boly",
+    "value": "willyboly",
+    "img": "/_assets/tagsbg/willyboly.webp",
+    "type": "player"
+  },
+  {
+    "id": 34,
+    "tag": "Kenji-Van Boto",
+    "value": "kenjivanboto",
+    "img": "/_assets/tagsbg/kenjivanboto.webp",
+    "type": "player"
+  },
+  {
+    "id": 35,
+    "tag": "Birama Touré",
+    "value": "biramatoure",
+    "img": "/_assets/tagsbg/biramatoure.jpg",
+    "type": "player"
+  },
+  {
+    "id": 36,
+    "tag": "Hamza Sakhi",
+    "value": "hamzasakhi",
+    "img": "/_assets/tagsbg/hamzasakhi.jpg",
+    "type": "player"
+  },
+  {
+    "id": 37,
+    "tag": "Gaëtan Perrin",
+    "value": "gaetanperrin",
+    "img": "/_assets/tagsbg/gaetanperrin.webp",
+    "type": "player"
+  },
+  {
+    "id": 38,
+    "tag": "Mathias Autret",
+    "value": "mathiasautret",
+    "img": "/_assets/tagsbg/mathiasautret.jpg",
+    "type": "player"
+  },
+  {
+    "id": 39,
+    "tag": "Lassine Sinayoko",
+    "value": "lassinesinayoko",
+    "img": "/_assets/tagsbg/lassinesinayoko.webp",
+    "type": "player"
+  },
+  {
+    "id": 40,
+    "tag": "Gideon Mensah",
+    "value": "gideonmensah",
+    "img": "/_assets/tagsbg/gideonmensah.webp",
+    "type": "player"
   }
 ]
