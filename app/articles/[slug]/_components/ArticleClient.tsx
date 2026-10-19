@@ -8,6 +8,7 @@ import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
 import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
+import { linkMethodes } from "@/lib/methodes";
 import {
   jsonLd,
   SITE_NAME,
@@ -76,7 +77,8 @@ export default async function ArticleClient({ slug }: { slug: string }) {
       dangerouslySetInnerHTML={{ __html: jsonLd(articleJsonLd) }}
     />
     <ArticleDisplay
-      article={article}
+      // Joueurs, coachs et saisons surlignés automatiquement (lib/methodes)
+      article={{ ...article, content: linkMethodes(article.content, methodes) }}
       methodes={methodes}
       articleComments={articleComments}
       articleLikes={articleLikes}

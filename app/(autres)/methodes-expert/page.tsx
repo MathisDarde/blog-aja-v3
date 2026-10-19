@@ -4,7 +4,7 @@ import { getArticles } from "@/controllers/ArticlesController";
 import { Methodes } from "@/contexts/Interfaces";
 import { ajaLogo, DEFAULT_TEAM_LOGO, getTeamLogoResolver, TeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
 import { normalizeText } from "@/lib/normalize-text";
-import { MethodeEntry, mentionedMethodes, methodeKey, methodeName } from "@/lib/methodes";
+import { MethodeEntry, linkMethodes, mentionedMethodes, methodeKey, methodeName } from "@/lib/methodes";
 import MethodesExplorer from "./_components/MethodesExplorer";
 
 // Comme /articles : régénérée au plus toutes les 60 s
@@ -80,7 +80,7 @@ export default async function MethodesExpertPage() {
   // Articles citant chaque méthode, du plus récent au plus ancien
   const citations = new Map<string, { slug: string; title: string }[]>();
   for (const article of articles.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())) {
-    for (const key of mentionedMethodes(article.content)) {
+    for (const key of mentionedMethodes(linkMethodes(article.content, (methodes ?? []) as Methodes[]))) {
       citations.set(key, [...(citations.get(key) ?? []), { slug: article.slug, title: article.title }]);
     }
   }
