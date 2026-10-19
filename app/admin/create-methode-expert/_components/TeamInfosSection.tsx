@@ -337,7 +337,7 @@ export default function TeamInfosSection({
                   <input
                     type="text"
                     list={squadListId}
-                    onFocus={squad.ensureSquad}
+                    onFocus={() => squad.focusName(`${fieldArrayNameTitulaires}.${index}`)}
                     {...register(
                       `${fieldArrayNameTitulaires}.${index}.nom` as Path<MethodeMatchSchemaType>,
                       {
@@ -513,7 +513,7 @@ export default function TeamInfosSection({
                   <input
                     type="text"
                     list={squadListId}
-                    onFocus={squad.ensureSquad}
+                    onFocus={() => squad.focusName(`${fieldArrayNameRemplacants}.${index}`)}
                     {...register(
                       `${fieldArrayNameRemplacants}.${index}.nom` as Path<MethodeMatchSchemaType>,
                       {
