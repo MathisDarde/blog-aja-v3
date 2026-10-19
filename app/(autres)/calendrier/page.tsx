@@ -1,5 +1,4 @@
-import { fetchCalendrier, fetchMeta, fetchSaison, fetchSaisonsIndex } from "@/lib/scraped-data";
-import SeasonSelector from "@/components/SeasonSelector";
+import { fetchCalendrier, fetchCalendrierSaison, fetchSaisonsIndex } from "@/lib/scraped-data";
 import { ajaLogo, getTeamLogoResolver, withMatchLogos } from "@/lib/team-logos";
 import Calendar from "./_components/Calendar";
 
@@ -9,33 +8,32 @@ export default async function CalendrierPage({
   searchParams: Promise<{ saison?: string }>;
 }) {
   const { saison } = await searchParams;
-  const [index, meta, resolver] = await Promise.all([fetchSaisonsIndex(), fetchMeta(), getTeamLogoResolver()]);
+  const [index, resolver] = await Promise.all([fetchSaisonsIndex(), getTeamLogoResolver()]);
 
-  // Saison archivée demandée (?saison=1995), sinon la saison en cours, mise à jour toutes les 2 h
+  // Toutes les saisons à la suite : la saison en cours (mise à jour toutes les 2 h) puis l'archive
+  const calendriers = await Promise.all(
+    index.map((s, i) => (i === 0 ? fetchCalendrier() : fetchCalendrierSaison(s.seasonId))),
+  );
+  const matches = index.flatMap((s, i) =>
+    withMatchLogos(calendriers[i], s.seasonId, resolver).map((match) => ({
+      ...match,
+      seasonId: s.seasonId,
+      ajaLogo: ajaLogo(s.seasonId, resolver),
+    })),
+  );
+
+  // ?saison=1995 : le calendrier s'ouvre au début de cette saison
   const requested = Number(saison);
-  const archived = requested && requested !== index[0]?.seasonId ? await fetchSaison(requested) : null;
-  const matches = archived ? archived.calendrier : await fetchCalendrier();
-  const selected = archived?.seasonId ?? index[0]?.seasonId ?? 0;
-  const subtitle = archived
-    ? `${archived.season} · ${archived.competition.name}`
-    : [meta.season, meta.competition.name].filter(Boolean).join(" · ");
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 sm:p-10">
       <h1 className="text-center font-Bai_Jamjuree text-3xl sm:text-4xl font-bold uppercase">
         Calendrier
       </h1>
-      <p className="font-Montserrat text-gray-600 mt-1 mb-4">{subtitle}</p>
-      <div className="mb-6 sm:mb-10">
-        <SeasonSelector
-          seasons={index.map((s) => ({ seasonId: s.seasonId, season: s.season, competitionName: s.competition.name }))}
-          selected={selected}
-        />
-      </div>
       <Calendar
-        key={selected}
-        matches={withMatchLogos(matches, archived?.seasonId ?? meta.seasonId, resolver)}
-        ajaLogo={ajaLogo(archived?.seasonId ?? meta.seasonId, resolver)}
+        matches={matches}
+        seasons={index.map((s) => ({ seasonId: s.seasonId, season: s.season, competitionName: s.competition.name }))}
+        initialSeason={index.some((s) => s.seasonId === requested) ? requested : null}
       />
     </div>
   );

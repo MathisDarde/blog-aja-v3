@@ -102,11 +102,15 @@ export const fetchSaisonsIndex = () => fetchScrapedData<SaisonIndexEntry[]>("sai
 /** Tous les matchs de championnat de l'AJA archivés, toutes saisons confondues. */
 export const fetchHistoriqueMatchs = () => fetchScrapedData<HistoMatch[]>("saisons/matchs.json", []);
 
+/** Calendrier d'une saison archivée (vide si elle n'existe pas). */
+export const fetchCalendrierSaison = (seasonId: number) =>
+  fetchScrapedData<MatchAPI[]>(`saisons/${seasonId}/calendrier.json`, []);
+
 /** Une saison archivée, ou null si elle n'existe pas. */
 export async function fetchSaison(seasonId: number): Promise<SaisonData | null> {
   const [infos, calendrier, classement, statistiques] = await Promise.all([
     fetchScrapedData<{ season: string; competition: Competition } | null>(`saisons/${seasonId}/saison.json`, null),
-    fetchScrapedData<MatchAPI[]>(`saisons/${seasonId}/calendrier.json`, []),
+    fetchCalendrierSaison(seasonId),
     fetchScrapedData<Team[]>(`saisons/${seasonId}/classement.json`, []),
     fetchScrapedData<PlayerStats[]>(`saisons/${seasonId}/statistiques.json`, []),
   ]);
