@@ -9,12 +9,14 @@ export const SITE_DESCRIPTION =
 // Logo carré sur fond plein : Google n'affiche pas le SVG portrait de l'écusson
 export const SITE_LOGO = `${SITE_URL}/icons/logo-512.png`;
 
-// JPG et non AVIF : Facebook, LinkedIn, WhatsApp... n'affichent pas l'AVIF
+// Bannière de l'accueil (app/opengraph-image.tsx). Next ne la transmet pas aux pages
+// qui définissent leur propre openGraph : pageMetadata la reprend explicitement.
 export const DEFAULT_OG_IMAGE = {
-  url: "/_assets/img/opengraphimage.jpg",
+  url: "/opengraph-image",
   width: 1200,
   height: 630,
-  alt: "Image bannière - Mémoire d'Auxerrois",
+  type: "image/png",
+  alt: "Mémoire d'Auxerrois – L'histoire de l'AJ Auxerre",
 };
 
 // Le club, sujet de tout le site : relie les pages à l'entité "AJ Auxerre"

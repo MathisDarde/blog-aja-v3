@@ -79,7 +79,6 @@ export async function renderOgImage({
               style={{
                 fontSize: 30,
                 fontWeight: 700,
-                letterSpacing: 2,
                 textTransform: "uppercase",
               }}
             >
@@ -88,7 +87,6 @@ export async function renderOgImage({
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            <div style={{ width: 96, height: 8, background: "#f76200" }} />
             <div
               style={{
                 fontSize: title.length > 28 ? 64 : 80,

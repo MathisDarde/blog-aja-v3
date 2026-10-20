@@ -4,7 +4,6 @@ import { Toaster } from "sonner";
 import { AppProvider } from "@/contexts/GlobalContext";
 import type { Metadata, Viewport } from "next";
 import {
-  DEFAULT_OG_IMAGE,
   SITE_DESCRIPTION,
   SITE_NAME,
   SITE_URL,
@@ -93,7 +92,6 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     siteName: SITE_NAME,
-    images: [DEFAULT_OG_IMAGE],
     locale: "fr_FR",
     type: "website",
   },
@@ -102,7 +100,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} – L'histoire de l'AJ Auxerre`,
     description: SITE_DESCRIPTION,
-    images: [DEFAULT_OG_IMAGE.url],
   },
 
   // Résolu par Next sur le chemin de chaque page
