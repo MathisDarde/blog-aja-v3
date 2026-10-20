@@ -188,7 +188,19 @@ export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
 export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
   id_methode: text("id_methode").primaryKey(),
   typemethode: text("typemethode").notNull().default("match"),
+  // Construit à l'enregistrement depuis les champs ci-dessous (lib/methode-match-form)
   titrematch: text("titrematch").notNull(),
+  abreviationequipe1: text("abreviationequipe1").notNull().default(""),
+  abreviationequipe2: text("abreviationequipe2").notNull().default(""),
+  scoreequipe1: integer("scoreequipe1").notNull().default(0),
+  scoreequipe2: integer("scoreequipe2").notNull().default(0),
+  // Tirs au but : null quand le match ne s'est pas joué aux tirs au but
+  tabequipe1: integer("tabequipe1"),
+  tabequipe2: integer("tabequipe2"),
+  prolongation: boolean("prolongation").notNull().default(false),
+  // Vide : logo d'époque calculé à l'affichage (lib/team-logos)
+  logoequipe1: text("logoequipe1").notNull().default(""),
+  logoequipe2: text("logoequipe2").notNull().default(""),
   couleur1equipe1: text("couleur1equipe1").notNull(),
   couleur2equipe1: text("couleur2equipe1").notNull(),
   nomequipe1: text("nomequipe1").notNull(),

@@ -7,6 +7,7 @@ import { Dispositifs } from "@/components/Dispositifs";
 import { redirect } from "next/navigation";
 import Button from "@/components/BlueButton";
 import { authClient } from "@/lib/auth-client";
+import type { MatchScoreData } from "@/contexts/Interfaces";
 
 // On définit les interfaces ici pour être sûr (ou on utilise celles de l'import si elles sont identiques)
 export interface TituPlayerType {
@@ -31,7 +32,7 @@ export interface RempPlayerType {
 
 // On redéfinit partiellement MethodeMatch pour s'assurer que les tableaux sont bien typés
 // Si votre import @/contexts/Interfaces est déjà à jour, vous pouvez retirer cette partie et utiliser l'import.
-interface MethodeMatch {
+interface MethodeMatch extends MatchScoreData {
   id_methode: string;
   titrematch: string;
   date: string;
@@ -55,6 +56,64 @@ interface GameMethodeExpertProps {
 }
 
 // --- UTILITAIRES ---
+
+// Bandeau logo · score · logo ; titre seul pour une méthode antérieure aux champs de score
+function ScoreBanner({ methode }: { methode: MethodeMatch }) {
+  const hasScore =
+    !!methode.abreviationequipe1 &&
+    !!methode.abreviationequipe2 &&
+    methode.scoreequipe1 != null &&
+    methode.scoreequipe2 != null;
+
+  if (!hasScore) {
+    return (
+      <p className="text-center font-Bai_Jamjuree text-xl sm:text-2xl font-bold mt-4">
+        {methode.titrematch}
+      </p>
+    );
+  }
+
+  const details = [
+    methode.prolongation ? "Après prolongation" : "",
+    methode.tabequipe1 != null && methode.tabequipe2 != null
+      ? `Tirs au but : ${methode.tabequipe1} - ${methode.tabequipe2}`
+      : "",
+  ].filter(Boolean);
+
+  const team = (logo: string | undefined, abreviation: string | undefined, name: string) => (
+    <div className="flex flex-col items-center gap-1 w-20 sm:w-24">
+      {logo && (
+        <Image
+          src={logo}
+          alt={name}
+          width={56}
+          height={56}
+          className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
+        />
+      )}
+      <span className="font-Bai_Jamjuree font-bold text-sm sm:text-base">{abreviation}</span>
+    </div>
+  );
+
+  return (
+    <div className="mt-4">
+      <div className="flex items-center justify-center gap-3 sm:gap-6">
+        {team(methode.logoequipe1, methode.abreviationequipe1, methode.nomequipe1)}
+        <p className="font-Bai_Jamjuree font-bold text-3xl sm:text-4xl whitespace-nowrap">
+          {methode.scoreequipe1} - {methode.scoreequipe2}
+        </p>
+        {team(methode.logoequipe2, methode.abreviationequipe2, methode.nomequipe2)}
+      </div>
+      {details.length > 0 && (
+        <p className="text-center text-xs sm:text-sm text-gray-600 mt-1">{details.join(" · ")}</p>
+      )}
+    </div>
+  );
+}
+
+// Logo du club à côté de son nom (absent quand la fiche est affichée sans logos)
+const TeamLogo = ({ src, name }: { src?: string; name: string }) =>
+  src ? <Image src={src} alt={name} width={28} height={28} className="w-7 h-7 object-contain" /> : null;
 
 // Ballon des buteurs, avec le nombre de buts s'il y en a plusieurs (terrain et banc)
 const GoalBadge = ({ buts }: { buts: number }) => (
@@ -287,24 +346,22 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
 
   return (
     <div className="flex flex-col pt-4">
-      {/* Titre du match */}
-      <p className="text-center font-Bai_Jamjuree text-xl sm:text-2xl font-bold mt-4">
-        {methode.titrematch}
-      </p>
+      <ScoreBanner methode={methode} />
 
       {/* Équipe 1 (Infos) */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mt-4">
         <div className="flex gap-1">
           <div
-            className="w-6 h-6 rounded-full border border-black"
+            className="w-4 h-4 rounded-full border border-black"
             style={{ background: methode.couleur1equipe1 }}
           ></div>
           <div
-            className="w-6 h-6 rounded-full border border-black"
+            className="w-4 h-4 rounded-full border border-black"
             style={{ background: methode.couleur2equipe1 }}
           ></div>
         </div>
         <div className="flex gap-2 items-center text-left">
+          <TeamLogo src={methode.logoequipe1} name={methode.nomequipe1} />
           <h3 className="font-semibold font-Bai_Jamjuree text-lg">
             {methode.nomequipe1}
           </h3>
@@ -366,15 +423,16 @@ export default function GameMethodeExpert({ methode }: GameMethodeExpertProps) {
       <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mt-2">
         <div className="flex gap-1">
           <div
-            className="w-6 h-6 rounded-full border border-black"
+            className="w-4 h-4 rounded-full border border-black"
             style={{ background: methode.couleur1equipe2 }}
           ></div>
           <div
-            className="w-6 h-6 rounded-full border border-black"
+            className="w-4 h-4 rounded-full border border-black"
             style={{ background: methode.couleur2equipe2 }}
           ></div>
         </div>
         <div className="flex gap-2 items-center text-left">
+          <TeamLogo src={methode.logoequipe2} name={methode.nomequipe2} />
           <h3 className="font-semibold font-Bai_Jamjuree text-lg">
             {methode.nomequipe2}
           </h3>

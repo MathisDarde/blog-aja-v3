@@ -204,10 +204,61 @@ export const MatchRemplacantSchema = z.object({
   cartonRouge: z.boolean().default(false).optional(),
 });
 
+// Coach de chaque équipe : obligatoire, enregistré à la fin des remplaçants (poste « Coach »)
+const matchCoachSchema = (equipe: string) =>
+  z.object({
+    nom: z
+      .string()
+      .trim()
+      .nonempty({ message: `Le coach de l'équipe ${equipe} doit être renseigné.` }),
+    drapeau: z.string().default(""),
+    poste: z.string().default("Coach"),
+  });
+
+// Le titre du match est construit à partir de ces champs (buildMatchTitle)
+const matchScoreFields = {
+  abreviationequipe1: z
+    .string()
+    .trim()
+    .nonempty({ message: "L'abréviation de l'équipe à domicile doit être renseignée." }),
+  abreviationequipe2: z
+    .string()
+    .trim()
+    .nonempty({ message: "L'abréviation de l'équipe à l'extérieur doit être renseignée." }),
+  scoreequipe1: z
+    .string()
+    .trim()
+    .regex(/^\d+$/, { message: "Le score de l'équipe à domicile doit être un nombre." }),
+  scoreequipe2: z
+    .string()
+    .trim()
+    .regex(/^\d+$/, { message: "Le score de l'équipe à l'extérieur doit être un nombre." }),
+  tabequipe1: z
+    .string()
+    .trim()
+    .regex(/^\d*$/, { message: "Les tirs au but doivent être des nombres." })
+    .default(""),
+  tabequipe2: z
+    .string()
+    .trim()
+    .regex(/^\d*$/, { message: "Les tirs au but doivent être des nombres." })
+    .default(""),
+  prolongation: z.boolean().default(false),
+  logoequipe1: z.string().default(""),
+  logoequipe2: z.string().default(""),
+  coachequipe1: matchCoachSchema("à domicile"),
+  coachequipe2: matchCoachSchema("à l'extérieur"),
+};
+
+const tabsComplete = (data: { tabequipe1: string; tabequipe2: string }) =>
+  !data.tabequipe1 === !data.tabequipe2;
+const tabsMessage = {
+  message: "Renseigne les tirs au but des deux équipes, ou aucun.",
+  path: ["tabequipe2"],
+};
+
 export const MethodeMatchSchema = z.object({
-  titrematch: z
-    .string()
-    .nonempty({ message: "Le titre du match doit être renseigné." }),
+  ...matchScoreFields,
   couleur1equipe1: z
     .string()
     .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
@@ -242,11 +293,9 @@ export const MethodeMatchSchema = z.object({
   date: z.string().nonempty({
     message: "La date du match doit être renseignée.",
   }),
-});
+}).refine(tabsComplete, tabsMessage);
 export const UpdateMethodeMatchSchema = z.object({
-  titrematch: z
-    .string()
-    .nonempty({ message: "Le titre du match doit être renseigné." }),
+  ...matchScoreFields,
   couleur1equipe1: z
     .string()
     .nonempty({ message: "La couleur doit apparaître sous la forme #xxxxxx." }),
@@ -281,7 +330,7 @@ export const UpdateMethodeMatchSchema = z.object({
   date: z.string().nonempty({
     message: "La date du match doit être renseignée.",
   }),
-});
+}).refine(tabsComplete, tabsMessage);
 
 export const MethodeJoueurSchema = z.object({
   joueurnom: z

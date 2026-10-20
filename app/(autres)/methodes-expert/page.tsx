@@ -17,6 +17,8 @@ const firstYear = (value: string) => {
   return match ? Number(match[0]) : null;
 };
 
+const chosenLogo = (logo: string | undefined) => (logo && logo !== DEFAULT_TEAM_LOGO ? logo : null);
+
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
 function describe(
@@ -50,9 +52,10 @@ function describe(
         subtitle: capitalize(methode.date.replace(/\s+/g, " ").trim()),
         image: null,
         // Logos des deux équipes à l'époque du match
+        // Logo choisi dans le formulaire, sinon logo d'époque
         logos: [
-          clubLogo(methode.nomequipe1, seasonOfFrenchDate(methode.date)),
-          clubLogo(methode.nomequipe2, seasonOfFrenchDate(methode.date)),
+          chosenLogo(methode.logoequipe1) ?? clubLogo(methode.nomequipe1, seasonOfFrenchDate(methode.date)),
+          chosenLogo(methode.logoequipe2) ?? clubLogo(methode.nomequipe2, seasonOfFrenchDate(methode.date)),
         ],
         year: firstYear(methode.date),
         keywords: [methode.nomequipe1, methode.nomequipe2, methode.stade, methode.date],

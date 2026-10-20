@@ -212,8 +212,25 @@ export function withPeriodClubLogos<T extends { typemethode: string }>(methode: 
       name,
       years,
     ]);
-  const m = methode as T & { clubs?: ClubEntry[]; clubscoach?: ClubEntry[] };
+  const m = methode as T & {
+    clubs?: ClubEntry[];
+    clubscoach?: ClubEntry[];
+    date?: string;
+    nomequipe1?: string;
+    nomequipe2?: string;
+    logoequipe1?: string;
+    logoequipe2?: string;
+  };
   if (m.typemethode === "joueur" && Array.isArray(m.clubs)) return { ...m, clubs: swap(m.clubs) };
   if (m.typemethode === "coach" && Array.isArray(m.clubscoach)) return { ...m, clubscoach: swap(m.clubscoach) };
+  // Match : logo choisi dans le formulaire, sinon logo d'époque à la date du match
+  if (m.typemethode === "match") {
+    const season = seasonOfFrenchDate(m.date ?? "");
+    return {
+      ...m,
+      logoequipe1: m.logoequipe1 || resolver.logo({ name: m.nomequipe1, season }),
+      logoequipe2: m.logoequipe2 || resolver.logo({ name: m.nomequipe2, season }),
+    };
+  }
   return methode;
 }

@@ -229,7 +229,20 @@ export interface LightRempPlayerType {
   drapeau: string;
 }
 
-export interface MethodeMatch extends BaseMethodeData {
+// Score, prolongation, tirs au but et logos : absents des méthodes antérieures à la migration 0024
+export interface MatchScoreData {
+  abreviationequipe1?: string;
+  abreviationequipe2?: string;
+  scoreequipe1?: number;
+  scoreequipe2?: number;
+  tabequipe1?: number | null;
+  tabequipe2?: number | null;
+  prolongation?: boolean;
+  logoequipe1?: string;
+  logoequipe2?: string;
+}
+
+export interface MethodeMatch extends BaseMethodeData, MatchScoreData {
   typemethode: "match";
   titrematch: string;
   couleur1equipe1: string;
@@ -275,7 +288,7 @@ export interface MethodeMatch extends BaseMethodeData {
 }
 
 export interface UpdateMethodeMatchFromProps {
-  selectedMethode: {
+  selectedMethode: MatchScoreData & {
     id_methode: string;
     titrematch: string;
     couleur1equipe1: string;

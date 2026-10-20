@@ -16,13 +16,6 @@ type ArticleParams = {
   leaguefilter: string;
 };
 
-export const NO_ARTICLE_PARAMS: ArticleParams = {
-  searchQuery: "",
-  yearfilter: "",
-  playerfilter: "",
-  leaguefilter: "",
-};
-
 type ArticleCenterProps = {
   articles: SearchableArticle[];
   filters: Filter[];
@@ -43,7 +36,7 @@ export default function ArticleCenter(props: ArticleCenterProps) {
   );
 }
 
-// Sans useSearchParams : rendu au build avec NO_ARTICLE_PARAMS (fallback du Suspense),
+// Sans useSearchParams : rendu au build sans recherche ni filtre (fallback du Suspense),
 // pour que la liste complète des articles soit dans le HTML lu par les moteurs
 export function ArticleCenterView({
   articles,

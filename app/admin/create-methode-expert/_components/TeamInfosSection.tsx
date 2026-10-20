@@ -10,7 +10,9 @@ import {
   Path,
   FieldArrayPath,
 } from "react-hook-form";
+import Image from "next/image";
 import {
+  AlertTriangle,
   ArrowLeftRight,
   ChartBarBig,
   ChevronDown,
@@ -20,7 +22,10 @@ import {
   Loader2,
   PaintbrushVertical,
   Plus,
+  RotateCcw,
+  Shield,
   Trash,
+  UserRound,
 } from "lucide-react";
 import Section from "./DropdownContainerDomExt";
 import { MethodeMatchSchemaType } from "@/types/forms";
@@ -30,6 +35,9 @@ import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
 import { usePlayerAutofill } from "@/components/usePlayerAutofill";
 import { useTeamSquad } from "@/components/useTeamSquad";
 import { lookupClubColors } from "@/actions/method/wikidata-import";
+import { getMatchTeamDefaults } from "@/actions/method/match-team-defaults";
+import { getTeamLogos, type LogoOption } from "@/actions/method/get-logos-files";
+import LogoSelectorModal from "@/components/ClubLogoSelector";
 
 interface TeamInfosSectionProps {
   control: Control<MethodeMatchSchemaType>;
@@ -41,8 +49,11 @@ interface TeamInfosSectionProps {
   teamIndex: 1 | 2;
   expandedIndices: number[];
   onToggleExpand: (index: number) => void;
+  // Index du remplaçant dont on choisit le drapeau, ou COACH_FLAG pour le coach
   onOpenModal: (index: number) => void;
 }
+
+export const COACH_FLAG = -1;
 
 export default function TeamInfosSection({
   control,
@@ -80,6 +91,67 @@ export default function TeamInfosSection({
     setValue(color2Field, response.data.secondary, { shouldDirty: true });
   };
 
+  // Logo d'époque et abréviation : remplacés quand le nom change, comme les couleurs.
+  // Un changement de date ne touche au logo que s'il vient encore de l'autocomplétion.
+  const lastDefaultsLookup = useRef(lastTeamLookup.current);
+  const autofilledLogo = useRef<string | null>(null);
+  const [loadingDefaults, setLoadingDefaults] = useState(false);
+  const [logoNotFound, setLogoNotFound] = useState(false);
+
+  const fillTeamDefaults = async ({ onlyLogo }: { onlyLogo: boolean }) => {
+    const name = String(getValues(teamNameField) ?? "").trim();
+    if (name.length < 2) return;
+    const date = String(getValues("date") ?? "");
+
+    setLoadingDefaults(true);
+    try {
+      const defaults = await getMatchTeamDefaults(name, date);
+      // Nom modifié entre-temps : ces valeurs ne sont plus les bonnes
+      if (String(getValues(teamNameField) ?? "").trim() !== name) return;
+
+      setValue(logoField, defaults.logo, { shouldDirty: true });
+      autofilledLogo.current = defaults.logo;
+      setLogoNotFound(!defaults.logoFound);
+      if (!onlyLogo && defaults.abreviation) {
+        setValue(abreviationField, defaults.abreviation, { shouldDirty: true });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingDefaults(false);
+    }
+  };
+
+  const onTeamNameBlur = () => {
+    const name = String(getValues(teamNameField) ?? "").trim();
+    if (name === lastDefaultsLookup.current) return;
+    lastDefaultsLookup.current = name;
+    fillTeamDefaults({ onlyLogo: false });
+  };
+
+  const matchDate = watch("date");
+  useEffect(() => {
+    const current = String(getValues(logoField) ?? "");
+    if (current && current !== autofilledLogo.current) return;
+    const timer = setTimeout(() => fillTeamDefaults({ onlyLogo: true }), 600);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matchDate]);
+
+  // Sélecteur de logos (fichiers du projet + bibliothèque)
+  const [logoModalOpen, setLogoModalOpen] = useState(false);
+  const [logoFiles, setLogoFiles] = useState<LogoOption[]>([]);
+  const [logoSearch, setLogoSearch] = useState("");
+  const [loadingLogos, setLoadingLogos] = useState(false);
+  const openLogoModal = async () => {
+    setLogoModalOpen(true);
+    if (logoFiles.length) return;
+    setLoadingLogos(true);
+    const result = await getTeamLogos();
+    setLogoFiles(result.files);
+    setLoadingLogos(false);
+  };
+
   // Drapeau et poste des remplaçants complétés dès que le nom est saisi
   const { autofill, isPending } = usePlayerAutofill({
     getValues,
@@ -104,6 +176,11 @@ export default function TeamInfosSection({
     `couleur1equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
   const color2Field =
     `couleur2equipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const logoField = `logoequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const abreviationField =
+    `abreviationequipe${teamIndex}` as Path<MethodeMatchSchemaType>;
+  const coachField = `coachequipe${teamIndex}` as const;
+  const logo = watch(logoField) as string;
 
   const fieldArrayNameTitulaires =
     `titulairesequipe${teamIndex}` as FieldArrayPath<MethodeMatchSchemaType>;
@@ -263,13 +340,14 @@ export default function TeamInfosSection({
             {...register(teamNameField, {
               onBlur: () => {
                 autofillColors();
+                onTeamNameBlur();
                 squad.ensureSquad();
               },
             })}
             className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
             placeholder={`Nom de l'équipe (ex: ${isDom ? "AJ Auxerre" : "RC Lens"})`}
           />
-          {(loadingColors || squad.loading) && (
+          {(loadingColors || loadingDefaults || squad.loading) && (
             <Loader2
               size={16}
               className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
@@ -287,6 +365,61 @@ export default function TeamInfosSection({
             </option>
           ))}
         </datalist>
+      </div>
+
+      {/* --- LOGO --- */}
+      <div className="relative w-auto my-4">
+        <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <Shield className="mr-4" />
+          Logo de l&apos;équipe à {domExtLabel} :
+        </span>
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 shrink-0 rounded-md border border-gray-300 bg-white flex items-center justify-center">
+            {logo ? (
+              <Image src={logo} alt="" width={56} height={56} className="w-14 h-14 object-contain" />
+            ) : (
+              <Shield className="text-gray-300" />
+            )}
+          </div>
+          <div className="flex flex-col items-start gap-1 text-xs sm:text-sm font-Montserrat">
+            <button
+              type="button"
+              onClick={openLogoModal}
+              className="text-aja-blue hover:text-orange-third hover:underline"
+            >
+              Choisir un autre logo
+            </button>
+            <button
+              type="button"
+              onClick={() => fillTeamDefaults({ onlyLogo: true })}
+              className="flex items-center gap-1 text-gray-500 hover:text-aja-blue"
+            >
+              <RotateCcw size={14} />
+              Logo d&apos;époque selon le nom et la date
+            </button>
+            {logoNotFound && (
+              <p className="flex items-center gap-1 text-orange-third">
+                <AlertTriangle size={14} />
+                Aucun logo trouvé pour ce club : choisis-le ou importe-le.
+              </p>
+            )}
+          </div>
+        </div>
+        {logoModalOpen && (
+          <LogoSelectorModal
+            open={logoModalOpen}
+            onClose={() => setLogoModalOpen(false)}
+            files={logoFiles}
+            searchTerm={logoSearch}
+            setSearchTerm={setLogoSearch}
+            loading={loadingLogos}
+            onSelect={(src) => {
+              setValue(logoField, src, { shouldDirty: true });
+              setLogoNotFound(false);
+              setLogoModalOpen(false);
+            }}
+          />
+        )}
       </div>
 
       {/* --- SYSTEME DE JEU --- */}
@@ -656,6 +789,50 @@ export default function TeamInfosSection({
           <Plus size={18} />
           Ajouter un remplaçant
         </button>
+      </div>
+
+      {/* --- COACH (enregistré à la fin des remplaçants) --- */}
+      <div className="relative w-auto my-4">
+        <span className="font-semibold text-left font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
+          <UserRound className="mr-4" />
+          Coach de l&apos;équipe à {domExtLabel} :
+        </span>
+        <div className="flex flex-col md:flex-row items-center gap-2 w-full">
+          <div className="relative w-full md:w-3/5">
+            <input
+              type="text"
+              {...register(`${coachField}.nom`, {
+                onBlur: () => autofill(coachField),
+              })}
+              placeholder={`Nom du coach (ex: ${isDom ? "Guy Roux" : "Ottmar Hitzfeld"})`}
+              className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+            />
+            {isPending(coachField) && (
+              <Loader2
+                size={16}
+                className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-aja-blue"
+              />
+            )}
+          </div>
+          <div className="relative w-full md:w-2/5 flex">
+            <input
+              type="text"
+              {...register(`${coachField}.drapeau`)}
+              placeholder="Drapeau (ex: france)"
+              className="py-2 px-4 border rounded w-full text-xs sm:text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => onOpenModal(COACH_FLAG)}
+              className="ml-1 text-aja-blue"
+            >
+              <FileQuestion size={20} />
+            </button>
+          </div>
+        </div>
+        {errors[coachField]?.nom && (
+          <span className="text-red-500 text-[10px]">{errors[coachField]?.nom?.message}</span>
+        )}
       </div>
     </Section>
   );

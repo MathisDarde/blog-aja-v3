@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  AArrowUp,
   Clock,
   Dumbbell,
 } from "lucide-react";
@@ -13,28 +12,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateMethodeMatchSchema } from "@/app/schema";
 import { toast } from "sonner";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import {
-  RempPlayerType,
-  UpdateMethodeMatchFromProps,
-} from "@/contexts/Interfaces";
+import { UpdateMethodeMatchFromProps } from "@/contexts/Interfaces";
 import { getFlags } from "@/actions/method/get-flags-files";
 import updateMethodeMatchForm from "@/actions/method/update-match-form";
 import { useRouter } from "next/navigation";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
 import Button from "@/components/BlueButton";
-import TeamInfosSection from "@/app/admin/create-methode-expert/_components/TeamInfosSection";
+import TeamInfosSection, { COACH_FLAG } from "@/app/admin/create-methode-expert/_components/TeamInfosSection";
+import MatchScoreFields from "@/app/admin/create-methode-expert/_components/MatchScoreFields";
 import SwapTeamsButton from "@/app/admin/create-methode-expert/_components/SwapTeamsButton";
 import {
   emptyMatchFormValues,
   methodeMatchToFormValues,
   swapMatchTeams,
+  withFlagPaths,
 } from "@/lib/methode-match-form";
-
-const IMAGE_PATHS = {
-  clubs: "/_assets/teamlogos/",
-  drapeaux: "/_assets/flags/",
-};
 
 export default function MatchForm({
   selectedMethode,
@@ -112,7 +105,9 @@ export default function MatchForm({
   // Mise à jour pour cibler la propriété .drapeau de l'objet remplaçant
   const selectFile = (filename: string) => {
     if (modal && typeof modal !== "boolean") {
-      if (modal.team === "equipe1") {
+      if (modal.index === COACH_FLAG) {
+        setValue(`coach${modal.team}.drapeau`, filename, { shouldDirty: true });
+      } else if (modal.team === "equipe1") {
         setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, {
           shouldDirty: true,
         });
@@ -138,42 +133,6 @@ export default function MatchForm({
     });
   };
 
-  // Traitement des données avant envoi (Ajout prefixe images)
-  const processSubmissionData = (
-    data: UpdateMethodeMatchSchemaType
-  ): UpdateMethodeMatchSchemaType => {
-    // Copie profonde
-    const processedData = JSON.parse(JSON.stringify(data));
-
-    // Helper pour traiter les tableaux de remplaçants (Objets)
-    const processRemplacants = (remplacants: RempPlayerType[]) => {
-      return remplacants.map((remp) => {
-        if (
-          remp.drapeau &&
-          typeof remp.drapeau === "string" &&
-          !remp.drapeau.startsWith("http") &&
-          !remp.drapeau.startsWith("/")
-        ) {
-          remp.drapeau = `${IMAGE_PATHS.drapeaux}${remp.drapeau}`;
-        }
-        return remp;
-      });
-    };
-
-    if (processedData.remplacantsequipe1) {
-      processedData.remplacantsequipe1 = processRemplacants(
-        processedData.remplacantsequipe1
-      );
-    }
-    if (processedData.remplacantsequipe2) {
-      processedData.remplacantsequipe2 = processRemplacants(
-        processedData.remplacantsequipe2
-      );
-    }
-
-    return processedData as UpdateMethodeMatchSchemaType;
-  };
-
   const handleSubmitForm = async (data: UpdateMethodeMatchSchemaType) => {
     if (!user_id) {
       toast.error(
@@ -182,7 +141,7 @@ export default function MatchForm({
       return;
     }
 
-    const finalData = processSubmissionData(data);
+    const finalData = withFlagPaths(data);
 
     const response = await updateMethodeMatchForm(
       selectedMethode.id_methode,
@@ -227,18 +186,7 @@ export default function MatchForm({
       >
         {/* --- CHAMPS TITRE, STADE, DATE (Inchangés) --- */}
 
-        <div className="relative w-full my-4">
-          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-            <AArrowUp className="mr-4" />
-            Nom du match :
-          </span>
-          <input
-            type="text"
-            {...register("titrematch")}
-            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-            placeholder="Nom du match (ex: DOM X - X EXT)"
-          />
-        </div>
+        <MatchScoreFields register={register} watch={watch} errors={errors} />
 
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">

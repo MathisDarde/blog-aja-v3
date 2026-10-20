@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
 import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
+import { matchFormToRecord } from "@/lib/methode-match-form";
 
 export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
   return await db.select().from(methodeExpertMatchTable);
@@ -20,41 +21,9 @@ export async function createMethodeMatch(
   const { id: userId } = await requireAdmin();
 
   try {
-    const {
-      titrematch,
-      couleur1equipe1,
-      couleur2equipe1,
-      nomequipe1,
-      systemeequipe1,
-      couleur1equipe2,
-      couleur2equipe2,
-      nomequipe2,
-      systemeequipe2,
-      stade,
-      date,
-      titulairesequipe1,
-      titulairesequipe2,
-      remplacantsequipe1,
-      remplacantsequipe2,
-    } = data;
-
     const result = await db.insert(methodeExpertMatchTable).values({
+      ...matchFormToRecord(data),
       id_methode: uuidv4(),
-      titrematch,
-      couleur1equipe1,
-      couleur2equipe1,
-      nomequipe1,
-      systemeequipe1,
-      couleur1equipe2,
-      couleur2equipe2,
-      nomequipe2,
-      systemeequipe2,
-      titulairesequipe1,
-      titulairesequipe2,
-      remplacantsequipe1,
-      remplacantsequipe2,
-      stade,
-      date,
       typemethode: "match",
       userId,
     });
@@ -95,40 +64,8 @@ export async function updateMethodeMatch(
   const { id: userId } = await requireAdmin();
 
   try {
-    const {
-      titrematch,
-      couleur1equipe1,
-      couleur2equipe1,
-      nomequipe1,
-      systemeequipe1,
-      couleur1equipe2,
-      couleur2equipe2,
-      nomequipe2,
-      systemeequipe2,
-      stade,
-      date,
-      titulairesequipe1,
-      titulairesequipe2,
-      remplacantsequipe1,
-      remplacantsequipe2,
-    } = data;
-
     const updateData: Partial<typeof methodeExpertMatchTable.$inferInsert> = {
-      titrematch,
-      couleur1equipe1,
-      couleur2equipe1,
-      nomequipe1,
-      systemeequipe1,
-      couleur1equipe2,
-      couleur2equipe2,
-      nomequipe2,
-      systemeequipe2,
-      titulairesequipe1,
-      titulairesequipe2,
-      remplacantsequipe1,
-      remplacantsequipe2,
-      stade,
-      date,
+      ...matchFormToRecord(data),
       userId,
     };
 

@@ -5,7 +5,6 @@ import submitMethodeMatchForm from "@/actions/method/methode-match-form";
 import { MethodeMatchSchemaType } from "@/types/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  AArrowUp,
   Dumbbell,
   Clock,
 } from "lucide-react";
@@ -18,17 +17,12 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import FlagSelectorModal from "@/components/FlagSelector";
 import Button from "@/components/BlueButton";
-import TeamInfosSection from "./TeamInfosSection";
-import { RempPlayerType } from "@/contexts/Interfaces";
+import TeamInfosSection, { COACH_FLAG } from "./TeamInfosSection";
+import MatchScoreFields from "./MatchScoreFields";
 import { MethodeMatchSchema } from "@/app/schema";
-import { emptyMatchFormValues, swapMatchTeams } from "@/lib/methode-match-form";
+import { emptyMatchFormValues, swapMatchTeams, withFlagPaths } from "@/lib/methode-match-form";
 import MatchTemplatePicker from "./MatchTemplatePicker";
 import SwapTeamsButton from "./SwapTeamsButton";
-
-const IMAGE_PATHS = {
-  clubs: "/_assets/teamlogos/",
-  drapeaux: "/_assets/flags/",
-};
 
 export default function MatchForm() {
   const { user_id } = useGlobalContext();
@@ -106,7 +100,9 @@ export default function MatchForm() {
   // Mise à jour pour cibler la propriété "drapeau" de l'objet remplaçant
   const selectFile = (filename: string) => {
     if (modal && typeof modal !== "boolean") {
-      if (modal.team === "equipe1") {
+      if (modal.index === COACH_FLAG) {
+        setValue(`coach${modal.team}.drapeau`, filename, { shouldDirty: true });
+      } else if (modal.team === "equipe1") {
         setValue(`remplacantsequipe1.${modal.index}.drapeau`, filename, {
           shouldDirty: true,
         });
@@ -117,44 +113,6 @@ export default function MatchForm() {
       }
       setModal(false);
     }
-  };
-
-  // Mise à jour pour traiter les objets au lieu des index
-  const processImagePaths = (
-    data: MethodeMatchSchemaType
-  ): MethodeMatchSchemaType => {
-    // Crée une copie profonde des données
-    const processedData = JSON.parse(
-      JSON.stringify(data)
-    ) as MethodeMatchSchemaType;
-
-    const processRemplacants = (remplacants: RempPlayerType[]) => {
-      return remplacants.map((remp) => {
-        if (
-          remp.drapeau &&
-          typeof remp.drapeau === "string" &&
-          !remp.drapeau.startsWith("http") &&
-          !remp.drapeau.startsWith("/")
-        ) {
-          remp.drapeau = `${IMAGE_PATHS.drapeaux}${remp.drapeau}`;
-        }
-        return remp;
-      });
-    };
-
-    if (processedData.remplacantsequipe1) {
-      processedData.remplacantsequipe1 = processRemplacants(
-        processedData.remplacantsequipe1
-      );
-    }
-
-    if (processedData.remplacantsequipe2) {
-      processedData.remplacantsequipe2 = processRemplacants(
-        processedData.remplacantsequipe2
-      );
-    }
-
-    return processedData;
   };
 
   const toggleExpand = (team: "equipe1" | "equipe2", index: number) => {
@@ -183,8 +141,7 @@ export default function MatchForm() {
       return;
     }
 
-    const processedData = processImagePaths(data);
-    const finalData = { ...processedData };
+    const finalData = withFlagPaths(data);
 
     const response = await submitMethodeMatchForm(finalData, user_id);
 
@@ -226,18 +183,7 @@ export default function MatchForm() {
           }}
         />
 
-        <div className="relative w-full my-4">
-          <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">
-            <AArrowUp className="mr-4" />
-            Nom du match :
-          </span>
-          <input
-            type="text"
-            {...register("titrematch")}
-            className="w-full py-3 sm:py-4 px-6 rounded-full border border-gray-600 font-Montserrat text-xs sm:text-sm"
-            placeholder="Nom du match (ex: DOM X - X EXT)"
-          />
-        </div>
+        <MatchScoreFields register={register} watch={watch} errors={errors} />
 
         <div className="relative w-full my-4">
           <span className="font-semibold font-Montserrat text-sm sm:text-base flex items-center text-gray-600 mb-2">

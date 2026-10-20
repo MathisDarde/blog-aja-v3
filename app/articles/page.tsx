@@ -1,8 +1,5 @@
 import { Suspense } from "react";
-import ArticleCenter, {
-  ArticleCenterView,
-  NO_ARTICLE_PARAMS,
-} from "./_components/ArticleCenter";
+import ArticleCenter, { ArticleCenterView } from "./_components/ArticleCenter";
 import { getArticles } from "@/controllers/ArticlesController";
 import filtersData from "@/public/data/articletags.json";
 import { toSearchableArticle } from "@/lib/article-search";
@@ -23,7 +20,12 @@ export default async function Page() {
         <ArticleCenterView
           articles={articles}
           filters={filtersData}
-          {...NO_ARTICLE_PARAMS}
+          // Valeurs écrites ici : une constante importée d'un module client
+          // n'arrive pas jusqu'au rendu serveur
+          searchQuery=""
+          yearfilter=""
+          playerfilter=""
+          leaguefilter=""
         />
       }
     >

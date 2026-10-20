@@ -1,22 +1,24 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
-import { BaseMethodeData, Methode } from "@/contexts/Interfaces";
+import Image from "next/image";
+import { getMethodeOptions, type MethodeOption } from "@/actions/method/get-methode-options";
 import Button from "@/components/BlueButton";
 import { Editor } from "@tiptap/react";
 import { Trash2, Search, Check } from "lucide-react";
+import { normalizeText } from "@/lib/normalize-text";
 
-const normalizeText = (value: string) =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
+type Methode = MethodeOption;
 
-const methodName = (m: Methode) =>
-  m.joueurnom || m.nomcoach || m.saison || m.titrematch || `Méthode #${m.id_methode}`;
+const methodName = (m: Methode) => m.name || `Méthode #${m.id_methode}`;
+
+const TYPE_ORDER = ["joueur", "coach", "match", "saison"];
+
+// Par type, puis matchs et saisons du plus récent au plus ancien, le reste par ordre alphabétique
+const compareMethods = (a: Methode, b: Methode) =>
+  TYPE_ORDER.indexOf(a.typemethode) - TYPE_ORDER.indexOf(b.typemethode) ||
+  (b.year ?? 0) - (a.year ?? 0) ||
+  a.name.localeCompare(b.name, "fr");
 
 /**
  * Méthode la plus proche du texte sélectionné dans l'article : nom identique ou contenu
@@ -66,28 +68,25 @@ export const MethodSelect = ({
   const [loading, setLoading] = useState(true);
 
   const [label, setLabel] = useState(editMention?.label || initialLabel);
-  const [selectedMethod, setSelectedMethod] = useState<BaseMethodeData | null>(
-    null,
-  );
+  const [selectedMethod, setSelectedMethod] = useState<Methode | null>(null);
   const [typeFilter, setTypeFilter] = useState<string>(editMention?.type || "all");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAllMethodes();
-        if (data && data.length > 0) {
-          setMethods(data as unknown as Methode[]);
+        const data = (await getMethodeOptions()).sort(compareMethods);
+        if (data.length > 0) {
+          setMethods(data);
           // En mode édition, pré-sélectionner la méthode existante
           if (editMention) {
             const found = data.find((m) => m.id_methode === editMention.id);
-            setSelectedMethod((found || data[0]) as BaseMethodeData);
+            setSelectedMethod(found || data[0]);
             // Filtrer par le type de la méthode éditée
             if (found) setTypeFilter(found.typemethode);
           } else {
             // Méthode correspondant au texte sélectionné, à défaut la première
-            const match = findMethodForText(data as unknown as Methode[], initialLabel);
-            setSelectedMethod((match ?? data[0]) as BaseMethodeData);
+            setSelectedMethod(findMethodForText(data, initialLabel) ?? data[0]);
           }
         } else {
           setMethods([]);
@@ -178,9 +177,10 @@ export const MethodSelect = ({
     if (typeFilter !== "all") {
       list = list.filter((m) => m.typemethode === typeFilter);
     }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter((m) => getMethodName(m).toLowerCase().includes(q));
+    // Tous les mots cherchés, dans le nom ou les détails (« dortmund 1993 »)
+    const terms = normalizeText(search).split(" ").filter(Boolean);
+    if (terms.length) {
+      list = list.filter((m) => terms.every((term) => m.search.includes(term)));
     }
     // En mode édition, placer la méthode sélectionnée en premier
     if (selectedMethod) {
@@ -191,7 +191,6 @@ export const MethodSelect = ({
       });
     }
     return list;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [methods, typeFilter, search, selectedMethod]);
 
   if (loading)
@@ -268,13 +267,13 @@ export const MethodSelect = ({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher une méthode…"
+            placeholder="Nom, équipe, année… (ex : dortmund 1993)"
             className="rounded-md font-Montserrat pl-9 pr-4 py-2 w-full outline-none border-gray-300 border text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
           />
         </div>
 
         {/* Liste scrollable */}
-        <div className="w-full max-h-[200px] overflow-y-auto border border-gray-200 rounded-lg">
+        <div className="w-full max-h-[280px] overflow-y-auto border border-gray-200 rounded-lg">
           {filteredMethods.length === 0 ? (
             <div className="p-3 text-center text-xs text-slate-400 font-Montserrat">
               Aucun résultat
@@ -287,14 +286,30 @@ export const MethodSelect = ({
                 <button
                   key={method.id_methode}
                   type="button"
-                  onClick={() => setSelectedMethod(method as unknown as BaseMethodeData)}
-                  className={`w-full text-left px-3 py-2 text-sm font-Montserrat flex items-center justify-between transition-colors ${
+                  onClick={() => setSelectedMethod(method)}
+                  className={`w-full text-left px-3 py-2 text-sm font-Montserrat flex items-center justify-between gap-2 transition-colors ${
                     isSelected
                       ? "bg-blue-50 text-aja-blue font-semibold"
                       : "hover:bg-slate-50 text-slate-700"
                   }`}
                 >
-                  <span className="truncate">{name}</span>
+                  {method.logos && (
+                    <span className="flex items-center gap-0.5 shrink-0">
+                      {method.logos.map((logo, index) =>
+                        logo ? (
+                          <Image key={index} src={logo} alt="" width={20} height={20} className="w-5 h-5 object-contain" />
+                        ) : null,
+                      )}
+                    </span>
+                  )}
+                  <span className="flex flex-col min-w-0 flex-1">
+                    <span className="truncate">{name}</span>
+                    {method.details && (
+                      <span className="truncate text-[11px] font-normal text-slate-500">
+                        {method.details}
+                      </span>
+                    )}
+                  </span>
                   <span className={`text-[10px] uppercase px-1.5 py-0.5 rounded font-medium ${
                     method.typemethode === "joueur" ? "bg-green-100 text-green-600" :
                     method.typemethode === "coach" ? "bg-purple-100 text-purple-600" :
