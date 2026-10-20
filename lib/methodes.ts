@@ -1,6 +1,7 @@
 // Utilitaires communs aux méthodes expert (popup des articles, page /methodes-expert).
 
 import { BaseMethodeData, Methodes } from "@/contexts/Interfaces";
+import { normalizeText } from "@/lib/normalize-text";
 
 export type MethodeType = BaseMethodeData["typemethode"];
 
@@ -42,6 +43,9 @@ export function mentionedMethodes(content: string): Set<string> {
   }
   return keys;
 }
+
+/** Clé des fiches des joueurs et coachs : nom normalisé (accents, casse et espaces ignorés). */
+export const ficheKey = (name: string) => normalizeText(name.trim().replace(/\s+/g, " "));
 
 export const methodeKey = (methode: Methodes) => `${methode.typemethode}:${methode.id_methode}`;
 

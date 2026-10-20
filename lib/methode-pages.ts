@@ -5,14 +5,27 @@ import { cache } from "react";
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import { getArticles } from "@/controllers/ArticlesController";
 import type { MethodeCoach, MethodeJoueur, MethodeMatch, Methodes } from "@/contexts/Interfaces";
-import { linkMethodes, mentionedMethodes, methodeKey, methodeUrl, MethodeType } from "@/lib/methodes";
+import { ficheKey, linkMethodes, mentionedMethodes, methodeKey, methodeUrl, MethodeType } from "@/lib/methodes";
 import { normalizeText } from "@/lib/normalize-text";
-import { getTeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
+import { ajaLogo, getTeamLogoResolver, seasonOfFrenchDate, TeamLogoResolver, withPeriodClubLogos } from "@/lib/team-logos";
+
+export interface MatchSide {
+  name: string;
+  // Abréviation (AJA, BVB…), sinon le nom du club
+  short: string;
+  logo: string | null;
+}
 
 export interface CrossingLink {
   url: string;
   name: string;
   details?: string;
+  // Portrait (joueur, coach), bannière (article) ou logo d'époque de l'AJA (saison)
+  image?: string | null;
+  // Match : les deux équipes et le score
+  match?: { sides: [MatchSide, MatchSide]; score: string | null };
+  // Méthode de la page elle-même (frise des matchs de la saison)
+  current?: boolean;
 }
 
 export interface Crossings {
@@ -71,7 +84,7 @@ function ajaSpan(clubs: [string, string, string][]) {
 
 // --- Compositions des matchs et des saisons ---
 
-const isCoachEntry = (poste: string | undefined) => /^(coach|entra[iî]neur)$/i.test((poste ?? "").trim());
+export const isCoachEntry = (poste: string | undefined) => /^(coach|entra[iî]neur)$/i.test((poste ?? "").trim());
 
 function squad(methode: Methodes): { players: Set<string>; coaches: Set<string> } {
   const players = new Set<string>();
@@ -111,32 +124,56 @@ export const getMethodeGraph = cache(async () => {
   const citations = new Map<string, CrossingLink[]>();
   for (const article of [...articles].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())) {
     for (const key of mentionedMethodes(linkMethodes(article.content, methodes))) {
-      citations.set(key, [...(citations.get(key) ?? []), { url: `/articles/${article.slug}`, name: article.title }]);
+      const citation = { url: `/articles/${article.slug}`, name: article.title, image: article.imageUrl || null };
+      citations.set(key, [...(citations.get(key) ?? []), citation]);
     }
   }
 
   const squads = new Map(methodes.map((m) => [m.id_methode, squad(m)]));
-  return { methodes, citations, squads };
+  return { methodes, citations, squads, resolver };
 });
 
 type Graph = Awaited<ReturnType<typeof getMethodeGraph>>;
 
-function link(methode: Methodes): CrossingLink | null {
+export const hasScore = (match: MethodeMatch) =>
+  !!match.abreviationequipe1 && !!match.abreviationequipe2 && match.scoreequipe1 != null && match.scoreequipe2 != null;
+
+const side = (name: string, short: string | undefined, logo: string | undefined): MatchSide => ({
+  name,
+  short: short || name,
+  logo: logo || null,
+});
+
+function link(methode: Methodes, resolver: TeamLogoResolver): CrossingLink | null {
   const url = methodeUrl(methode);
   if (!url) return null;
   switch (methode.typemethode) {
     case "joueur":
-      return { url, name: methode.joueurnom, details: methode.poste };
+      return { url, name: methode.joueurnom, details: methode.poste, image: methode.imagejoueur || null };
     case "coach":
-      return { url, name: methode.nomcoach };
+      return { url, name: methode.nomcoach, details: "Entraîneur", image: methode.imagecoach || null };
     case "match":
-      return { url, name: matchHeading(methode), details: shortDate(methode.date) };
+      return {
+        url,
+        name: matchHeading(methode),
+        details: shortDate(methode.date),
+        match: {
+          sides: [
+            side(methode.nomequipe1, methode.abreviationequipe1, methode.logoequipe1),
+            side(methode.nomequipe2, methode.abreviationequipe2, methode.logoequipe2),
+          ],
+          score: hasScore(methode) ? `${methode.scoreequipe1} - ${methode.scoreequipe2}` : null,
+        },
+      };
     case "saison":
-      return { url, name: `Saison ${methode.saison}`, details: methode.coach };
+      return {
+        url,
+        name: `Saison ${methode.saison}`,
+        details: methode.coach,
+        image: ajaLogo(firstYear(methode.saison), resolver),
+      };
   }
 }
-
-const links = (methodes: Methodes[]) => methodes.map(link).filter((l): l is CrossingLink => l !== null);
 
 function crossingsOf(methode: Methodes, graph: Graph): Crossings {
   const of = <T extends Methodes["typemethode"]>(type: T) =>
@@ -144,6 +181,13 @@ function crossingsOf(methode: Methodes, graph: Graph): Crossings {
   const matchs = of("match").sort((a, b) => matchTime(a).localeCompare(matchTime(b)));
   const saisons = of("saison").sort((a, b) => a.saison.localeCompare(b.saison));
   const squadOf = (m: Methodes) => graph.squads.get(m.id_methode)!;
+  const links = (list: Methodes[]) =>
+    list
+      .map((m) => {
+        const l = link(m, graph.resolver);
+        return l && m.id_methode === methode.id_methode ? { ...l, current: true } : l;
+      })
+      .filter((l): l is CrossingLink => l !== null);
 
   const crossings: Crossings = {
     joueurs: [],
@@ -174,9 +218,9 @@ function crossingsOf(methode: Methodes, graph: Graph): Crossings {
       crossings.saisons = ajaPlays(methode)
         ? links(saisons.filter((s) => firstYear(s.saison) === season))
         : [];
-      crossings.matchs = links(
-        matchs.filter((m) => m.id_methode !== methode.id_methode && ajaPlays(m) && ajaPlays(methode) && matchSeason(m) === season),
-      );
+      // Frise de la saison, ce match compris (sauf s'il est seul)
+      const campaign = ajaPlays(methode) ? matchs.filter((m) => ajaPlays(m) && matchSeason(m) === season) : [];
+      crossings.matchs = campaign.length > 1 ? links(campaign) : [];
       break;
     }
     case "saison": {
@@ -192,12 +236,13 @@ function crossingsOf(methode: Methodes, graph: Graph): Crossings {
 }
 
 /** Une fiche sans aucun lien vers le reste du site n'est pas proposée aux moteurs. */
-export const hasCrossings = (crossings: Crossings) => Object.values(crossings).some((list) => list.length > 0);
+export const hasCrossings = (crossings: Crossings) =>
+  Object.values(crossings).some((list: CrossingLink[]) => list.some((l) => !l.current));
 
 // --- Titres et phrase de contexte ---
 
 export function matchHeading(match: MethodeMatch) {
-  if (match.abreviationequipe1 && match.abreviationequipe2 && match.scoreequipe1 != null && match.scoreequipe2 != null) {
+  if (hasScore(match)) {
     return `${match.nomequipe1} ${match.scoreequipe1} - ${match.scoreequipe2} ${match.nomequipe2}`;
   }
   return match.titrematch;
@@ -290,7 +335,14 @@ export interface MethodePageData {
   indexable: boolean;
   // Joueur ou coach passé par l'AJA
   ajaMember: boolean;
+  // Fiches des joueurs et coachs d'un match ou d'une saison : nom normalisé → page
+  fiches: Record<string, string>;
+  // Logo de l'AJA à l'époque (saison)
+  logo: string | null;
+  // Saison du match (« 1992-1993 »), pour les matchs de l'AJA
+  season: string | null;
 }
+
 
 export const getMethodePage = cache(async (type: MethodeType, slug: string): Promise<MethodePageData | null> => {
   const graph = await getMethodeGraph();
@@ -300,6 +352,8 @@ export const getMethodePage = cache(async (type: MethodeType, slug: string): Pro
 
   const crossings = crossingsOf(methode, graph);
   const sentence = intro(methode);
+  const fiches = Object.fromEntries([...crossings.joueurs, ...crossings.coachs].map((l) => [ficheKey(l.name), l.url]));
+  const matchYear = methode.typemethode === "match" && ajaPlays(methode) ? matchSeason(methode) : null;
   return {
     methode,
     url,
@@ -311,6 +365,9 @@ export const getMethodePage = cache(async (type: MethodeType, slug: string): Pro
     ajaMember:
       (methode.typemethode === "joueur" && methode.clubs.some(([, name]) => isAja(name))) ||
       (methode.typemethode === "coach" && methode.clubscoach.some(([, name]) => isAja(name))),
+    fiches,
+    logo: methode.typemethode === "saison" ? ajaLogo(firstYear(methode.saison), graph.resolver) : null,
+    season: matchYear ? `${matchYear}-${matchYear + 1}` : null,
   };
 });
 

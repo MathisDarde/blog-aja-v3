@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import MethodInfo from "@/components/methodes/MethodInfo";
-import { Crossings, getMethodePage, isoDate, MethodePageData, shortDate } from "@/lib/methode-pages";
+import { getMethodePage, isoDate, MethodePageData } from "@/lib/methode-pages";
 import { MethodeType } from "@/lib/methodes";
 import { AJA_ENTITY, jsonLd, paddedSocialImageUrl, SITE_NAME, SITE_URL } from "@/lib/seo";
+import AdminEditButton from "./AdminEditButton";
+import { Crossings } from "./Crossings";
+import { CoachView, JoueurView, MatchView, SaisonView } from "./MethodeViews";
 
 // --- Métadonnées ---
 
@@ -104,91 +106,38 @@ function structuredData(page: MethodePageData) {
 
 // --- Page ---
 
-const SECTION_LABELS: Record<MethodeType, Partial<Record<keyof Crossings, string>>> = {
-  joueur: {},
-  coach: {},
-  match: { matchs: "Autres matchs de la saison", joueurs: "Joueurs de la rencontre", coachs: "Entraîneurs" },
-  saison: { matchs: "Matchs de la saison", joueurs: "Joueurs de l'effectif", coachs: "Entraîneur" },
-};
-
-const DEFAULT_LABELS: Record<keyof Crossings, string> = {
-  matchs: "Matchs",
-  saisons: "Saisons",
-  joueurs: "Joueurs",
-  coachs: "Coachs",
-  articles: "Cité dans les articles",
-};
-
-const SECTION_ORDER: (keyof Crossings)[] = ["articles", "matchs", "saisons", "joueurs", "coachs"];
-
-function CrossingsAside({ type, crossings }: { type: MethodeType; crossings: Crossings }) {
-  const sections = SECTION_ORDER.filter((key) => crossings[key].length > 0);
-
-  return (
-    <aside className="font-Montserrat">
-      {sections.length > 0 && (
-        <>
-          <h2 className="font-Bai_Jamjuree font-bold text-lg sm:text-xl uppercase mb-3">Pour aller plus loin</h2>
-          <div className="space-y-5">
-            {sections.map((key) => (
-              <section key={key}>
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">
-                  {SECTION_LABELS[type][key] ?? DEFAULT_LABELS[key]}
-                </h3>
-                <ul className="space-y-1">
-                  {crossings[key].map((item) => (
-                    <li key={item.url} className="text-sm sm:text-base leading-snug">
-                      <Link href={item.url} className="text-aja-blue hover:text-orange-third hover:underline">
-                        {item.name}
-                      </Link>
-                      {item.details && <span className="text-gray-500 text-xs sm:text-sm"> · {item.details}</span>}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
-        </>
-      )}
-      <Link
-        href="/methodes-expert"
-        className="inline-block mt-6 text-sm text-gray-600 hover:text-aja-blue hover:underline"
-      >
-        ← Toutes les méthodes expert
-      </Link>
-    </aside>
-  );
-}
+const VIEWS = { joueur: JoueurView, coach: CoachView, match: MatchView, saison: SaisonView };
 
 export async function MethodePage({ type, slug }: { type: MethodeType; slug: string }) {
   const page = await getMethodePage(type, slug);
   if (!page) notFound();
 
-  const date = page.methode.typemethode === "match" ? shortDate(page.methode.date) : null;
+  const View = VIEWS[type];
+  // Joueurs et coachs : la phrase de contexte est sous le nom ; matchs et saisons : sous la fiche
+  const introBelow = type === "match" || type === "saison";
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="px-3 sm:px-6 lg:px-8 py-4 sm:py-5">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData(page)) }} />
 
-      <div className="max-w-[1200px] mx-auto">
-        <nav aria-label="Fil d'Ariane" className="text-xs sm:text-sm text-gray-500 font-Montserrat">
-          <Link href="/" className="hover:text-aja-blue hover:underline">Accueil</Link>
-          {" / "}
-          <Link href="/methodes-expert" className="hover:text-aja-blue hover:underline">Méthodes expert</Link>
-          {" / "}
-          <span className="text-gray-700">{page.h1}</span>
-        </nav>
-
-        <h1 className="font-Bai_Jamjuree font-bold text-2xl sm:text-4xl mt-3">{page.h1}</h1>
-        {date && <p className="font-Montserrat text-sm text-gray-500 mt-1">{date}</p>}
-        <p className="font-Montserrat text-sm sm:text-base text-gray-700 mt-3 max-w-3xl">{page.intro}</p>
-
-        <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)] items-start">
-          <section className="bg-white rounded-xl p-4 sm:p-6 shadow-sm font-Montserrat text-center">
-            <MethodInfo methode={[page.methode]} />
-          </section>
-          <CrossingsAside type={type} crossings={page.crossings} />
+      <div className="max-w-[1400px] mx-auto">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <nav aria-label="Fil d'Ariane" className="text-xs sm:text-sm text-gray-500 font-Montserrat truncate">
+            <Link href="/" className="hover:text-aja-blue hover:underline">Accueil</Link>
+            {" / "}
+            <Link href="/methodes-expert" className="hover:text-aja-blue hover:underline">Méthodes expert</Link>
+            {" / "}
+            <span className="text-gray-700">{page.h1}</span>
+          </nav>
+          <AdminEditButton id={page.methode.id_methode} />
         </div>
+
+        <div className="font-Montserrat">
+          <View page={page} />
+        </div>
+        {introBelow && <p className="font-Montserrat text-sm text-gray-600 mt-4 max-w-4xl">{page.intro}</p>}
+
+        <Crossings page={page} />
       </div>
     </div>
   );
