@@ -17,11 +17,11 @@ import {
   Article,
   ArticleLikes,
   Comment,
-  Methodes,
   User,
 } from "@/contexts/Interfaces";
+import type { CitedMethodes } from "@/lib/methode-pages";
 import DisplayArticleComments from "./DisplayComments";
-import MethodPopup from "./MethodPopup";
+import CitedMethodesPanel from "./CitedMethodesPanel";
 import { useRouter } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
 import removeLike from "@/actions/article/remove-like";
@@ -30,13 +30,13 @@ import { toast } from "sonner";
 
 export default function ArticleDisplay({
   article,
-  methodes,
+  cited,
   articleComments,
   articleLikes,
   user,
 }: {
   article: Article;
-  methodes: Methodes[];
+  cited: CitedMethodes;
   articleComments: Comment[];
   articleLikes: ArticleLikes[];
   user: User | null;
@@ -44,8 +44,8 @@ export default function ArticleDisplay({
   const router = useRouter();
   const isAdmin = user?.admin;
 
-  const [activeMethodes, setActiveMethodes] = useState<Methodes[]>([]);
   const [isMethodOpen, setIsMethodOpen] = useState(false);
+  const citedCount = Object.values(cited).reduce((total, list) => total + list.length, 0);
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 
   // Likes
@@ -106,14 +106,6 @@ export default function ArticleDisplay({
     }
   }, []);
 
-  const handleMethodClick = (id_methode: string, typemethode: string) => {
-    const selectedMethodes = methodes.filter(
-      (m) => m.id_methode === id_methode && m.typemethode === typemethode,
-    );
-    setActiveMethodes(selectedMethodes);
-    setIsMethodOpen(true);
-  };
-
   const handleShare = async () => {
     const url = window.location.href;
 
@@ -144,11 +136,7 @@ export default function ArticleDisplay({
   };
 
   return (
-    <div
-      className={`bg-gray-100 min-h-screen w-full m-0 box-border p-6 sm:p-10 ${
-        isMethodOpen && "overflow-hidden"
-      }`}
-    >
+    <div className="bg-gray-100 min-h-screen w-full m-0 box-border p-6 sm:p-10">
       {/* Delete article popup */}
       {deletePopupOpen && (
         <ActionPopup
@@ -321,10 +309,7 @@ export default function ArticleDisplay({
           />
 
           <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-5 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base ">
-            <ArticleContent
-              text={article.content}
-              onMethodClick={handleMethodClick}
-            />
+            <ArticleContent text={article.content} />
           </div>
 
           {article.state !== "pending" && (
@@ -338,21 +323,23 @@ export default function ArticleDisplay({
       </div>
 
       {isMethodOpen && (
-        <MethodPopup
-          onClose={() => setIsMethodOpen(false)}
-          activeMethodes={activeMethodes}
-          setActiveMethodes={setActiveMethodes}
-          methodes={methodes}
-          content={article.content}
-        />
+        <CitedMethodesPanel cited={cited} onClose={() => setIsMethodOpen(false)} />
       )}
 
-      <div
-        onClick={() => setIsMethodOpen(true)}
-        className="cursor-pointer fixed bottom-10 right-10 w-16 lg:w-24 h-16 lg:h-24 rounded-full text-white bg-aja-blue flex items-center justify-center"
-      >
-        <Gem size={50} className="size-10 lg:size-14" />
-      </div>
+      {/* Méthodes expert citées dans l'article */}
+      {citedCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setIsMethodOpen(true)}
+          aria-label={`Méthodes expert de l'article (${citedCount})`}
+          className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-40 w-16 lg:w-24 h-16 lg:h-24 rounded-full text-white bg-aja-blue shadow-lg hover:bg-orange-third transition-colors flex items-center justify-center"
+        >
+          <Gem size={50} className="size-10 lg:size-14" />
+          <span className="absolute -top-1 -right-1 min-w-6 h-6 px-1.5 rounded-full bg-orange-third text-xs font-bold leading-6 ring-2 ring-white">
+            {citedCount}
+          </span>
+        </button>
+      )}
     </div>
   );
 }

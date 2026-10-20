@@ -33,6 +33,23 @@ export function methodeName(methode: Methodes): string {
   }
 }
 
+const MENTION = /<span\b([^>]*\bclass="[^"]*\bmethode-expert\b[^"]*"[^>]*)>([\s\S]*?)<\/span>/g;
+
+/**
+ * Mentions des méthodes (insérées dans l'éditeur ou surlignées par linkMethodes) changées
+ * en liens vers leur page : lisibles par les moteurs, ouvertes par-dessus l'article au clic.
+ * Une méthode sans page reste un simple surlignage.
+ */
+export function methodeAnchors(content: string, methodes: Pick<Methodes, "typemethode" | "id_methode" | "slug">[]): string {
+  const urls = new Map(methodes.map((m) => [`${m.typemethode}:${m.id_methode}`, methodeUrl(m)]));
+  return content.replace(MENTION, (mention, attributes: string, text: string) => {
+    const id = attributes.match(/data-id="([^"]+)"/)?.[1];
+    const type = attributes.match(/data-type="([^"]+)"/)?.[1];
+    const url = id && type && urls.get(`${type}:${id}`);
+    return url ? `<a${attributes} href="${url}">${text}</a>` : mention;
+  });
+}
+
 /** Clés « type:id » des méthodes citées dans un article (spans insérés par l'éditeur). */
 export function mentionedMethodes(content: string): Set<string> {
   const keys = new Set<string>();

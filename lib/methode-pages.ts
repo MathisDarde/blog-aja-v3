@@ -144,7 +144,8 @@ const side = (name: string, short: string | undefined, logo: string | undefined)
   logo: logo || null,
 });
 
-function link(methode: Methodes, resolver: TeamLogoResolver): CrossingLink | null {
+/** Carte d'une méthode (lien, nom, image ou logos et score). */
+export function methodeLink(methode: Methodes, resolver: TeamLogoResolver): CrossingLink | null {
   const url = methodeUrl(methode);
   if (!url) return null;
   switch (methode.typemethode) {
@@ -184,7 +185,7 @@ function crossingsOf(methode: Methodes, graph: Graph): Crossings {
   const links = (list: Methodes[]) =>
     list
       .map((m) => {
-        const l = link(m, graph.resolver);
+        const l = methodeLink(m, graph.resolver);
         return l && m.id_methode === methode.id_methode ? { ...l, current: true } : l;
       })
       .filter((l): l is CrossingLink => l !== null);
@@ -388,4 +389,25 @@ export async function indexableMethodePages() {
       image:
         m.typemethode === "joueur" ? (m as MethodeJoueur).imagejoueur : m.typemethode === "coach" ? (m as MethodeCoach).imagecoach : null,
     }));
+}
+
+// --- Méthodes citées par un article ---
+
+export type CitedMethodes = Pick<Crossings, "joueurs" | "coachs" | "matchs" | "saisons">;
+
+/**
+ * Méthodes citées dans le HTML d'un article (après linkMethodes), par type et dans l'ordre
+ * du texte : seules ces cartes partent au navigateur, pas toutes les méthodes.
+ * `methodes` : avec leurs logos d'époque (withPeriodClubLogos).
+ */
+export function citedMethodes(content: string, methodes: Methodes[], resolver: TeamLogoResolver): CitedMethodes {
+  const byKey = new Map(methodes.map((m) => [methodeKey(m), m]));
+  const cited: CitedMethodes = { joueurs: [], coachs: [], matchs: [], saisons: [] };
+  const lists = { joueur: cited.joueurs, coach: cited.coachs, match: cited.matchs, saison: cited.saisons };
+  for (const key of mentionedMethodes(content)) {
+    const methode = byKey.get(key);
+    const card = methode && methodeLink(methode, resolver);
+    if (card) lists[methode.typemethode].push(card);
+  }
+  return cited;
 }

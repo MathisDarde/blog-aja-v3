@@ -44,7 +44,6 @@ export type ArticleSortKey = keyof Pick<
 
 export interface ArticleContentProps {
   text: string;
-  onMethodClick: (id: string, type: string) => void;
 }
 
 export interface Tags {

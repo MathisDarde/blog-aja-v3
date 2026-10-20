@@ -8,7 +8,9 @@ import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
 import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
-import { linkMethodes } from "@/lib/methodes";
+import { linkMethodes, methodeAnchors } from "@/lib/methodes";
+import { citedMethodes } from "@/lib/methode-pages";
+import type { Methodes } from "@/contexts/Interfaces";
 import {
   AJA_ENTITY,
   jsonLd,
@@ -36,7 +38,7 @@ export default async function ArticleClient({ slug }: { slug: string }) {
   if (!article) notFound();
   // Logos des clubs des parcours selon l'époque (lib/team-logos)
   const [rawMethodes, resolver] = await Promise.all([getAllMethodes(), getTeamLogoResolver()]);
-  const methodes = rawMethodes?.map((m) => withPeriodClubLogos(m, resolver)) ?? null;
+  const methodes = (rawMethodes?.map((m) => withPeriodClubLogos(m, resolver)) ?? null) as Methodes[] | null;
 
   const articleComments = await getCommentsbyArticle(article?.id_article);
 
@@ -45,6 +47,11 @@ export default async function ArticleClient({ slug }: { slug: string }) {
   if (!methodes) {
     return <p>Erreur lors du chargement des méthodes.</p>;
   }
+
+  // Joueurs, coachs et saisons surlignés automatiquement (lib/methodes), puis mentions
+  // changées en liens vers les fiches ; seules les cartes des méthodes citées partent au navigateur
+  const linked = linkMethodes(article.content, methodes);
+  const cited = citedMethodes(linked, methodes, resolver);
 
   if (!article) {
     return <p>Chargement de l&apos;article</p>;
@@ -90,9 +97,8 @@ export default async function ArticleClient({ slug }: { slug: string }) {
       dangerouslySetInnerHTML={{ __html: jsonLd(articleJsonLd) }}
     />
     <ArticleDisplay
-      // Joueurs, coachs et saisons surlignés automatiquement (lib/methodes)
-      article={{ ...article, content: linkMethodes(article.content, methodes) }}
-      methodes={methodes}
+      article={{ ...article, content: methodeAnchors(linked, methodes) }}
+      cited={cited}
       articleComments={articleComments}
       articleLikes={articleLikes}
       user={user}

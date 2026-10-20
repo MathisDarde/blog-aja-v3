@@ -20,7 +20,7 @@ const ratio = (variant: keyof typeof PITCHES) => PITCHES[variant].width / PITCHE
 // --- Joueurs et coachs ---
 
 /** Photo entière, jamais recadrée : l'encadré prend les proportions de la photo. */
-function Portrait({ src, alt }: { src: string | null; alt: string }) {
+function Portrait({ src, alt, compact }: { src: string | null; alt: string; compact?: boolean }) {
   return (
     <Image
       src={src || "/_assets/img/pdpdebase.png"}
@@ -29,7 +29,7 @@ function Portrait({ src, alt }: { src: string | null; alt: string }) {
       height={600}
       priority
       sizes="(min-width: 1024px) 400px, (min-width: 768px) 320px, 100vw"
-      className="mx-auto w-auto max-w-full h-auto max-h-[70svh] object-contain rounded-xl"
+      className={`mx-auto w-auto max-w-full h-auto object-contain rounded-xl ${compact ? "max-h-[45svh]" : "max-h-[70svh]"}`}
     />
   );
 }
@@ -72,21 +72,31 @@ function Facts({ items }: { items: [string, string][] }) {
   );
 }
 
+// Fiche ouverte par-dessus un article (panneau ou fenêtre) : une colonne, titre de niveau 2
+export interface ViewProps {
+  page: MethodePageData;
+  compact?: boolean;
+}
+
 function ProfileLayout({
   page,
   image,
+  compact,
   children,
-}: {
-  page: MethodePageData;
+}: ViewProps & {
   image: string | null;
   children: React.ReactNode;
 }) {
+  const Title = compact ? "h2" : "h1";
+  const columns = compact
+    ? ""
+    : "md:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]";
   return (
-    <article className={`${card} p-4 sm:p-6 grid gap-6 md:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] items-start`}>
-      <Portrait src={image} alt={page.h1} />
+    <article className={`${card} p-4 sm:p-6 grid gap-6 ${columns} items-start`}>
+      <Portrait src={image} alt={page.h1} compact={compact} />
       <div className="min-w-0 space-y-5">
         <header>
-          <h1 className="font-Bai_Jamjuree font-bold text-3xl sm:text-4xl">{page.h1}</h1>
+          <Title className="font-Bai_Jamjuree font-bold text-3xl sm:text-4xl">{page.h1}</Title>
           <p className="mt-2 text-sm sm:text-base text-gray-700 max-w-2xl">{page.intro}</p>
         </header>
         {children}
@@ -95,7 +105,7 @@ function ProfileLayout({
   );
 }
 
-export function JoueurView({ page }: { page: MethodePageData }) {
+export function JoueurView({ page, compact }: ViewProps) {
   const m = page.methode as MethodeJoueur;
   const stats = (
     [
@@ -106,7 +116,7 @@ export function JoueurView({ page }: { page: MethodePageData }) {
   ).filter(([value]) => isKnown(value));
 
   return (
-    <ProfileLayout page={page} image={m.imagejoueur}>
+    <ProfileLayout page={page} image={m.imagejoueur} compact={compact}>
       <Facts items={[["Poste", m.poste], ["Taille", m.taille], ["Pied fort", m.piedfort]]} />
       {stats.length > 0 && (
         <section>
@@ -133,13 +143,13 @@ export function JoueurView({ page }: { page: MethodePageData }) {
   );
 }
 
-export function CoachView({ page }: { page: MethodePageData }) {
+export function CoachView({ page, compact }: ViewProps) {
   const m = page.methode as MethodeCoach;
   const clubs = m.clubscoach.filter(([, name]) => name);
   const palmares = (m.palmares ?? []).filter(([title]) => title);
 
   return (
-    <ProfileLayout page={page} image={m.imagecoach}>
+    <ProfileLayout page={page} image={m.imagecoach} compact={compact}>
       {clubs.length > 0 && (
         <section>
           <h2 className={label}>Clubs entraînés</h2>
@@ -233,7 +243,8 @@ function Bench({ title, logo, players, fiches }: { title: string; logo?: string;
   );
 }
 
-export function MatchView({ page }: { page: MethodePageData }) {
+export function MatchView({ page, compact }: ViewProps) {
+  const Title = compact ? "h2" : "h1";
   const m = page.methode as MethodeMatch;
   const team1 = splitBench(m.remplacantsequipe1);
   const team2 = splitBench(m.remplacantsequipe2);
@@ -255,13 +266,13 @@ export function MatchView({ page }: { page: MethodePageData }) {
     <article className={card}>
       <header className="px-3 sm:px-8 pt-5 pb-4 border-b border-gray-100">
         {/* Le titre de la page se lit « AJ Auxerre 2 - 0 Borussia Dortmund » */}
-        <h1 className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-8 font-Bai_Jamjuree font-bold">
+        <Title className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-8 font-Bai_Jamjuree font-bold">
           <TeamName name={m.nomequipe1} logo={m.logoequipe1} reverse />{" "}
           <span className="text-3xl sm:text-5xl tabular-nums whitespace-nowrap">
             {scored ? `${m.scoreequipe1} - ${m.scoreequipe2}` : "–"}
           </span>{" "}
           <TeamName name={m.nomequipe2} logo={m.logoequipe2} />
-        </h1>
+        </Title>
         <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-3 sm:gap-8">
           <TeamMeta colors={colors1} systeme={m.systemeequipe1} coach={team1.coach} fiches={page.fiches} align="right" />
           <p className="text-center text-xs sm:text-sm font-semibold text-gray-600 max-w-[110px] sm:max-w-none">
@@ -307,7 +318,8 @@ export function MatchView({ page }: { page: MethodePageData }) {
 
 // --- Saisons ---
 
-export function SaisonView({ page }: { page: MethodePageData }) {
+export function SaisonView({ page, compact }: ViewProps) {
+  const Title = compact ? "h2" : "h1";
   const m = page.methode as MethodeSaison;
 
   return (
@@ -315,7 +327,7 @@ export function SaisonView({ page }: { page: MethodePageData }) {
       <header className="px-4 sm:px-8 pt-5 pb-4 border-b border-gray-100 flex items-center gap-4">
         {page.logo && <Image src={page.logo} alt="" width={64} height={64} priority className="w-12 h-12 sm:w-16 sm:h-16 object-contain shrink-0" />}
         <div className="min-w-0">
-          <h1 className="font-Bai_Jamjuree font-bold text-2xl sm:text-4xl">{page.h1}</h1>
+          <Title className="font-Bai_Jamjuree font-bold text-2xl sm:text-4xl">{page.h1}</Title>
           <p className="mt-1 text-sm sm:text-base text-gray-600">
             Entraîneur : <PersonName name={m.coach} fiches={page.fiches} />
             {m.systeme && <> · {m.systeme}</>}

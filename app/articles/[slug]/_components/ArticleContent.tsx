@@ -1,29 +1,26 @@
 "use client";
 
 import React, { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { ArticleContentProps } from "@/contexts/Interfaces";
 
-const ArticleContent: React.FC<ArticleContentProps> = ({
-  text,
-  onMethodClick,
-}) => {
+const ArticleContent: React.FC<ArticleContentProps> = ({ text }) => {
+  const router = useRouter();
   const displayText = text?.trim()
     ? text
     : "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>";
 
+  // Lien vers la fiche d'une méthode : navigation côté client, pour que la fiche s'ouvre
+  // par-dessus l'article (routes interceptées @modal). Ctrl/Cmd-clic : nouvel onglet.
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      const target = e.target as HTMLElement;
-      if (target.classList.contains("methode-expert")) {
-        const id = target.getAttribute("data-id");
-        const type = target.getAttribute("data-type");
-        if (id && type) {
-          e.stopPropagation();
-          onMethodClick(id, type);
-        }
-      }
+      const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a.methode-expert");
+      const href = link?.getAttribute("href");
+      if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      router.push(href, { scroll: false });
     },
-    [onMethodClick],
+    [router],
   );
 
   return (

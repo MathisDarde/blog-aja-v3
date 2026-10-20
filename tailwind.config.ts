@@ -23,6 +23,10 @@ export default {
       animation: {
         spin: "spin 1s linear infinite",
         'infinite-scroll': 'infinite-scroll 120s linear infinite',
+        // Fiches des méthodes ouvertes par-dessus un article
+        "overlay-fade": "overlay-fade 150ms ease-out",
+        "overlay-side": "overlay-side 220ms ease-out",
+        "overlay-center": "overlay-center 180ms ease-out",
       },
       keyframes: {
         spin: {
@@ -36,7 +40,13 @@ export default {
         'infinite-scroll': {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-100%)' },
-        }
+        },
+        "overlay-fade": { from: { opacity: "0" }, to: { opacity: "1" } },
+        "overlay-side": { from: { transform: "translateX(100%)" }, to: { transform: "translateX(0)" } },
+        "overlay-center": {
+          from: { opacity: "0", transform: "scale(0.97)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
       },
     },
   },
