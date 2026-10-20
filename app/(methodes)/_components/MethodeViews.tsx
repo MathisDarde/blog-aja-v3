@@ -19,14 +19,18 @@ const ratio = (variant: keyof typeof PITCHES) => PITCHES[variant].width / PITCHE
 
 // --- Joueurs et coachs ---
 
-/** Photo entière (jamais recadrée) sur un fond flouté de la même photo. */
+/** Photo entière, jamais recadrée : l'encadré prend les proportions de la photo. */
 function Portrait({ src, alt }: { src: string | null; alt: string }) {
-  const image = src || "/_assets/img/pdpdebase.png";
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-200">
-      <Image src={image} alt="" aria-hidden fill sizes="400px" className="object-cover blur-2xl scale-110 opacity-60" />
-      <Image src={image} alt={alt} fill priority sizes="(min-width: 1024px) 400px, 100vw" className="object-contain" />
-    </div>
+    <Image
+      src={src || "/_assets/img/pdpdebase.png"}
+      alt={alt}
+      width={800}
+      height={600}
+      priority
+      sizes="(min-width: 1024px) 400px, (min-width: 768px) 320px, 100vw"
+      className="mx-auto w-auto max-w-full h-auto max-h-[70svh] object-contain rounded-xl"
+    />
   );
 }
 

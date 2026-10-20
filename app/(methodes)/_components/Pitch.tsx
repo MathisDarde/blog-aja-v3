@@ -33,6 +33,12 @@ export const PITCHES: Record<PitchVariant, { src: string; width: number; height:
   half: { src: "/_assets/terrains/demiterrain.png", width: 1667, height: 1250 },
 };
 
+// Diamètre des pastilles des joueurs, en % de la largeur du terrain (24 à 52 px)
+const MARKER_SIZE: Record<PitchVariant, number> = { vertical: 7, horizontal: 3.8, half: 4.6 };
+
+// Cartons, proportionnels aux pastilles
+const CARD = { width: "calc(var(--marker) * 0.36)", height: "calc(var(--marker) * 0.5)" };
+
 // Écart entre deux lignes d'une équipe sur le terrain horizontal, en % de sa largeur
 const HORIZONTAL_LABEL_WIDTH = 10;
 
@@ -91,29 +97,42 @@ function Marker({
 }) {
   const goals = Number(player.buts) || 0;
   const label = lastName(player.nom);
-  const labelClass =
-    "mt-0.5 block max-w-full truncate text-[9px] sm:text-[11px] xl:text-xs text-white px-1.5 sm:px-2 py-0.5 rounded-full shadow-sm";
+  const labelClass = "mt-0.5 block max-w-full truncate text-white px-[0.6em] py-[0.15em] rounded-full shadow-sm";
+  const labelStyle = { fontSize: "max(9px, calc(var(--marker) * 0.4))" };
 
   return (
     <>
       <span className="relative">
         <span
-          className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] shadow-md border font-bold"
-          style={{ backgroundColor: color, color: text, borderColor: text }}
+          className="rounded-full flex items-center justify-center shadow-md border font-bold"
+          style={{
+            width: "var(--marker)",
+            height: "var(--marker)",
+            fontSize: "calc(var(--marker) * 0.4)",
+            backgroundColor: color,
+            color: text,
+            borderColor: text,
+          }}
         >
           {player.numero}
         </span>
         {player.cartonJaune && (
-          <span className="absolute -top-1 -right-1 w-2.5 h-3.5 bg-yellow-400 border border-white rounded-sm shadow-sm" />
+          <span style={CARD} className="absolute -top-1 -right-1 bg-yellow-400 border border-white rounded-sm shadow-sm" />
         )}
         {player.cartonRouge && (
           <span
-            className={`absolute -top-1 ${player.cartonJaune ? "-right-2.5" : "-right-1"} w-2.5 h-3.5 bg-red-600 border border-white rounded-sm shadow-sm`}
+            style={CARD}
+            className={`absolute -top-1 ${player.cartonJaune ? "-right-2.5" : "-right-1"} bg-red-600 border border-white rounded-sm shadow-sm`}
           />
         )}
         {player.sortie && (
           <span className="absolute -bottom-1 -left-2 drop-shadow-md" title={`Sorti à la ${player.sortie}`}>
-            <ArrowBigDown size={18} fill="#f81b1b" stroke="#fff" strokeWidth={1.5} />
+            <ArrowBigDown
+              fill="#f81b1b"
+              stroke="#fff"
+              strokeWidth={1.5}
+              style={{ width: "calc(var(--marker) * 0.65)", height: "calc(var(--marker) * 0.65)" }}
+            />
           </span>
         )}
         {goals > 0 && (
@@ -126,12 +145,13 @@ function Marker({
         <Link
           href={href}
           title={`Fiche de ${player.nom}`}
+          style={labelStyle}
           className={`${labelClass} bg-aja-blue ring-1 ring-white/70 hover:bg-orange-third transition-colors`}
         >
           {label}
         </Link>
       ) : (
-        <span title={player.nom} className={`${labelClass} bg-black/60`}>
+        <span title={player.nom} style={labelStyle} className={`${labelClass} bg-black/60`}>
           {label}
         </span>
       )}
@@ -154,7 +174,15 @@ export function Pitch({
   const pitch = PITCHES[variant];
 
   return (
-    <div className="relative w-full" style={{ aspectRatio: `${pitch.width} / ${pitch.height}` }}>
+    <div
+      className="relative w-full"
+      // Pastilles et noms proportionnels à la largeur du terrain (unités cqw)
+      style={{
+        aspectRatio: `${pitch.width} / ${pitch.height}`,
+        containerType: "inline-size",
+        ["--marker" as string]: `clamp(24px, ${MARKER_SIZE[variant]}cqw, 52px)`,
+      }}
+    >
       <Image
         src={pitch.src}
         alt="Terrain"
