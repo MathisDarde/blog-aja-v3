@@ -1,0 +1,1 @@
+ALTER TABLE "draft_table" ADD COLUMN "scheduledAt" timestamp with time zone;

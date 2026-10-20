@@ -42,6 +42,7 @@ export default async function BrouillonEditPage({
         user={user}
         draft={{
           id_draft: brouillon.id_draft,
+          scheduledAt: brouillon.scheduledAt,
           data: {
             tags: brouillon.tags ?? [],
             slug: brouillon.slug ?? undefined,

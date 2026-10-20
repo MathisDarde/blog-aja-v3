@@ -116,6 +116,8 @@ export const draftTable = pgTable("draft_table", {
   author: text("author"),
   tags: varchar("tags", { length: 255 }).array(),
   state: statesEnum().default("pending").notNull(),
+  // Date de publication automatique (cf. /api/cron/publish-scheduled), null = non programmé
+  scheduledAt: timestamp("scheduledAt", { withTimezone: true }),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

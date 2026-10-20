@@ -1,0 +1,22 @@
+name: Publications programmées
+
+# Le cron de Vercel (offre gratuite) ne passe qu'une fois par jour : GitHub
+# déclenche donc la publication des brouillons programmés toutes les 5 minutes.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Publier les brouillons arrivés à échéance
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://memoiredauxerrois.fr' }}
+        run: |
+          curl --fail-with-body -sS --max-time 120 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/publish-scheduled"

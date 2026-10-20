@@ -10,6 +10,8 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
+  CalendarClock,
+  X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { ArticleSchemaType } from "@/types/forms";
@@ -24,6 +26,9 @@ import { useFormErrorToasts } from "@/components/FormErrorsHook";
 import Image from "next/image";
 import storeDraftArticle from "@/actions/article/store-draft";
 import updateBrouillonForm from "@/actions/article/update-brouillon-form";
+import scheduleDraftArticle from "@/actions/article/schedule-draft";
+import unscheduleDraftArticle from "@/actions/article/unschedule-draft";
+import { formatScheduledAt, toDatetimeLocal } from "@/lib/schedule-date";
 import { ArticleEditor } from "./ArticleEditor";
 import { Controller } from "react-hook-form";
 
@@ -45,6 +50,10 @@ export default function MultiStepArticleForm({
   const [uploadedUrl, setUploadedUrl] = useState<string>(draftImage);
   const [isUploading, setIsUploading] = useState(false);
   const [openTagsCategory, setOpenTagsCategory] = useState<string | null>(null);
+  // Fenêtre de programmation : date choisie au format datetime-local, null = fermée
+  const [scheduleValue, setScheduleValue] = useState<string | null>(null);
+  const [isScheduling, setIsScheduling] = useState(false);
+  const scheduledAt = draft?.scheduledAt ?? null;
 
   const user_id = user?.id;
 
@@ -165,11 +174,51 @@ export default function MultiStepArticleForm({
   };
 
   const handleSaveDraft = async () => {
+    // Un article programmé sera publié tel quel : il doit rester complet
+    if (scheduledAt && (!(await trigger()) || !uploadedUrl)) {
+      toast.error(
+        "Cet article est programmé : complétez-le ou retirez la programmation pour l'enregistrer incomplet",
+      );
+      return;
+    }
     const response = draft
       ? await updateBrouillonForm(draft.id_draft, getValues())
       : await storeDraftArticle(getValues(), user_id!);
     if (response.success) redirect("/admin/brouillons");
     toast.error(response.message ?? response.errors?.[0]?.message);
+  };
+
+  const openSchedule = () => {
+    // Par défaut : la date déjà programmée, sinon demain à la même heure
+    const base =
+      scheduledAt ?? new Date(Date.now() + 24 * 60 * 60 * 1000);
+    setScheduleValue(toDatetimeLocal(base));
+  };
+
+  const onSchedule = async (data: ArticleSchemaType) => {
+    if (!scheduleValue) return;
+    if (!uploadedUrl) {
+      toast.error("L'image est obligatoire");
+      return;
+    }
+    setIsScheduling(true);
+    const response = await scheduleDraftArticle(
+      { ...data, imageUrl: uploadedUrl },
+      new Date(scheduleValue).toISOString(),
+      draft?.id_draft,
+    );
+    setIsScheduling(false);
+    if (response.success) redirect("/admin/brouillons");
+    toast.error(response.message ?? response.errors?.[0]?.message);
+  };
+
+  const handleUnschedule = async () => {
+    if (!draft) return;
+    setIsScheduling(true);
+    const response = await unscheduleDraftArticle(draft.id_draft);
+    setIsScheduling(false);
+    if (response.success) redirect("/admin/brouillons");
+    toast.error(response.message);
   };
 
   useFormErrorToasts(errors);
@@ -222,6 +271,20 @@ export default function MultiStepArticleForm({
               <span className="hidden md:block">Brouillon</span>
             </button>
             <button
+              type="button"
+              onClick={openSchedule}
+              disabled={isUploading || step !== 3}
+              title={
+                scheduledAt
+                  ? `Programmé : ${formatScheduledAt(scheduledAt)}`
+                  : "Programmer la publication"
+              }
+              className={`p-2.5 sm:px-5 text-xs font-bold uppercase tracking-wider transition-all font-Bai_Jamjuree flex items-center gap-2 ${scheduledAt ? "text-aja-blue" : "text-gray-500"} ${step !== 3 ? "opacity-30 cursor-not-allowed" : "hover:text-gray-800"}`}
+            >
+              <CalendarClock size={18} />
+              <span className="hidden md:block">Programmer</span>
+            </button>
+            <button
               form="article-form"
               type="submit"
               disabled={isUploading || step !== 3}
@@ -237,6 +300,82 @@ export default function MultiStepArticleForm({
           </div>
         </div>
       </div>
+
+      {scheduledAt && (
+        <div className="mt-4 mx-auto max-w-6xl flex items-center gap-2 rounded-2xl border border-aja-blue/20 bg-aja-blue/5 px-4 py-3 text-left text-sm text-aja-blue">
+          <CalendarClock size={16} className="shrink-0" />
+          <span>
+            Publication programmée le{" "}
+            <strong>{formatScheduledAt(scheduledAt)}</strong>
+          </span>
+        </div>
+      )}
+
+      {scheduleValue !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setScheduleValue(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 text-left shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <h2 className="font-Bai_Jamjuree text-xl sm:text-2xl font-bold text-gray-900">
+                Programmer la publication
+              </h2>
+              <button
+                type="button"
+                onClick={() => setScheduleValue(null)}
+                className="text-gray-400 hover:text-gray-800"
+                aria-label="Fermer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mb-6">
+              L&apos;article reste dans les brouillons, modifiable jusqu&apos;à
+              la date choisie, puis est publié automatiquement (newsletter
+              comprise).
+            </p>
+            <label className="text-[12px] font-black uppercase text-gray-400 font-Bai_Jamjuree ml-2">
+              Date et heure
+            </label>
+            <input
+              type="datetime-local"
+              value={scheduleValue}
+              min={toDatetimeLocal(new Date())}
+              onChange={(e) => setScheduleValue(e.target.value)}
+              className="mt-2 w-full px-4 py-3 sm:px-5 sm:py-4 bg-white border border-gray-200 rounded-2xl focus:ring-4 focus:ring-aja-blue/5 focus:border-aja-blue outline-none transition-all text-sm"
+            />
+            <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              {scheduledAt && (
+                <button
+                  type="button"
+                  onClick={handleUnschedule}
+                  disabled={isScheduling}
+                  className="px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider text-red-500 hover:bg-red-50 transition-all font-Bai_Jamjuree sm:mr-auto"
+                >
+                  Retirer la programmation
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleSubmit(onSchedule)}
+                disabled={isScheduling || !scheduleValue}
+                className="bg-aja-blue text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-blue-100 transition-all font-Bai_Jamjuree hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {isScheduling ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <CalendarClock size={18} />
+                )}
+                Programmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-6xl mx-auto mt-6 sm:mt-8">
         <form id="article-form" onSubmit={handleSubmit(onSubmit)}>

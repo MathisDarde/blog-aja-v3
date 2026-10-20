@@ -32,6 +32,7 @@ export interface Draft {
   author: string | null | undefined;
   userId: string;
   state: "pending" | "published" | "archived";
+  scheduledAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   tags: string[] | null | undefined;
@@ -70,6 +71,8 @@ export interface UpdateArticleFormProps {
 export interface ArticleFormDraft {
   id_draft: string;
   data: DraftArticleSchemaType;
+  // Date de publication automatique, null si non programmé
+  scheduledAt?: Date | null;
 }
 
 export interface UpdateCommentFormProps {

@@ -3,6 +3,8 @@
 import { Draft } from "@/contexts/Interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { CalendarClock } from "lucide-react";
+import { formatScheduledAt } from "@/lib/schedule-date";
 
 export default function BrouillonComponent({
   brouillons,
@@ -35,7 +37,13 @@ export default function BrouillonComponent({
               className="w-full h-full cursor-pointer"
               onClick={() => handleEditClick(brouillon)}
             >
-              <div className="flex flex-col bg-white rounded text-center p-6 h-full">
+              <div className="relative flex flex-col bg-white rounded text-center p-6 h-full">
+                {brouillon.scheduledAt && (
+                  <span className="absolute top-8 left-8 z-[1] flex items-center gap-1.5 rounded-full bg-aja-blue px-3 py-1.5 text-[11px] font-bold text-white shadow font-Montserrat">
+                    <CalendarClock size={14} />
+                    {formatScheduledAt(brouillon.scheduledAt)}
+                  </span>
+                )}
                 <Image
                   className="inline-block w-full h-auto mx-auto rounded-sm object-contain aspect-video object-top"
                   width={512}

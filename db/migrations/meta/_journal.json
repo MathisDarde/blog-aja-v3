@@ -183,6 +183,13 @@
       "when": 1792490289366,
       "tag": "0025_methode_slugs",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792509479045,
+      "tag": "0026_draft_scheduled_at",
+      "breakpoints": true
     }
   ]
 }

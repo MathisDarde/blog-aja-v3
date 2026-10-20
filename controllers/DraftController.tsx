@@ -3,13 +3,18 @@ import { db } from "@/db/db";
 import { draftTable, SelectDraft } from "@/db/schema";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { DraftArticleSchemaType } from "@/types/forms";
-import { eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
 
 export async function getBrouillons(): Promise<SelectDraft[]> {
   await requireAdmin();
-  return db.select().from(draftTable).where(eq(draftTable.state, "pending"));
+  // Programmés d'abord, du plus proche au plus lointain, puis les plus récemment modifiés
+  return db
+    .select()
+    .from(draftTable)
+    .where(eq(draftTable.state, "pending"))
+    .orderBy(asc(draftTable.scheduledAt), desc(draftTable.updatedAt));
 }
 
 export async function storeBrouillon(
@@ -27,8 +32,9 @@ export async function storeBrouillon(
     const safeSlug = slug && slug.trim() !== "" ? slug : `draft-${Date.now()}`;
     const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
 
-    return await db.insert(draftTable).values({
-      id_draft: uuidv4(),
+    const id_draft = uuidv4();
+    await db.insert(draftTable).values({
+      id_draft,
       slug: safeSlug,
       ...(imageUrl && { imageUrl }),
       title: title ?? "",
@@ -39,6 +45,7 @@ export async function storeBrouillon(
       state: "pending",
       userId,
     });
+    return id_draft;
   } catch (err) {
     console.error(err);
     throw new Error(`Erreur lors de l'enregistrement du brouillon`);
@@ -83,4 +90,17 @@ export async function updateBrouillon(
 export async function deleteBrouillon(draftId: string) {
   await requireAdmin();
   return db.delete(draftTable).where(eq(draftTable.id_draft, draftId));
+}
+
+// null annule la programmation : le brouillon redevient un simple brouillon
+export async function scheduleBrouillon(
+  draftId: string,
+  scheduledAt: Date | null
+) {
+  await requireAdmin();
+  return db
+    .update(draftTable)
+    .set({ scheduledAt, updatedAt: new Date() })
+    .where(eq(draftTable.id_draft, draftId))
+    .returning({ id: draftTable.id_draft });
 }
