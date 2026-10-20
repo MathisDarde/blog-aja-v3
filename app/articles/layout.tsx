@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Articles",
+  title: "Articles sur l'histoire de l'AJ Auxerre",
   description:
-    "Plongez dans une collection captivante d'articles dédiés à l'histoire de l'AJ Auxerre sur Mémoire d'Auxerrois. Explorez des récits fascinants, des analyses approfondies et des perspectives uniques sur le club bourguignon.",
+    "Tous les articles de Mémoire d'Auxerrois sur l'histoire de l'AJ Auxerre : saisons mythiques, légendes de l'AJA, épopées européennes et grands matchs au stade de l'Abbé-Deschamps.",
 });
 
 export default async function RootLayout({

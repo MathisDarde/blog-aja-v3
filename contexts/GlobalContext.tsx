@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Article, Category, Methodes, SortParams } from "./Interfaces";
+import { Article, ArticleCard, Category, Methodes, SortParams } from "./Interfaces";
 import { authClient } from "@/lib/auth-client";
 
 type SortElementsType = <T>(params: SortParams<T>) => T[];
@@ -27,7 +27,7 @@ interface GlobalContextType {
   setIsAdmin: React.Dispatch<boolean>;
   user_id: string | null;
   loadSession: () => Promise<void>;
-  getRandomArticles: (articles: Article[], amount: number) => Article[];
+  getRandomArticles: <T extends ArticleCard>(articles: T[], amount: number) => T[];
   getRandomCategories: (categories: Category[], amount: number) => Category[];
   getArticleById: (articles: Article[], id: string) => Article | null;
   getMethodeById: (methodes: Methodes[], id: string) => Methodes | null;
@@ -125,7 +125,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  function getRandomArticles(articles: Article[], amount: number): Article[] {
+  function getRandomArticles<T extends ArticleCard>(articles: T[], amount: number): T[] {
     if (!Array.isArray(articles)) return [];
     if (amount >= articles.length) return [...articles];
 

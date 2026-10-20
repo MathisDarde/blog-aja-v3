@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Effectif actuel",
+  title: "Effectif de l'AJ Auxerre",
   description:
-    "Découvrez l'effectif actuel de l'AJ Auxerre, avec les profils détaillés des joueurs et membres du staff.",
+    "L'effectif actuel de l'AJ Auxerre : profils des joueurs et du staff de l'AJA pour la saison en cours.",
 });
 
 export default async function RootLayout({

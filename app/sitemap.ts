@@ -1,120 +1,67 @@
 import { MetadataRoute } from "next";
 import { getArticles } from "@/controllers/ArticlesController";
+import { SITE_URL, socialImageUrl } from "@/lib/seo";
 
 // Régénérée au plus toutes les 60 s (et immédiatement après une action admin
 // sur les articles, cf. revalidateArticlePages) au lieu d'être figée au build.
 export const revalidate = 60;
 
-// 1. Définition de l'URL de base propre
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.fr";
+type Route = {
+  path: string;
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+  priority: number;
+};
+
+// Pages dont le contenu suit l'actualité des articles : leur date est celle du dernier article
+const ARTICLE_LISTINGS: Route[] = [
+  { path: "", changeFrequency: "daily", priority: 1.0 },
+  { path: "/articles", changeFrequency: "daily", priority: 0.9 },
+  { path: "/categories", changeFrequency: "weekly", priority: 0.7 },
+];
+
+// Pas de lastModified : une date qui change à chaque requête ferait ignorer le champ par Google
+const STATIC_ROUTES: Route[] = [
+  { path: "/calendrier", changeFrequency: "daily", priority: 0.8 },
+  { path: "/classement-statistiques", changeFrequency: "daily", priority: 0.8 },
+  { path: "/effectif-actuel", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/methodes-expert", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/historique", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/palmares", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/chants", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/quiz", changeFrequency: "weekly", priority: 0.6 },
+  { path: "/about", changeFrequency: "yearly", priority: 0.4 },
+  { path: "/charte-graphique", changeFrequency: "yearly", priority: 0.2 },
+  { path: "/utilisation", changeFrequency: "yearly", priority: 0.2 },
+];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // 2. Récupération des articles depuis ton contrôleur
   const articles = await getArticles();
 
-  // 3. Définition des pages statiques
-  const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: SITE_URL,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${SITE_URL}/articles`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/categories`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/calendrier`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/classement-statistiques`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/palmares`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/quiz`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/chants`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/historique`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/methodes-expert`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/effectif-actuel`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/about`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/charte-graphique`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/utilisation`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-  ];
+  const lastModified = (article: (typeof articles)[number]) =>
+    new Date(article.updatedAt ?? article.createdAt);
 
-  // 4. Mapping des articles (Pages dynamiques)
-  const articleRoutes: MetadataRoute.Sitemap = articles.map((article) => {
-    const dateToUse = article.updatedAt
-      ? new Date(article.updatedAt)
-      : new Date(article.createdAt);
+  const latestArticle = articles.reduce<Date | undefined>((latest, article) => {
+    const date = lastModified(article);
+    return !latest || date > latest ? date : latest;
+  }, undefined);
 
-    return {
+  return [
+    ...ARTICLE_LISTINGS.map(({ path, ...route }) => ({
+      url: `${SITE_URL}${path}`,
+      lastModified: latestArticle,
+      ...route,
+    })),
+    ...STATIC_ROUTES.map(({ path, ...route }) => ({
+      url: `${SITE_URL}${path}`,
+      ...route,
+    })),
+    // Avec leur bannière : référencement dans Google Images
+    ...articles.map((article) => ({
       url: `${SITE_URL}/articles/${article.slug}`,
-      lastModified: dateToUse,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    };
-  });
-
-  // 5. Fusion des deux tableaux
-  return [...staticRoutes, ...articleRoutes];
+      lastModified: lastModified(article),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+      images: article.imageUrl ? [socialImageUrl(article.imageUrl)] : undefined,
+    })),
+  ];
 }

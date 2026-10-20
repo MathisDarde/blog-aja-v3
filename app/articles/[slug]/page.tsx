@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ArticleClient from "./_components/ArticleClient";
-import { getArticleBySlug } from "@/controllers/ArticlesController";
+import { getArticle } from "./get-article";
 import { SITE_NAME, socialImageUrl, tagLabels } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -9,7 +9,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getArticle(slug);
 
   if (!article) {
     return { title: "Article introuvable", robots: { index: false } };
@@ -20,6 +20,7 @@ export async function generateMetadata({
     url: socialImageUrl(article.imageUrl),
     width: 1200,
     height: 630,
+    type: "image/jpeg",
     alt: article.title,
   };
 
@@ -51,7 +52,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: article.title,
       description: article.teaser,
-      images: [image.url],
+      images: [{ url: image.url, alt: article.title }],
     },
   };
 }

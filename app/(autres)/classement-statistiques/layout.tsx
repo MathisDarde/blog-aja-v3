@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Classement & Statistiques",
+  title: "Classement et statistiques de l'AJA",
   description:
-    "Consultez le classement actuel de l'AJ Auxerre ainsi que des statistiques détaillées sur les performances de l'équipe et des joueurs tout au long de la saison.",
+    "Le classement de l'AJ Auxerre en championnat et les statistiques de l'équipe et des joueurs de l'AJA, mis à jour tout au long de la saison.",
 });
 
 export default async function RootLayout({

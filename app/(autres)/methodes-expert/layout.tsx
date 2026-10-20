@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Méthodes expert",
+  title: "Fiches joueurs, coachs et matchs de l'AJA",
   description:
-    "Toutes les méthodes expert de Mémoire d'Auxerrois : fiches des joueurs et des coachs, compositions des grands matchs et des saisons de l'AJ Auxerre.",
+    "Les méthodes expert de Mémoire d'Auxerrois : fiches des joueurs et des entraîneurs, compositions des grands matchs et des saisons de l'AJ Auxerre.",
 });
 
 export default async function RootLayout({

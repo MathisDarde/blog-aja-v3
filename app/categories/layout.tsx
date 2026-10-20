@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Catégories",
+  title: "Catégories d'articles sur l'AJA",
   description:
-    "Explorez les différentes catégories de contenu sur Mémoire d'Auxerrois, couvrant divers aspects de l'histoire et des actualités de l'AJ Auxerre.",
+    "Parcourez les articles sur l'AJ Auxerre par époque, par joueur et par compétition : des années Guy Roux aux saisons récentes de l'AJA.",
 });
 
 export default async function RootLayout({

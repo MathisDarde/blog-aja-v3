@@ -1,7 +1,7 @@
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import { getTeamLogoResolver, withPeriodClubLogos } from "@/lib/team-logos";
 import ArticleDisplay from "./ArticleDisplay";
-import { getArticleBySlug } from "@/controllers/ArticlesController";
+import { getArticle } from "../get-article";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
@@ -10,10 +10,11 @@ import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
 import { linkMethodes } from "@/lib/methodes";
 import {
+  AJA_ENTITY,
   jsonLd,
-  SITE_NAME,
+  ORGANIZATION_ENTITY,
   SITE_URL,
-  socialImageUrl,
+  structuredDataImages,
   tagLabels,
 } from "@/lib/seo";
 
@@ -29,7 +30,7 @@ export default async function ArticleClient({ slug }: { slug: string }) {
 
   if (!slug) notFound();
 
-  const article = await getArticleBySlug(slug);
+  const article = await getArticle(slug);
 
   // null aussi pour un article non publié si l'utilisateur n'est pas admin
   if (!article) notFound();
@@ -49,25 +50,37 @@ export default async function ArticleClient({ slug }: { slug: string }) {
     return <p>Chargement de l&apos;article</p>;
   }
 
-  // Données structurées schema.org (résultats enrichis Google)
+  // Données structurées schema.org (résultats enrichis Google, Discover)
+  const articleUrl = `${SITE_URL}/articles/${article.slug}`;
   const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.teaser,
-    image: [socialImageUrl(article.imageUrl)],
-    datePublished: new Date(article.createdAt).toISOString(),
-    dateModified: new Date(article.updatedAt ?? article.createdAt).toISOString(),
-    author: { "@type": "Person", name: article.author },
-    publisher: {
-      "@type": "Organization",
-      name: SITE_NAME,
-      url: SITE_URL,
-      logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` },
-    },
-    mainEntityOfPage: `${SITE_URL}/articles/${article.slug}`,
-    keywords: tagLabels(article.tags).join(", "),
-    inLanguage: "fr-FR",
+    "@graph": [
+      {
+        "@type": "Article",
+        "@id": `${articleUrl}#article`,
+        headline: article.title,
+        description: article.teaser,
+        image: structuredDataImages(article.imageUrl),
+        datePublished: new Date(article.createdAt).toISOString(),
+        dateModified: new Date(article.updatedAt ?? article.createdAt).toISOString(),
+        author: { "@type": "Person", name: article.author },
+        publisher: ORGANIZATION_ENTITY,
+        mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
+        about: AJA_ENTITY,
+        keywords: tagLabels(article.tags).join(", "),
+        articleSection: "Histoire de l'AJ Auxerre",
+        isAccessibleForFree: true,
+        inLanguage: "fr-FR",
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Accueil", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Articles", item: `${SITE_URL}/articles` },
+          { "@type": "ListItem", position: 3, name: article.title, item: articleUrl },
+        ],
+      },
+    ],
   };
 
   return (

@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Historique",
+  title: "Historique de l'AJA saison par saison",
   description:
-    "Le parcours de l'AJ Auxerre saison par saison depuis 1974 : classements en Ligue 1 et en Ligue 2, et bilan face à chaque adversaire.",
+    "Le parcours de l'AJ Auxerre saison par saison depuis 1974 : classements en Ligue 1 et en Ligue 2, et bilan de l'AJA face à chaque adversaire.",
 });
 
 export default async function RootLayout({

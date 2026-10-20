@@ -311,9 +311,12 @@ export default function ArticleDisplay({
 
           <Image
             src={article.imageUrl || "/_assets/img/defaultarticlebanner.png"}
-            width={1024}
-            height={1024}
-            alt="Image de bannière de l'article"
+            width={1200}
+            height={675}
+            // Image LCP de la page : chargée en priorité, à la largeur réellement affichée
+            priority
+            sizes="(min-width: 1280px) 1200px, 100vw"
+            alt={article.title}
             className="aspect-video w-full object-cover object-top rounded-xl"
           />
 

@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import Image from "next/image";
 import { CarouselDots } from "./Dots";
-import { Article } from "@/contexts/Interfaces";
+import { ArticleCard } from "@/contexts/Interfaces";
 import { useRouter } from "next/navigation";
 
 type CarouselContentProps = {
   currentIndex: number;
   setCurrentIndex: React.Dispatch<React.SetStateAction<number>>; // Utilisé pour mettre à jour les Dots
-  articles: Article[];
+  articles: ArticleCard[];
 };
 
 export const CarouselContent = ({

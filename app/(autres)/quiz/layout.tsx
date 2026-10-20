@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Quiz",
+  title: "Quiz sur l'AJ Auxerre",
   description:
-    "Testez vos connaissances sur l'AJ Auxerre avec notre quiz interactif.",
+    "Testez vos connaissances sur l'AJ Auxerre : joueurs, entraîneurs, grands matchs et dates clés de l'histoire de l'AJA. Êtes-vous un vrai supporter auxerrois ?",
 });
 
 export default async function RootLayout({

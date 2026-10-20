@@ -2,10 +2,10 @@
 
 import React from "react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { Article } from "@/contexts/Interfaces";
+import { ArticleCard } from "@/contexts/Interfaces";
 import ArticleShowcase from "./ArticleComponent";
 
-export default function DisplayRandom({ articles }: { articles: Article[] }) {
+export default function DisplayRandom({ articles }: { articles: ArticleCard[] }) {
   const { getRandomArticles } = useGlobalContext();
 
   const randomArticles = getRandomArticles(articles, 4);

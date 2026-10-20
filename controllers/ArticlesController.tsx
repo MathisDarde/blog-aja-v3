@@ -18,12 +18,25 @@ import {
   requireSelfOrAdmin,
 } from "@/lib/auth-guard";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { socialImageUrl } from "@/lib/seo";
 
 // Pages listant les articles publiés : à invalider après chaque modification
 function revalidateArticlePages() {
   revalidatePath("/");
   revalidatePath("/articles");
   revalidatePath("/sitemap.xml");
+}
+
+// Cloudinary ne génère le recadrage 1200x630 de la bannière qu'à la première demande :
+// sans ça, le premier partage (WhatsApp, Facebook...) peut expirer et rester sans image en cache
+function warmSocialImage(imageUrl: string | null | undefined) {
+  if (!imageUrl) return;
+  after(() =>
+    fetch(socialImageUrl(imageUrl), { method: "GET", cache: "no-store" })
+      .then((res) => res.arrayBuffer())
+      .catch((err) => console.error("Préchauffage de l'image de partage :", err)),
+  );
 }
 
 export async function getAllArticles(): Promise<SelectArticle[]> {
@@ -82,6 +95,7 @@ export async function createArticle(data: ArticleSchemaType, _userId: string) {
     });
 
     revalidateArticlePages();
+    warmSocialImage(imageUrl);
 
     if (process.env.NODE_ENV === "production") {
       console.log("📨 Déclenchement de la newsletter en arrière-plan...");
@@ -179,6 +193,7 @@ export async function updateArticle(
       .where(eq(articlesTable.id_article, articleId));
 
     revalidateArticlePages();
+    warmSocialImage(imageUrl);
     return result;
   } catch (err) {
     console.error(err);

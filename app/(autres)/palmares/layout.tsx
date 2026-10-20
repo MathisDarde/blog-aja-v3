@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Palmarès et records",
+  title: "Palmarès et records de l'AJ Auxerre",
   description:
-    "Explorez le prestigieux palmarès de l'AJ Auxerre et découvrez les nombreux records établis par le club et ses membres au fil des années.",
+    "Le palmarès de l'AJ Auxerre : champion de France 1996, quatre Coupes de France (1994, 1996, 2003, 2005), deux titres de Ligue 2, la Coupe Intertoto 1997 et les records du club.",
 });
 
 export default async function RootLayout({

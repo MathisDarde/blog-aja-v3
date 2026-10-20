@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Calendrier",
+  title: "Calendrier des matchs de l'AJ Auxerre",
   description:
-    "Consultez le calendrier complet des matchs de l'AJ Auxerre, incluant les dates, horaires et scores des rencontres à venir et passées.",
+    "Calendrier de l'AJ Auxerre : dates, horaires et résultats des matchs de l'AJA, à domicile au stade de l'Abbé-Deschamps comme à l'extérieur.",
 });
 
 export default async function RootLayout({

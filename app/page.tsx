@@ -12,14 +12,26 @@ import Timeline from "@/components/timeline/Timeline";
 import { TimelineItems } from "@/components/timeline/TimelineItems";
 import CitationSlider from "@/components/slidercitations/CitationSlider";
 import PagesTilt from "@/components/PagesTilt";
-import { jsonLd, SITE_NAME, SITE_URL } from "@/lib/seo";
+import {
+  AJA_ENTITY,
+  jsonLd,
+  ORGANIZATION_ENTITY,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo";
 
 // Régénérée au plus toutes les 60 s (et immédiatement après une action admin
 // sur les articles, cf. revalidateArticlePages) au lieu d'être figée au build.
 export const revalidate = 60;
 
 export default async function Page() {
-  const articles = await getArticles();
+  // Sans le contenu HTML : les cartes n'en ont pas besoin et il alourdissait
+  // la page de tous les articles du site
+  const articles = (await getArticles())?.map(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ({ content, ...card }) => card,
+  );
   if (!articles) return;
 
   function getRandomElements<T>(items: T[], amount: number): T[] {
@@ -38,21 +50,22 @@ export default async function Page() {
     "@graph": [
       {
         "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
         name: SITE_NAME,
+        alternateName: ["Memoire d'Auxerrois", "Mémoire d'Auxerrois – AJ Auxerre"],
         url: SITE_URL,
+        description: SITE_DESCRIPTION,
         inLanguage: "fr-FR",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        about: { "@id": `${SITE_URL}/#aja` },
         potentialAction: {
           "@type": "SearchAction",
           target: `${SITE_URL}/articles?q={search_term_string}`,
           "query-input": "required name=search_term_string",
         },
       },
-      {
-        "@type": "Organization",
-        name: SITE_NAME,
-        url: SITE_URL,
-        logo: `${SITE_URL}/favicon.svg`,
-      },
+      ORGANIZATION_ENTITY,
+      AJA_ENTITY,
     ],
   };
 
@@ -76,6 +89,7 @@ export default async function Page() {
         <div className="my-6 sm:my-10 text-center px-4 sm:px-0">
           <h1 className="uppercase text-2xl sm:text-3xl lg:text-4xl font-Bai_Jamjuree font-bold text-center mb-6">
             A la une sur Mémoire d&apos;Auxerrois
+            <span className="sr-only">, l&apos;histoire de l&apos;AJ Auxerre</span>
           </h1>
 
           {/* Conteneur principal : Empilé sur mobile, Ligne sur Desktop (lg) */}

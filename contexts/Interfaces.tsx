@@ -19,6 +19,9 @@ export interface Article {
   tags: string[];
 }
 
+// Article sans son contenu HTML : ce que reçoivent les cartes et listes côté client
+export type ArticleCard = Omit<Article, "content">;
+
 export interface Draft {
   id_draft: string;
   slug: string | null | undefined;

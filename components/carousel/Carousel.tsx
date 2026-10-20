@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { CarouselContent } from "./CarouselContent";
-import { Article } from "@/contexts/Interfaces";
+import { ArticleCard } from "@/contexts/Interfaces";
 
-export default function Carousel({ articles }: { articles: Article[] }) {
+export default function Carousel({ articles }: { articles: ArticleCard[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   return (

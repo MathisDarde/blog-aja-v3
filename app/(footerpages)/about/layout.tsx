@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "À propos",
   description:
-    "Mémoire d'Auxerrois retrace l'histoire de l'AJ Auxerre et offre une exprérience complète et diversifiée pour ses utilisateurs. Découvrez des histoires uniques et apprenez en plus sur l'histoire de votre club préféré !",
+    "Mémoire d'Auxerrois est un site de passionnés consacré à l'histoire de l'AJ Auxerre : articles, archives, statistiques et quiz pour revivre le passé du club auxerrois.",
 });
 
 export default async function RootLayout({

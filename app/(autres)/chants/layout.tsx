@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Chants",
+  title: "Chants des supporters de l'AJ Auxerre",
   description:
-    "Découvrez les chants emblématiques de l'AJ Auxerre, portés par les supporters passionnés du club. Plongez dans l'ambiance unique des matchs avec ces hymnes qui résonnent dans le stade.",
+    "Les chants des supporters de l'AJ Auxerre : les hymnes qui font vibrer le stade de l'Abbé-Deschamps les soirs de match de l'AJA.",
 });
 
 export default async function RootLayout({

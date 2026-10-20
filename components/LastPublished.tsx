@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react";
-import { Article } from "@/contexts/Interfaces";
+import { ArticleCard } from "@/contexts/Interfaces";
 import ArticleShowcase from "./ArticleComponent";
 
-export default function LastArticle({ articles }: { articles: Article[] }) {
+export default function LastArticle({ articles }: { articles: ArticleCard[] }) {
   const sortedArticles = [...articles].sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });

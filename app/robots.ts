@@ -1,9 +1,7 @@
 import { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  const SITE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://memoiredauxerrois.fr";
-
   return {
     rules: {
       userAgent: "*",
@@ -21,5 +19,6 @@ export default function robots(): MetadataRoute.Robots {
       ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

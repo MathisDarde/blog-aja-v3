@@ -139,7 +139,12 @@ export default function Footer() {
           L&apos;AJA est bâtie sur pierre. <br />
           L&apos;AJA ne périra pas.
         </p>
-        <div className="flex flex-col sm:flex-row items-center gap-2 text-aja-blue justify-center py-2 text-sm sm;:text-base">
+        <p className="text-gray-500 text-center text-xs sm:text-sm max-w-2xl mx-auto my-3">
+          Site de passionnés consacré à l&apos;histoire de l&apos;AJ Auxerre,
+          le club de football d&apos;Auxerre (Yonne) : légendes de l&apos;AJA, grands
+          matchs au stade de l&apos;Abbé-Deschamps, palmarès, calendrier et classement.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-2 text-aja-blue justify-center py-2 text-sm sm:text-base">
           <p>&copy; 2025 Mémoire d&apos;Auxerrois</p>
           <p className="hidden sm:block">•</p>
           <a
