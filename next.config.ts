@@ -16,6 +16,11 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Polices et images lues par les bannières de partage générées à la demande
+  // (matchs, saisons) : chemins construits dans lib/og-image, non détectés seuls
+  outputFileTracingIncludes: {
+    "/**": ["./assets/fonts/**/*", "./public/icons/icon-192.png", "./public/_assets/img/motif-aja.png"],
+  },
   images: {
     domains: ["www.aja.fr", "lh3.googleusercontent.com", "res.cloudinary.com"],
     remotePatterns: [
