@@ -24,16 +24,28 @@ function compareEntries(a: MethodeEntry, b: MethodeEntry) {
   return a.name.localeCompare(b.name, "fr");
 }
 
+// Lit la méthode ouverte dans l'URL (rendu côté navigateur uniquement)
 export default function MethodesExplorer({ entries }: { entries: MethodeEntry[] }) {
+  const searchParams = useSearchParams();
+  return <MethodesExplorerView entries={entries} openId={searchParams.get("m")} />;
+}
+
+// Sans useSearchParams : rendu au build (fallback du Suspense), pour que toutes les
+// fiches soient dans le HTML lu par les moteurs
+export function MethodesExplorerView({
+  entries,
+  openId,
+}: {
+  entries: MethodeEntry[];
+  openId: string | null;
+}) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [query, setQuery] = useState("");
 
   // La méthode ouverte est dans l'URL (?m=<id>) pour pouvoir partager le lien
-  const openId = searchParams.get("m");
   const openEntry = entries.find((e) => e.methode.id_methode === openId) ?? null;
 
   const setOpenId = useCallback(

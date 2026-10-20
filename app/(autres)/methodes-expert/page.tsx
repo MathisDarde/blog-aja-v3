@@ -5,7 +5,7 @@ import { Methodes } from "@/contexts/Interfaces";
 import { ajaLogo, DEFAULT_TEAM_LOGO, getTeamLogoResolver, TeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
 import { normalizeText } from "@/lib/normalize-text";
 import { MethodeEntry, linkMethodes, mentionedMethodes, methodeKey, methodeName } from "@/lib/methodes";
-import MethodesExplorer from "./_components/MethodesExplorer";
+import MethodesExplorer, { MethodesExplorerView } from "./_components/MethodesExplorer";
 
 // Comme /articles : régénérée au plus toutes les 60 s
 export const revalidate = 60;
@@ -99,7 +99,7 @@ export default async function MethodesExpertPage() {
   });
 
   return (
-    <Suspense fallback={<div className="p-10 text-center">Chargement des méthodes...</div>}>
+    <Suspense fallback={<MethodesExplorerView entries={entries} openId={null} />}>
       <MethodesExplorer entries={entries} />
     </Suspense>
   );

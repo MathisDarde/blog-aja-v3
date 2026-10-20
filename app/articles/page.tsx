@@ -1,5 +1,8 @@
 import { Suspense } from "react";
-import ArticleCenter from "./_components/ArticleCenter";
+import ArticleCenter, {
+  ArticleCenterView,
+  NO_ARTICLE_PARAMS,
+} from "./_components/ArticleCenter";
 import { getArticles } from "@/controllers/ArticlesController";
 import filtersData from "@/public/data/articletags.json";
 import { toSearchableArticle } from "@/lib/article-search";
@@ -15,7 +18,15 @@ export default async function Page() {
     .map((article) => toSearchableArticle(article, filtersData));
 
   return (
-    <Suspense fallback={<div>Chargement des articles...</div>}>
+    <Suspense
+      fallback={
+        <ArticleCenterView
+          articles={articles}
+          filters={filtersData}
+          {...NO_ARTICLE_PARAMS}
+        />
+      }
+    >
       <ArticleCenter articles={articles} filters={filtersData} />
     </Suspense>
   );

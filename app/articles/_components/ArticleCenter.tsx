@@ -9,20 +9,51 @@ import FilterContent from "./FilterContent";
 import Button from "@/components/BlueButton";
 import ArticleShowcase from "@/components/ArticleComponent";
 
-export default function ArticleCenter({
-  articles,
-  filters,
-}: {
+type ArticleParams = {
+  searchQuery: string;
+  yearfilter: string;
+  playerfilter: string;
+  leaguefilter: string;
+};
+
+export const NO_ARTICLE_PARAMS: ArticleParams = {
+  searchQuery: "",
+  yearfilter: "",
+  playerfilter: "",
+  leaguefilter: "",
+};
+
+type ArticleCenterProps = {
   articles: SearchableArticle[];
   filters: Filter[];
-}) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+};
 
-  const searchQuery = searchParams ? searchParams.get("q") || "" : "";
-  const yearfilter = searchParams ? searchParams.get("year") || "" : "";
-  const playerfilter = searchParams ? searchParams.get("player") || "" : "";
-  const leaguefilter = searchParams ? searchParams.get("league") || "" : "";
+// Lit la recherche et les filtres dans l'URL (rendu côté navigateur uniquement)
+export default function ArticleCenter(props: ArticleCenterProps) {
+  const searchParams = useSearchParams();
+
+  return (
+    <ArticleCenterView
+      {...props}
+      searchQuery={searchParams.get("q") || ""}
+      yearfilter={searchParams.get("year") || ""}
+      playerfilter={searchParams.get("player") || ""}
+      leaguefilter={searchParams.get("league") || ""}
+    />
+  );
+}
+
+// Sans useSearchParams : rendu au build avec NO_ARTICLE_PARAMS (fallback du Suspense),
+// pour que la liste complète des articles soit dans le HTML lu par les moteurs
+export function ArticleCenterView({
+  articles,
+  filters,
+  searchQuery,
+  yearfilter,
+  playerfilter,
+  leaguefilter,
+}: ArticleCenterProps & ArticleParams) {
+  const router = useRouter();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchValue, setSearchValue] = useState(searchQuery);
