@@ -170,6 +170,8 @@ export const commentReportsTable = pgTable(
 
 export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
   id_methode: text("id_methode").primaryKey(),
+  // Adresse de la page de la méthode (lib/methode-slug), unique par type
+  slug: text("slug").unique(),
   typemethode: text("typemethode").notNull().default("saison"),
   saison: text("saison").notNull(),
   coach: text("coach").notNull(),
@@ -187,6 +189,8 @@ export const methodeExpertSaisonTable = pgTable("methode_expert_saison_table", {
 
 export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
   id_methode: text("id_methode").primaryKey(),
+  // Adresse de la page de la méthode (lib/methode-slug), unique par type
+  slug: text("slug").unique(),
   typemethode: text("typemethode").notNull().default("match"),
   // Construit à l'enregistrement depuis les champs ci-dessous (lib/methode-match-form)
   titrematch: text("titrematch").notNull(),
@@ -226,6 +230,8 @@ export const methodeExpertMatchTable = pgTable("methode_expert_match_table", {
 
 export const methodeExpertJoueurTable = pgTable("methode_expert_joueur_table", {
   id_methode: text("id_methode").primaryKey(),
+  // Adresse de la page de la méthode (lib/methode-slug), unique par type
+  slug: text("slug").unique(),
   typemethode: text("typemethode").notNull().default("joueur"),
   imagejoueur: text("imagejoueur").notNull(),
   joueurnom: text("joueurnom").notNull(),
@@ -247,6 +253,8 @@ export const methodeExpertJoueurTable = pgTable("methode_expert_joueur_table", {
 
 export const methodeExpertCoachTable = pgTable("methode_expert_coach_table", {
   id_methode: text("id_methode").primaryKey(),
+  // Adresse de la page de la méthode (lib/methode-slug), unique par type
+  slug: text("slug").unique(),
   typemethode: text("typemethode").notNull().default("coach"),
   imagecoach: text("imagecoach").notNull(),
   nomcoach: text("nomcoach").notNull(),

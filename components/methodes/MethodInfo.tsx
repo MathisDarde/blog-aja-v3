@@ -1,3 +1,5 @@
+"use client";
+
 import PlayerMethodeExpert from "./MethodDetails/MethodeExpertJoueur";
 import SeasonMethodeExpert from "./MethodDetails/MethodeExpertSaison";
 import GameMethodeExpert from "./MethodDetails/MethodeExpertMatch";

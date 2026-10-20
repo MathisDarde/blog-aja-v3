@@ -4,7 +4,7 @@ import { getArticles } from "@/controllers/ArticlesController";
 import { Methodes } from "@/contexts/Interfaces";
 import { ajaLogo, DEFAULT_TEAM_LOGO, getTeamLogoResolver, TeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
 import { normalizeText } from "@/lib/normalize-text";
-import { MethodeEntry, linkMethodes, mentionedMethodes, methodeKey, methodeName } from "@/lib/methodes";
+import { MethodeEntry, linkMethodes, mentionedMethodes, methodeKey, methodeName, methodeUrl } from "@/lib/methodes";
 import MethodesExplorer, { MethodesExplorerView } from "./_components/MethodesExplorer";
 
 // Comme /articles : régénérée au plus toutes les 60 s
@@ -25,7 +25,7 @@ function describe(
   methode: Methodes,
   clubLogo: (clubName: string, season: number | null) => string,
   resolver: TeamLogoResolver,
-): Omit<MethodeEntry, "methode" | "name" | "search" | "articles"> & {
+): Omit<MethodeEntry, "methode" | "url" | "name" | "search" | "articles"> & {
   keywords: string[];
 } {
   switch (methode.typemethode) {
@@ -93,7 +93,8 @@ export default async function MethodesExpertPage() {
     const { keywords, ...details } = describe(methode, clubLogo, resolver);
     const name = methodeName(methode);
     return {
-      methode,
+      methode: { typemethode: methode.typemethode, id_methode: methode.id_methode },
+      url: methodeUrl(methode),
       name,
       ...details,
       search: normalizeText([name, ...keywords].join(" ")),
@@ -102,7 +103,7 @@ export default async function MethodesExpertPage() {
   });
 
   return (
-    <Suspense fallback={<MethodesExplorerView entries={entries} openId={null} />}>
+    <Suspense fallback={<MethodesExplorerView entries={entries} />}>
       <MethodesExplorer entries={entries} />
     </Suspense>
   );

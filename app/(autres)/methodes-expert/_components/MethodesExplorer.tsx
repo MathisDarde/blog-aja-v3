@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Newspaper, Search, X } from "lucide-react";
-import MethodInfo from "@/components/methodes/MethodInfo";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Newspaper, Search } from "lucide-react";
 import { normalizeText } from "@/lib/normalize-text";
 import { METHODE_TYPES, MethodeEntry, MethodeType } from "@/lib/methodes";
 
@@ -24,36 +23,25 @@ function compareEntries(a: MethodeEntry, b: MethodeEntry) {
   return a.name.localeCompare(b.name, "fr");
 }
 
-// Lit la méthode ouverte dans l'URL (rendu côté navigateur uniquement)
+// Anciens liens partagés (/methodes-expert?m=<id>) : redirigés vers la page de la méthode
 export default function MethodesExplorer({ entries }: { entries: MethodeEntry[] }) {
   const searchParams = useSearchParams();
-  return <MethodesExplorerView entries={entries} openId={searchParams.get("m")} />;
+  const router = useRouter();
+  const legacyId = searchParams.get("m");
+
+  useEffect(() => {
+    const url = legacyId && entries.find((e) => e.methode.id_methode === legacyId)?.url;
+    if (url) router.replace(url);
+  }, [legacyId, entries, router]);
+
+  return <MethodesExplorerView entries={entries} />;
 }
 
 // Sans useSearchParams : rendu au build (fallback du Suspense), pour que toutes les
 // fiches soient dans le HTML lu par les moteurs
-export function MethodesExplorerView({
-  entries,
-  openId,
-}: {
-  entries: MethodeEntry[];
-  openId: string | null;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-
+export function MethodesExplorerView({ entries }: { entries: MethodeEntry[] }) {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [query, setQuery] = useState("");
-
-  // La méthode ouverte est dans l'URL (?m=<id>) pour pouvoir partager le lien
-  const openEntry = entries.find((e) => e.methode.id_methode === openId) ?? null;
-
-  const setOpenId = useCallback(
-    (id: string | null) => {
-      router.replace(id ? `${pathname}?m=${id}` : pathname, { scroll: false });
-    },
-    [router, pathname]
-  );
 
   const filtered = useMemo(() => {
     const terms = normalizeText(query).split(" ").filter(Boolean);
@@ -125,33 +113,25 @@ export function MethodesExplorerView({
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {section.entries.map((entry) => (
-                  <MethodeCard
-                    key={entry.methode.id_methode}
-                    entry={entry}
-                    onOpen={() => setOpenId(entry.methode.id_methode)}
-                  />
+                  <MethodeCard key={entry.methode.id_methode} entry={entry} />
                 ))}
               </div>
             </section>
           ))
         )}
       </div>
-
-      {openEntry && <MethodeModal entry={openEntry} onClose={() => setOpenId(null)} />}
     </div>
   );
 }
 
-function MethodeCard({ entry, onOpen }: { entry: MethodeEntry; onOpen: () => void }) {
-  const { methode, name, subtitle, image, logos, articles } = entry;
+function MethodeCard({ entry }: { entry: MethodeEntry }) {
+  const { methode, url, name, subtitle, image, logos, articles } = entry;
   const portrait = methode.typemethode === "joueur" || methode.typemethode === "coach";
+  const className =
+    "group bg-white rounded-xl overflow-hidden text-left shadow-sm hover:shadow-lg transition-shadow flex flex-col";
 
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="group bg-white rounded-xl overflow-hidden text-left shadow-sm hover:shadow-lg transition-shadow flex flex-col"
-    >
+  const content = (
+    <>
       <div className="relative h-48 bg-gradient-to-b from-aja-blue/10 to-aja-blue/30 flex items-center justify-center overflow-hidden">
         {logos ? (
           <div className="flex items-center gap-4 sm:gap-6">
@@ -190,63 +170,14 @@ function MethodeCard({ entry, onOpen }: { entry: MethodeEntry; onOpen: () => voi
           </p>
         )}
       </div>
-    </button>
+    </>
   );
-}
 
-function MethodeModal({ entry, onClose }: { entry: MethodeEntry; onClose: () => void }) {
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKeyDown = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose]);
-
-  return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 font-Montserrat"
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={entry.name}
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg m-4 max-h-[90vh] overflow-y-auto relative text-center"
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Fermer"
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors"
-        >
-          <X />
-        </button>
-
-        <MethodInfo methode={[entry.methode]} />
-
-        {entry.articles.length > 0 && (
-          <div className="mt-6 pt-4 border-t text-left">
-            <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree mb-2">Cité dans</p>
-            <ul className="space-y-1">
-              {entry.articles.map((article) => (
-                <li key={article.slug}>
-                  <Link
-                    href={`/articles/${article.slug}`}
-                    className="text-sm sm:text-base text-orange-third underline hover:text-aja-blue"
-                  >
-                    {article.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    </div>
+  return url ? (
+    <Link href={url} className={className}>
+      {content}
+    </Link>
+  ) : (
+    <div className={className}>{content}</div>
   );
 }

@@ -6,6 +6,7 @@ import { MethodeJoueurSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
+import { newMethodeSlug } from "@/lib/methode-slug-db";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import { rememberClubLogosSafely } from "@/lib/club-logos";
 
@@ -37,6 +38,7 @@ export async function createMethodeJoueur(
 
     const result = await db.insert(methodeExpertJoueurTable).values({
       id_methode: uuidv4(),
+      slug: await newMethodeSlug({ typemethode: "joueur", joueurnom }),
       joueurnom,
       poste,
       taille,

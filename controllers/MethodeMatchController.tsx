@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
 import { RempPlayerType, TituPlayerType } from "@/contexts/Interfaces";
 import { matchFormToRecord } from "@/lib/methode-match-form";
+import { newMethodeSlug } from "@/lib/methode-slug-db";
 
 export async function getMatchMethodes(): Promise<SelectMatchMethode[]> {
   return await db.select().from(methodeExpertMatchTable);
@@ -24,6 +25,7 @@ export async function createMethodeMatch(
     const result = await db.insert(methodeExpertMatchTable).values({
       ...matchFormToRecord(data),
       id_methode: uuidv4(),
+      slug: await newMethodeSlug({ typemethode: "match", ...data }),
       typemethode: "match",
       userId,
     });

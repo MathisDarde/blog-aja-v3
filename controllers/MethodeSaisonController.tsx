@@ -6,6 +6,7 @@ import { MethodeSaisonSchemaType } from "@/types/forms";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth-guard";
+import { newMethodeSlug } from "@/lib/methode-slug-db";
 
 export async function getSaisonMethodes(): Promise<SelectSaisonMethode[]> {
   return await db.select().from(methodeExpertSaisonTable);
@@ -23,6 +24,7 @@ export async function createMethodeSaison(
 
     const result = await db.insert(methodeExpertSaisonTable).values({
       id_methode: uuidv4(),
+      slug: await newMethodeSlug({ typemethode: "saison", saison }),
       saison,
       coach,
       systeme,

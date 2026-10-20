@@ -119,6 +119,8 @@ export type MethodeSortKey = keyof Pick<
 export interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
   id_methode: string;
+  // Adresse de la page de la méthode (/joueurs/<slug>…), absente avant la migration 0025
+  slug?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

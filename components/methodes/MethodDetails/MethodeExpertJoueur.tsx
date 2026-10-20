@@ -5,6 +5,8 @@ import { PenBox } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+const isKnownStat = (value: string | null | undefined) => !/^\s*(-+|0+)?\s*$/.test(value ?? "");
+
 interface PlayerMethodeExpertProps {
   methode: MethodeJoueur;
 }
@@ -14,6 +16,14 @@ export default function PlayerMethodeExpert({
 }: PlayerMethodeExpertProps) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
+
+  const stats = (
+    [
+      [methode.matchs, "matchs"],
+      [methode.buts, "buts"],
+      [methode.passesd, "passes décisives"],
+    ] as const
+  ).filter(([value]) => isKnownStat(value));
 
   return (
     <div className="flex flex-col pt-8">
@@ -62,17 +72,19 @@ export default function PlayerMethodeExpert({
         ))}
       </ul>
 
-      {/* Statistiques */}
-      <div className="mt-4 text-left space-y-2">
-        <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">
-          Statistiques en carrière
-        </p>
-        <p className="text-sm sm:text-base">{methode.matchs} matchs</p>
-        <p className="text-sm sm:text-base">{methode.buts} buts</p>
-        <p className="text-sm sm:text-base">
-          {methode.passesd} passes décisives
-        </p>
-      </div>
+      {/* Statistiques : « - », « 0 » ou « 000 » signifient « inconnu », pas « zéro » */}
+      {stats.length > 0 && (
+        <div className="mt-4 text-left space-y-2">
+          <p className="text-base sm:text-lg font-semibold font-Bai_Jamjuree">
+            Statistiques en carrière
+          </p>
+          {stats.map(([value, label]) => (
+            <p key={label} className="text-sm sm:text-base">
+              {value} {label}
+            </p>
+          ))}
+        </div>
+      )}
 
       {user?.admin && (
         <Button

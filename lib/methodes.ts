@@ -4,12 +4,20 @@ import { BaseMethodeData, Methodes } from "@/contexts/Interfaces";
 
 export type MethodeType = BaseMethodeData["typemethode"];
 
-export const METHODE_TYPES: { type: MethodeType; label: string; plural: string }[] = [
-  { type: "joueur", label: "Joueur", plural: "Joueurs" },
-  { type: "coach", label: "Coach", plural: "Coachs" },
-  { type: "match", label: "Match", plural: "Matchs" },
-  { type: "saison", label: "Saison", plural: "Saisons" },
+// path : préfixe des pages des méthodes (/joueurs/djibril-cisse…)
+export const METHODE_TYPES: { type: MethodeType; label: string; plural: string; path: string }[] = [
+  { type: "joueur", label: "Joueur", plural: "Joueurs", path: "joueurs" },
+  { type: "coach", label: "Coach", plural: "Coachs", path: "coachs" },
+  { type: "match", label: "Match", plural: "Matchs", path: "matchs" },
+  { type: "saison", label: "Saison", plural: "Saisons", path: "saisons" },
 ];
+
+/** Page de la méthode, ou null tant qu'elle n'a pas d'adresse. */
+export function methodeUrl(methode: Pick<Methodes, "typemethode" | "slug">): string | null {
+  if (!methode.slug) return null;
+  const path = METHODE_TYPES.find((t) => t.type === methode.typemethode)!.path;
+  return `/${path}/${methode.slug}`;
+}
 
 export function methodeName(methode: Methodes): string {
   switch (methode.typemethode) {
@@ -39,7 +47,10 @@ export const methodeKey = (methode: Methodes) => `${methode.typemethode}:${metho
 
 /** Méthode prête à afficher dans le catalogue /methodes-expert (préparée côté serveur). */
 export interface MethodeEntry {
-  methode: Methodes;
+  // Seuls le type et l'identifiant partent au navigateur : la fiche complète est sur sa page
+  methode: Pick<Methodes, "typemethode" | "id_methode">;
+  // Page de la méthode (null tant qu'elle n'a pas d'adresse)
+  url: string | null;
   name: string;
   subtitle: string;
   // Portrait (joueur, coach) ou logos des deux équipes (match) ou logo du club (saison)

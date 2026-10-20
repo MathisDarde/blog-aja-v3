@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getArticles } from "@/controllers/ArticlesController";
+import { indexableMethodePages } from "@/lib/methode-pages";
 import { SITE_URL, socialImageUrl } from "@/lib/seo";
 
 // Régénérée au plus toutes les 60 s (et immédiatement après une action admin
@@ -35,7 +36,7 @@ const STATIC_ROUTES: Route[] = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const articles = await getArticles();
+  const [articles, methodePages] = await Promise.all([getArticles(), indexableMethodePages()]);
 
   const lastModified = (article: (typeof articles)[number]) =>
     new Date(article.updatedAt ?? article.createdAt);
@@ -62,6 +63,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.8,
       images: article.imageUrl ? [socialImageUrl(article.imageUrl)] : undefined,
+    })),
+    // Fiches des méthodes ayant au moins un croisement (les autres sont en noindex)
+    ...methodePages.map((page) => ({
+      url: `${SITE_URL}${page.url}`,
+      lastModified: page.lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+      images: page.image ? [page.image] : undefined,
     })),
   ];
 }

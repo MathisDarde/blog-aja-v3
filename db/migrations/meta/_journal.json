@@ -176,6 +176,13 @@
       "when": 1792487943915,
       "tag": "0024_match_score_logos",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792490289366,
+      "tag": "0025_methode_slugs",
+      "breakpoints": true
     }
   ]
 }
