@@ -1,15 +1,14 @@
 import { Loader2 } from "lucide-react";
-import { MethodeType } from "@/lib/methodes";
-import MethodeOverlay from "./MethodeOverlay";
-import { OVERLAY_KINDS } from "./MethodeModal";
+import { OverlayHeader } from "./MethodeOverlay";
 
-/** Fenêtre ouverte immédiatement au clic, le temps de charger la fiche. */
-export function MethodeLoading({ type }: { type: MethodeType }) {
+/** Contenu du cadre le temps de charger la fiche (le cadre, lui, est déjà ouvert). */
+export function MethodeLoading() {
   return (
-    <MethodeOverlay kind={OVERLAY_KINDS[type]} title="Chargement de la fiche…">
-      <div className="flex h-full min-h-[200px] items-center justify-center text-gray-400">
+    <>
+      <OverlayHeader title="Chargement de la fiche…" />
+      <div className="flex min-h-[60svh] items-center justify-center text-gray-400">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    </MethodeOverlay>
+    </>
   );
 }

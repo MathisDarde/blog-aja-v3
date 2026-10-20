@@ -23,8 +23,18 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ text }) => {
     [router],
   );
 
+  // Fiche préparée dès le survol : le cadre s'ouvre sans attendre au clic
+  const handlePointerOver = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      const href = (e.target as HTMLElement).closest("a.methode-expert")?.getAttribute("href");
+      if (href) router.prefetch(href);
+    },
+    [router],
+  );
+
   return (
     <div
+      onPointerOver={handlePointerOver}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: content trusted from DB
       dangerouslySetInnerHTML={{ __html: displayText }}
       onClick={handleClick}

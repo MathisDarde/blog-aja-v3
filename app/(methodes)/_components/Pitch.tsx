@@ -1,4 +1,8 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
+// Imports statiques : Next.js en tire un aperçu flouté, affiché tant que l'image charge
+import verticalPitch from "@/public/_assets/terrains/terraincompletv2.jpg";
+import horizontalPitch from "@/public/_assets/terrains/terraincomplet-horizontal.jpg";
+import halfPitch from "@/public/_assets/terrains/demiterrain.png";
 import Link from "next/link";
 import { ArrowBigDown } from "lucide-react";
 import { Dispositifs, Poste } from "@/components/Dispositifs";
@@ -27,10 +31,10 @@ export interface PitchTeam {
 // half : demi-terrain des saisons
 export type PitchVariant = "vertical" | "horizontal" | "half";
 
-export const PITCHES: Record<PitchVariant, { src: string; width: number; height: number }> = {
-  vertical: { src: "/_assets/terrains/terraincompletv2.jpg", width: 1667, height: 2813 },
-  horizontal: { src: "/_assets/terrains/terraincomplet-horizontal.jpg", width: 2813, height: 1667 },
-  half: { src: "/_assets/terrains/demiterrain.png", width: 1667, height: 1250 },
+export const PITCHES: Record<PitchVariant, StaticImageData> = {
+  vertical: verticalPitch,
+  horizontal: horizontalPitch,
+  half: halfPitch,
 };
 
 // Diamètre des pastilles des joueurs, en % de la largeur du terrain (24 à 52 px)
@@ -175,7 +179,8 @@ export function Pitch({
 
   return (
     <div
-      className="relative w-full"
+      // Vert de la pelouse sous l'image : jamais de fond blanc pendant le chargement
+      className="relative w-full rounded-lg bg-[#3d9b2c]"
       // Pastilles et noms proportionnels à la largeur du terrain (unités cqw)
       style={{
         aspectRatio: `${pitch.width} / ${pitch.height}`,
@@ -184,9 +189,10 @@ export function Pitch({
       }}
     >
       <Image
-        src={pitch.src}
+        src={pitch}
         alt="Terrain"
         fill
+        placeholder="blur"
         priority={priority}
         sizes={variant === "horizontal" ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 50vw, 100vw"}
         className="rounded-lg object-cover"
