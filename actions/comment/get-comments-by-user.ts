@@ -1,6 +1,5 @@
 "use server";
 
-import { getUserLikedArticles } from "@/controllers/ArticlesController";
 import { getCommentsByUser } from "@/controllers/CommentController";
 
 export default async function getUserComments(userId: string) {

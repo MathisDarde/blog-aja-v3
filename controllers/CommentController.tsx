@@ -71,7 +71,6 @@ export async function getComments() {
 
 export async function createComment(
   data: CommentSchemaType,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _userId: string,
   articleId: string
 ) {

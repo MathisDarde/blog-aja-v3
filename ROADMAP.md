@@ -34,4 +34,4 @@
 
 - [x] Scrapers automatiques : saison et championnat détectés, passage toutes les 2 h, défi anti-robot de Transfermarkt résolu, échecs signalés par mail
 - [x] Tests des parseurs sur pages réelles : 43 tests pytest (scrapers) + 28 tests Vitest (blog), à chaque push
-- [ ] Migrer `next lint` vers l'ESLint CLI (`npx @next/codemod@canary next-lint-to-eslint-cli .`) avant Next 16
+- [x] `next lint` remplacé par l'ESLint CLI (`eslint .`, qui couvre aussi `actions`, `contexts`, `controllers`)
