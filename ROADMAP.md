@@ -13,7 +13,7 @@
 ## 2. Articles
 
 - [x] Recherche sur `/articles` : titre, tags, chapô, auteur et texte brut ; sans accents ni casse, tous les mots requis, classée par pertinence (`lib/article-search.ts`)
-- [ ] Pagination de `/articles`
+- [x] Pagination de `/articles` : 12 articles par page, `?page=` dans l'URL (garde la recherche et les filtres), retour à la page 1 à chaque nouvelle recherche (`lib/pagination.ts`)
 
 ## 3. Admin
 

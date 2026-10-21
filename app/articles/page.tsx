@@ -26,6 +26,7 @@ export default async function Page() {
           yearfilter=""
           playerfilter=""
           leaguefilter=""
+          page={1}
         />
       }
     >
