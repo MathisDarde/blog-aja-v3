@@ -21,28 +21,11 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/**": ["./assets/fonts/**/*", "./public/icons/icon-192.png", "./public/_assets/img/motif-aja.png"],
   },
+  // Aucune image optimisée par Vercel (quota gratuit limité) : Cloudinary redimensionne les
+  // siennes, les autres sont servies telles quelles (lib/image-loader)
   images: {
-    domains: ["www.aja.fr", "lh3.googleusercontent.com", "res.cloudinary.com"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-        pathname: "/**",
-      },
-      // Logos des clubs publiés par les scrapers (actuels et d'époque)
-      {
-        protocol: "https",
-        hostname: "mathisdarde.github.io",
-        pathname: "/AJA-Website-Scrapers/**",
-      },
-      // Logos d'époque des clubs lus sur Wikipédia, affichés depuis Wikimedia (lib/club-logo-sync)
-      { protocol: "https", hostname: "upload.wikimedia.org", pathname: "/**" },
-      { protocol: "https", hostname: "thumb.wikimedia.org", pathname: "/**" },
-      // Mêmes données servies en local pour les tests (SCRAPERS_URL=http://localhost:8765)
-      ...(process.env.NODE_ENV === "development"
-        ? [{ protocol: "http" as const, hostname: "localhost", port: "8765" }]
-        : []),
-    ],
+    loader: "custom",
+    loaderFile: "./lib/image-loader.ts",
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
