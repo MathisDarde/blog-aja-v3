@@ -210,7 +210,9 @@ export const chosenLogo = (logo: string | null | undefined) => (logo && logo !==
 
 /**
  * Méthode expert avec, pour chaque club d'un parcours (joueur, coach), le logo de l'époque
- * de son arrivée quand il est connu ; sinon le logo choisi à la création de la méthode.
+ * de son arrivée quand il est connu, et pour un match celui de la date du match ; sinon le logo
+ * enregistré dans la méthode. Le logo d'époque passe d'abord : le formulaire enregistre le logo
+ * trouvé à la création, qui ne doit pas masquer une version d'époque ajoutée depuis.
  */
 export function withPeriodClubLogos<T extends { typemethode: string }>(methode: T, resolver: TeamLogoResolver): T {
   const swap = (clubs: ClubEntry[]) =>
@@ -230,13 +232,15 @@ export function withPeriodClubLogos<T extends { typemethode: string }>(methode: 
   };
   if (m.typemethode === "joueur" && Array.isArray(m.clubs)) return { ...m, clubs: swap(m.clubs) };
   if (m.typemethode === "coach" && Array.isArray(m.clubscoach)) return { ...m, clubscoach: swap(m.clubscoach) };
-  // Match : logo choisi dans le formulaire, sinon logo d'époque à la date du match
+  // Match : logo d'époque à la date du match, sinon logo enregistré, sinon logo actuel
   if (m.typemethode === "match") {
     const season = seasonOfFrenchDate(m.date ?? "");
+    const teamLogo = (name: string | undefined, saved: string | undefined) =>
+      resolver.periodLogo({ name, season }) ?? chosenLogo(saved) ?? resolver.currentLogo({ name });
     return {
       ...m,
-      logoequipe1: chosenLogo(m.logoequipe1) ?? resolver.logo({ name: m.nomequipe1, season }),
-      logoequipe2: chosenLogo(m.logoequipe2) ?? resolver.logo({ name: m.nomequipe2, season }),
+      logoequipe1: teamLogo(m.nomequipe1, m.logoequipe1),
+      logoequipe2: teamLogo(m.nomequipe2, m.logoequipe2),
     };
   }
   return methode;

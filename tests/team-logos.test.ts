@@ -88,18 +88,33 @@ describe("logo selon la saison", () => {
     ]);
   });
 
+  it("donne aux matchs le logo d'époque avant le logo enregistré à la création", () => {
+    const match = {
+      typemethode: "match",
+      date: "Mercredi 15 septembre 1995, 20h45",
+      nomequipe1: "Olympique de Marseille",
+      logoequipe1: "/logo-actuel-enregistre.png",
+      nomequipe2: "SC Hazebrouck",
+      logoequipe2: "/logo-choisi.png",
+    };
+    const resolved = withPeriodClubLogos(match, resolver);
+    expect(resolved.logoequipe1).toBe("https://data.test/logos/historique/244-1993.png");
+    // Pas de version d'époque : le logo enregistré reste
+    expect(resolved.logoequipe2).toBe("/logo-choisi.png");
+  });
+
   it("ne garde pas l'écusson neutre enregistré pour un club alors inconnu", () => {
     const match = {
       typemethode: "match",
       date: "Mercredi 15 septembre 1995, 20h45",
       nomequipe1: "Olympique de Marseille",
       logoequipe1: "/_assets/teamlogos/logodefault.png",
-      nomequipe2: "AJ Auxerre",
-      logoequipe2: "/logo-choisi.png",
+      nomequipe2: "SC Hazebrouck",
+      logoequipe2: "/_assets/teamlogos/logodefault.png",
     };
     const resolved = withPeriodClubLogos(match, resolver);
     expect(resolved.logoequipe1).toBe("https://data.test/logos/historique/244-1993.png");
-    expect(resolved.logoequipe2).toBe("/logo-choisi.png");
+    expect(resolved.logoequipe2).not.toBe("/_assets/teamlogos/logodefault.png");
 
     const joueur = {
       typemethode: "joueur",
