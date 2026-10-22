@@ -4,6 +4,7 @@ import DisplayCategories from "@/components/DisplayCategories";
 import React from "react";
 import Carousel from "@/components/carousel/Carousel";
 import TeamStatsBlock from "@/components/teamstatshomepage/TeamStatsBlock";
+import { readingMinutes } from "@/lib/reading-time";
 import { getArticles } from "@/controllers/ArticlesController";
 import categories from "@/public/data/articletags.json";
 import Header from "@/components/header/Header";
@@ -28,10 +29,10 @@ export const revalidate = 60;
 export default async function Page() {
   // Sans le contenu HTML : les cartes n'en ont pas besoin et il alourdissait
   // la page de tous les articles du site
-  const articles = (await getArticles())?.map(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ({ content, ...card }) => card,
-  );
+  const articles = (await getArticles())?.map(({ content, ...card }) => ({
+    ...card,
+    readingMinutes: readingMinutes(content),
+  }));
   if (!articles) return;
 
   function getRandomElements<T>(items: T[], amount: number): T[] {

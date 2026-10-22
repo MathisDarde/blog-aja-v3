@@ -3,8 +3,10 @@
 
 import { Article, Filter } from "@/contexts/Interfaces";
 import { normalizeText } from "@/lib/normalize-text";
+import { readingMinutes } from "@/lib/reading-time";
 
 export type SearchableArticle = Omit<Article, "content"> & {
+  readingMinutes: number;
   // Titre, tags, chapô, auteur et texte brut de l'article, déjà normalisés
   search: { title: string; tags: string; teaser: string; author: string; content: string };
 };
@@ -39,6 +41,7 @@ export function toSearchableArticle(article: Article, filters: Filter[]): Search
 
   return {
     ...rest,
+    readingMinutes: readingMinutes(content),
     search: {
       title: normalizeText(article.title),
       tags: normalizeText([...article.tags, ...tagLabels].join(" ")),

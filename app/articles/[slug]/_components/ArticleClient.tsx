@@ -7,6 +7,7 @@ import { getUserbyId } from "@/controllers/UserController";
 import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
 import { withArticleMethodes } from "../article-methodes";
+import { withHeadingAnchors } from "@/lib/article-toc";
 import {
   AJA_ENTITY,
   jsonLd,
@@ -41,6 +42,8 @@ export default async function ArticleClient({ slug }: { slug: string }) {
   if (!prepared) {
     return <p>Erreur lors du chargement des méthodes.</p>;
   }
+  // Ancres des intertitres pour le sommaire
+  const { html, toc } = withHeadingAnchors(prepared.content);
 
   if (!article) {
     return <p>Chargement de l&apos;article</p>;
@@ -86,8 +89,9 @@ export default async function ArticleClient({ slug }: { slug: string }) {
       dangerouslySetInnerHTML={{ __html: jsonLd(articleJsonLd) }}
     />
     <ArticleDisplay
-      article={{ ...article, content: prepared.content }}
+      article={{ ...article, content: html }}
       cited={prepared.cited}
+      toc={toc}
       articleComments={articleComments}
       articleLikes={articleLikes}
       user={user}

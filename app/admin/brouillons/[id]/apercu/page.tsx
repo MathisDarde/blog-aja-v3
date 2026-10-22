@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ArticleDisplay from "@/app/articles/[slug]/_components/ArticleDisplay";
 import { withArticleMethodes } from "@/app/articles/[slug]/article-methodes";
+import { withHeadingAnchors } from "@/lib/article-toc";
 import { getBrouillonById } from "@/controllers/DraftController";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { getUserbyId } from "@/controllers/UserController";
@@ -35,6 +36,8 @@ export default async function ApercuBrouillonPage({
     return <p>Erreur lors du chargement des méthodes.</p>;
   }
 
+  const { html, toc } = withHeadingAnchors(prepared.content);
+
   // Daté du jour de publication prévu, sinon d'aujourd'hui
   const date = brouillon.scheduledAt ?? new Date();
 
@@ -46,7 +49,7 @@ export default async function ApercuBrouillonPage({
         title: brouillon.title ?? "",
         teaser: brouillon.teaser ?? "",
         imageUrl: brouillon.imageUrl ?? "",
-        content: prepared.content,
+        content: html,
         author: brouillon.author ?? "",
         userId: brouillon.userId,
         state: "pending",
@@ -55,6 +58,7 @@ export default async function ApercuBrouillonPage({
         tags: brouillon.tags ?? [],
       }}
       cited={prepared.cited}
+      toc={toc}
       articleComments={[]}
       articleLikes={[]}
       user={user}

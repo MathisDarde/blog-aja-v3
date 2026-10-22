@@ -1,12 +1,13 @@
 "use client";
 
-import { Article } from "@/contexts/Interfaces";
+import { ArticleCard } from "@/contexts/Interfaces";
+import { Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface ArticleProps {
-    article: Omit<Article, "content">;
+    article: ArticleCard;
     displayPosition: "horizontal" | "vertical";
     size: "small" | "large";
     showTags?: boolean;
@@ -195,6 +196,12 @@ export default function ArticleShowcase({
                                             </p>
                                         )}
                                     </div>
+                                )}
+
+                                {article.readingMinutes && (
+                                    <p className={`font-Montserrat ${smallTextSize} text-gray-500 flex items-center gap-1`}>
+                                        <Clock size={12} /> {article.readingMinutes} min de lecture
+                                    </p>
                                 )}
 
                                 <h2

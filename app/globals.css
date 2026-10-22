@@ -81,6 +81,12 @@
   content: "\00a0";
 }
 
+/* Intertitres atteints depuis le sommaire : pas collés au haut de l'écran */
+.article-content h2,
+.article-content h3 {
+  scroll-margin-top: 1.5rem;
+}
+
 .tiptap h2,
 .article-content h2 {
   @apply text-2xl sm:text-3xl font-bold mt-8 mb-4 font-Bai_Jamjuree;

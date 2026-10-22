@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   Calendar1,
   CalendarClock,
+  Clock,
   Eye,
   Gem,
   Heart,
@@ -26,6 +27,9 @@ import {
 import type { CitedMethodes } from "@/lib/methode-pages";
 import DisplayArticleComments from "./DisplayComments";
 import CitedMethodesPanel from "./CitedMethodesPanel";
+import ArticleToc from "./ArticleToc";
+import { MIN_TOC_ENTRIES, TocEntry } from "@/lib/article-toc";
+import { readingMinutes } from "@/lib/reading-time";
 import { useRouter } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
 import removeLike from "@/actions/article/remove-like";
@@ -39,6 +43,7 @@ export default function ArticleDisplay({
   articleLikes,
   user,
   draft,
+  toc,
 }: {
   article: Article;
   cited: CitedMethodes;
@@ -47,6 +52,8 @@ export default function ArticleDisplay({
   user: User | null;
   // Aperçu d'un brouillon (admin) : modifier et supprimer agissent sur le brouillon
   draft?: { id: string; scheduledAt: Date | null };
+  // Intertitres de l'article (lib/article-toc)
+  toc: TocEntry[];
 }) {
   const router = useRouter();
   const isAdmin = user?.admin;
@@ -54,6 +61,7 @@ export default function ArticleDisplay({
   const [isMethodOpen, setIsMethodOpen] = useState(false);
   const citedCount = Object.values(cited).reduce((total, list) => total + list.length, 0);
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
+  const readingTime = useMemo(() => readingMinutes(article.content), [article.content]);
 
   // Likes
   const userLike = articleLikes.find((l) => l.userId === user?.id);
@@ -211,6 +219,9 @@ export default function ArticleDisplay({
                   day: "numeric",
                 })}{" "}
                 par {article.author || "Auteur"}
+                <span className="mx-2 text-gray-400">·</span>
+                <Clock className="mr-1.5 w-4 h-4" />
+                {readingTime} min de lecture
               </p>
 
               <div className="flex items-center gap-2">
@@ -341,6 +352,8 @@ export default function ArticleDisplay({
             alt={article.title}
             className="aspect-video w-full object-cover object-top rounded-xl"
           />
+
+          {toc.length >= MIN_TOC_ENTRIES && <ArticleToc toc={toc} />}
 
           <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-5 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base ">
             <ArticleContent text={article.content} />
