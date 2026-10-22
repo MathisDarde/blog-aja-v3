@@ -1,4 +1,5 @@
 import { betterFetch } from "@better-fetch/fetch";
+import { getCookieCache } from "better-auth/cookies";
 import type { auth } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,15 +25,20 @@ function isAdminPage(pathname: string) {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  const { data: session } = await betterFetch<Session>(
-    "/api/auth/get-session",
-    {
-      baseURL: request.nextUrl.origin,
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
-    }
-  );
+  // Session du cookie signé (lib/auth, cookieCache) : sans appel réseau. Cookie absent,
+  // expiré, illisible ou sans le rôle : on demande à l'API, qui relit la session en base
+  const cached = (await getCookieCache(request).catch(() => null)) as Session | null;
+  const session =
+    cached && typeof cached.user?.admin === "boolean"
+      ? cached
+      : (
+          await betterFetch<Session>("/api/auth/get-session", {
+            baseURL: request.nextUrl.origin,
+            headers: {
+              cookie: request.headers.get("cookie") || "",
+            },
+          })
+        ).data;
 
   // 1️⃣ Non connecté
   if (!session) {

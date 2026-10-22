@@ -66,6 +66,12 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
+  // Session gardée 5 min dans un cookie signé : pages, actions et middleware la lisent sans
+  // interroger la base. Contrepartie : un changement de rôle ou une session révoquée met
+  // jusqu'à 5 min à s'appliquer (une déconnexion sur le même navigateur est immédiate).
+  session: {
+    cookieCache: { enabled: true, maxAge: 5 * 60 },
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
