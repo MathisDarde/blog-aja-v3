@@ -45,6 +45,8 @@ export type UpdateMethodeCoachSchemaType = z.infer<
 >;
 export type FormResponse = {
   success: boolean;
+  // Élément créé (ex. brouillon enregistré pour la première fois)
+  id?: string;
   errors?: ZodIssue[];
   message?: string;
   token?: string;

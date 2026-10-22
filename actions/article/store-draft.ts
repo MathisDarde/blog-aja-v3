@@ -24,7 +24,7 @@ const storeDraftArticle = async (
       };
     }
 
-    return { success: true, message: "Article sauvegardé avec succès" };
+    return { success: true, message: "Article sauvegardé avec succès", id: registerArticle };
   } catch (err) {
     console.error(err);
     return {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ImageIcon,
   ChevronDown,
@@ -55,6 +55,12 @@ export default function MultiStepArticleForm({
   const [scheduleValue, setScheduleValue] = useState<string | null>(null);
   const [isScheduling, setIsScheduling] = useState(false);
   const scheduledAt = draft?.scheduledAt ?? null;
+  // Brouillon en cours : celui repris, ou celui créé par la sauvegarde automatique
+  const [draftId, setDraftId] = useState<string | null>(draft?.id_draft ?? null);
+  const draftIdRef = useRef(draftId);
+  const [autosave, setAutosave] = useState<
+    { state: "idle" } | { state: "saving" } | { state: "saved"; at: Date } | { state: "error"; message: string }
+  >({ state: "idle" });
 
   const user_id = user?.id;
 
@@ -168,7 +174,7 @@ export default function MultiStepArticleForm({
     const response = await submitArticleForm(
       { ...data, imageUrl: uploadedUrl },
       user_id!,
-      draft?.id_draft,
+      draftId ?? undefined,
     );
     if (response.success) redirect("/");
     toast.error(response.message ?? response.errors?.[0]?.message);
@@ -187,8 +193,8 @@ export default function MultiStepArticleForm({
 
   const handleSaveDraft = async () => {
     if (!(await canSaveDraft())) return;
-    const response = draft
-      ? await updateBrouillonForm(draft.id_draft, getValues())
+    const response = draftId
+      ? await updateBrouillonForm(draftId, getValues())
       : await storeDraftArticle(getValues(), user_id!);
     if (response.success) redirect("/admin/brouillons");
     toast.error(response.message ?? response.errors?.[0]?.message);
@@ -196,16 +202,16 @@ export default function MultiStepArticleForm({
 
   // Enregistre le brouillon puis l'affiche comme publié, dans un nouvel onglet
   const handlePreview = async () => {
-    if (!draft || !(await canSaveDraft())) return;
+    if (!draftId || !(await canSaveDraft())) return;
     // Onglet ouvert tout de suite : ouvert après l'enregistrement, il serait bloqué
     const tab = window.open("", "_blank");
-    const response = await updateBrouillonForm(draft.id_draft, getValues());
+    const response = await updateBrouillonForm(draftId, getValues());
     if (!response.success) {
       tab?.close();
       toast.error(response.message ?? response.errors?.[0]?.message);
       return;
     }
-    const url = `/admin/brouillons/${draft.id_draft}/apercu`;
+    const url = `/admin/brouillons/${draftId}/apercu`;
     if (tab) tab.location.href = url;
     else window.location.href = url;
   };
@@ -227,7 +233,7 @@ export default function MultiStepArticleForm({
     const response = await scheduleDraftArticle(
       { ...data, imageUrl: uploadedUrl },
       new Date(scheduleValue).toISOString(),
-      draft?.id_draft,
+      draftId ?? undefined,
     );
     setIsScheduling(false);
     if (response.success) redirect("/admin/brouillons");
@@ -242,6 +248,53 @@ export default function MultiStepArticleForm({
     if (response.success) redirect("/admin/brouillons");
     toast.error(response.message);
   };
+
+  // --- Sauvegarde automatique du brouillon, quelques secondes après la dernière frappe ---
+  const lastSaved = useRef(JSON.stringify(getValues()));
+  const autoSave = useCallback(async () => {
+    const values = getValues();
+    const snapshot = JSON.stringify(values);
+    if (snapshot === lastSaved.current) return;
+    // Rien qui vaille un brouillon tant qu'il n'y a ni titre ni texte
+    if (!values.title?.trim() && !values.content?.replace(/<[^>]+>/g, "").trim()) return;
+    // Un article programmé sera publié tel quel : jamais enregistré incomplet
+    if (scheduledAt && !ArticleSchema.safeParse({ ...values, imageUrl: uploadedUrl }).success) {
+      setAutosave({ state: "error", message: "Programmé : complétez-le pour l'enregistrer" });
+      return;
+    }
+
+    setAutosave({ state: "saving" });
+    // Slug vide : le brouillon garde le sien (ils sont uniques)
+    const data = { ...values, slug: values.slug?.trim() || undefined };
+    const id = draftIdRef.current;
+    const response = await (id ? updateBrouillonForm(id, data) : storeDraftArticle(data, user_id!)).catch(
+      () => ({ success: false, id: undefined }),
+    );
+    if (!response.success) {
+      setAutosave({ state: "error", message: "Échec de l'enregistrement automatique" });
+      return;
+    }
+    if (!id && response.id) {
+      // Nouveau brouillon : la page devient la sienne, sans recharger le formulaire
+      draftIdRef.current = response.id;
+      setDraftId(response.id);
+      window.history.replaceState(null, "", `/admin/brouillons/${response.id}`);
+    }
+    lastSaved.current = snapshot;
+    setAutosave({ state: "saved", at: new Date() });
+  }, [getValues, scheduledAt, uploadedUrl, user_id]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const subscription = watch(() => {
+      clearTimeout(timer);
+      timer = setTimeout(autoSave, 3000);
+    });
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
+  }, [watch, autoSave]);
 
   useFormErrorToasts(errors);
 
@@ -284,6 +337,19 @@ export default function MultiStepArticleForm({
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2">
+            {autosave.state !== "idle" && (
+              <span
+                className={`hidden lg:block text-xs whitespace-nowrap mr-1 ${
+                  autosave.state === "error" ? "text-red-600" : "text-gray-400"
+                }`}
+              >
+                {autosave.state === "saving"
+                  ? "Enregistrement…"
+                  : autosave.state === "saved"
+                    ? `Enregistré à ${autosave.at.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
+                    : autosave.message}
+              </span>
+            )}
             <button
               type="button"
               onClick={handleSaveDraft}
@@ -292,7 +358,7 @@ export default function MultiStepArticleForm({
               <Save size={18} />
               <span className="hidden md:block">Brouillon</span>
             </button>
-            {draft && (
+            {draftId && (
               <button
                 type="button"
                 onClick={handlePreview}
