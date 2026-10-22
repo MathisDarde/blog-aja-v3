@@ -24,6 +24,7 @@ export default function TabContentContainer({
   drafts,
   methodes,
   comments,
+  articleStats,
   isLoading,
 }: TabContentContainerProps) {
   const [activeMenu, setActiveMenu] = useState("users");
@@ -128,6 +129,7 @@ export default function TabContentContainer({
         <TabArticleContent
           searchTerm={searchTerm}
           articles={articles as Article[]}
+          stats={articleStats}
           isLoading={isLoading}
         />
       )}

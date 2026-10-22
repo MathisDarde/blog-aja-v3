@@ -6,8 +6,12 @@ import ContextPopup from "./ContextPopup";
 import DashboardTable, { DashboardColumn, useTableSort } from "./DashboardTable";
 import { Article, ArticleSortKey } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import type { ArticleStats } from "@/lib/article-stats";
 
-const COLUMNS: DashboardColumn<Article, ArticleSortKey>[] = [
+type ArticleRow = Article & ArticleStats;
+type ArticleRowSortKey = ArticleSortKey | keyof ArticleStats;
+
+const COLUMNS: DashboardColumn<ArticleRow, ArticleRowSortKey>[] = [
   {
     label: "Image",
     width: "w-[75px]",
@@ -60,20 +64,45 @@ const COLUMNS: DashboardColumn<Article, ArticleSortKey>[] = [
   },
 ];
 
+// Vues PostHog depuis la mise en ligne, affichées quand les stats sont configurées
+const STATS_COLUMNS: DashboardColumn<ArticleRow, ArticleRowSortKey>[] = [
+  {
+    label: "Vues",
+    width: "w-[100px]",
+    sortKey: "views",
+    render: (article) => article.views.toLocaleString("fr-FR"),
+    skeleton: { width: "50px" },
+  },
+  {
+    label: "Lecteurs",
+    width: "w-[100px]",
+    sortKey: "visitors",
+    render: (article) => article.visitors.toLocaleString("fr-FR"),
+    skeleton: { width: "50px" },
+  },
+];
+
 export default function TabArticleContent({
   searchTerm,
   articles,
+  stats,
   isLoading,
 }: {
   searchTerm: string;
   articles: Article[];
+  stats: Record<string, ArticleStats> | null;
   isLoading: boolean;
 }) {
   const { sortElements } = useGlobalContext();
-  const sort = useTableSort<ArticleSortKey>("title");
+  const sort = useTableSort<ArticleRowSortKey>("title");
+
+  const rows: ArticleRow[] = articles.map((article) => ({
+    ...article,
+    ...(stats?.[article.slug] ?? { views: 0, visitors: 0 }),
+  }));
 
   const search = searchTerm.toLowerCase();
-  const filteredArticles = sortElements({ elements: articles, sortKey: sort.key, sortOrder: sort.order }).filter(
+  const filteredArticles = sortElements({ elements: rows, sortKey: sort.key, sortOrder: sort.order }).filter(
     (article) =>
       article.title.toLowerCase().includes(search) ||
       article.content?.toLowerCase().includes(search) ||
@@ -87,7 +116,7 @@ export default function TabArticleContent({
   return (
     <DashboardTable
       rows={filteredArticles}
-      columns={COLUMNS}
+      columns={stats ? [...COLUMNS, ...STATS_COLUMNS] : COLUMNS}
       getId={(article) => article.id_article}
       isLoading={isLoading}
       emptyLabel="Aucun article ne correspond."

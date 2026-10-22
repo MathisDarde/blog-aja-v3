@@ -3,6 +3,7 @@
 import { CommentSchemaType, DraftArticleSchemaType } from "@/types/forms";
 import { ReactNode } from "react";
 import type { CommentReportReason } from "@/db/schema";
+import type { ArticleStats } from "@/lib/article-stats";
 
 export interface Article {
   id_article: string;
@@ -440,6 +441,8 @@ export interface TabContentContainerProps {
   drafts: Draft[];
   methodes: Methodes[];
   comments: Comment[];
+  // Vues par slug (PostHog), null si non configuré
+  articleStats: Record<string, ArticleStats> | null;
   isLoading: boolean;
 }
 
