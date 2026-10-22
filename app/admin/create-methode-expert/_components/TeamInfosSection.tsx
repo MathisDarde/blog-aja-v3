@@ -109,8 +109,11 @@ export default function TeamInfosSection({
       // Nom modifié entre-temps : ces valeurs ne sont plus les bonnes
       if (String(getValues(teamNameField) ?? "").trim() !== name) return;
 
-      setValue(logoField, defaults.logo, { shouldDirty: true });
-      autofilledLogo.current = defaults.logo;
+      // Club inconnu : pas de logo enregistré, le logo d'époque sera trouvé à l'affichage
+      // dès qu'il sera ajouté dans la bibliothèque
+      const logo = defaults.logoFound ? defaults.logo : "";
+      setValue(logoField, logo, { shouldDirty: true });
+      autofilledLogo.current = logo;
       setLogoNotFound(!defaults.logoFound);
       if (!onlyLogo && defaults.abreviation) {
         setValue(abreviationField, defaults.abreviation, { shouldDirty: true });

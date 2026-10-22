@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import { getArticles } from "@/controllers/ArticlesController";
 import { Methodes } from "@/contexts/Interfaces";
-import { ajaLogo, DEFAULT_TEAM_LOGO, getTeamLogoResolver, TeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
+import { ajaLogo, chosenLogo, DEFAULT_TEAM_LOGO, getTeamLogoResolver, TeamLogoResolver, seasonOfFrenchDate, withPeriodClubLogos } from "@/lib/team-logos";
 import { normalizeText } from "@/lib/normalize-text";
 import { MethodeEntry, linkMethodes, mentionedMethodes, methodeKey, methodeName, methodeUrl } from "@/lib/methodes";
 import MethodesExplorer, { MethodesExplorerView } from "./_components/MethodesExplorer";
@@ -16,8 +16,6 @@ const firstYear = (value: string) => {
   const match = value.match(/\b(19|20)\d{2}\b/);
   return match ? Number(match[0]) : null;
 };
-
-const chosenLogo = (logo: string | undefined) => (logo && logo !== DEFAULT_TEAM_LOGO ? logo : null);
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 

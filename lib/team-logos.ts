@@ -202,13 +202,20 @@ const firstYear = (years: string) => {
 type ClubEntry = [string, string, string]; // [logo, nom, années]
 
 /**
+ * Logo choisi à la main dans une méthode, ou null. L'écusson neutre n'en est pas un : le
+ * formulaire l'enregistrait pour un club encore inconnu, il ne doit pas masquer un logo
+ * ajouté depuis dans la bibliothèque ou l'historique.
+ */
+export const chosenLogo = (logo: string | null | undefined) => (logo && logo !== DEFAULT_TEAM_LOGO ? logo : null);
+
+/**
  * Méthode expert avec, pour chaque club d'un parcours (joueur, coach), le logo de l'époque
  * de son arrivée quand il est connu ; sinon le logo choisi à la création de la méthode.
  */
 export function withPeriodClubLogos<T extends { typemethode: string }>(methode: T, resolver: TeamLogoResolver): T {
   const swap = (clubs: ClubEntry[]) =>
     clubs.map(([logo, name, years]): ClubEntry => [
-      resolver.periodLogo({ name, season: firstYear(years) }) ?? logo,
+      resolver.periodLogo({ name, season: firstYear(years) }) ?? chosenLogo(logo) ?? resolver.currentLogo({ name }),
       name,
       years,
     ]);
@@ -228,8 +235,8 @@ export function withPeriodClubLogos<T extends { typemethode: string }>(methode: 
     const season = seasonOfFrenchDate(m.date ?? "");
     return {
       ...m,
-      logoequipe1: m.logoequipe1 || resolver.logo({ name: m.nomequipe1, season }),
-      logoequipe2: m.logoequipe2 || resolver.logo({ name: m.nomequipe2, season }),
+      logoequipe1: chosenLogo(m.logoequipe1) ?? resolver.logo({ name: m.nomequipe1, season }),
+      logoequipe2: chosenLogo(m.logoequipe2) ?? resolver.logo({ name: m.nomequipe2, season }),
     };
   }
   return methode;
