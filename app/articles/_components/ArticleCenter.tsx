@@ -113,23 +113,30 @@ export function ArticleCenterView({
     router.push(`/articles?${params.toString()}`);
   };
 
-  const applyFilter = (filterType: string, value: string) => {
+  const activeFilters = { year: yearfilter, player: playerfilter, league: leaguefilter };
+
+  // Un clic sur le filtre déjà actif le retire
+  const applyFilter = (filterType: "year" | "player" | "league", value: string) => {
     const params = new URLSearchParams(window.location.search);
     params.delete("page");
 
     if (searchQuery) params.set("q", searchQuery);
 
-    if (filterType === "year") {
-      params.set("year", value);
-    } else if (filterType === "player") {
-      params.set("player", value);
-    } else if (filterType === "league") {
-      params.set("league", value);
-    }
+    if (activeFilters[filterType] === value) params.delete(filterType);
+    else params.set(filterType, value);
 
     router.push(`/articles?${params.toString()}`);
     setIsFilterOpen(false);
   };
+
+  // Articles par tag, pour les pastilles des filtres
+  const tagCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const article of articles) {
+      for (const tag of new Set(article.tags)) counts[tag] = (counts[tag] ?? 0) + 1;
+    }
+    return counts;
+  }, [articles]);
 
   const removeFilter = (type: "year" | "player" | "league") => {
     const params = new URLSearchParams(window.location.search);
@@ -178,11 +185,15 @@ export function ArticleCenterView({
         {isFilterOpen && (
           <div
             ref={filterRef}
-            className="absolute z-[5] mt-4 w-full max-w-[748px] p-4 bg-white ring-1 ring-black ring-opacity-5 top-3 right-1/2 transform translate-x-1/2"
+            className="absolute z-[5] top-full mt-2 left-0 right-0 max-h-[75vh] overflow-y-auto p-4 sm:p-5 bg-white rounded-xl shadow-xl ring-1 ring-black/5"
           >
-            <div className="py-1">
-              <FilterContent filters={filters} applyFilter={applyFilter} />
-            </div>
+            <FilterContent
+              filters={filters}
+              counts={tagCounts}
+              active={activeFilters}
+              applyFilter={applyFilter}
+              onClose={() => setIsFilterOpen(false)}
+            />
           </div>
         )}
       </div>

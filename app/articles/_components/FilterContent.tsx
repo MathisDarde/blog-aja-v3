@@ -1,160 +1,106 @@
 "use client";
 
 import { Filter } from "@/contexts/Interfaces";
-import { useScreenSize } from "@/utils/use-screen-size";
-import { ChevronDown } from "lucide-react";
+import { normalizeText } from "@/lib/normalize-text";
+import { Search, X } from "lucide-react";
 import { useState } from "react";
 
+type FilterType = "year" | "league" | "player";
+
+const SECTIONS: { type: FilterType; title: string }[] = [
+  { type: "year", title: "Époques" },
+  { type: "league", title: "Compétitions" },
+  { type: "player", title: "Joueurs" },
+];
+
+/**
+ * Filtres de /articles en pastilles, avec le nombre d'articles de chacune. Un clic sur le
+ * filtre actif le retire ; les joueurs se cherchent par leur nom.
+ */
 export default function FilterContent({
   filters,
+  counts,
+  active,
   applyFilter,
+  onClose,
 }: {
   filters: Filter[];
-  applyFilter: (filterType: string, value: string) => void;
+  // Articles publiés par tag
+  counts: Record<string, number>;
+  active: Record<FilterType, string>;
+  applyFilter: (filterType: FilterType, value: string) => void;
+  onClose: () => void;
 }) {
-  const { width } = useScreenSize();
-
-  const [yearFilterOpen, setYearFilterOpen] = useState(false);
-  const [leagueFilterOpen, setLeagueFilterOpen] = useState(false);
-  const [playerFilterOpen, setPlayerFilterOpen] = useState(false);
+  const [playerSearch, setPlayerSearch] = useState("");
 
   return (
-    <>
-      {width > 640 ? (
-        <div className="grid grid-cols-3 gap-4 p-4 font-Montserrat">
-          {/* Années */}
-          <div>
-            <p className="text-lg font-semibold border-b pb-2 mb-2">Années</p>
-            {filters
-              .filter((filter) => filter.type === "year")
-              .map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => applyFilter("year", filter.value)}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                >
-                  {filter.tag}
-                </button>
-              ))}
-          </div>
+    <div className="font-Montserrat text-left">
+      <div className="flex items-center justify-between mb-4">
+        <p className="font-Bai_Jamjuree text-lg font-bold uppercase">Filtrer les articles</p>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Fermer les filtres"
+          className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+        >
+          <X size={18} />
+        </button>
+      </div>
 
-          {/* Joueurs */}
-          <div>
-            <p className="text-lg font-semibold border-b pb-2 mb-2">Joueurs</p>
-            {filters
-              .filter((filter) => filter.type === "player")
-              .map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => applyFilter("player", filter.value)}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                >
-                  {filter.tag}
-                </button>
-              ))}
-          </div>
+      {SECTIONS.map(({ type, title }) => {
+        let list = filters.filter((f) => f.type === type);
+        if (type === "player") {
+          const wanted = normalizeText(playerSearch);
+          // Les joueurs les plus racontés d'abord, puis par ordre alphabétique
+          list = list
+            .filter((f) => !wanted || normalizeText(f.tag).includes(wanted))
+            .sort((a, b) => (counts[b.value] ?? 0) - (counts[a.value] ?? 0) || a.tag.localeCompare(b.tag, "fr"));
+        }
 
-          {/* Ligues */}
-          <div>
-            <p className="text-lg font-semibold border-b pb-2 mb-2">Ligues</p>
-            {filters
-              .filter((filter) => filter.type === "league")
-              .map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => applyFilter("league", filter.value)}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full md:text-left"
-                >
-                  {filter.tag}
-                </button>
-              ))}
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4 pt-4">
-          <div>
-            <div
-              className="flex items-center justify-between px-4 py-2 cursor-pointer"
-              onClick={() => setYearFilterOpen((prev) => !prev)}
-            >
-              <p className="text-base font-semibold font-Montserrat">Années</p>
-              <ChevronDown
-                size={18}
-                className={`${yearFilterOpen && "rotate-180"}`}
-              />
+        return (
+          <section key={type} className="mb-4 last:mb-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{title}</p>
+              {type === "player" && (
+                <div className="relative w-full sm:w-56">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="search"
+                    value={playerSearch}
+                    onChange={(e) => setPlayerSearch(e.target.value)}
+                    placeholder="Chercher un joueur…"
+                    className="w-full h-8 rounded-full pl-8 pr-3 text-sm border border-gray-200 focus:border-aja-blue focus:outline-none"
+                  />
+                </div>
+              )}
             </div>
-            {yearFilterOpen && (
-              <>
-                {filters
-                  .filter((filter) => filter.type === "year")
-                  .map((filter) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => applyFilter("year", filter.value)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left font-Montserrat"
-                    >
-                      {filter.tag}
-                    </button>
-                  ))}
-              </>
-            )}
-          </div>
-          <div>
-            <div
-              className="flex items-center justify-between px-4 py-2 cursor-pointer"
-              onClick={() => setPlayerFilterOpen((prev) => !prev)}
-            >
-              <p className="text-base font-semibold font-Montserrat">Joueurs</p>
-              <ChevronDown
-                size={18}
-                className={`${playerFilterOpen && "rotate-180"}`}
-              />
+
+            <div className={`flex flex-wrap gap-2 ${type === "player" ? "max-h-48 overflow-y-auto pr-1" : ""}`}>
+              {list.length === 0 && <p className="text-sm text-gray-500">Aucun joueur ne correspond.</p>}
+              {list.map((filter) => {
+                const count = counts[filter.value] ?? 0;
+                const selected = active[type] === filter.value;
+                return (
+                  <button
+                    key={filter.id}
+                    type="button"
+                    disabled={count === 0 && !selected}
+                    onClick={() => applyFilter(type, filter.value)}
+                    className={`px-3 py-1.5 rounded-full border text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                      selected
+                        ? "bg-aja-blue text-white border-aja-blue"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-aja-blue hover:text-aja-blue disabled:hover:border-gray-200 disabled:hover:text-gray-700"
+                    }`}
+                  >
+                    {filter.tag}{" "}
+                    <span className={selected ? "text-white/80" : "text-gray-400"}>{count}</span>
+                  </button>
+                );
+              })}
             </div>
-            {playerFilterOpen && (
-              <>
-                {filters
-                  .filter((filter) => filter.type === "player")
-                  .map((filter) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => applyFilter("player", filter.value)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left font-Montserrat"
-                    >
-                      {filter.tag}
-                    </button>
-                  ))}
-              </>
-            )}
-          </div>
-          <div>
-            <div
-              className="flex items-center justify-between px-4 py-2 cursor-pointer"
-              onClick={() => setLeagueFilterOpen((prev) => !prev)}
-            >
-              <p className="text-base font-semibold font-Montserrat">Ligues</p>
-              <ChevronDown
-                size={18}
-                className={`${leagueFilterOpen && "rotate-180"}`}
-              />
-            </div>
-            {leagueFilterOpen && (
-              <>
-                {filters
-                  .filter((filter) => filter.type === "league")
-                  .map((filter) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => applyFilter("league", filter.value)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left font-Montserrat"
-                    >
-                      {filter.tag}
-                    </button>
-                  ))}
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </>
+          </section>
+        );
+      })}
+    </div>
   );
 }
