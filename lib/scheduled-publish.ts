@@ -2,11 +2,15 @@ import { ArticleSchema } from "@/app/schema";
 import { db } from "@/db/db";
 import { draftTable } from "@/db/schema";
 import { insertPublishedArticle } from "@/lib/publish-article";
+import {
+  alertScheduledPublishFailures,
+  ScheduledPublishFailure,
+} from "@/lib/scheduled-publish-alert";
 import { and, eq, lte } from "drizzle-orm";
 
 type ScheduledPublishResult = {
   published: string[];
-  failed: { id: string; slug: string | null; error: string }[];
+  failed: ScheduledPublishFailure[];
 };
 
 // Publie les brouillons dont la date programmée est passée. Appelé par le cron
@@ -36,14 +40,11 @@ export async function publishDueDrafts(
     });
 
     if (!parsed.success) {
-      // Incomplet : on retire la programmation plutôt que de réessayer à chaque passage
-      await db
-        .update(draftTable)
-        .set({ scheduledAt: null })
-        .where(eq(draftTable.id_draft, draft.id_draft));
+      await unschedule(draft.id_draft);
       result.failed.push({
         id: draft.id_draft,
         slug: draft.slug,
+        title: draft.title,
         error: parsed.error.errors.map((e) => e.message).join(" "),
       });
       continue;
@@ -57,13 +58,24 @@ export async function publishDueDrafts(
       result.published.push(parsed.data.slug);
     } catch (err) {
       console.error(`Publication programmée de "${draft.slug}" :`, err);
+      await unschedule(draft.id_draft).catch((e) => console.error(e));
       result.failed.push({
         id: draft.id_draft,
         slug: draft.slug,
+        title: draft.title,
         error: err instanceof Error ? err.message : "Erreur inconnue",
       });
     }
   }
 
+  await alertScheduledPublishFailures(result.failed);
   return result;
+}
+
+// Échec : on retire la programmation plutôt que de réessayer (et d'alerter) à chaque passage
+async function unschedule(draftId: string) {
+  await db
+    .update(draftTable)
+    .set({ scheduledAt: null })
+    .where(eq(draftTable.id_draft, draftId));
 }

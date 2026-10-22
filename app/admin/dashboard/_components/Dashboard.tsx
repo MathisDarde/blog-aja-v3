@@ -8,7 +8,10 @@ import { getAllUsers } from "@/controllers/UserController";
 import { getAllArticles } from "@/controllers/ArticlesController";
 import { getComments } from "@/controllers/CommentController";
 import displayBrouillons from "@/actions/article/display-brouillons";
+import getArticleStats from "@/actions/dashboard/get-article-stats";
+import type { ArticleStats } from "@/lib/article-stats";
 import Skeleton from "@/components/CustomSkeleton";
+import { formatScheduledAt } from "@/lib/schedule-date";
 
 export default function Dashboard() {
   const [users, setUsers] = useState<User[] | null>(null);
@@ -16,6 +19,7 @@ export default function Dashboard() {
   const [drafts, setDrafts] = useState<Draft[] | null>(null);
   const [methodes, setMethodes] = useState<Methodes[] | null>(null);
   const [comments, setComments] = useState<Comment[] | null>(null);
+  const [articleStats, setArticleStats] = useState<Record<string, ArticleStats> | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -40,11 +44,19 @@ export default function Dashboard() {
     }
 
     fetchData();
+    // À part : PostHog peut être lent, les tableaux s'affichent sans attendre les vues
+    getArticleStats()
+      .then(setArticleStats)
+      .catch((error) => console.error("Stats des articles :", error));
   }, []);
 
   const isLoading = !users || !articles || !drafts || !methodes || !comments;
   // L'onglet Articles liste aussi les archivés : la case ne compte que les publiés
   const publishedCount = articles?.filter((a) => a.state === "published").length ?? 0;
+  // Brouillons programmés, du plus proche au plus lointain
+  const scheduled = (drafts ?? [])
+    .flatMap((d) => (d.scheduledAt ? [d.scheduledAt] : []))
+    .sort((a, b) => a.getTime() - b.getTime());
   const toModerate = comments?.filter((c) => (c.reportsCount ?? 0) > 0).length ?? 0;
 
   return (
@@ -63,7 +75,15 @@ export default function Dashboard() {
           {isLoading ? (
             <Skeleton animated={true} height="50px" width="100px" />
           ) : (
-            <p className="text-5xl font-Bai_Jamjuree font-bold">{publishedCount}</p>
+            <>
+              <p className="text-5xl font-Bai_Jamjuree font-bold">{publishedCount}</p>
+              {scheduled.length > 0 && (
+                <p className="text-sm font-semibold text-aja-blue text-center">
+                  {scheduled.length} programmé{scheduled.length > 1 ? "s" : ""} · prochain{" "}
+                  {formatScheduledAt(scheduled[0])}
+                </p>
+              )}
+            </>
           )}
         </div>
 <div className="mx-auto flex flex-col items-center">
@@ -98,6 +118,7 @@ export default function Dashboard() {
           drafts={drafts ?? []}
           methodes={methodes ?? []}
           comments={comments ?? []}
+          articleStats={articleStats}
           isLoading={isLoading}
         />
       </div>
