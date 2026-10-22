@@ -43,6 +43,8 @@ export default function Dashboard() {
   }, []);
 
   const isLoading = !users || !articles || !drafts || !methodes || !comments;
+  // L'onglet Articles liste aussi les archivés : la case ne compte que les publiés
+  const publishedCount = articles?.filter((a) => a.state === "published").length ?? 0;
   const toModerate = comments?.filter((c) => (c.reportsCount ?? 0) > 0).length ?? 0;
 
   return (
@@ -61,7 +63,7 @@ export default function Dashboard() {
           {isLoading ? (
             <Skeleton animated={true} height="50px" width="100px" />
           ) : (
-            <p className="text-5xl font-Bai_Jamjuree font-bold">{articles?.length ?? 0}</p>
+            <p className="text-5xl font-Bai_Jamjuree font-bold">{publishedCount}</p>
           )}
         </div>
 <div className="mx-auto flex flex-col items-center">

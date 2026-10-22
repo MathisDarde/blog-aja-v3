@@ -425,6 +425,8 @@ export interface DashboardElementProps {
   isAdmin?: boolean | null;
   // Méthodes : adresse de la fiche, absente sans slug
   href?: string | null;
+  // Articles : l'adresse de l'article est /articles/<slug>
+  slug?: string;
   // Commentaires : état de modération
   hidden?: boolean;
   reportsCount?: number;

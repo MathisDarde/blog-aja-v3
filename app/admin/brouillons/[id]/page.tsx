@@ -1,9 +1,9 @@
-import displayBrouillons from "@/actions/article/display-brouillons";
 import ArticleForm from "@/app/admin/publish-article/_components/ArticleForm";
 import UpdateBrouillonGuard from "../_components/UpdateBrouillonGuard";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
+import { getBrouillonById } from "@/controllers/DraftController";
 
 export default async function BrouillonEditPage({
   params,
@@ -19,12 +19,7 @@ export default async function BrouillonEditPage({
     user = users?.[0] ?? null;
   }
 
-  const brouillonId = (await params).id;
-
-  const brouillons = await displayBrouillons();
-  const brouillon = brouillons.find(
-    (b) => b.id_draft.toString() === brouillonId
-  );
+  const brouillon = await getBrouillonById((await params).id);
 
   if (!brouillon) {
     return <div className="p-10 text-center">Brouillon introuvable</div>;

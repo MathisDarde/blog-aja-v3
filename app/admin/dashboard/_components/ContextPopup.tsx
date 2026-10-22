@@ -23,12 +23,21 @@ import deleteMethode from "@/actions/method/delete-method";
 import deleteAccount from "@/actions/user/delete-account";
 import giveUserAdmin from "@/actions/user/set-user-admin";
 import removeUserAdminRole from "@/actions/user/remove-user-admin";
-import getArticleIdByComment from "@/actions/comment/get-article-id-by-comment-id";
+import getArticleSlugByComment from "@/actions/comment/get-article-slug-by-comment-id";
 import {
   dismissCommentReportsAction,
   setCommentHiddenAction,
 } from "@/actions/comment/moderate-comment";
 import { DashboardElementProps } from "@/contexts/Interfaces";
+
+// Libellés des messages de suppression
+const TYPE_LABELS: Record<string, string> = {
+  user: "Utilisateur supprimé",
+  article: "Article supprimé",
+  draft: "Brouillon supprimé",
+  comment: "Commentaire supprimé",
+  method: "Méthode supprimée",
+};
 
 export default function ContextPopup({
   id,
@@ -38,6 +47,7 @@ export default function ContextPopup({
   hidden,
   reportsCount,
   href,
+  slug,
 }: DashboardElementProps) {
   const router = useRouter();
 
@@ -67,12 +77,12 @@ export default function ContextPopup({
           break;
       }
       if (result?.success) {
-        toast.success(`${type} supprimé avec succès`);
+        toast.success(TYPE_LABELS[type] ?? "Élément supprimé");
         // Attendre un peu avant de recharger
         await new Promise((r) => setTimeout(r, 1000));
         window.location.reload();
       } else {
-        toast.error(`Erreur lors de la suppression du ${type}`);
+        toast.error("Erreur lors de la suppression");
       }
     } catch (error) {
       console.error("Erreur de suppression:", error);
@@ -133,14 +143,14 @@ export default function ContextPopup({
         router.push(`/admin/dashboard/previewelement/${id}`);
         break;
       case "article":
-        router.push(`/articles/${id}`);
+        router.push(`/articles/${slug}`);
         break;
       case "draft":
         router.push(`/admin/brouillons/${id}/apercu`);
         break;
       case "comment":
-        const articleId = await getArticleIdByComment(id);
-        if (articleId) router.push(`/articles/${articleId}#comment-${id}`);
+        const articleSlug = await getArticleSlugByComment(id);
+        if (articleSlug) router.push(`/articles/${articleSlug}#comment-${id}`);
         else toast.error("Impossible de retrouver l'article du commentaire");
         break;
       case "method":
@@ -154,18 +164,13 @@ export default function ContextPopup({
     if (!id) return;
     switch (type) {
       case "article":
-        switch (state) {
-          case "published":
-            router.push(`/articles/${id}/update`);
-            break;
-          case "archived":
-            toast.error(
-              "Impossible de modifier cet article étant donné qu'il est archivé."
-            );
-            break;
-          case "pending":
-            router.push(`/admin/brouillons/${id}`);
-            break;
+        // Les brouillons sont dans leur propre table (onglet Brouillons)
+        if (state === "archived") {
+          toast.error(
+            "Impossible de modifier cet article étant donné qu'il est archivé."
+          );
+        } else {
+          router.push(`/articles/${slug}/update`);
         }
         break;
       case "draft":

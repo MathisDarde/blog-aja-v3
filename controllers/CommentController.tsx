@@ -2,6 +2,7 @@
 
 import { db } from "@/db/db";
 import {
+  articlesTable,
   commentReportsTable,
   CommentReportReason,
   commentReportReasonEnum,
@@ -146,16 +147,18 @@ export async function getCommentsByUser(
     .where(eq(commentsTable.userId, id_user));
 }
 
-export async function getArticleIdByCommentId(
+// Slug de l'article d'un commentaire : c'est lui qui forme l'adresse /articles/<slug>
+export async function getArticleSlugByCommentId(
   commentId: SelectComment["id_comment"]
 ): Promise<string | null> {
   const result = await db
-    .select({ articleId: commentsTable.articleId })
+    .select({ slug: articlesTable.slug })
     .from(commentsTable)
+    .innerJoin(articlesTable, eq(articlesTable.id_article, commentsTable.articleId))
     .where(eq(commentsTable.id_comment, commentId))
     .limit(1);
 
-  return result.length > 0 ? result[0].articleId : null;
+  return result.length > 0 ? result[0].slug : null;
 }
 
 /**

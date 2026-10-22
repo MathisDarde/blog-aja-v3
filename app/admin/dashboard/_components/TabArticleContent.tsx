@@ -238,7 +238,12 @@ export default function TabArticleContent({
             className="absolute z-50"
             style={{ top: popupPosition.top, left: popupPosition.left, maxWidth: "calc(100vw - 16px)" }}
           >
-            <ContextPopup id={selectedArticle.id_article} type="article" state={selectedArticle.state} />
+            <ContextPopup
+              id={selectedArticle.id_article}
+              type="article"
+              state={selectedArticle.state}
+              slug={selectedArticle.slug}
+            />
           </div>,
           document.body
         )}
