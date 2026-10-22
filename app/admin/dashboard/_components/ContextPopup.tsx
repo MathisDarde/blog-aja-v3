@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Archive,
   ArchiveRestore,
   Eye,
   EyeOff,
@@ -23,15 +24,15 @@ import deleteMethode from "@/actions/method/delete-method";
 import deleteAccount from "@/actions/user/delete-account";
 import giveUserAdmin from "@/actions/user/set-user-admin";
 import removeUserAdminRole from "@/actions/user/remove-user-admin";
-import getArticleSlugByComment from "@/actions/comment/get-article-slug-by-comment-id";
 import {
   dismissCommentReportsAction,
   setCommentHiddenAction,
 } from "@/actions/comment/moderate-comment";
-import { DashboardElementProps } from "@/contexts/Interfaces";
+
+export type DashboardElementType = "user" | "article" | "draft" | "comment" | "method";
 
 // Libellés des messages de suppression
-const TYPE_LABELS: Record<string, string> = {
+const DELETED: Record<DashboardElementType, string> = {
   user: "Utilisateur supprimé",
   article: "Article supprimé",
   draft: "Brouillon supprimé",
@@ -39,280 +40,205 @@ const TYPE_LABELS: Record<string, string> = {
   method: "Méthode supprimée",
 };
 
+const DELETE_ACTIONS: Record<DashboardElementType, (id: string) => Promise<{ success: boolean } | undefined>> = {
+  user: deleteAccount,
+  article: deleteArticleSA,
+  draft: deleteDraftArticle,
+  comment: deleteCommentAction,
+  method: deleteMethode,
+};
+
+const itemClass =
+  "w-full px-3 py-2 flex items-center gap-2.5 rounded-lg text-left transition-colors hover:bg-gray-100";
+
+/** Menu « trois points » d'une ligne du dashboard. */
 export default function ContextPopup({
   id,
   type,
+  href,
+  editHref,
   state,
   isAdmin,
   hidden,
   reportsCount,
-  href,
-  slug,
-}: DashboardElementProps) {
+  onDone,
+}: {
+  id: string;
+  type: DashboardElementType;
+  // « Accéder à l'élément », absent si l'élément n'a pas d'adresse
+  href?: string | null;
+  // « Modifier »
+  editHref?: string;
+  // Article : publié ou archivé
+  state?: string;
+  isAdmin?: boolean;
+  // Commentaire : état de modération
+  hidden?: boolean;
+  reportsCount?: number;
+  // Ferme le menu
+  onDone: () => void;
+}) {
   const router = useRouter();
+  const [confirm, setConfirm] = useState<"delete" | "promote" | "demote" | null>(null);
 
-  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [giveAdminPopupOpen, setGiveAdminPopupOpen] = useState(false);
-  const [removeAdminPopupOpen, setRemoveAdminPopupOpen] = useState(false);
-
-  const deleteElement = async (id: string, type: string) => {
-    if (!id) return toast.error("Element ID is missing.");
+  // Données du dashboard relues côté serveur, sans recharger la page
+  const run = async (
+    action: () => Promise<{ success: boolean; message?: string } | undefined>,
+    success: string,
+    failure: string
+  ) => {
     try {
-      let result;
-      switch (type) {
-        case "user":
-          result = await deleteAccount(id);
-          break;
-        case "article":
-          result = await deleteArticleSA(id);
-          break;
-        case "draft":
-          result = await deleteDraftArticle(id);
-          break;
-        case "comment":
-          result = await deleteCommentAction(id);
-          break;
-        case "method":
-          result = await deleteMethode(id);
-          break;
-      }
+      const result = await action();
       if (result?.success) {
-        toast.success(TYPE_LABELS[type] ?? "Élément supprimé");
-        // Attendre un peu avant de recharger
-        await new Promise((r) => setTimeout(r, 1000));
-        window.location.reload();
+        toast.success(success);
+        onDone();
+        router.refresh();
       } else {
-        toast.error("Erreur lors de la suppression");
-      }
-    } catch (error) {
-      console.error("Erreur de suppression:", error);
-      toast.error("Erreur inattendue lors de la suppression");
-    }
-  };
-
-  const handleAdminRole = async (id: string) => {
-    try {
-      const update = !isAdmin
-        ? await giveUserAdmin(id)
-        : await removeUserAdminRole(id);
-      if (update?.success) {
-        toast.success(
-          isAdmin
-            ? "L'utilisateur ne possède plus les droits administrateur."
-            : "L'utilisateur est désormais administrateur."
-        );
-        await new Promise((r) => setTimeout(r, 1000));
-        window.location.reload();
-      } else {
-        toast.error("Échec de la mise à jour du rôle.");
-      }
-    } catch (e) {
-      console.error("Erreur lors de la mise à jour:", e);
-      toast.error("Erreur lors de la mise à jour.");
-    }
-  };
-
-  const archiveElement = async (id: string) => {
-    try {
-      const result = await updateArticleStatus(id, "archived");
-      if (result.success) {
-        toast.success("Modification réussie");
-        window.location.reload();
+        toast.error(result?.message ?? failure);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Erreur lors de la modification du status");
+      toast.error(failure);
     }
   };
 
-  const moderateComment = async (
-    action: () => Promise<{ success: boolean; message: string }>
-  ) => {
-    const result = await action();
-    if (result.success) {
-      toast.success(result.message);
-      window.location.reload();
-    } else {
-      toast.error(result.message);
-    }
-  };
-
-  const previewElement = async (id: string, type: string) => {
-    switch (type) {
-      case "user":
-        router.push(`/admin/dashboard/previewelement/${id}`);
-        break;
-      case "article":
-        router.push(`/articles/${slug}`);
-        break;
-      case "draft":
-        router.push(`/admin/brouillons/${id}/apercu`);
-        break;
-      case "comment":
-        const articleSlug = await getArticleSlugByComment(id);
-        if (articleSlug) router.push(`/articles/${articleSlug}#comment-${id}`);
-        else toast.error("Impossible de retrouver l'article du commentaire");
-        break;
-      case "method":
-        if (href) router.push(href);
-        else toast.error("Cette méthode n'a pas encore d'adresse");
-        break;
-    }
-  };
-
-  const updateElement = (id: string, type: string) => {
-    if (!id) return;
-    switch (type) {
-      case "article":
-        // Les brouillons sont dans leur propre table (onglet Brouillons)
-        if (state === "archived") {
-          toast.error(
-            "Impossible de modifier cet article étant donné qu'il est archivé."
-          );
-        } else {
-          router.push(`/articles/${slug}/update`);
-        }
-        break;
-      case "draft":
-        router.push(`/admin/brouillons/${id}`);
-        break;
-      case "method":
-        router.push(`/admin/dashboard/updateelement/${id}`);
-        break;
-    }
-  };
+  const archived = state === "archived";
 
   return (
     <>
-      <div className="bg-white p-2 rounded-xl flex flex-col gap-2 border border-gray-300 font-Montserrat">
-        <div
-          className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-          onClick={() => previewElement(id, type)}
-        >
-          <SquareArrowOutUpRight size={20} /> Accéder à l&apos;élément
-        </div>
-
-        {(type == "article" || type == "draft" || type == "method") && (
-          <div
-            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => updateElement(id, type)}
-          >
-            <Pencil size={20} /> Modifier
-          </div>
+      <div className="bg-white p-1.5 rounded-xl flex flex-col border border-gray-200 shadow-lg font-Montserrat text-sm text-gray-800">
+        {href && (
+          <button type="button" className={itemClass} onClick={() => router.push(href)}>
+            <SquareArrowOutUpRight size={16} /> Accéder à l&apos;élément
+          </button>
         )}
 
-        {type == "article" && (
-          <div
-            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => archiveElement(id)}
+        {editHref &&
+          (archived ? (
+            <button
+              type="button"
+              className={`${itemClass} text-gray-400`}
+              onClick={() => toast.error("Désarchivez l'article pour le modifier.")}
+            >
+              <Pencil size={16} /> Modifier
+            </button>
+          ) : (
+            <button type="button" className={itemClass} onClick={() => router.push(editHref)}>
+              <Pencil size={16} /> Modifier
+            </button>
+          ))}
+
+        {type === "article" && (
+          <button
+            type="button"
+            className={itemClass}
+            onClick={() =>
+              run(
+                () => updateArticleStatus(id, archived ? "published" : "archived"),
+                archived ? "Article de nouveau en ligne" : "Article archivé",
+                "Erreur lors de la modification du statut"
+              )
+            }
           >
-            <ArchiveRestore size={20} /> Archiver
-          </div>
+            {archived ? <ArchiveRestore size={16} /> : <Archive size={16} />}
+            {archived ? "Désarchiver" : "Archiver"}
+          </button>
         )}
 
-        {type == "comment" && (
-          <div
-            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => moderateComment(() => setCommentHiddenAction(id, !hidden))}
+        {type === "comment" && (
+          <button
+            type="button"
+            className={itemClass}
+            onClick={() =>
+              run(
+                () => setCommentHiddenAction(id, !hidden),
+                hidden ? "Commentaire réaffiché" : "Commentaire masqué",
+                "Erreur de modération"
+              )
+            }
           >
-            {hidden ? <Eye size={20} /> : <EyeOff size={20} />}{" "}
+            {hidden ? <Eye size={16} /> : <EyeOff size={16} />}
             {hidden ? "Réafficher" : "Masquer"}
-          </div>
+          </button>
         )}
 
-        {type == "comment" && !hidden && (reportsCount ?? 0) > 0 && (
-          <div
-            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => moderateComment(() => dismissCommentReportsAction(id))}
+        {type === "comment" && !hidden && (reportsCount ?? 0) > 0 && (
+          <button
+            type="button"
+            className={itemClass}
+            onClick={() =>
+              run(() => dismissCommentReportsAction(id), "Signalements ignorés", "Erreur de modération")
+            }
           >
-            <FlagOff size={20} /> Ignorer les signalements
-          </div>
+            <FlagOff size={16} /> Ignorer les signalements
+          </button>
         )}
 
-        {type == "user" && (
-          <div
-            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => {
-              if (isAdmin) setRemoveAdminPopupOpen(true);
-              else setGiveAdminPopupOpen(true);
-            }}
-          >
-            {isAdmin ? <UserMinus2 size={20} /> : <UserPlus2 size={20} />}{" "}
-            {isAdmin ? "Rétrograder" : "Promouvoir"}
-          </div>
+        {type === "user" && (
+          <button type="button" className={itemClass} onClick={() => setConfirm(isAdmin ? "demote" : "promote")}>
+            {isAdmin ? <UserMinus2 size={16} /> : <UserPlus2 size={16} />}
+            {isAdmin ? "Rétrograder" : "Promouvoir admin"}
+          </button>
         )}
 
-        <div
-          className="group px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-red-400 hover:text-white"
-          onClick={() => setDeletePopupOpen(true)}
+        <div className="my-1 border-t border-gray-100" />
+        <button
+          type="button"
+          className={`${itemClass} text-red-600 hover:bg-red-50`}
+          onClick={() => setConfirm("delete")}
         >
-          <Trash size={20} /> Supprimer
-        </div>
+          <Trash size={16} /> Supprimer
+        </button>
       </div>
 
-      {giveAdminPopupOpen && (
+      {confirm === "promote" && (
         <ActionPopup
-          onClose={() => setGiveAdminPopupOpen(false)}
+          onClose={() => setConfirm(null)}
           title="Conférer le rôle admin ?"
           description="Souhaitez-vous donner à cet utilisateur le rôle admin ?"
           actions={[
-            {
-              label: "Annuler",
-              onClick: () => setGiveAdminPopupOpen(false),
-              theme: "discard",
-            },
+            { label: "Annuler", onClick: () => setConfirm(null), theme: "discard" },
             {
               label: "Confirmer",
-              onClick: async () => {
-                await handleAdminRole(id);
-                setGiveAdminPopupOpen(false);
-              },
+              onClick: () =>
+                run(() => giveUserAdmin(id), "L'utilisateur est désormais administrateur.", "Échec de la mise à jour du rôle."),
               theme: "confirm",
             },
           ]}
         />
       )}
 
-      {removeAdminPopupOpen && (
+      {confirm === "demote" && (
         <ActionPopup
-          onClose={() => setRemoveAdminPopupOpen(false)}
-          title="Supprimer le rôle admin ?"
+          onClose={() => setConfirm(null)}
+          title="Retirer le rôle admin ?"
           description="Souhaitez-vous retirer à cet utilisateur le rôle admin ?"
           actions={[
+            { label: "Annuler", onClick: () => setConfirm(null), theme: "discard" },
             {
-              label: "Annuler",
-              onClick: () => setRemoveAdminPopupOpen(false),
-              theme: "discard",
-            },
-            {
-              label: "Supprimer",
-              onClick: async () => {
-                await handleAdminRole(id);
-                setRemoveAdminPopupOpen(false);
-              },
+              label: "Retirer",
+              onClick: () =>
+                run(
+                  () => removeUserAdminRole(id),
+                  "L'utilisateur ne possède plus les droits administrateur.",
+                  "Échec de la mise à jour du rôle."
+                ),
               theme: "delete",
             },
           ]}
         />
       )}
 
-      {deletePopupOpen && (
+      {confirm === "delete" && (
         <ActionPopup
-          onClose={() => setDeletePopupOpen(false)}
+          onClose={() => setConfirm(null)}
           title="Supprimer cet élément ?"
           description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
           actions={[
-            {
-              label: "Annuler",
-              onClick: () => setDeletePopupOpen(false),
-              theme: "discard",
-            },
+            { label: "Annuler", onClick: () => setConfirm(null), theme: "discard" },
             {
               label: "Supprimer",
-              onClick: async () => {
-                await deleteElement(id, type);
-                setDeletePopupOpen(false);
-              },
+              onClick: () => run(() => DELETE_ACTIONS[type](id), DELETED[type], "Erreur lors de la suppression"),
               theme: "delete",
             },
           ]}

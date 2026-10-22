@@ -2,7 +2,6 @@
 
 import { db } from "@/db/db";
 import {
-  articlesTable,
   commentReportsTable,
   CommentReportReason,
   commentReportReasonEnum,
@@ -11,7 +10,7 @@ import {
   user,
 } from "@/db/schema";
 import { CommentSchemaType } from "@/types/forms";
-import { and, count, eq, sql } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin, requireUser } from "@/lib/auth-guard";
 import { isRateLimited } from "@/lib/rate-limit";
@@ -46,28 +45,6 @@ async function requireCommentOwnerOrAdmin(commentId: string) {
   if (!comment || comment.userId !== currentUser.id) {
     throw new Error("Accès refusé");
   }
-}
-
-export async function getComments() {
-  await requireAdmin();
-  const [comments, reports] = await Promise.all([
-    db.select(commentFields).from(commentsTable).innerJoin(user, eq(commentsTable.userId, user.id)),
-    db
-      .select({
-        commentId: commentReportsTable.commentId,
-        count: count(),
-        reasons: sql<CommentReportReason[]>`array_agg(distinct ${commentReportsTable.reason})::text[]`,
-      })
-      .from(commentReportsTable)
-      .groupBy(commentReportsTable.commentId),
-  ]);
-
-  const reportsByComment = new Map(reports.map((r) => [r.commentId, r]));
-  return comments.map((comment) => ({
-    ...comment,
-    reportsCount: reportsByComment.get(comment.id_comment)?.count ?? 0,
-    reportReasons: reportsByComment.get(comment.id_comment)?.reasons ?? [],
-  }));
 }
 
 export async function createComment(
@@ -145,20 +122,6 @@ export async function getCommentsByUser(
     .from(commentsTable)
     .innerJoin(user, eq(commentsTable.userId, user.id))
     .where(eq(commentsTable.userId, id_user));
-}
-
-// Slug de l'article d'un commentaire : c'est lui qui forme l'adresse /articles/<slug>
-export async function getArticleSlugByCommentId(
-  commentId: SelectComment["id_comment"]
-): Promise<string | null> {
-  const result = await db
-    .select({ slug: articlesTable.slug })
-    .from(commentsTable)
-    .innerJoin(articlesTable, eq(articlesTable.id_article, commentsTable.articleId))
-    .where(eq(commentsTable.id_comment, commentId))
-    .limit(1);
-
-  return result.length > 0 ? result[0].slug : null;
 }
 
 /**

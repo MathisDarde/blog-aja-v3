@@ -3,7 +3,6 @@
 import { CommentSchemaType, DraftArticleSchemaType } from "@/types/forms";
 import { ReactNode } from "react";
 import type { CommentReportReason } from "@/db/schema";
-import type { ArticleStats } from "@/lib/article-stats";
 
 export interface Article {
   id_article: string;
@@ -21,7 +20,10 @@ export interface Article {
 }
 
 // Article sans son contenu HTML : ce que reçoivent les cartes et listes côté client
-export type ArticleCard = Omit<Article, "content">;
+export type ArticleCard = Omit<Article, "content"> & {
+  // Calculé côté serveur à partir du contenu (lib/reading-time)
+  readingMinutes?: number;
+};
 
 export interface Draft {
   id_draft: string;
@@ -38,16 +40,6 @@ export interface Draft {
   updatedAt: Date;
   tags: string[] | null | undefined;
 }
-
-export type ArticleSortKey = keyof Pick<
-  Article,
-  "title" | "author" | "createdAt" | "updatedAt" | "state"
->;
-
-export type DraftSortKey = keyof Pick<
-  Draft,
-  "title" | "author" | "scheduledAt" | "createdAt" | "updatedAt"
->;
 
 export interface ArticleContentProps {
   text: string;
@@ -118,11 +110,6 @@ export interface Methode {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export type MethodeSortKey = keyof Pick<
-  Methode,
-  "typemethode" | "createdAt" | "updatedAt"
->;
 
 export interface BaseMethodeData {
   typemethode: "joueur" | "saison" | "match" | "coach";
@@ -383,11 +370,6 @@ export interface Comment {
   updatedAt: Date;
 }
 
-export type CommentSortKey = keyof Pick<
-  Comment,
-  "title" | "stars" | "pseudo" | "reportsCount" | "createdAt" | "updatedAt"
->;
-
 //Interfaces User
 
 export interface User {
@@ -403,11 +385,6 @@ export interface User {
   mailArticle: boolean | null;
 }
 
-export type UserSortKey = keyof Pick<
-  User,
-  "name" | "email" | "birthday" | "createdAt" | "updatedAt" | "admin"
->;
-
 export interface UpdateUserFromProps {
   userData: {
     name: string;
@@ -418,33 +395,6 @@ export interface UpdateUserFromProps {
 }
 
 //Others
-
-export interface DashboardElementProps {
-  id: string;
-  type: string;
-  state?: string;
-  isAdmin?: boolean | null;
-  // Méthodes : adresse de la fiche, absente sans slug
-  href?: string | null;
-  // Articles : l'adresse de l'article est /articles/<slug>
-  slug?: string;
-  // Commentaires : état de modération
-  hidden?: boolean;
-  reportsCount?: number;
-}
-
-export interface TabContentContainerProps {
-  searchTerm: string;
-  setSearchTerm: React.Dispatch<string>;
-  users: User[];
-  articles: Article[];
-  drafts: Draft[];
-  methodes: Methodes[];
-  comments: Comment[];
-  // Vues par slug (PostHog), null si non configuré
-  articleStats: Record<string, ArticleStats> | null;
-  isLoading: boolean;
-}
 
 export interface MatchAPI {
   journee: string;

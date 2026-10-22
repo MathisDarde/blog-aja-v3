@@ -13,6 +13,11 @@ export const METHODE_TYPES: { type: MethodeType; label: string; plural: string; 
   { type: "saison", label: "Saison", plural: "Saisons", path: "saisons" },
 ];
 
+const WEEKDAYS = /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\s+/i;
+
+/** « Mardi 20 avril 1993, 20h45 » → « 20 avril 1993 » */
+export const shortDate = (date: string) => date.split(",")[0].replace(WEEKDAYS, "").replace(/\s+/g, " ").trim();
+
 /** Page de la méthode, ou null tant qu'elle n'a pas d'adresse. */
 export function methodeUrl(methode: Pick<Methodes, "typemethode" | "slug">): string | null {
   if (!methode.slug) return null;

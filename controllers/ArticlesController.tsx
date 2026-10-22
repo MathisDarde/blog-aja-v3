@@ -21,22 +21,6 @@ import {
   warmSocialImage,
 } from "@/lib/publish-article";
 
-export async function getAllArticles(): Promise<SelectArticle[]> {
-  await requireAdmin();
-  return db
-    .select()
-    .from(articlesTable)
-    .then((articles) =>
-      articles.map((article) => ({
-        ...article,
-        state: (article.state ?? "pending") as
-          | "pending"
-          | "published"
-          | "archived",
-      })),
-    );
-}
-
 export async function getArticles(): Promise<SelectArticle[]> {
   return db
     .select()

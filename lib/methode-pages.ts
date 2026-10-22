@@ -5,7 +5,7 @@ import { cache } from "react";
 import getAllMethodes from "@/actions/method/get-all-methodes";
 import { getArticles } from "@/controllers/ArticlesController";
 import type { MethodeCoach, MethodeJoueur, MethodeMatch, Methodes } from "@/contexts/Interfaces";
-import { ficheKey, linkMethodes, mentionedMethodes, methodeKey, methodeUrl, MethodeType } from "@/lib/methodes";
+import { ficheKey, linkMethodes, mentionedMethodes, methodeKey, methodeUrl, MethodeType, shortDate } from "@/lib/methodes";
 import { normalizeText } from "@/lib/normalize-text";
 import { ajaLogo, getTeamLogoResolver, seasonOfFrenchDate, TeamLogoResolver, withPeriodClubLogos } from "@/lib/team-logos";
 
@@ -39,10 +39,8 @@ export interface Crossings {
 // --- Dates et textes ---
 
 const MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
-const WEEKDAYS = /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\s+/i;
 
-/** « Mardi 20 avril 1993, 20h45 » → « 20 avril 1993 » */
-export const shortDate = (date: string) => date.split(",")[0].replace(WEEKDAYS, "").replace(/\s+/g, " ").trim();
+export { shortDate } from "@/lib/methodes";
 
 /** « Mardi 20 avril 1993, 20h45 » → « 1993-04-20 », ou null si la date n'est pas lisible. */
 export function isoDate(date: string): string | null {

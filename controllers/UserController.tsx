@@ -13,11 +13,6 @@ export async function getUserbyId(id: SelectUser["id"]): Promise<SelectUser[]> {
   return db.select().from(user).where(eq(user.id, id));
 }
 
-export async function getAllUsers(): Promise<SelectUser[]> {
-  await requireAdmin();
-  return db.select().from(user);
-}
-
 export const signUp = async (data: InscSchemaType) => {
   await auth.api.signUpEmail({
     body: {
