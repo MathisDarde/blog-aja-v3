@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Calendar1,
+  CalendarClock,
+  Eye,
   Gem,
   Heart,
   MessageCircle,
@@ -13,6 +15,8 @@ import {
 } from "lucide-react";
 import ArticleContent from "./ArticleContent";
 import deleteArticleSA from "@/actions/article/delete-article";
+import deleteDraftArticle from "@/actions/article/delete-draft";
+import { formatScheduledAt } from "@/lib/schedule-date";
 import {
   Article,
   ArticleLikes,
@@ -34,12 +38,15 @@ export default function ArticleDisplay({
   articleComments,
   articleLikes,
   user,
+  draft,
 }: {
   article: Article;
   cited: CitedMethodes;
   articleComments: Comment[];
   articleLikes: ArticleLikes[];
   user: User | null;
+  // Aperçu d'un brouillon (admin) : modifier et supprimer agissent sur le brouillon
+  draft?: { id: string; scheduledAt: Date | null };
 }) {
   const router = useRouter();
   const isAdmin = user?.admin;
@@ -137,11 +144,25 @@ export default function ArticleDisplay({
 
   return (
     <div className="bg-gray-100 min-h-screen w-full m-0 box-border p-6 sm:p-10">
+      {draft && (
+        <div className="max-w-[1200px] mx-auto mb-6 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 rounded-xl bg-aja-blue text-white px-4 py-3 font-Montserrat text-sm">
+          <p className="flex items-center gap-2 font-semibold">
+            <Eye size={18} /> Aperçu du brouillon, non publié
+          </p>
+          {draft.scheduledAt && (
+            <p className="flex items-center gap-2">
+              <CalendarClock size={18} /> Programmé pour le{" "}
+              {formatScheduledAt(draft.scheduledAt)}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Delete article popup */}
       {deletePopupOpen && (
         <ActionPopup
           onClose={() => setDeletePopupOpen(false)}
-          title="Supprimer cet article ?"
+          title={draft ? "Supprimer ce brouillon ?" : "Supprimer cet article ?"}
           description="Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
           actions={[
             {
@@ -153,8 +174,17 @@ export default function ArticleDisplay({
               label: "Supprimer",
               onClick: async () => {
                 try {
-                  await deleteArticleSA(article.id_article);
-                  router.push("/");
+                  if (draft) {
+                    const result = await deleteDraftArticle(draft.id);
+                    if (!result.success) {
+                      toast.error(result.message);
+                      return;
+                    }
+                    router.push("/admin/brouillons");
+                  } else {
+                    await deleteArticleSA(article.id_article);
+                    router.push("/");
+                  }
                   setDeletePopupOpen(false);
                 } catch (error) {
                   console.error("Erreur suppression article :", error);
@@ -274,7 +304,11 @@ export default function ArticleDisplay({
                     <div
                       className="border border-gray-300 hover:bg-gray-300 rounded-full p-2 text-gray-500 flex items-center justify-center transition-colors cursor-pointer hover:text-blue-500"
                       onClick={() =>
-                        router.push(`/articles/${article.slug}/update`)
+                        router.push(
+                          draft
+                            ? `/admin/brouillons/${draft.id}`
+                            : `/articles/${article.slug}/update`
+                        )
                       }
                     >
                       <PenBox

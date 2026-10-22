@@ -43,6 +43,11 @@ export type ArticleSortKey = keyof Pick<
   "title" | "author" | "createdAt" | "updatedAt" | "state"
 >;
 
+export type DraftSortKey = keyof Pick<
+  Draft,
+  "title" | "author" | "scheduledAt" | "createdAt" | "updatedAt"
+>;
+
 export interface ArticleContentProps {
   text: string;
 }
@@ -418,6 +423,8 @@ export interface DashboardElementProps {
   type: string;
   state?: string;
   isAdmin?: boolean | null;
+  // Méthodes : adresse de la fiche, absente sans slug
+  href?: string | null;
   // Commentaires : état de modération
   hidden?: boolean;
   reportsCount?: number;
@@ -428,6 +435,7 @@ export interface TabContentContainerProps {
   setSearchTerm: React.Dispatch<string>;
   users: User[];
   articles: Article[];
+  drafts: Draft[];
   methodes: Methodes[];
   comments: Comment[];
   isLoading: boolean;

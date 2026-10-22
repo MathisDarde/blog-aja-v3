@@ -1,17 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Article, Comment, Methodes, User } from "@/contexts/Interfaces";
+import { Article, Comment, Draft, Methodes, User } from "@/contexts/Interfaces";
 import TabContentContainer from "./TabContentContainer";
 import getAllMethodes from "@/actions/dashboard/get-methodes-infos";
 import { getAllUsers } from "@/controllers/UserController";
 import { getAllArticles } from "@/controllers/ArticlesController";
 import { getComments } from "@/controllers/CommentController";
+import displayBrouillons from "@/actions/article/display-brouillons";
 import Skeleton from "@/components/CustomSkeleton";
 
 export default function Dashboard() {
   const [users, setUsers] = useState<User[] | null>(null);
   const [articles, setArticles] = useState<Article[] | null>(null);
+  const [drafts, setDrafts] = useState<Draft[] | null>(null);
   const [methodes, setMethodes] = useState<Methodes[] | null>(null);
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,15 +21,17 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [usersRes, articlesRes, methodesRes, commentsRes] = await Promise.all([
+        const [usersRes, articlesRes, draftsRes, methodesRes, commentsRes] = await Promise.all([
           getAllUsers(),
           getAllArticles(),
+          displayBrouillons(),
           getAllMethodes(),
           getComments(),
         ]);
 
         setUsers(usersRes);
         setArticles(articlesRes);
+        setDrafts(draftsRes);
         setMethodes(methodesRes as Methodes[]);
         setComments(commentsRes);
       } catch (error) {
@@ -38,7 +42,7 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  const isLoading = !users || !articles || !methodes || !comments;
+  const isLoading = !users || !articles || !drafts || !methodes || !comments;
   const toModerate = comments?.filter((c) => (c.reportsCount ?? 0) > 0).length ?? 0;
 
   return (
@@ -89,6 +93,7 @@ export default function Dashboard() {
           setSearchTerm={setSearchTerm}
           users={users ?? []}
           articles={articles ?? []}
+          drafts={drafts ?? []}
           methodes={methodes ?? []}
           comments={comments ?? []}
           isLoading={isLoading}

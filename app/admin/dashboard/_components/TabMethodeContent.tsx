@@ -7,6 +7,7 @@ import { MethodeSortKey, Methodes } from "@/contexts/Interfaces";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { createPortal } from "react-dom";
 import Skeleton from "@/components/CustomSkeleton";
+import { methodeUrl } from "@/lib/methodes";
 
 export default function TabMethodeContent({
   searchTerm,
@@ -208,7 +209,11 @@ export default function TabMethodeContent({
             className="absolute z-50"
             style={{ top: popupPosition.top, left: popupPosition.left, maxWidth: "calc(100vw - 16px)" }}
           >
-            <ContextPopup id={selectedMethode.id_methode} type="method" />
+            <ContextPopup
+              id={selectedMethode.id_methode}
+              type="method"
+              href={methodeUrl(selectedMethode)}
+            />
           </div>,
           document.body
         )}

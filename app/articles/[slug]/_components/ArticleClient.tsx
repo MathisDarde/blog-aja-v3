@@ -1,5 +1,3 @@
-import getAllMethodes from "@/actions/method/get-all-methodes";
-import { getTeamLogoResolver, withPeriodClubLogos } from "@/lib/team-logos";
 import ArticleDisplay from "./ArticleDisplay";
 import { getArticle } from "../get-article";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
@@ -8,9 +6,7 @@ import { User } from "@/contexts/Interfaces";
 import { getUserbyId } from "@/controllers/UserController";
 import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
-import { linkMethodes, methodeAnchors } from "@/lib/methodes";
-import { citedMethodes } from "@/lib/methode-pages";
-import type { Methodes } from "@/contexts/Interfaces";
+import { withArticleMethodes } from "../article-methodes";
 import {
   AJA_ENTITY,
   jsonLd,
@@ -36,22 +32,15 @@ export default async function ArticleClient({ slug }: { slug: string }) {
 
   // null aussi pour un article non publié si l'utilisateur n'est pas admin
   if (!article) notFound();
-  // Logos des clubs des parcours selon l'époque (lib/team-logos)
-  const [rawMethodes, resolver] = await Promise.all([getAllMethodes(), getTeamLogoResolver()]);
-  const methodes = (rawMethodes?.map((m) => withPeriodClubLogos(m, resolver)) ?? null) as Methodes[] | null;
+  const prepared = await withArticleMethodes(article.content);
 
   const articleComments = await getCommentsbyArticle(article?.id_article);
 
   const articleLikes = await getLikesByArticle(article?.id_article);
 
-  if (!methodes) {
+  if (!prepared) {
     return <p>Erreur lors du chargement des méthodes.</p>;
   }
-
-  // Joueurs, coachs et saisons surlignés automatiquement (lib/methodes), puis mentions
-  // changées en liens vers les fiches ; seules les cartes des méthodes citées partent au navigateur
-  const linked = linkMethodes(article.content, methodes);
-  const cited = citedMethodes(linked, methodes, resolver);
 
   if (!article) {
     return <p>Chargement de l&apos;article</p>;
@@ -97,8 +86,8 @@ export default async function ArticleClient({ slug }: { slug: string }) {
       dangerouslySetInnerHTML={{ __html: jsonLd(articleJsonLd) }}
     />
     <ArticleDisplay
-      article={{ ...article, content: methodeAnchors(linked, methodes) }}
-      cited={cited}
+      article={{ ...article, content: prepared.content }}
+      cited={prepared.cited}
       articleComments={articleComments}
       articleLikes={articleLikes}
       user={user}

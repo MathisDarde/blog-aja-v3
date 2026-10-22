@@ -3,12 +3,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import TabUserContent from "./TabUserContent";
 import TabArticleContent from "./TabArticleContent";
+import TabDraftContent from "./TabDraftContent";
 import TabMethodeContent from "./TabMethodeContent";
 import TabCommentContent from "./TabCommentContent";
 import { ChevronDown, Search } from "lucide-react";
 import {
   Article,
   Comment,
+  Draft,
   Methodes,
   TabContentContainerProps,
   User,
@@ -19,6 +21,7 @@ export default function TabContentContainer({
   setSearchTerm,
   users,
   articles,
+  drafts,
   methodes,
   comments,
   isLoading,
@@ -30,6 +33,7 @@ export default function TabContentContainer({
   const menuItems = [
     { key: "users", label: "Utilisateurs" },
     { key: "articles", label: "Articles" },
+    { key: "drafts", label: "Brouillons" },
     { key: "methodes", label: "Méthodes expert" },
     { key: "comments", label: "Commentaires" },
   ];
@@ -124,6 +128,13 @@ export default function TabContentContainer({
         <TabArticleContent
           searchTerm={searchTerm}
           articles={articles as Article[]}
+          isLoading={isLoading}
+        />
+      )}
+      {activeMenu === "drafts" && (
+        <TabDraftContent
+          searchTerm={searchTerm}
+          drafts={drafts as Draft[]}
           isLoading={isLoading}
         />
       )}

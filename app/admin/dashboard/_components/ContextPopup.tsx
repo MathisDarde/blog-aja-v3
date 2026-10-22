@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import ActionPopup from "@/components/ActionPopup";
 import updateArticleStatus from "@/actions/article/archive-article";
 import deleteArticleSA from "@/actions/article/delete-article";
+import deleteDraftArticle from "@/actions/article/delete-draft";
 import deleteCommentAction from "@/actions/comment/delete-comment";
 import deleteMethode from "@/actions/method/delete-method";
 import deleteAccount from "@/actions/user/delete-account";
@@ -36,6 +37,7 @@ export default function ContextPopup({
   isAdmin,
   hidden,
   reportsCount,
+  href,
 }: DashboardElementProps) {
   const router = useRouter();
 
@@ -53,6 +55,9 @@ export default function ContextPopup({
           break;
         case "article":
           result = await deleteArticleSA(id);
+          break;
+        case "draft":
+          result = await deleteDraftArticle(id);
           break;
         case "comment":
           result = await deleteCommentAction(id);
@@ -130,13 +135,18 @@ export default function ContextPopup({
       case "article":
         router.push(`/articles/${id}`);
         break;
+      case "draft":
+        router.push(`/admin/brouillons/${id}/apercu`);
+        break;
       case "comment":
         const articleId = await getArticleIdByComment(id);
         if (articleId) router.push(`/articles/${articleId}#comment-${id}`);
         else toast.error("Impossible de retrouver l'article du commentaire");
         break;
       case "method":
-        return;
+        if (href) router.push(href);
+        else toast.error("Cette méthode n'a pas encore d'adresse");
+        break;
     }
   };
 
@@ -158,6 +168,9 @@ export default function ContextPopup({
             break;
         }
         break;
+      case "draft":
+        router.push(`/admin/brouillons/${id}`);
+        break;
       case "method":
         router.push(`/admin/dashboard/updateelement/${id}`);
         break;
@@ -167,16 +180,14 @@ export default function ContextPopup({
   return (
     <>
       <div className="bg-white p-2 rounded-xl flex flex-col gap-2 border border-gray-300 font-Montserrat">
-        {type !== "method" && (
-          <div
-            className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
-            onClick={() => previewElement(id, type)}
-          >
-            <SquareArrowOutUpRight size={20} /> Accéder à l&apos;élément
-          </div>
-        )}
+        <div
+          className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
+          onClick={() => previewElement(id, type)}
+        >
+          <SquareArrowOutUpRight size={20} /> Accéder à l&apos;élément
+        </div>
 
-        {(type == "article" || type == "method") && (
+        {(type == "article" || type == "draft" || type == "method") && (
           <div
             className="px-4 py-2 flex items-center gap-3 rounded-xl cursor-pointer transition-colors hover:bg-gray-100"
             onClick={() => updateElement(id, type)}

@@ -17,6 +17,17 @@ export async function getBrouillons(): Promise<SelectDraft[]> {
     .orderBy(asc(draftTable.scheduledAt), desc(draftTable.updatedAt));
 }
 
+export async function getBrouillonById(
+  draftId: string
+): Promise<SelectDraft | null> {
+  await requireAdmin();
+  const [draft] = await db
+    .select()
+    .from(draftTable)
+    .where(eq(draftTable.id_draft, draftId));
+  return draft ?? null;
+}
+
 export async function storeBrouillon(
   data: Partial<DraftArticleSchemaType>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -89,7 +100,10 @@ export async function updateBrouillon(
 
 export async function deleteBrouillon(draftId: string) {
   await requireAdmin();
-  return db.delete(draftTable).where(eq(draftTable.id_draft, draftId));
+  return db
+    .delete(draftTable)
+    .where(eq(draftTable.id_draft, draftId))
+    .returning({ id: draftTable.id_draft });
 }
 
 // null annule la programmation : le brouillon redevient un simple brouillon
