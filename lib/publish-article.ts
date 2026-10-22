@@ -13,6 +13,7 @@ export function revalidateArticlePages() {
   revalidatePath("/");
   revalidatePath("/articles");
   revalidatePath("/sitemap.xml");
+  revalidatePath("/rss.xml");
 }
 
 // Cloudinary ne génère le recadrage 1200x630 de la bannière qu'à la première demande :

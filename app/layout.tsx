@@ -105,6 +105,8 @@ export const metadata: Metadata = {
   // Résolu par Next sur le chemin de chaque page
   alternates: {
     canonical: "./",
+    // Flux des derniers articles (app/rss.xml)
+    types: { "application/rss+xml": [{ url: "/rss.xml", title: SITE_NAME }] },
   },
 
   // Ancrage local (Auxerre, Yonne) lu par certains moteurs et annuaires
