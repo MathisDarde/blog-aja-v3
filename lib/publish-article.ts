@@ -12,6 +12,7 @@ import { after } from "next/server";
 export function revalidateArticlePages() {
   revalidatePath("/");
   revalidatePath("/articles");
+  revalidatePath("/categories");
   revalidatePath("/sitemap.xml");
   revalidatePath("/rss.xml");
 }

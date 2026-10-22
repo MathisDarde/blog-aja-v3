@@ -6,6 +6,7 @@ import XformerlyTwitter from "./Twitter";
 import Facebook from "./Facebook";
 import TikTok from "./Tiktok";
 import { useState } from "react";
+import { Rss } from "lucide-react";
 
 export default function Footer() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -55,6 +56,11 @@ export default function Footer() {
             <Facebook fontSize={14} />
             <p>@memoiredauxerrois</p>
           </div>
+          {/* Flux des derniers articles (app/rss.xml) */}
+          <a href="/rss.xml" className="flex items-center gap-2 hover:underline hover:text-orange-third">
+            <Rss size={14} />
+            <span>Flux RSS des articles</span>
+          </a>
         </div>
       ),
     },
