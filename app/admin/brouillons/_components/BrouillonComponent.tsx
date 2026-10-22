@@ -2,8 +2,9 @@
 
 import { Draft } from "@/contexts/Interfaces";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, Eye } from "lucide-react";
 import { formatScheduledAt } from "@/lib/schedule-date";
 
 export default function BrouillonComponent({
@@ -60,6 +61,13 @@ export default function BrouillonComponent({
                 <p className="text-black text-justify font-Montserrat mx-auto text-sm leading-5">
                   {brouillon.teaser}
                 </p>
+                <Link
+                  href={`/admin/brouillons/${brouillon.id_draft}/apercu`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-auto pt-4 self-end flex items-center gap-1.5 text-sm font-semibold font-Montserrat text-aja-blue hover:text-orange-third transition-colors"
+                >
+                  <Eye size={16} /> Aperçu
+                </Link>
               </div>
             </div>
           ))

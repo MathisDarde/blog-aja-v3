@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   CalendarClock,
+  Eye,
   X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -173,19 +174,40 @@ export default function MultiStepArticleForm({
     toast.error(response.message ?? response.errors?.[0]?.message);
   };
 
-  const handleSaveDraft = async () => {
-    // Un article programmé sera publié tel quel : il doit rester complet
+  // Un article programmé sera publié tel quel : il doit rester complet
+  const canSaveDraft = async () => {
     if (scheduledAt && (!(await trigger()) || !uploadedUrl)) {
       toast.error(
         "Cet article est programmé : complétez-le ou retirez la programmation pour l'enregistrer incomplet",
       );
-      return;
+      return false;
     }
+    return true;
+  };
+
+  const handleSaveDraft = async () => {
+    if (!(await canSaveDraft())) return;
     const response = draft
       ? await updateBrouillonForm(draft.id_draft, getValues())
       : await storeDraftArticle(getValues(), user_id!);
     if (response.success) redirect("/admin/brouillons");
     toast.error(response.message ?? response.errors?.[0]?.message);
+  };
+
+  // Enregistre le brouillon puis l'affiche comme publié, dans un nouvel onglet
+  const handlePreview = async () => {
+    if (!draft || !(await canSaveDraft())) return;
+    // Onglet ouvert tout de suite : ouvert après l'enregistrement, il serait bloqué
+    const tab = window.open("", "_blank");
+    const response = await updateBrouillonForm(draft.id_draft, getValues());
+    if (!response.success) {
+      tab?.close();
+      toast.error(response.message ?? response.errors?.[0]?.message);
+      return;
+    }
+    const url = `/admin/brouillons/${draft.id_draft}/apercu`;
+    if (tab) tab.location.href = url;
+    else window.location.href = url;
   };
 
   const openSchedule = () => {
@@ -270,6 +292,17 @@ export default function MultiStepArticleForm({
               <Save size={18} />
               <span className="hidden md:block">Brouillon</span>
             </button>
+            {draft && (
+              <button
+                type="button"
+                onClick={handlePreview}
+                title="Enregistrer et voir l'aperçu"
+                className="p-2.5 sm:px-5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-all font-Bai_Jamjuree flex items-center gap-2"
+              >
+                <Eye size={18} />
+                <span className="hidden md:block">Aperçu</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={openSchedule}
