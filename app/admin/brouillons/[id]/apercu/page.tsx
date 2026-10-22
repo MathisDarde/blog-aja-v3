@@ -5,9 +5,6 @@ import { withArticleMethodes } from "@/app/articles/[slug]/article-methodes";
 import { withHeadingAnchors } from "@/lib/article-toc";
 import { relatedArticles } from "@/lib/related-articles";
 import { getBrouillonById } from "@/controllers/DraftController";
-import { isAuthenticated } from "@/actions/user/is-user-connected";
-import { getUserbyId } from "@/controllers/UserController";
-import { User } from "@/contexts/Interfaces";
 
 export const metadata: Metadata = {
   title: "Aperçu du brouillon",
@@ -20,15 +17,6 @@ export default async function ApercuBrouillonPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const auth = await isAuthenticated();
-
-  let user: User | null = null;
-
-  if (auth?.user?.id) {
-    const users = await getUserbyId(auth.user.id);
-    user = users?.[0] ?? null;
-  }
-
   const brouillon = await getBrouillonById((await params).id);
   if (!brouillon) notFound();
 
@@ -66,7 +54,6 @@ export default async function ApercuBrouillonPage({
       related={related}
       articleComments={[]}
       articleLikes={[]}
-      user={user}
       draft={{ id: brouillon.id_draft, scheduledAt: brouillon.scheduledAt }}
     />
   );

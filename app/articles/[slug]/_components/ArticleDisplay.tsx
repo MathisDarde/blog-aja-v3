@@ -37,13 +37,13 @@ import ActionPopup from "@/components/ActionPopup";
 import removeLike from "@/actions/article/remove-like";
 import likeArticle from "@/actions/article/like-article";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 
 export default function ArticleDisplay({
   article,
   cited,
   articleComments,
   articleLikes,
-  user,
   draft,
   toc,
   related,
@@ -52,7 +52,6 @@ export default function ArticleDisplay({
   cited: CitedMethodes;
   articleComments: Comment[];
   articleLikes: ArticleLikes[];
-  user: User | null;
   // Aperçu d'un brouillon (admin) : modifier et supprimer agissent sur le brouillon
   draft?: { id: string; scheduledAt: Date | null };
   // Intertitres de l'article (lib/article-toc)
@@ -61,6 +60,9 @@ export default function ArticleDisplay({
   related: ArticleCard[];
 }) {
   const router = useRouter();
+  // Session lue dans le navigateur : la page elle-même est servie en cache, la même pour tous
+  const { data: session } = authClient.useSession();
+  const user = (session?.user ?? null) as User | null;
   const isAdmin = user?.admin;
 
   const [isMethodOpen, setIsMethodOpen] = useState(false);
@@ -68,10 +70,13 @@ export default function ArticleDisplay({
   const [deletePopupOpen, setDeletePopupOpen] = useState(false);
   const readingTime = useMemo(() => readingMinutes(article.content), [article.content]);
 
-  // Likes
-  const userLike = articleLikes.find((l) => l.userId === user?.id);
-  const [liked, setLiked] = useState(!!userLike);
+  // Likes : « aimé » connu une fois la session chargée
+  const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(articleLikes.length);
+  const userId = user?.id;
+  useEffect(() => {
+    setLiked(!!userId && articleLikes.some((l) => l.userId === userId));
+  }, [userId, articleLikes]);
   const [confirmUnlike, setConfirmUnlike] = useState(false);
 
   const handleLikeClick = async () => {

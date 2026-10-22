@@ -2,6 +2,15 @@ import type { Metadata } from "next";
 import ArticleClient from "./_components/ArticleClient";
 import { getArticle } from "./get-article";
 import { SITE_NAME, socialImageUrl, tagLabels } from "@/lib/seo";
+import { getArticles } from "@/controllers/ArticlesController";
+
+// Page servie en cache, régénérée dès qu'un article, un commentaire ou un like change
+// (lib/publish-article, lib/article-cache) et au plus tard toutes les 5 min (méthodes)
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  return (await getArticles()).map((article) => ({ slug: article.slug }));
+}
 
 export async function generateMetadata({
   params,
@@ -31,10 +40,6 @@ export async function generateMetadata({
     keywords: tags,
     authors: article.author ? [{ name: article.author }] : undefined,
     alternates: { canonical: `/articles/${article.slug}` },
-    // Un brouillon prévisualisé par un admin ne doit jamais être indexé
-    ...(article.state !== "published" && {
-      robots: { index: false, follow: false },
-    }),
     openGraph: {
       type: "article",
       title: `${article.title} | ${SITE_NAME}`,

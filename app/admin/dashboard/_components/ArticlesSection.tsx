@@ -103,7 +103,8 @@ export default function ArticlesSection({
           <ContextPopup
             id={a.id_article}
             type="article"
-            href={`/articles/${a.slug}`}
+            // Un article archivé n'a plus de page publique
+            href={a.state === "published" ? `/articles/${a.slug}` : null}
             editHref={`/articles/${a.slug}/update`}
             state={a.state}
             onDone={close}

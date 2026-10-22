@@ -15,6 +15,8 @@ export function revalidateArticlePages() {
   revalidatePath("/categories");
   revalidatePath("/sitemap.xml");
   revalidatePath("/rss.xml");
+  // Pages des articles : liste « À lire aussi », articles archivés ou republiés
+  revalidatePath("/articles/[slug]", "page");
 }
 
 // Cloudinary ne génère le recadrage 1200x630 de la bannière qu'à la première demande :

@@ -5,6 +5,7 @@ import { likedArticles, SelectLikedArticles } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
+import { revalidateArticle } from "@/lib/article-cache";
 
 export async function storeLike(userId: string, articleId: string) {
     await requireSelfOrAdmin(userId);
@@ -16,7 +17,8 @@ export async function storeLike(userId: string, articleId: string) {
       articleId,
       likedAt: new Date(),
     });
-  
+
+    await revalidateArticle(articleId);
     return { id_like, userId, articleId };
   }
 
@@ -39,6 +41,7 @@ export async function deleteLike(userId: string, articleId: string) {
           eq(likedArticles.articleId, articleId)
         )
       );
+    await revalidateArticle(articleId);
   }
 
 export async function getLikesByArticle(articleId: string): Promise<

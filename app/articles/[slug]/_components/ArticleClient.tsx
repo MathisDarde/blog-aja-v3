@@ -1,9 +1,6 @@
 import ArticleDisplay from "./ArticleDisplay";
 import { getArticle } from "../get-article";
 import { getCommentsbyArticle } from "@/controllers/CommentController";
-import { isAuthenticated } from "@/actions/user/is-user-connected";
-import { User } from "@/contexts/Interfaces";
-import { getUserbyId } from "@/controllers/UserController";
 import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
 import { withArticleMethodes } from "../article-methodes";
@@ -19,20 +16,11 @@ import {
 } from "@/lib/seo";
 
 export default async function ArticleClient({ slug }: { slug: string }) {
-  const auth = await isAuthenticated();
-
-  let user: User | null = null;
-
-  if (auth?.user?.id) {
-    const users = await getUserbyId(auth.user.id);
-    user = users?.[0] ?? null;
-  }
-
   if (!slug) notFound();
 
   const article = await getArticle(slug);
 
-  // null aussi pour un article non publié si l'utilisateur n'est pas admin
+  // Articles publiés seulement (les brouillons ont leur aperçu dans l'admin)
   if (!article) notFound();
   const [prepared, related] = await Promise.all([withArticleMethodes(article.content), relatedArticles(article)]);
 
@@ -96,7 +84,6 @@ export default async function ArticleClient({ slug }: { slug: string }) {
       related={related}
       articleComments={articleComments}
       articleLikes={articleLikes}
-      user={user}
     />
     </>
   );

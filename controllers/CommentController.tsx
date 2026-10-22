@@ -14,6 +14,7 @@ import { and, count, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin, requireUser } from "@/lib/auth-guard";
 import { isRateLimited } from "@/lib/rate-limit";
+import { articleOfComment, revalidateArticle, revalidateArticleOfComment } from "@/lib/article-cache";
 
 // Au-delà, le commentaire est masqué en attendant qu'un admin tranche
 const COMMENT_REPORTS_AUTO_HIDE = 3;
@@ -59,8 +60,9 @@ export async function createComment(
 
   const { title, stars, content } = data;
 
+  const id_comment = uuidv4();
   const result = await db.insert(commentsTable).values({
-    id_comment: uuidv4(),
+    id_comment,
     title,
     stars,
     content,
@@ -68,6 +70,7 @@ export async function createComment(
     articleId,
   });
 
+  await revalidateArticle(articleId);
   return result;
 }
 
@@ -97,11 +100,14 @@ export async function updateComment(
     .update(commentsTable)
     .set({ title, stars, content })
     .where(eq(commentsTable.id_comment, commentId));
+  await revalidateArticleOfComment(commentId);
 }
 
 export async function deleteComment(commentId: SelectComment["id_comment"]) {
   await requireCommentOwnerOrAdmin(commentId);
+  const articleId = await articleOfComment(commentId);
   await db.delete(commentsTable).where(eq(commentsTable.id_comment, commentId));
+  if (articleId) await revalidateArticle(articleId);
 }
 
 export async function getCommentsbyArticle(
@@ -159,11 +165,13 @@ export async function reportComment(
     .from(commentReportsTable)
     .where(eq(commentReportsTable.commentId, commentId));
 
-  if (total >= COMMENT_REPORTS_AUTO_HIDE) {
+  const autoHidden = total >= COMMENT_REPORTS_AUTO_HIDE;
+  if (autoHidden) {
     await db
       .update(commentsTable)
       .set({ hidden: true })
       .where(eq(commentsTable.id_comment, commentId));
+    await revalidateArticleOfComment(commentId);
   }
   return null;
 }
@@ -176,6 +184,7 @@ export async function setCommentHidden(commentId: string, hidden: boolean) {
     .set({ hidden })
     .where(eq(commentsTable.id_comment, commentId));
   if (!hidden) await dismissReports(commentId);
+  await revalidateArticleOfComment(commentId);
 }
 
 /** Efface les signalements d'un commentaire jugé acceptable, sans changer sa visibilité. */

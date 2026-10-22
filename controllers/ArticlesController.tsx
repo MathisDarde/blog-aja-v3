@@ -8,7 +8,7 @@ import {
   SelectPost,
 } from "@/db/schema";
 import { ArticleSchemaType } from "@/types/forms";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { ensureCloudinaryUrl } from "@/lib/store-cloudinary-image";
 import {
   getSessionUser,
@@ -71,6 +71,15 @@ export async function getArticlebyId(
       | "published"
       | "archived",
   };
+}
+
+// Sans session : la page publique d'un article est servie en cache (app/articles/[slug])
+export async function getPublishedArticleBySlug(slug: string): Promise<SelectArticle | null> {
+  const [article] = await db
+    .select()
+    .from(articlesTable)
+    .where(and(eq(articlesTable.slug, slug), eq(articlesTable.state, "published")));
+  return article ? { ...article, state: "published" } : null;
 }
 
 export async function getArticleBySlug(
