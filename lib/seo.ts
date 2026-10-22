@@ -120,15 +120,6 @@ export function socialImageUrl(
     .replace(/\.(webp|avif|png|jpeg|gif)$/i, ".jpg");
 }
 
-// Portrait entier, sans recadrage, sur la même photo floutée en fond, au format de partage
-export function paddedSocialImageUrl(imageUrl: string | null | undefined) {
-  const match = imageUrl?.match(/^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(?:v\d+\/)?(.+)\.[a-z0-9]+$/i);
-  if (!imageUrl || !match) return null;
-  const [, base, publicId] = match;
-  const overlay = publicId.replace(/\//g, ":");
-  return `${base}c_fill,w_1200,h_630/e_blur:1500/e_brightness:-20/l_${overlay}/c_fit,w_1200,h_630/fl_layer_apply/f_jpg,q_auto/${publicId}.jpg`;
-}
-
 // Google recommande plusieurs ratios (16:9, 4:3, 1:1) pour les résultats enrichis et Discover
 export function structuredDataImages(imageUrl: string | null | undefined) {
   return [

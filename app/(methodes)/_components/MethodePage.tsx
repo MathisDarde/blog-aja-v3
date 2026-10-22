@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMethodePage, isoDate, MethodePageData } from "@/lib/methode-pages";
 import { MethodeType } from "@/lib/methodes";
-import { AJA_ENTITY, jsonLd, paddedSocialImageUrl, SITE_NAME, SITE_URL } from "@/lib/seo";
+import { AJA_ENTITY, jsonLd, SITE_NAME, SITE_URL } from "@/lib/seo";
 import AdminEditButton from "./AdminEditButton";
 import { Crossings } from "./Crossings";
 import { CoachView, JoueurView, MatchView, SaisonView } from "./MethodeViews";
@@ -14,15 +14,7 @@ export async function methodeMetadata(type: MethodeType, slug: string): Promise<
   const page = await getMethodePage(type, slug);
   if (!page) return { title: "Fiche introuvable", robots: { index: false } };
 
-  const { methode } = page;
-  const portrait =
-    methode.typemethode === "joueur"
-      ? paddedSocialImageUrl(methode.imagejoueur)
-      : methode.typemethode === "coach"
-        ? paddedSocialImageUrl(methode.imagecoach)
-        : null;
-  // Matchs et saisons : bannière générée par l'opengraph-image du segment
-  const image = portrait && { url: portrait, width: 1200, height: 630, type: "image/jpeg", alt: page.h1 };
+  // Bannière de partage générée par l'opengraph-image de chaque segment (lib/og-image)
   const fullTitle = `${page.title} | ${SITE_NAME}`;
 
   return {
@@ -38,13 +30,11 @@ export async function methodeMetadata(type: MethodeType, slug: string): Promise<
       url: page.url,
       siteName: SITE_NAME,
       locale: "fr_FR",
-      ...(image && { images: [image] }),
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description: page.description,
-      ...(image && { images: [image.url] }),
     },
   };
 }

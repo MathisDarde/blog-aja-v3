@@ -253,3 +253,117 @@ export async function renderMethodeOgImage({
     },
   );
 }
+
+// --- Bannières des joueurs et des coachs (pages /joueurs et /coachs) ---
+
+// Portrait recadré au format du panneau par Cloudinary, en JPEG (le moteur de rendu ne lit pas le WebP)
+function portraitUrl(src: string, width: number, height: number) {
+  const match = src.match(/^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(.*)$/);
+  return match ? `${match[1]}c_fill,g_face,w_${width},h_${height},f_jpg,q_auto/${match[2]}` : src;
+}
+
+const isAja = (club: string) => /^(aj )?auxerre$/i.test(club.trim());
+
+/**
+ * Portrait à gauche ; nom, poste et logos des clubs du parcours (d'époque) à droite,
+ * avec les années à l'AJA.
+ */
+export async function renderPersonOgImage({
+  kind,
+  name,
+  subtitle,
+  portrait,
+  clubs,
+  siteUrl,
+}: {
+  kind: "joueur" | "coach";
+  name: string;
+  subtitle: string;
+  portrait: string | null | undefined;
+  // [logo, nom, années] du parcours, chaque logo avec ses solutions de repli
+  clubs: { logos: (string | null | undefined)[]; name: string; years: string }[];
+  siteUrl: string;
+}) {
+  const PANEL = { width: 440, height: 630 };
+  // Un club une seule fois, dans l'ordre du parcours
+  const distinct = clubs.filter((c, i) => clubs.findIndex((o) => o.name === c.name) === i).slice(0, 6);
+  const ajaYears = clubs.filter((c) => isAja(c.name)).map((c) => c.years).join(", ");
+
+  const [photo, loaded, brand, bold, medium] = await Promise.all([
+    portrait ? loadLogo([portraitUrl(portrait, PANEL.width, PANEL.height)], siteUrl) : null,
+    Promise.all(distinct.map((c) => loadLogo(c.logos, siteUrl))),
+    asset("public/icons/icon-192.png"),
+    asset("assets/fonts/BaiJamjuree-Bold.ttf"),
+    asset("assets/fonts/BaiJamjuree-Medium.ttf"),
+  ]);
+  // Deux passages au même club (ou ses deux noms) : un seul logo
+  const logos = loaded.filter((src, i): src is string => !!src && loaded.indexOf(src) === i);
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          fontFamily: "Bai Jamjuree",
+          color: "#0f2a5c",
+          backgroundImage: "linear-gradient(180deg, #e8eff8 0%, #c3d4ea 100%)",
+          position: "relative",
+        }}
+      >
+        <div style={{ ...PANEL, display: "flex", backgroundColor: "#0f2a5c" }}>
+          {photo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photo} width={PANEL.width} height={PANEL.height} alt="" style={{ objectFit: "cover" }} />
+          )}
+        </div>
+
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 56px 40px" }}>
+          <div style={{ fontSize: 26, fontWeight: 500, color: "#3c77b4", textTransform: "uppercase", letterSpacing: 2 }}>
+            {kind === "joueur" ? "Fiche du joueur" : "Fiche du coach"}
+          </div>
+          <div style={{ fontSize: name.length > 18 ? 60 : 76, fontWeight: 700, lineHeight: 1.05, marginTop: 8 }}>{name}</div>
+          <div style={{ fontSize: 32, fontWeight: 500, color: "#3c5478", marginTop: 10 }}>{subtitle}</div>
+          {ajaYears && (
+            <div style={{ fontSize: 28, fontWeight: 700, color: "#f76200", marginTop: 6 }}>{`À l'AJA : ${ajaYears}`}</div>
+          )}
+
+          {logos.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 18, marginTop: 34 }}>
+              {logos.map((src, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={i} src={src} width={76} height={76} alt="" style={{ objectFit: "contain" }} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: 28,
+            right: 40,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            fontSize: 24,
+            fontWeight: 700,
+            textTransform: "uppercase",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={dataUri(brand, "image/png")} width={36} height={36} alt="" />
+          Mémoire d&apos;Auxerrois
+        </div>
+      </div>
+    ),
+    {
+      ...OG_SIZE,
+      fonts: [
+        { name: "Bai Jamjuree", data: bold, weight: 700, style: "normal" },
+        { name: "Bai Jamjuree", data: medium, weight: 500, style: "normal" },
+      ],
+    },
+  );
+}
