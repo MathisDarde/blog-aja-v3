@@ -8,6 +8,7 @@ import { getLikesByArticle } from "@/controllers/LikedArticlesController";
 import { notFound } from "next/navigation";
 import { withArticleMethodes } from "../article-methodes";
 import { withHeadingAnchors } from "@/lib/article-toc";
+import { relatedArticles } from "@/lib/related-articles";
 import {
   AJA_ENTITY,
   jsonLd,
@@ -33,7 +34,7 @@ export default async function ArticleClient({ slug }: { slug: string }) {
 
   // null aussi pour un article non publié si l'utilisateur n'est pas admin
   if (!article) notFound();
-  const prepared = await withArticleMethodes(article.content);
+  const [prepared, related] = await Promise.all([withArticleMethodes(article.content), relatedArticles(article)]);
 
   const articleComments = await getCommentsbyArticle(article?.id_article);
 
@@ -92,6 +93,7 @@ export default async function ArticleClient({ slug }: { slug: string }) {
       article={{ ...article, content: html }}
       cited={prepared.cited}
       toc={toc}
+      related={related}
       articleComments={articleComments}
       articleLikes={articleLikes}
       user={user}

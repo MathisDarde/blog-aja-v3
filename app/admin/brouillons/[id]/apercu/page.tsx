@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import ArticleDisplay from "@/app/articles/[slug]/_components/ArticleDisplay";
 import { withArticleMethodes } from "@/app/articles/[slug]/article-methodes";
 import { withHeadingAnchors } from "@/lib/article-toc";
+import { relatedArticles } from "@/lib/related-articles";
 import { getBrouillonById } from "@/controllers/DraftController";
 import { isAuthenticated } from "@/actions/user/is-user-connected";
 import { getUserbyId } from "@/controllers/UserController";
@@ -31,7 +32,10 @@ export default async function ApercuBrouillonPage({
   const brouillon = await getBrouillonById((await params).id);
   if (!brouillon) notFound();
 
-  const prepared = await withArticleMethodes(brouillon.content ?? "");
+  const [prepared, related] = await Promise.all([
+    withArticleMethodes(brouillon.content ?? ""),
+    relatedArticles({ slug: brouillon.slug ?? "", tags: brouillon.tags ?? [], content: brouillon.content ?? "" }),
+  ]);
   if (!prepared) {
     return <p>Erreur lors du chargement des méthodes.</p>;
   }
@@ -59,6 +63,7 @@ export default async function ApercuBrouillonPage({
       }}
       cited={prepared.cited}
       toc={toc}
+      related={related}
       articleComments={[]}
       articleLikes={[]}
       user={user}

@@ -20,6 +20,7 @@ import deleteDraftArticle from "@/actions/article/delete-draft";
 import { formatScheduledAt } from "@/lib/schedule-date";
 import {
   Article,
+  ArticleCard,
   ArticleLikes,
   Comment,
   User,
@@ -28,6 +29,7 @@ import type { CitedMethodes } from "@/lib/methode-pages";
 import DisplayArticleComments from "./DisplayComments";
 import CitedMethodesPanel from "./CitedMethodesPanel";
 import ArticleToc from "./ArticleToc";
+import ArticleShowcase from "@/components/ArticleComponent";
 import { MIN_TOC_ENTRIES, TocEntry } from "@/lib/article-toc";
 import { readingMinutes } from "@/lib/reading-time";
 import { useRouter } from "next/navigation";
@@ -44,6 +46,7 @@ export default function ArticleDisplay({
   user,
   draft,
   toc,
+  related,
 }: {
   article: Article;
   cited: CitedMethodes;
@@ -54,6 +57,8 @@ export default function ArticleDisplay({
   draft?: { id: string; scheduledAt: Date | null };
   // Intertitres de l'article (lib/article-toc)
   toc: TocEntry[];
+  // Articles qui citent les mêmes méthodes ou tags (lib/related-articles)
+  related: ArticleCard[];
 }) {
   const router = useRouter();
   const isAdmin = user?.admin;
@@ -358,6 +363,25 @@ export default function ArticleDisplay({
           <div className="font-Montserrat text-justify bg-white rounded-xl p-4 sm:p-8 leading-5 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-base ">
             <ArticleContent text={article.content} />
           </div>
+
+          {related.length > 0 && (
+            <section className="mt-2 sm:mt-4">
+              <h2 className="font-Bai_Jamjuree text-2xl sm:text-3xl font-bold uppercase mb-4">À lire aussi</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                {related.map((card) => (
+                  <div key={card.id_article} className="bg-white rounded-xl p-4">
+                    <ArticleShowcase
+                      article={card}
+                      displayPosition="vertical"
+                      size="small"
+                      showTags={false}
+                      showTeaser={true}
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {article.state !== "pending" && (
             <DisplayArticleComments
