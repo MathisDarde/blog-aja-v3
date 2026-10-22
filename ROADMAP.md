@@ -13,7 +13,7 @@
 ## 2. Articles
 
 - [x] Recherche sur `/articles` : titre, tags, chapô, auteur et texte brut ; sans accents ni casse, tous les mots requis, classée par pertinence (`lib/article-search.ts`)
-- [ ] Pagination de `/articles`
+- [x] Pagination de `/articles` : 12 articles par page, `?page=` dans l'URL (garde la recherche et les filtres), retour à la page 1 à chaque nouvelle recherche (`lib/pagination.ts`)
 
 ## 3. Admin
 
@@ -34,4 +34,4 @@
 
 - [x] Scrapers automatiques : saison et championnat détectés, passage toutes les 2 h, défi anti-robot de Transfermarkt résolu, échecs signalés par mail
 - [x] Tests des parseurs sur pages réelles : 43 tests pytest (scrapers) + 28 tests Vitest (blog), à chaque push
-- [ ] Migrer `next lint` vers l'ESLint CLI (`npx @next/codemod@canary next-lint-to-eslint-cli .`) avant Next 16
+- [x] `next lint` remplacé par l'ESLint CLI (`eslint .`, qui couvre aussi `actions`, `contexts`, `controllers`)

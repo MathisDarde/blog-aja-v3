@@ -8,12 +8,15 @@ import { SearchableArticle, searchArticles } from "@/lib/article-search";
 import FilterContent from "./FilterContent";
 import Button from "@/components/BlueButton";
 import ArticleShowcase from "@/components/ArticleComponent";
+import { paginate, parsePage } from "@/lib/pagination";
+import Pagination from "./Pagination";
 
 type ArticleParams = {
   searchQuery: string;
   yearfilter: string;
   playerfilter: string;
   leaguefilter: string;
+  page: number;
 };
 
 type ArticleCenterProps = {
@@ -32,6 +35,7 @@ export default function ArticleCenter(props: ArticleCenterProps) {
       yearfilter={searchParams.get("year") || ""}
       playerfilter={searchParams.get("player") || ""}
       leaguefilter={searchParams.get("league") || ""}
+      page={parsePage(searchParams.get("page"))}
     />
   );
 }
@@ -45,6 +49,7 @@ export function ArticleCenterView({
   yearfilter,
   playerfilter,
   leaguefilter,
+  page,
 }: ArticleCenterProps & ArticleParams) {
   const router = useRouter();
 
@@ -93,6 +98,7 @@ export function ArticleCenterView({
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams(window.location.search);
+    params.delete("page");
 
     if (yearfilter) params.set("year", yearfilter);
     if (playerfilter) params.set("player", playerfilter);
@@ -109,6 +115,7 @@ export function ArticleCenterView({
 
   const applyFilter = (filterType: string, value: string) => {
     const params = new URLSearchParams(window.location.search);
+    params.delete("page");
 
     if (searchQuery) params.set("q", searchQuery);
 
@@ -127,6 +134,7 @@ export function ArticleCenterView({
   const removeFilter = (type: "year" | "player" | "league") => {
     const params = new URLSearchParams(window.location.search);
     params.delete(type);
+    params.delete("page");
     router.push(`/articles?${params.toString()}`);
   };
 
@@ -138,6 +146,20 @@ export function ArticleCenterView({
     );
     return searchArticles(tagged, searchQuery);
   }, [articles, searchQuery, yearfilter, playerfilter, leaguefilter]);
+
+  const pagination = paginate(filteredArticles, page);
+
+  // Lien vers une autre page en gardant la recherche et les filtres en cours
+  const pageHref = (target: number) => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("q", searchQuery);
+    if (yearfilter) params.set("year", yearfilter);
+    if (playerfilter) params.set("player", playerfilter);
+    if (leaguefilter) params.set("league", leaguefilter);
+    if (target > 1) params.set("page", String(target));
+    const query = params.toString();
+    return query ? `/articles?${query}` : "/articles";
+  };
 
   return (
     <div className="text-center bg-gray-100 min-h-screen w-screen box-border p-6 md:p-10">
@@ -240,7 +262,7 @@ export function ArticleCenterView({
               Aucun article ne correspond à votre recherche.
             </p>
           ) : (
-            filteredArticles.map((article) => (
+            pagination.items.map((article) => (
               <div key={article.id_article} className="bg-white p-4">
                 <ArticleShowcase
                   article={article}
@@ -255,6 +277,12 @@ export function ArticleCenterView({
             ))
           )}
         </div>
+
+        <Pagination
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          pageHref={pageHref}
+        />
       </div>
     </div>
   );

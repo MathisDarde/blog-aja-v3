@@ -63,8 +63,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     sortOrder,
   }: SortParams<T>): T[] {
     return [...elements].sort((a, b) => {
-      let aValue: unknown = a[sortKey];
-      let bValue: unknown = b[sortKey];
+      const aValue: unknown = a[sortKey];
+      const bValue: unknown = b[sortKey];
 
       // Cas spécial pour Date
       if (aValue instanceof Date && bValue instanceof Date) {
