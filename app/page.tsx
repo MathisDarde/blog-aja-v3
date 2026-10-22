@@ -45,6 +45,8 @@ export default async function Page() {
 
   const randomCategories = getRandomElements(categories, 7);
   const randomArticles = getRandomElements(articles, 3);
+  // Tiré ici, pas dans le composant : le serveur et le navigateur afficheraient deux tirages
+  const otherArticles = getRandomElements(articles, 4);
 
   const siteJsonLd = {
     "@context": "https://schema.org",
@@ -98,9 +100,9 @@ export default async function Page() {
             <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-6">
               {/* Partie Gauche : Dernier Article (60% sur desktop) */}
               <div className="w-full lg:w-[60%]">
-                <h3 className="text-xl sm:text-2xl font-semibold mb-4 font-Bai_Jamjuree uppercase text-center lg:text-left w-full">
+                <h2 className="text-xl sm:text-2xl font-semibold mb-4 font-Bai_Jamjuree uppercase text-center lg:text-left w-full">
                   Dernier article publié
-                </h3>
+                </h2>
                 <div className="h-full">
                   <LastArticle articles={articles} />
                 </div>
@@ -108,11 +110,11 @@ export default async function Page() {
 
               {/* Partie Droite : Recommandations (40% sur desktop) */}
               <div className="w-full lg:w-[40%]">
-                <h3 className="text-xl sm:text-2xl font-semibold mb-4 font-Bai_Jamjuree uppercase text-center lg:text-left w-full">
+                <h2 className="text-xl sm:text-2xl font-semibold mb-4 font-Bai_Jamjuree uppercase text-center lg:text-left w-full">
                   Articles que vous pourriez aimer
-                </h3>
+                </h2>
                 <div className="w-full">
-                  <DisplayRandom articles={articles} />
+                  <DisplayRandom articles={otherArticles} />
                 </div>
               </div>
             </div>

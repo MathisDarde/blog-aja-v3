@@ -29,7 +29,7 @@ export default function DisplayAllCategories({ counts }: { counts: Record<string
         return (
           <section key={type} className="mb-10 sm:mb-14">
             <h2 className="font-Bai_Jamjuree text-xl sm:text-2xl font-bold uppercase mb-4">
-              {title} <span className="text-gray-400">({list.length})</span>
+              {title} <span className="text-gray-500">({list.length})</span>
             </h2>
             {type === "player" ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5">
@@ -43,12 +43,14 @@ export default function DisplayAllCategories({ counts }: { counts: Record<string
                   type === "year" ? "lg:grid-cols-3" : "lg:grid-cols-5"
                 }`}
               >
-                {sorted.map((category) => (
+                {sorted.map((category, index) => (
                   <CoverCard
                     key={category.id}
                     category={category}
                     count={counts[category.value] ?? 0}
                     tall={type === "league"}
+                    // Premières époques visibles dès l'arrivée : chargées en priorité
+                    priority={type === "year" && index < 3}
                   />
                 ))}
               </div>
@@ -80,7 +82,17 @@ function CategoryLink({
 }
 
 /** Époque ou compétition : photo pleine, titre sur un dégradé. */
-function CoverCard({ category, count, tall }: { category: Category; count: number; tall: boolean }) {
+function CoverCard({
+  category,
+  count,
+  tall,
+  priority,
+}: {
+  category: Category;
+  count: number;
+  tall: boolean;
+  priority?: boolean;
+}) {
   return (
     <CategoryLink
       category={category}
@@ -93,6 +105,7 @@ function CoverCard({ category, count, tall }: { category: Category; count: numbe
         src={category.img}
         alt=""
         fill
+        priority={priority}
         sizes={tall ? "(min-width: 1024px) 20vw, 50vw" : "(min-width: 1024px) 33vw, 50vw"}
         className={`object-cover object-top transition-transform duration-300 group-hover:scale-105 ${
           count === 0 ? "grayscale" : ""
@@ -136,7 +149,7 @@ function PlayerCard({ category, count }: { category: Category; count: number }) 
         </p>
         <p
           className={`mt-auto text-xs font-semibold flex items-center gap-1 ${
-            count > 0 ? "text-orange-third" : "text-gray-400"
+            count > 0 ? "text-orange-third" : "text-gray-500"
           }`}
         >
           <Newspaper size={14} /> {articleCount(count)}

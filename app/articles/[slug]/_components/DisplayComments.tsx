@@ -84,7 +84,7 @@ export default function DisplayArticleComments({
                           onClick={() => setIsPublishingComment(true)}
                         >
                           <Plus />{" "}
-                          <span className="hidden md:block">
+                          <span className="sr-only md:not-sr-only">
                             Ajouter un commentaire
                           </span>
                         </Button>
@@ -95,7 +95,7 @@ export default function DisplayArticleComments({
                             size="slim"
                           >
                             <LogIn />{" "}
-                            <span className="hidden lg:block">
+                            <span className="sr-only lg:not-sr-only">
                               Connectez-vous pour publier un commentaire
                             </span>
                           </Button>

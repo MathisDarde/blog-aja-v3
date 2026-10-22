@@ -25,7 +25,7 @@ export default function ArticleToc({ toc }: { toc: TocEntry[] }) {
         <span className="flex items-center gap-2 font-Bai_Jamjuree font-bold uppercase text-lg sm:text-xl">
           <ListOrdered size={22} className="text-aja-blue" />
           Sommaire
-          <span className="text-gray-400 text-sm sm:text-base font-semibold normal-case">
+          <span className="text-gray-500 text-sm sm:text-base font-semibold normal-case">
             ({toc.filter((entry) => entry.level === 2).length} parties)
           </span>
         </span>

@@ -9,6 +9,8 @@ const TRANSFORMED = /^[a-z]{1,3}_[^/]*\//;
 
 export default function imageLoader({ src, width, quality }: { src: string; width: number; quality?: number }) {
   const match = src.match(CLOUDINARY_UPLOAD);
-  if (!match || TRANSFORMED.test(match[2])) return src;
+  // Largeur en fragment : jamais envoyée au serveur (même fichier, même cache), elle évite
+  // l'avertissement de Next sur un loader qui ignore la largeur
+  if (!match || TRANSFORMED.test(match[2])) return src.includes("#") ? src : `${src}#w=${width}`;
   return `${match[1]}f_auto,q_${quality ?? "auto"},w_${width},c_limit/${match[2]}`;
 }

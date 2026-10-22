@@ -63,7 +63,7 @@ export default function FilterContent({
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{title}</p>
               {type === "player" && (
                 <div className="relative w-full sm:w-56">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type="search"
                     value={playerSearch}
@@ -93,7 +93,7 @@ export default function FilterContent({
                     }`}
                   >
                     {filter.tag}{" "}
-                    <span className={selected ? "text-white/80" : "text-gray-400"}>{count}</span>
+                    <span className={selected ? "text-white/80" : "text-gray-500"}>{count}</span>
                   </button>
                 );
               })}

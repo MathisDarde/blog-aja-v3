@@ -19,7 +19,10 @@ const ratio = (variant: keyof typeof PITCHES) => PITCHES[variant].width / PITCHE
 
 // --- Joueurs et coachs ---
 
-/** Photo entière, jamais recadrée : l'encadré prend les proportions de la photo. */
+/**
+ * Photo entière, jamais recadrée. Hauteur fixée d'avance : la page ne saute pas quand
+ * la photo arrive (sa largeur suit ses proportions).
+ */
 function Portrait({ src, alt, compact }: { src: string | null; alt: string; compact?: boolean }) {
   return (
     <Image
@@ -29,7 +32,7 @@ function Portrait({ src, alt, compact }: { src: string | null; alt: string; comp
       height={600}
       priority
       sizes="(min-width: 1024px) 400px, (min-width: 768px) 320px, 100vw"
-      className={`mx-auto w-auto max-w-full h-auto object-contain rounded-xl ${compact ? "max-h-[45svh]" : "max-h-[70svh]"}`}
+      className={`mx-auto w-auto max-w-full object-contain rounded-xl ${compact ? "h-[45svh]" : "h-[70svh]"}`}
     />
   );
 }

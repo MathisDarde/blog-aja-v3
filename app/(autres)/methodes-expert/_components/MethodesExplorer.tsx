@@ -106,14 +106,15 @@ export function MethodesExplorerView({ entries }: { entries: MethodeEntry[] }) {
         {sections.length === 0 ? (
           <p className="py-10 text-gray-600">Aucune méthode ne correspond à votre recherche.</p>
         ) : (
-          sections.map((section) => (
+          sections.map((section, sectionIndex) => (
             <section key={section.type} className="mb-10 text-left">
               <h2 className="font-Bai_Jamjuree text-xl sm:text-2xl font-bold uppercase mb-4">
-                {section.plural} <span className="text-gray-400">({section.entries.length})</span>
+                {section.plural} <span className="text-gray-500">({section.entries.length})</span>
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {section.entries.map((entry) => (
-                  <MethodeCard key={entry.methode.id_methode} entry={entry} />
+                {section.entries.map((entry, index) => (
+                  // Première ligne visible dès l'arrivée : images chargées en priorité
+                  <MethodeCard key={entry.methode.id_methode} entry={entry} priority={sectionIndex === 0 && index < 4} />
                 ))}
               </div>
             </section>
@@ -124,7 +125,7 @@ export function MethodesExplorerView({ entries }: { entries: MethodeEntry[] }) {
   );
 }
 
-function MethodeCard({ entry }: { entry: MethodeEntry }) {
+function MethodeCard({ entry, priority }: { entry: MethodeEntry; priority?: boolean }) {
   const { methode, url, name, subtitle, image, logos, articles } = entry;
   const portrait = methode.typemethode === "joueur" || methode.typemethode === "coach";
   const className =
@@ -145,6 +146,8 @@ function MethodeCard({ entry }: { entry: MethodeEntry }) {
             alt={name}
             width={400}
             height={400}
+            priority={priority}
+            sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className={
               portrait
                 ? "w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"

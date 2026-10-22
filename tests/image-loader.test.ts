@@ -13,8 +13,8 @@ describe("loader des images", () => {
 
   it("laisse les autres images et les adresses Cloudinary déjà transformées", () => {
     const transformed = "https://res.cloudinary.com/demo/image/upload/c_fill,w_1200,h_630/v1/a.jpg";
-    expect(imageLoader({ src: transformed, width: 640 })).toBe(transformed);
-    expect(imageLoader({ src: "/_assets/img/pdpdebase.png", width: 640 })).toBe("/_assets/img/pdpdebase.png");
-    expect(imageLoader({ src: "https://upload.wikimedia.org/x.svg", width: 64 })).toBe("https://upload.wikimedia.org/x.svg");
+    expect(imageLoader({ src: transformed, width: 640 })).toBe(`${transformed}#w=640`);
+    expect(imageLoader({ src: "/_assets/img/pdpdebase.png", width: 640 })).toBe("/_assets/img/pdpdebase.png#w=640");
+    expect(imageLoader({ src: "https://upload.wikimedia.org/x.svg", width: 64 })).toBe("https://upload.wikimedia.org/x.svg#w=64");
   });
 });
