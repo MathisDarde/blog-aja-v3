@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { requireAdmin, requireUser } from "@/lib/auth-guard";
 import { isRateLimited } from "@/lib/rate-limit";
 import { articleOfComment, revalidateArticle, revalidateArticleOfComment } from "@/lib/article-cache";
+import { notifyComment, notifyReport } from "@/lib/activity-notifications";
 
 // Au-delà, le commentaire est masqué en attendant qu'un admin tranche
 const COMMENT_REPORTS_AUTO_HIDE = 3;
@@ -71,6 +72,7 @@ export async function createComment(
   });
 
   await revalidateArticle(articleId);
+  notifyComment(id_comment);
   return result;
 }
 
@@ -166,6 +168,7 @@ export async function reportComment(
     .where(eq(commentReportsTable.commentId, commentId));
 
   const autoHidden = total >= COMMENT_REPORTS_AUTO_HIDE;
+  notifyReport(commentId, reason, userId, total, autoHidden);
   if (autoHidden) {
     await db
       .update(commentsTable)

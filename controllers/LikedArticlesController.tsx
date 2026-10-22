@@ -6,6 +6,7 @@ import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin, requireSelfOrAdmin } from "@/lib/auth-guard";
 import { revalidateArticle } from "@/lib/article-cache";
+import { notifyLike } from "@/lib/activity-notifications";
 
 export async function storeLike(userId: string, articleId: string) {
     await requireSelfOrAdmin(userId);
@@ -19,6 +20,7 @@ export async function storeLike(userId: string, articleId: string) {
     });
 
     await revalidateArticle(articleId);
+    notifyLike(userId, articleId);
     return { id_like, userId, articleId };
   }
 

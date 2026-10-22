@@ -6,6 +6,7 @@ import { schema } from "@/db/schema";
 import { nextCookies } from "better-auth/next-js";
 import { Resend } from "resend";
 import ResetPasswordEmail from "@/components/emails/forgot-password";
+import { notifySignup } from "@/lib/activity-notifications";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
@@ -71,6 +72,14 @@ export const auth = betterAuth({
   // jusqu'à 5 min à s'appliquer (une déconnexion sur le même navigateur est immédiate).
   session: {
     cookieCache: { enabled: true, maxAge: 5 * 60 },
+  },
+  // Inscription annoncée dans le salon Discord des inscriptions (lib/activity-notifications)
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (createdUser) => notifySignup(createdUser),
+      },
+    },
   },
   database: drizzleAdapter(db, {
     provider: "pg",
