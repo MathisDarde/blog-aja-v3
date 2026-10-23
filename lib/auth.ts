@@ -46,9 +46,12 @@ export const auth = betterAuth({
       enabled: true,
     },
     additionalFields: {
+      // Facultatif ici : Google ne fournit pas de date de naissance, et better-auth refuse
+      // la création d'un compte social si un champ requis manque (MISSING_FIELD).
+      // L'inscription par email l'exige toujours via InscSchema (actions/user/insc-form.ts).
       birthday: {
         type: "date",
-        required: true,
+        required: false,
       },
       admin: {
         type: "boolean",
