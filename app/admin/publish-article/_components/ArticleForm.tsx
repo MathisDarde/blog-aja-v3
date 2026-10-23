@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import {
   ImageIcon,
   ChevronDown,
@@ -302,54 +302,51 @@ export default function MultiStepArticleForm({
     <div className="min-h-screen bg-gray-50/30 font-Montserrat w-full mx-auto max-w-[1000px]">
       {/* --- HEADER NAVIGATION --- */}
       <div className="sticky top-0 z-10 w-full bg-white border-b border-gray-200 shadow-sm">
-        <div className="px-5 sm:px-6 py-4 min-h-20 sm:min-h-24 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-          <div className="flex items-center gap-1 sm:gap-4">
-            <nav className="flex items-center gap-1 sm:gap-2">
-              {[
-                { id: 1, label: "Infos" },
-                { id: 2, label: "Tags" },
-                { id: 3, label: "Contenu" },
-              ].map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => jumpToStep(s.id)}
-                  className="flex items-center group"
-                >
-                  <div
-                    className={`flex justify-center items-center gap-2 sm:px-4 sm:w-auto sm:py-2 sm:h-auto h-[35px] w-[35px] rounded-full transition-all ${
-                      step === s.id
-                        ? "bg-aja-blue/10 text-aja-blue"
-                        : step > s.id
-                          ? "text-green-600 hover:bg-green-50"
-                          : "text-gray-400 hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="text-xs font-bold font-Montserrat uppercase">
-                      {step > s.id ? <CheckCircle2 size={14} /> : `0${s.id}.`}
-                    </span>
-                    <span className="hidden md:block text-sm">{s.label}</span>
-                  </div>
-                  {s.id < 3 && <div className="ml-2 w-4 h-[1px] bg-gray-200" />}
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-1 sm:gap-2">
-            {autosave.state !== "idle" && (
-              <span
-                className={`hidden lg:block text-xs whitespace-nowrap mr-1 ${
-                  autosave.state === "error" ? "text-red-600" : "text-gray-400"
+        {/* Étapes sur leur propre ligne, actions en dessous : rien ne se décale quand le statut change */}
+        <nav className="px-5 sm:px-6 py-3 flex items-center justify-center gap-2 sm:gap-3 border-b border-gray-100">
+          {[
+            { id: 1, label: "Infos" },
+            { id: 2, label: "Tags" },
+            { id: 3, label: "Contenu" },
+          ].map((s) => (
+            <Fragment key={s.id}>
+              <button
+                type="button"
+                onClick={() => jumpToStep(s.id)}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-all ${
+                  step === s.id
+                    ? "bg-aja-blue/10 text-aja-blue"
+                    : step > s.id
+                      ? "text-green-600 hover:bg-green-50"
+                      : "text-gray-400 hover:bg-gray-50"
                 }`}
               >
-                {autosave.state === "saving"
-                  ? "Enregistrement…"
-                  : autosave.state === "saved"
-                    ? `Enregistré à ${autosave.at.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
-                    : autosave.message}
-              </span>
-            )}
+                <span className="text-xs font-bold font-Montserrat uppercase">
+                  {step > s.id ? <CheckCircle2 size={14} /> : `0${s.id}.`}
+                </span>
+                <span className="hidden sm:block text-sm">{s.label}</span>
+              </button>
+              {s.id < 3 && <div className="w-4 sm:w-10 h-[1px] bg-gray-200" />}
+            </Fragment>
+          ))}
+        </nav>
+
+        <div className="px-5 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+          <span
+            className={`min-w-0 truncate text-xs ${
+              autosave.state === "error" ? "text-red-600" : "text-gray-400"
+            }`}
+          >
+            {autosave.state === "saving"
+              ? "Enregistrement…"
+              : autosave.state === "saved"
+                ? `Enregistré à ${autosave.at.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
+                : autosave.state === "error"
+                  ? autosave.message
+                  : null}
+          </span>
+
+          <div className="shrink-0 flex items-center gap-1 sm:gap-2">
             <button
               type="button"
               onClick={handleSaveDraft}
