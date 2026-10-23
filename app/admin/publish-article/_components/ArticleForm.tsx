@@ -302,7 +302,7 @@ export default function MultiStepArticleForm({
     <div className="min-h-screen bg-gray-50/30 font-Montserrat w-full mx-auto max-w-[1000px]">
       {/* --- HEADER NAVIGATION --- */}
       <div className="sticky top-0 z-10 w-full bg-white border-b border-gray-200 shadow-sm">
-        <div className="px-5 sm:px-6 h-20 sm:h-24 flex items-center justify-between">
+        <div className="px-5 sm:px-6 py-4 min-h-20 sm:min-h-24 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
           <div className="flex items-center gap-1 sm:gap-4">
             <nav className="flex items-center gap-1 sm:gap-2">
               {[
@@ -336,7 +336,7 @@ export default function MultiStepArticleForm({
             </nav>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-1 sm:gap-2">
             {autosave.state !== "idle" && (
               <span
                 className={`hidden lg:block text-xs whitespace-nowrap mr-1 ${
@@ -353,7 +353,7 @@ export default function MultiStepArticleForm({
             <button
               type="button"
               onClick={handleSaveDraft}
-              className="p-2.5 sm:px-5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-all font-Bai_Jamjuree flex items-center gap-2"
+              className="p-2.5 sm:px-3 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-all font-Bai_Jamjuree flex items-center gap-2"
             >
               <Save size={18} />
               <span className="hidden md:block">Brouillon</span>
@@ -363,7 +363,7 @@ export default function MultiStepArticleForm({
                 type="button"
                 onClick={handlePreview}
                 title="Enregistrer et voir l'aperçu"
-                className="p-2.5 sm:px-5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-all font-Bai_Jamjuree flex items-center gap-2"
+                className="p-2.5 sm:px-3 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-all font-Bai_Jamjuree flex items-center gap-2"
               >
                 <Eye size={18} />
                 <span className="hidden md:block">Aperçu</span>
@@ -378,7 +378,7 @@ export default function MultiStepArticleForm({
                   ? `Programmé : ${formatScheduledAt(scheduledAt)}`
                   : "Programmer la publication"
               }
-              className={`p-2.5 sm:px-5 text-xs font-bold uppercase tracking-wider transition-all font-Bai_Jamjuree flex items-center gap-2 ${scheduledAt ? "text-aja-blue" : "text-gray-500"} ${step !== 3 ? "opacity-30 cursor-not-allowed" : "hover:text-gray-800"}`}
+              className={`p-2.5 sm:px-3 text-xs font-bold uppercase tracking-wider transition-all font-Bai_Jamjuree flex items-center gap-2 ${scheduledAt ? "text-aja-blue" : "text-gray-500"} ${step !== 3 ? "opacity-30 cursor-not-allowed" : "hover:text-gray-800"}`}
             >
               <CalendarClock size={18} />
               <span className="hidden md:block">Programmer</span>
@@ -387,7 +387,7 @@ export default function MultiStepArticleForm({
               form="article-form"
               type="submit"
               disabled={isUploading || step !== 3}
-              className={`bg-aja-blue text-white p-2.5 sm:px-8 sm:py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-blue-100 transition-all font-Bai_Jamjuree ${step !== 3 ? "opacity-30 cursor-not-allowed" : "hover:scale-105"}`}
+              className={`bg-aja-blue text-white p-2.5 sm:px-6 sm:py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-blue-100 transition-all font-Bai_Jamjuree ${step !== 3 ? "opacity-30 cursor-not-allowed" : "hover:scale-105"}`}
             >
               {isUploading ? (
                 <Loader2 className="animate-spin" size={18} />
