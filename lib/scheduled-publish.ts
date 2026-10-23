@@ -4,8 +4,11 @@ import { draftTable } from "@/db/schema";
 import { insertPublishedArticle } from "@/lib/publish-article";
 import {
   alertScheduledPublishFailures,
+  confirmScheduledPublishes,
   ScheduledPublishFailure,
+  ScheduledPublishSuccess,
 } from "@/lib/scheduled-publish-alert";
+import { notifyScheduledPublishes } from "@/lib/activity-notifications";
 import { and, eq, lte } from "drizzle-orm";
 
 type ScheduledPublishResult = {
@@ -26,6 +29,7 @@ export async function publishDueDrafts(
     );
 
   const result: ScheduledPublishResult = { published: [], failed: [] };
+  const published: (ScheduledPublishSuccess & { imageUrl: string | null })[] = [];
 
   for (const draft of due) {
     // Le brouillon a pu être modifié après sa programmation : on revalide tout
@@ -56,6 +60,11 @@ export async function publishDueDrafts(
       await insertPublishedArticle(parsed.data, draft.userId);
       await db.delete(draftTable).where(eq(draftTable.id_draft, draft.id_draft));
       result.published.push(parsed.data.slug);
+      published.push({
+        slug: parsed.data.slug,
+        title: parsed.data.title,
+        imageUrl: draft.imageUrl,
+      });
     } catch (err) {
       console.error(`Publication programmée de "${draft.slug}" :`, err);
       await unschedule(draft.id_draft).catch((e) => console.error(e));
@@ -68,7 +77,11 @@ export async function publishDueDrafts(
     }
   }
 
-  await alertScheduledPublishFailures(result.failed);
+  notifyScheduledPublishes(published, result.failed);
+  await Promise.all([
+    confirmScheduledPublishes(published),
+    alertScheduledPublishFailures(result.failed),
+  ]);
   return result;
 }
 

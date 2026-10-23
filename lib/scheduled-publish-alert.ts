@@ -11,6 +11,17 @@ export interface ScheduledPublishFailure {
   error: string;
 }
 
+export interface ScheduledPublishSuccess {
+  slug: string;
+  title: string;
+}
+
+interface MailItem {
+  name: string;
+  url: string;
+  detail?: string;
+}
+
 const escapeHtml = (value: string) =>
   value
     .replace(/&/g, "&amp;")
@@ -18,10 +29,10 @@ const escapeHtml = (value: string) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-// Mail aux admins quand une publication programmée échoue : le brouillon a perdu sa
-// programmation et attend d'être corrigé puis reprogrammé. Sans garde d'accès (cron).
-export async function alertScheduledPublishFailures(failures: ScheduledPublishFailure[]) {
-  if (failures.length === 0 || !process.env.RESEND_API_KEY) return;
+// Mail aux admins sur le résultat des publications programmées. Sans garde d'accès (cron).
+// Le cron renvoie déjà l'échec (workflow GitHub en erreur) : le mail est un plus
+async function mailAdmins(subject: string, intro: string, items: MailItem[]) {
+  if (items.length === 0 || !process.env.RESEND_API_KEY) return;
 
   try {
     const admins = await db
@@ -30,22 +41,10 @@ export async function alertScheduledPublishFailures(failures: ScheduledPublishFa
       .where(eq(user.admin, true));
     if (admins.length === 0) return;
 
-    const items = failures.map((f) => ({
-      name: f.title || f.slug || "Brouillon sans titre",
-      url: `${SITE_URL}/admin/brouillons/${f.id}`,
-      error: f.error,
-    }));
-    const subject =
-      failures.length === 1
-        ? `Publication programmée échouée : ${items[0].name}`
-        : `${failures.length} publications programmées échouées`;
-    const intro =
-      "Ces brouillons n'ont pas pu être publiés à l'heure prévue. Ils ne sont plus programmés : corrigez-les puis reprogrammez-les.";
-
     const text = [
       intro,
       "",
-      ...items.map((i) => `- ${i.name} : ${i.error}\n  ${i.url}`),
+      ...items.map((i) => `- ${i.name}${i.detail ? ` : ${i.detail}` : ""}\n  ${i.url}`),
     ].join("\n");
     const html = `<div style="font-family: Arial, sans-serif; color: #111827; font-size: 14px; line-height: 1.5">
   <p>${escapeHtml(intro)}</p>
@@ -53,7 +52,9 @@ export async function alertScheduledPublishFailures(failures: ScheduledPublishFa
     ${items
       .map(
         (i) =>
-          `<li style="margin-bottom: 8px"><a href="${i.url}" style="color: #3c77b4; font-weight: bold">${escapeHtml(i.name)}</a><br /><span style="color: #6b7280">${escapeHtml(i.error)}</span></li>`
+          `<li style="margin-bottom: 8px"><a href="${i.url}" style="color: #3c77b4; font-weight: bold">${escapeHtml(i.name)}</a>${
+            i.detail ? `<br /><span style="color: #6b7280">${escapeHtml(i.detail)}</span>` : ""
+          }</li>`
       )
       .join("\n    ")}
   </ul>
@@ -69,7 +70,38 @@ export async function alertScheduledPublishFailures(failures: ScheduledPublishFa
       }))
     );
   } catch (error) {
-    // Le cron renvoie déjà l'échec (workflow GitHub en erreur) : le mail est un plus
-    console.error("Alerte des publications programmées échouées :", error);
+    console.error(`Mail des publications programmées (${subject}) :`, error);
   }
+}
+
+// Le brouillon a perdu sa programmation et attend d'être corrigé puis reprogrammé
+export async function alertScheduledPublishFailures(failures: ScheduledPublishFailure[]) {
+  const items = failures.map((f) => ({
+    name: f.title || f.slug || "Brouillon sans titre",
+    url: `${SITE_URL}/admin/brouillons/${f.id}`,
+    detail: f.error,
+  }));
+  await mailAdmins(
+    items.length === 1
+      ? `Publication programmée échouée : ${items[0]?.name}`
+      : `${items.length} publications programmées échouées`,
+    "Ces brouillons n'ont pas pu être publiés à l'heure prévue. Ils ne sont plus programmés : corrigez-les puis reprogrammez-les.",
+    items
+  );
+}
+
+export async function confirmScheduledPublishes(published: ScheduledPublishSuccess[]) {
+  const items = published.map((p) => ({
+    name: p.title,
+    url: `${SITE_URL}/articles/${p.slug}`,
+  }));
+  await mailAdmins(
+    items.length === 1
+      ? `Article publié : ${items[0]?.name}`
+      : `${items.length} articles programmés publiés`,
+    items.length === 1
+      ? "L'article programmé vient d'être publié, et la newsletter est partie."
+      : "Les articles programmés viennent d'être publiés, et la newsletter est partie.",
+    items
+  );
 }

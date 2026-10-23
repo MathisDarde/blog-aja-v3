@@ -5,6 +5,7 @@ import { count, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { articlesTable, commentsTable, CommentReportReason, likedArticles, user } from "@/db/schema";
 import { DISCORD_COLORS, notifyDiscord } from "@/lib/discord";
+import type { ScheduledPublishFailure } from "@/lib/scheduled-publish-alert";
 
 const REASONS: Record<CommentReportReason, string> = {
   spam: "Spam",
@@ -119,4 +120,30 @@ export function notifyReport(
       ],
     };
   });
+}
+
+/** Passage du cron des publications programmées : un message par article publié ou en échec. */
+export function notifyScheduledPublishes(
+  published: { slug: string; title: string; imageUrl: string | null }[],
+  failed: ScheduledPublishFailure[],
+) {
+  for (const p of published) {
+    notifyDiscord("articles", () => ({
+      title: `📰 ${p.title}`,
+      url: `/articles/${p.slug}`,
+      description: "Article programmé publié, la newsletter est partie.",
+      color: DISCORD_COLORS.green,
+      thumbnail: p.imageUrl,
+    }));
+  }
+  for (const f of failed) {
+    notifyDiscord("articles", () => ({
+      title: `⚠️ Publication programmée échouée : ${f.title || f.slug || "Brouillon sans titre"}`,
+      url: `/admin/brouillons/${f.id}`,
+      description: `Le brouillon n'est plus programmé : corrigez-le puis reprogrammez-le.
+
+${f.error}`,
+      color: DISCORD_COLORS.red,
+    }));
+  }
 }

@@ -1,16 +1,17 @@
-// Notifications d'activité dans des salons Discord (inscriptions, likes, commentaires), par
+// Notifications d'activité dans des salons Discord (inscriptions, likes, commentaires, articles), par
 // webhook : un salon = une variable d'environnement. Sans variable, rien n'est envoyé.
 // Envoi après la réponse (after) : jamais bloquant, et une erreur Discord est ignorée.
 
 import { after } from "next/server";
 import { SITE_URL } from "@/lib/seo";
 
-export type DiscordChannel = "signups" | "likes" | "comments";
+export type DiscordChannel = "signups" | "likes" | "comments" | "articles";
 
 const WEBHOOKS: Record<DiscordChannel, string | undefined> = {
   signups: process.env.DISCORD_WEBHOOK_SIGNUPS,
   likes: process.env.DISCORD_WEBHOOK_LIKES,
   comments: process.env.DISCORD_WEBHOOK_COMMENTS,
+  articles: process.env.DISCORD_WEBHOOK_ARTICLES,
 };
 
 // Couleurs de l'app : aja-blue, orange-third, rouge
