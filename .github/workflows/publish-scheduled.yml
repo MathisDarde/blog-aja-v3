@@ -1,7 +1,9 @@
 name: Publications programmées
 
-# Le cron de Vercel (offre gratuite) ne passe qu'une fois par jour : GitHub
-# déclenche donc la publication des brouillons programmés toutes les 5 minutes.
+# Filet de sécurité : la publication à l'heure exacte est déclenchée par QStash
+# (lib/scheduled-publish-trigger.ts). GitHub ne garantit pas ce cron (exécutions
+# retardées de plusieurs heures, voire sautées) : il rattrape seulement ce que
+# QStash aurait manqué. Lancement à la main : Actions → Run workflow.
 on:
   schedule:
     - cron: "*/5 * * * *"

@@ -8,6 +8,7 @@ import {
   updateBrouillon,
 } from "@/controllers/DraftController";
 import { requireAdmin } from "@/lib/auth-guard";
+import { triggerPublishAt } from "@/lib/scheduled-publish-trigger";
 import { ArticleSchemaType, FormResponse } from "@/types/forms";
 
 const scheduleDraftArticle = async (
@@ -48,6 +49,18 @@ const scheduleDraftArticle = async (
       await updateBrouillon(id, parsedData.data);
     } else {
       id = await storeBrouillon(parsedData.data, userId);
+    }
+
+    // Avant l'enregistrement : si QStash refuse, rien n'est programmé
+    // (un appel sans brouillon à publier, lui, ne fait rien)
+    try {
+      await triggerPublishAt(date);
+    } catch (err) {
+      console.error("QStash :", err);
+      return {
+        success: false,
+        message: "Impossible de programmer le déclenchement de la publication",
+      };
     }
 
     const scheduled = await scheduleBrouillon(id, date);
