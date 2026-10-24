@@ -15,14 +15,12 @@ import {
   TITLE_FONT,
 } from "@/lib/email-layout";
 import { readingMinutes } from "@/lib/reading-time";
-import { tagLabels } from "@/lib/seo";
 
 export interface NewArticleEmailData {
   title: string;
   teaser: string;
   slug: string;
   imageUrl: string | null;
-  tags: string[] | null;
   content: string;
 }
 
@@ -32,10 +30,6 @@ export function newArticleEmail(article: NewArticleEmailData, recipientName?: st
   const teaser = escapeHtml(article.teaser);
   const greeting = recipientName ? `Bonjour ${escapeHtml(recipientName)},` : "Bonjour,";
   const minutes = readingMinutes(article.content);
-  const meta = [
-    ...tagLabels(article.tags).slice(0, 2).map((t) => escapeHtml(t)),
-    `${minutes} min de lecture`,
-  ].join(`&nbsp;&nbsp;&middot;&nbsp;&nbsp;`);
 
   const body = `${paragraph(greeting, "font-size:16px; font-weight:600;")}
 ${paragraph("Un nouvel article vient de paraître sur Mémoire d'Auxerrois. Prenez quelques minutes, on vous raconte tout&nbsp;:", "margin-bottom:24px;")}
@@ -51,7 +45,7 @@ ${paragraph("Un nouvel article vient de paraître sur Mémoire d'Auxerrois. Pren
   }
   <tr>
     <td style="padding:22px 24px 26px;">
-      <p style="margin:0 0 10px; font-family:${TITLE_FONT}; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:${ORANGE};">${meta}</p>
+      <p style="margin:0 0 10px; font-family:${TITLE_FONT}; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:${ORANGE};">${minutes} min de lecture</p>
       <h1 class="title" style="margin:0 0 12px; font-family:${TITLE_FONT}; font-size:24px; line-height:1.25; font-weight:700; color:${GRAY_900};">
         <a href="${link}" style="color:${GRAY_900}; text-decoration:none;">${title}</a>
       </h1>
