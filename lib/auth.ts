@@ -5,7 +5,8 @@ import { db } from "@/db/db";
 import { schema } from "@/db/schema";
 import { nextCookies } from "better-auth/next-js";
 import { Resend } from "resend";
-import ResetPasswordEmail from "@/components/emails/forgot-password";
+import { resetPasswordEmail, verifyNewEmailEmail } from "@/lib/account-emails";
+import { EMAIL_FROM } from "@/lib/email-layout";
 import { notifySignup } from "@/lib/activity-notifications";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
@@ -16,10 +17,9 @@ export const auth = betterAuth({
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
       await resend.emails.send({
-        from: "Contact Mémoire d’Auxerrois <contact@memoiredauxerrois.fr>",
+        from: EMAIL_FROM,
         to: user.email,
-        subject: "Réinitialisation de votre mot de passe",
-        react: ResetPasswordEmail({ user, resetUrl: url }),
+        ...resetPasswordEmail(user.name, url),
       });
     },
   },
@@ -30,13 +30,9 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       await resend.emails.send({
-        from: "Contact Mémoire d’Auxerrois <contact@memoiredauxerrois.fr>",
+        from: EMAIL_FROM,
         to: user.email,
-        subject: "Confirmez votre nouvelle adresse email",
-        html: `<p>Bonjour,</p>
-<p>Une modification de l'adresse email de votre compte Mémoire d'Auxerrois a été demandée.</p>
-<p><a href="${url}">Cliquez ici pour confirmer cette nouvelle adresse</a>.</p>
-<p>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.</p>`,
+        ...verifyNewEmailEmail(user.name, url),
       });
     },
   },

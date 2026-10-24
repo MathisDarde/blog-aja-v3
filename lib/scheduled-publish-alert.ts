@@ -3,6 +3,17 @@ import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Resend } from "resend";
 import { SITE_URL } from "@/lib/seo";
+import {
+  BLUE,
+  EMAIL_FROM,
+  emailLayout,
+  escapeHtml,
+  GRAY_200,
+  GRAY_500,
+  paragraph,
+  TEXT_FONT,
+  TITLE_FONT,
+} from "@/lib/email-layout";
 
 export interface ScheduledPublishFailure {
   id: string;
@@ -22,13 +33,6 @@ interface MailItem {
   detail?: string;
 }
 
-const escapeHtml = (value: string) =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-
 // Mail aux admins sur le résultat des publications programmées. Sans garde d'accès (cron).
 // Le cron renvoie déjà l'échec (workflow GitHub en erreur) : le mail est un plus
 async function mailAdmins(subject: string, intro: string, items: MailItem[]) {
@@ -46,23 +50,31 @@ async function mailAdmins(subject: string, intro: string, items: MailItem[]) {
       "",
       ...items.map((i) => `- ${i.name}${i.detail ? ` : ${i.detail}` : ""}\n  ${i.url}`),
     ].join("\n");
-    const html = `<div style="font-family: Arial, sans-serif; color: #111827; font-size: 14px; line-height: 1.5">
-  <p>${escapeHtml(intro)}</p>
-  <ul>
-    ${items
-      .map(
-        (i) =>
-          `<li style="margin-bottom: 8px"><a href="${i.url}" style="color: #3c77b4; font-weight: bold">${escapeHtml(i.name)}</a>${
-            i.detail ? `<br /><span style="color: #6b7280">${escapeHtml(i.detail)}</span>` : ""
-          }</li>`
-      )
-      .join("\n    ")}
-  </ul>
-</div>`;
+    const html = emailLayout({
+      title: subject,
+      preheader: intro,
+      body: `${paragraph(escapeHtml(intro), "margin-bottom:20px;")}
+${items
+  .map(
+    (i) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px; border:1px solid ${GRAY_200}; border-radius:14px;">
+  <tr>
+    <td style="padding:14px 18px;">
+      <a href="${i.url}" style="font-family:${TITLE_FONT}; font-size:16px; font-weight:700; color:${BLUE}; text-decoration:none;">${escapeHtml(i.name)}</a>${
+        i.detail
+          ? `<p style="margin:6px 0 0; font-family:${TEXT_FONT}; font-size:13px; line-height:1.5; color:${GRAY_500};">${escapeHtml(i.detail)}</p>`
+          : ""
+      }
+    </td>
+  </tr>
+</table>`
+  )
+  .join("\n")}`,
+      footerNote: "Mail réservé aux administrateurs du site.",
+    });
 
     await new Resend(process.env.RESEND_API_KEY).batch.send(
       admins.map((admin) => ({
-        from: "Mémoire d'Auxerrois <contact@memoiredauxerrois.fr>",
+        from: EMAIL_FROM,
         to: admin.email,
         subject,
         html,

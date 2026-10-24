@@ -59,7 +59,9 @@ export async function insertPublishedArticle(
 
   if (process.env.NODE_ENV === "production") {
     console.log("📨 Déclenchement de la newsletter en arrière-plan...");
-    after(() => deliverNewsletter({ title, teaser, slug, imageUrl }));
+    after(() =>
+      deliverNewsletter({ title, teaser, slug, imageUrl, tags: parsedTags, content }),
+    );
   } else {
     console.log("📭 Newsletter ignorée (environnement de développement).");
   }

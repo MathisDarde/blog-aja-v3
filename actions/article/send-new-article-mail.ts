@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getArticlebyId } from "@/controllers/ArticlesController";
 import { requireAdmin } from "@/lib/auth-guard";
 import { newArticleEmail } from "@/lib/new-article-email";
+import { EMAIL_FROM } from "@/lib/email-layout";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,7 +18,7 @@ const TestMailSchema = z.object({
 
 /** Envoie le mail de nouvel article à une seule adresse, pour vérifier son rendu. */
 export async function sendTestNewArticleMail(articleId: string, email: string) {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const parsed = TestMailSchema.safeParse({ articleId, email });
   if (!parsed.success) {
@@ -28,9 +29,9 @@ export async function sendTestNewArticleMail(articleId: string, email: string) {
     const article = await getArticlebyId(articleId);
     if (!article) return { success: false, message: "Article introuvable" };
 
-    const { subject, html, text } = newArticleEmail(article);
+    const { subject, html, text } = newArticleEmail(article, admin.name);
     const { error } = await resend.emails.send({
-      from: "Mémoire d'Auxerrois <contact@memoiredauxerrois.fr>",
+      from: EMAIL_FROM,
       to: parsed.data.email,
       subject: `[Test] ${subject}`,
       html,
